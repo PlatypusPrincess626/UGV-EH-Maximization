@@ -16,6 +16,7 @@ from transformer import TransformerEncoder
 SCENE = "test"  # Scenario setup name inside the environment matrix
 NUM_SENSORS = 20  # Count of static ground nodes distributed on map
 MAX_STEPS_PER_EPISODE = 720  # Upper frame ceiling limit per iteration
+VIEW_DISTANCE = 20
 
 # Hyperparameters
 TOTAL_EPISODES = 200        # RL takes longer to converge than simple MSE
@@ -33,6 +34,9 @@ DROPOUT = 0.1  # Regulation dropout probability fraction
 # Ensure hardware acceleration is leveraged if accessible
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 print(f"Using device execution target: {device}")
+
+env = sim_env(SCENE, NUM_SENSORS, MAX_STEPS_PER_EPISODE, VIEW_DISTANCE)
+model = TransformerEncoder(VIEW_DISTANCE, d_model=D_MODEL, num_layers=NUM_LAYERS, dim_feedforward=DIM_FEEDFORWARD)
 
 
 # =====================================================================
@@ -94,7 +98,7 @@ for episode in range(1, TOTAL_EPISODES + 1):
         battery_before = env.ch.get_battery()
 
         # Advance simulation execution (updates location, draws physical current, samples solar irradiance)
-        telemetry = env.step_simulation(model, step)
+        telemetry = env.step_simulation(step, target_x, target_y)
         steps_taken += 1
 
         battery_after = env.ch.get_battery()
