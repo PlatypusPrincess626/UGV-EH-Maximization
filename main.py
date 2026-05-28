@@ -36,7 +36,8 @@ DROPOUT = 0.1  # Regulation dropout probability fraction
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 print(f"Using device execution target: {device}")
 
-env = sim_env(SCENE, NUM_SENSORS, MAX_STEPS_PER_EPISODE, VIEW_DISTANCE)
+env = sim_env(SCENE, NUM_SENSORS, MAX_STEPS_PER_EPISODE)
+env.set_view_dist(VIEW_DISTANCE)
 model = TransformerEncoder(VIEW_DISTANCE, d_model=D_MODEL, num_layers=NUM_LAYERS, dim_feedforward=DIM_FEEDFORWARD)
 
 

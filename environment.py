@@ -40,7 +40,7 @@ def dist(pt1: NDArray[np.int32], pt2: NDArray[np.int32]):
 
 
 class sim_env:
-    def __init__(self, scene, num_sensors, max_num_steps, view_distance):
+    def __init__(self, scene, num_sensors, max_num_steps):
 
         self.ch_table = None
         self.sensor_table = None
@@ -67,7 +67,9 @@ class sim_env:
             self.times = pd.date_range('2021-01-01 8:00', freq=self.stepSize, periods=self.max_num_steps, tz="MST")
             random.seed('2021-01-01 8:00')
 
-        self.view_dist = view_distance
+        self.env_map = self.make_map()
+
+        self.view_dist = self.dim
         self.r_move = self.dim
         # insert interference creation loop
         self.chkpt_div = 15
@@ -79,7 +81,7 @@ class sim_env:
 
         self.obfuscation_array = np.array(shadow_array)
 
-        self.env_map = self.make_map()
+
 
     def step_simulation(self, current_step: int, target_x: float, target_y: float):
         """
