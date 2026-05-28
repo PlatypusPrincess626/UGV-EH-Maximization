@@ -160,6 +160,9 @@ class UGVSimulator:
 
     def find_power(self, env, x: int, y: int, step: int,
                    sol_area: int, tilt: int, azimuth: int):
+        spectra = env.get_spectrum(self.x, self.y, tilt, azimuth, step)
+        interference = env.get_obfuscation(x, y, step)
+
         # 1. Ensure the spectral response is a clean 1D vector
         response_1d = self.spectral_response.flatten()
 
