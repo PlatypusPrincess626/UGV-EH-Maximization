@@ -5,6 +5,7 @@ import torch.optim as optim
 import numpy as np
 from torch.distributions import Normal
 import math
+import matplotlib.pyplot as plt
 
 # Import the refactored simulation modules
 from environment import sim_env
@@ -40,6 +41,20 @@ env = sim_env(SCENE, NUM_SENSORS, MAX_STEPS_PER_EPISODE)
 env.set_view_dist(VIEW_DISTANCE)
 model = TransformerEncoder(VIEW_DISTANCE, d_model=D_MODEL, num_layers=NUM_LAYERS,
                            dim_feedforward=DIM_FEEDFORWARD).to(device)
+
+# Initialize log_std as a trainable parameter for 2D continuous actions (x, y)
+log_std = torch.zeros(2, requires_grad=True, device=device)
+
+# Define the optimizer to update both model parameters AND log_std
+optimizer = optim.Adam(
+    list(model.parameters()) + [log_std],
+    lr=LEARNING_RATE
+)
+
+episode_step_counts = []
+episode_rewards = []
+all_batch_log_probs = []
+all_batch_rewards = []
 
 # =====================================================================
 # 2. MAIN SIMULATION TRAINING LOOP
@@ -166,29 +181,29 @@ for episode in range(1, TOTAL_EPISODES + 1):
         all_batch_log_probs.clear()
         all_batch_rewards.clear()
 
-    # =====================================================================
-    # 4. POST-RUN EVALUATION GRAPHING
-    # =====================================================================
-    print("\nTraining complete. Generating evaluation analytics plot...")
+# =====================================================================
+# 4. POST-RUN EVALUATION GRAPHING
+# =====================================================================
+print("\nTraining complete. Generating evaluation analytics plot...")
 
-    fig, ax1 = plt.subplots(figsize=(12, 6))
+fig, ax1 = plt.subplots(figsize=(12, 6))
 
-    color = 'tab:blue'
-    ax1.set_xlabel('Episodes')
-    ax1.set_ylabel('Steps per Episode', color=color)
-    ax1.plot(range(1, TOTAL_EPISODES + 1), episode_step_counts, color=color, alpha=0.6, label='Steps Limit')
-    ax1.tick_params(axis='y', labelcolor=color)
+color = 'tab:blue'
+ax1.set_xlabel('Episodes')
+ax1.set_ylabel('Steps per Episode', color=color)
+ax1.plot(range(1, TOTAL_EPISODES + 1), episode_step_counts, color=color, alpha=0.6, label='Steps Limit')
+ax1.tick_params(axis='y', labelcolor=color)
 
-    ax2 = ax1.twinx()
-    color = 'tab:green'
-    ax2.set_ylabel('Total Cumulative Reward', color=color)
-    ax2.plot(range(1, TOTAL_EPISODES + 1), episode_rewards, color=color, linestyle='--', alpha=0.6, label='Rewards Index')
-    ax2.tick_params(axis='y', labelcolor=color)
+ax2 = ax1.twinx()
+color = 'tab:green'
+ax2.set_ylabel('Total Cumulative Reward', color=color)
+ax2.plot(range(1, TOTAL_EPISODES + 1), episode_rewards, color=color, linestyle='--', alpha=0.6, label='Rewards Index')
+ax2.tick_params(axis='y', labelcolor=color)
 
-    plt.title('UGV Battery Maximization Training Metrics (Transformer Policy Gradient)')
-    fig.tight_layout()
-    plt.grid(True, alpha=0.3)
-    plt.show()
+plt.title('UGV Battery Maximization Training Metrics (Transformer Policy Gradient)')
+fig.tight_layout()
+plt.grid(True, alpha=0.3)
+plt.show()
 
 if __name__ == "__main__":
     run_rl_training()
