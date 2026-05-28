@@ -75,7 +75,7 @@ for episode in range(1, TOTAL_EPISODES + 1):
 
         # B. Evaluate state and get stochastic action selection from Normal distribution
         model.eval()
-        flat_obs = torch.tensor(local_patch.flatten(), dtype=torch.float32).unsqueeze(0).to(device)
+        flat_obs = torch.tensor(local_patch.flatten(), dtype=torch.float32, device=device).unsqueeze(0)
 
         with torch.no_grad():
             action_mean = model.forward(flat_obs).squeeze(0)
