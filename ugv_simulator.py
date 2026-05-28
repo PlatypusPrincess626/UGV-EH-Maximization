@@ -163,6 +163,7 @@ class UGVSimulator:
         # 1. Fetch the spectrum dictionary from pvlib
         spectra = env.get_spectrum(self.x, self.y, tilt, azimuth, step)
         interference = env.get_obfuscation(x, y, step)
+        print(interference)
 
         # 2. Extract and force arrays to be flat 1D vectors
         wavelengths = np.atleast_1d(spectra['wavelength']).flatten()
