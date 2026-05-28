@@ -174,7 +174,7 @@ class UGVSimulator:
 
         power = self.find_power(env, curr_x, curr_y, step, self.solar_area, self.tilt, self.azimuth)
         # Check if the machine is powered
-        if power / self.solar_current > self.solar_voltage * 0.4:
+        if power / self.solar_current > self.solar_voltage * 0.8:
             self.is_solar = True
         else:
             self.is_solar = False
