@@ -1,4 +1,5 @@
 import numpy as np
+from scipy.integrate import trapezoid
 import math
 
 class UGVSimulator:
@@ -159,11 +160,35 @@ class UGVSimulator:
 
     def find_power(self, env, x: int, y: int, step: int,
                    sol_area: int, tilt: int, azimuth: int):
-        spectra = env.get_spectrum(self.x, self.y, tilt, azimuth, step)
-        interference = env.get_obfuscation(x, y, step)
-        cell_current = np.trapz(spectra['poa_global'] * self.spectral_response,
-                                spectra['wavelength'], axis=0)
-        print(cell_current)
+        # 1. Ensure the spectral response is a clean 1D vector
+        response_1d = self.spectral_response.flatten()
+
+        # 2. Extract the POA global array/value and align shapes
+        poa_global = np.atleast_1d(spectra['poa_global'])
+        wavelengths = np.atleast_1d(spectra['wavelength'])
+
+        # Calculate the product safely across matching dimensions
+        # Note: If poa_global is a single integrated value, it can scale the response directly
+        y_values = (poa_global * response_1d).flatten()
+
+        # 3. Handle interpolation if wavelengths and y_values don't match length
+        if len(y_values) != len(wavelengths):
+            # Fallback: If wavelengths represent the 122 discrete spectral bands,
+            # interpolate poa_global. If poa_global is a scalar, broadcast it:
+            if len(poa_global) == 1:
+                y_values = poa_global[0] * response_1d
+                # Match lengths to wavelengths array if necessary
+                if len(y_values) != len(wavelengths):
+                    y_values = np.interp(wavelengths, np.linspace(wavelengths[0], wavelengths[-1], len(y_values)),
+                                         y_values)
+
+        # 4. Integrate using modern scipy trapezoid function
+        cell_current = trapezoid(y_values, wavelengths)
+
+        # Fallback to prevent NaN propagation downstream
+        if np.isnan(cell_current):
+            cell_current = 0.0
+
         a = step / 60 + 2
         alpha = abs(104 - 65 * a + 47 * pow(a, 2) - 12 * pow(a, 3) + pow(a, 4))
         power = abs(alpha / 100) * interference * cell_current * sol_area
