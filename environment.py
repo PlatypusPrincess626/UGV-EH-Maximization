@@ -210,7 +210,7 @@ class sim_env:
         )
         return True
 
-    def get_spectrum(self, lat, long, tilt, azimuth, step):
+    def get_spectrum(self, x, y, tilt, azimuth, step):
         lat_offset = x * self.stp
         long_offset = y * self.stp
 
