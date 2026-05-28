@@ -67,10 +67,11 @@ class sim_env:
             self.times = pd.date_range('2021-01-01 8:00', freq=self.stepSize, periods=self.max_num_steps, tz="MST")
             random.seed('2021-01-01 8:00')
 
+        self.r_move = self.dim
         self.env_map = self.make_map()
 
         self.view_dist = self.dim
-        self.r_move = self.dim
+
         # insert interference creation loop
         self.chkpt_div = 15
         checkpoints = int(720 / self.chkpt_div)
