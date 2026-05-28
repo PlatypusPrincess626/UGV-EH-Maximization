@@ -163,7 +163,6 @@ class UGVSimulator:
         # 1. Fetch the spectrum dictionary from pvlib
         spectra = env.get_spectrum(self.x, self.y, tilt, azimuth, step)
         interference = env.get_obfuscation(x, y, step)
-        print(interference)
 
         # 2. Extract and force arrays to be flat 1D vectors
         wavelengths = np.atleast_1d(spectra['wavelength']).flatten()
@@ -211,8 +210,7 @@ class UGVSimulator:
 
         power = self.find_power(env, curr_x, curr_y, step, self.solar_area, self.tilt, self.azimuth)
         # Check if the machine is powered
-        print(power, power / self.solar_current)
-        if power / self.solar_current > self.solar_voltage * 0.8:
+        if power / self.solar_current > self.solar_voltage * 0.6:
             self.is_solar = True
         else:
             self.is_solar = False
