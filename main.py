@@ -21,7 +21,7 @@ MAX_STEPS_PER_EPISODE = 720  # Upper frame ceiling limit per iteration
 VIEW_DISTANCE = 20
 
 # Hyperparameters
-TOTAL_EPISODES = 200        # RL takes longer to converge than simple MSE
+TOTAL_EPISODES = 1_000        # RL takes longer to converge than simple MSE
 TRAIN_EVERY_X_EPISODES = 5
 LEARNING_RATE = 5e-4
 GAMMA = 0.99                # Discount factor for future battery rewards
