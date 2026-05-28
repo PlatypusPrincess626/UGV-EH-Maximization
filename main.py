@@ -38,8 +38,8 @@ print(f"Using device execution target: {device}")
 
 env = sim_env(SCENE, NUM_SENSORS, MAX_STEPS_PER_EPISODE)
 env.set_view_dist(VIEW_DISTANCE)
-model = TransformerEncoder(VIEW_DISTANCE, d_model=D_MODEL, num_layers=NUM_LAYERS, dim_feedforward=DIM_FEEDFORWARD)
-
+model = TransformerEncoder(VIEW_DISTANCE, d_model=D_MODEL, num_layers=NUM_LAYERS,
+                           dim_feedforward=DIM_FEEDFORWARD).to(device)
 
 # =====================================================================
 # 2. MAIN SIMULATION TRAINING LOOP
@@ -75,7 +75,7 @@ for episode in range(1, TOTAL_EPISODES + 1):
 
         # B. Evaluate state and get stochastic action selection from Normal distribution
         model.eval()
-        flat_obs = torch.tensor(local_patch.flatten(), dtype=torch.float32, device=device).unsqueeze(0)
+        flat_obs = torch.tensor(local_patch.flatten(), dtype=torch.float32).unsqueeze(0).to(device)
 
         with torch.no_grad():
             action_mean = model.forward(flat_obs).squeeze(0)
