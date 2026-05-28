@@ -202,7 +202,7 @@ class UGVSimulator:
         # Apply your empirical scaling factors
         a = step / 60 + 2
         alpha = abs(104 - 65 * a + 47 * pow(a, 2) - 12 * pow(a, 3) + pow(a, 4))
-        power = abs(alpha / 100) * interference * cell_current * sol_area
+        power = abs(alpha / 100) * (1-interference) * cell_current * sol_area
         return power
 
     def harvest_energy(self, env, step):
