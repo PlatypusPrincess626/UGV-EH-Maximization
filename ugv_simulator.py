@@ -163,6 +163,7 @@ class UGVSimulator:
         interference = env.get_obfuscation(x, y, step)
         cell_current = np.trapz(spectra['poa_global'] * self.spectral_response,
                                 spectra['wavelength'], axis=0)
+        print(cell_current)
         a = step / 60 + 2
         alpha = abs(104 - 65 * a + 47 * pow(a, 2) - 12 * pow(a, 3) + pow(a, 4))
         power = abs(alpha / 100) * interference * cell_current * sol_area
@@ -174,7 +175,6 @@ class UGVSimulator:
 
         power = self.find_power(env, curr_x, curr_y, step, self.solar_area, self.tilt, self.azimuth)
         # Check if the machine is powered
-        print(power, power / self.solar_current, self.solar_voltage)
         if power / self.solar_current > self.solar_voltage * 0.8:
             self.is_solar = True
         else:
