@@ -40,7 +40,7 @@ class TransformerEncoder(nn.Module):
         self.reward_fn = None
 
         # 1. Custom Input Projection
-        self.input_projection = nn.Linear(input_dim, d_model)
+        self.input_projection = nn.Linear(self.input_dim, d_model)
 
         # Build encoder layer by layer
         encoder_layer = nn.TransformerEncoderLayer(
