@@ -219,7 +219,8 @@ class UGVSimulator:
 
     def battery_step(self):
         self.battery_level -= (self.total_amp_spent / self.max_energy) * 100  # Convert ratio to capacity %
-        self.battery_level = min(100.0, max(0.0, (self.battery_level + self.step_charge)))
+        if self.is_solar:
+            self.battery_level = min(100.0, max(0.0, (self.battery_level + self.step_charge)))
         return self.battery_level
 
     def step(self, env, step, target_x, target_y):
