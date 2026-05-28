@@ -160,38 +160,45 @@ class UGVSimulator:
 
     def find_power(self, env, x: int, y: int, step: int,
                    sol_area: int, tilt: int, azimuth: int):
+        # 1. Fetch the spectrum dictionary from pvlib
         spectra = env.get_spectrum(self.x, self.y, tilt, azimuth, step)
         interference = env.get_obfuscation(x, y, step)
 
-        # 1. Ensure the spectral response is a clean 1D vector
-        response_1d = self.spectral_response.flatten()
+        # 2. Extract and force arrays to be flat 1D vectors
+        wavelengths = np.atleast_1d(spectra['wavelength']).flatten()
+        poa_global = np.atleast_1d(spectra['poa_global']).flatten()
 
-        # 2. Extract the POA global array/value and align shapes
-        poa_global = np.atleast_1d(spectra['poa_global'])
-        wavelengths = np.atleast_1d(spectra['wavelength'])
+        # CRITICAL: If poa_global was generated as a 2D grid matrix,
+        # extract only the first point's worth of data to match the wavelength dimension
+        if len(poa_global) != len(wavelengths):
+            # Slice poa_global down to match the exact length of the wavelength array
+            poa_global = poa_global[:len(wavelengths)]
 
-        # Calculate the product safely across matching dimensions
-        # Note: If poa_global is a single integrated value, it can scale the response directly
-        y_values = (poa_global * response_1d).flatten()
+        # 3. Dynamically adapt your spectral_response vector to match target wavelengths
+        raw_response = self.spectral_response.flatten()
 
-        # 3. Handle interpolation if wavelengths and y_values don't match length
-        if len(y_values) != len(wavelengths):
-            # Fallback: If wavelengths represent the 122 discrete spectral bands,
-            # interpolate poa_global. If poa_global is a scalar, broadcast it:
-            if len(poa_global) == 1:
-                y_values = poa_global[0] * response_1d
-                # Match lengths to wavelengths array if necessary
-                if len(y_values) != len(wavelengths):
-                    y_values = np.interp(wavelengths, np.linspace(wavelengths[0], wavelengths[-1], len(y_values)),
-                                         y_values)
+        if len(raw_response) == len(wavelengths):
+            response_1d = raw_response
+        else:
+            # Interpolate or slice your hardcoded spectral response dynamically
+            # so it perfectly aligns with whatever shape pvlib outputs (e.g., 121 vs 122)
+            response_1d = np.interp(
+                wavelengths,
+                np.linspace(wavelengths[0], wavelengths[-1], len(raw_response)),
+                raw_response
+            )
 
-        # 4. Integrate using modern scipy trapezoid function
-        cell_current = trapezoid(y_values, wavelengths)
+        # 4. Calculate the integrand (Shapes are now guaranteed to match)
+        integrand = poa_global * response_1d
 
-        # Fallback to prevent NaN propagation downstream
+        # 5. Integrate along the wavelength axis using modern scipy
+        from scipy.integrate import trapezoid
+        cell_current = trapezoid(integrand, wavelengths)
+
         if np.isnan(cell_current):
             cell_current = 0.0
 
+        # Apply your empirical scaling factors
         a = step / 60 + 2
         alpha = abs(104 - 65 * a + 47 * pow(a, 2) - 12 * pow(a, 3) + pow(a, 4))
         power = abs(alpha / 100) * interference * cell_current * sol_area
