@@ -161,8 +161,14 @@ class UGVSimulator:
     def find_power(self, env, x: int, y: int, step: int,
                    sol_area: int, tilt: int, azimuth: int):
         # 1. Fetch the spectrum dictionary from pvlib
-        spectra = env.get_spectrum(self.x, self.y, tilt, azimuth, step)
-        interference = env.get_obfuscation(x, y, step)
+        spectra, solpos = env.get_spectrum(self.x, self.y, tilt, azimuth, step)
+
+        sun_azimuth = solpos['azimuth'].iloc[0]
+        sun_zenith = solpos['apparent_zenith'].iloc[0]
+
+        # Get localized patch, extract the center pixel weight (where vehicle sits)
+        obfuscation_patch = env.get_obfuscation(x, y, step, sun_azimuth, sun_zenith)
+        interference = obfuscation_patch[int(env.view_dist), int(env.view_dist)]
 
         # 2. Extract and force arrays to be flat 1D vectors
         wavelengths = np.atleast_1d(spectra['wavelength']).flatten()

@@ -73,14 +73,7 @@ class sim_env:
         self.view_dist = self.dim
 
         # insert interference creation loop
-        self.chkpt_div = 15
-        checkpoints = int(720 / self.chkpt_div)
-        shadow_array = []
-        for _ in range(checkpoints):
-            shadows = self.init_interference()
-            shadow_array.append(shadows)
-
-        self.obfuscation_array = np.array(shadow_array)
+        self.obfuscation_array = self.init_interference()
 
 
 
@@ -103,22 +96,16 @@ class sim_env:
         # 2. Step the UGV forward toward the destination
         new_position, battery_after = self.ch.step(self, current_step, float(target_x), float(target_y))
 
-        # 3. Extract the NEXT local 2D observation patch for the next step calculation
-        v_dist = int(self.view_dist)
-        checkpoint_idx = min(int(current_step / self.chkpt_div), self.obfuscation_array.shape[0] - 1)
-        grid_2d = self.obfuscation_array[checkpoint_idx].reshape((self.dim, self.dim))
+        # 3. Extract the NEXT local 2D observation patch of shadows for RL state observation
+        lat_offset = new_position[0] * self.stp
+        long_offset = new_position[1] * self.stp
+        solpos = solarposition.get_solarposition(self.times[current_step], self.lat_center + lat_offset,
+                                                 self.long_center + long_offset)
 
-        padded_grid = np.ones((self.dim + 2 * v_dist, self.dim + 2 * v_dist), dtype=np.float32)
-        padded_grid[v_dist: v_dist + self.dim, v_dist: v_dist + self.dim] = grid_2d
+        azimuth = solpos['azimuth'].iloc[0]
+        zenith = solpos['apparent_zenith'].iloc[0]
 
-        next_x, next_y, _ = new_position
-        center_x_padded = int(next_x) + v_dist
-        center_y_padded = int(next_y) + v_dist
-
-        next_local_observation = padded_grid[
-            center_y_padded - v_dist: center_y_padded + v_dist + 1,
-            center_x_padded - v_dist: center_x_padded + v_dist + 1
-        ]
+        next_local_observation = self.get_obfuscation(new_position[0], new_position[1], current_step, azimuth, zenith)
 
         telemetry = {
             "step": current_step,
@@ -149,28 +136,23 @@ class sim_env:
         return flg_done
 
     def init_interference(self):
+        # Base matrix initialized to 0 (ground level)
+        envStaticInter = np.zeros((self.dim, self.dim), dtype=np.int32)
 
-        envStaticInter = np.zeros((self.dim, self.dim))
+        obstacles_count = int(self.dim)
+        print("Placing Discrete Height Points")
+        for _ in range(obstacles_count):
+            pt_x = random.randint(0, self.dim - 1)
+            pt_y = random.randint(0, self.dim - 1)
 
-        shadows = int(self.dim)
-        print("Making Happy Trees")
-        for _ in range(shadows):
-            start_x = random.randint(0, self.dim - 1)
-            start_y = random.randint(0, self.dim - 1)
-            shadeSize = random.randint(8, 50)
-            intensity = random.randint(int(0.25 * shadeSize), int(0.75 * shadeSize))
-            data2D = gaussian_kernel(shadeSize, intensity, normalised=False)
+            # Select discrete integer height profile
+            obstacle_height = random.choice([3, 5, 10])
 
-            # FIXED: Safe 2D overlapping matrix alignment block to prevent index exceptions
-            end_x = min(start_x + shadeSize, self.dim)
-            end_y = min(start_y + shadeSize, self.dim)
-            kernel_w = end_x - start_x
-            kernel_h = end_y - start_y
+            # Direct single point assignment. If a coordinate is selected twice,
+            # it resolves to the higher obstacle.
+            envStaticInter[pt_y, pt_x] = max(envStaticInter[pt_y, pt_x], obstacle_height)
 
-            envStaticInter[start_y:end_y, start_x:end_x] += data2D[0:kernel_h, 0:kernel_w]
-
-        envStaticInter = np.clip(envStaticInter, 0.0, 1.0)
-        return envStaticInter.flatten()
+        return envStaticInter
 
     # Place obstructions and devices in initial positions
     def place_devices(self) -> list:
@@ -216,12 +198,12 @@ class sim_env:
 
         solpos = solarposition.get_solarposition(self.times[step], self.lat_center + lat_offset,
                                                  self.long_center + long_offset)
-        aoi = irradiance.aoi(tilt, azimuth, solpos.apparent_zenith, solpos.azimuth)
+        aoi = irradiance.aoi(solpos.apparent_zenith, solpos.azimuth, solpos.apparent_zenith, solpos.azimuth)
         relative_airmass = atmosphere.get_relative_airmass(solpos.apparent_zenith, model='kasten1966')
         spectra = spectrum.spectrl2(
             apparent_zenith=solpos.apparent_zenith,
             aoi=aoi,
-            surface_tilt=tilt,
+            surface_tilt=solpos.apparent_zenith,
             ground_albedo=self.albedo,
             surface_pressure=self.pressure,
             relative_airmass=relative_airmass,
@@ -229,11 +211,70 @@ class sim_env:
             ozone=self.ozone,
             aerosol_turbidity_500nm=self.tau500,
         )
-        return spectra
+        return spectra, solpos
 
-    def get_obfuscation(self, x: int, y: int, step):
-        safe_x = max(0, min(int(x), self.dim - 1))
-        safe_y = max(0, min(int(y), self.dim - 1))
-        checkpoint_idx = min(int(step / self.chkpt_div), self.obfuscation_array.shape[0] - 1)
+    def get_obfuscation(self, x: int, y: int, step, azimuth: float, zenith: float):
+        """
+        Generates a 2D float matrix of shape (2 * view_dist + 1, 2 * view_dist + 1)
+        representing localized solar block weights based on object height canopy projections.
+        """
+        v_dist = int(self.view_dist)
+        patch_size = 2 * v_dist + 1
+        obfuscation_patch = np.zeros((patch_size, patch_size), dtype=np.float32)
 
-        return self.obfuscation_array[checkpoint_idx, int(safe_y * self.dim + safe_x)]
+        if zenith >= 90.0:
+            return np.ones((patch_size, patch_size), dtype=np.float32)
+
+        azimuth_rad = math.radians(90.0 - azimuth)
+        step_x = math.cos(azimuth_rad)
+        step_y = math.sin(azimuth_rad)
+
+        perp_x = -step_y
+        perp_y = step_x
+
+        elevation_rad = math.radians(90.0 - zenith)
+        tan_elevation = math.tan(elevation_rad) if zenith > 0 else float('inf')
+
+        center_x = int(x)
+        center_y = int(y)
+
+        for j in range(patch_size):
+            for i in range(patch_size):
+                global_x = center_x - v_dist + i
+                global_y = center_y - v_dist + j
+
+                if global_x < 0 or global_x >= self.dim or global_y < 0 or global_y >= self.dim:
+                    continue
+
+                max_block_strength = 0.0
+                found_block = False
+
+                for d in range(1, self.dim):
+                    h_min = d * tan_elevation
+                    if h_min > 10.0:
+                        break
+
+                    ray_x = global_x + d * step_x
+                    ray_y = global_y + d * step_y
+
+                    for k in range(-5, 6):
+                        check_x = int(round(ray_x + k * perp_x))
+                        check_y = int(round(ray_y + k * perp_y))
+
+                        if check_x < 0 or check_x >= self.dim or check_y < 0 or check_y >= self.dim:
+                            continue
+
+                        height = self.obfuscation_array[check_y, check_x]
+                        if height > 0:
+                            half_height = int(height / 2)
+                            if -half_height <= k < half_height:
+                                if height >= h_min:
+                                    block_strength = 1.0 - (abs(k) * (1.0 / height))
+                                    if block_strength > max_block_strength:
+                                        max_block_strength = block_strength
+                                        found_block = True
+                    if found_block:
+                        obfuscation_patch[j, i] = max_block_strength
+                        break
+
+        return obfuscation_patch

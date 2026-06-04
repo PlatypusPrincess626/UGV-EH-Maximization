@@ -6,6 +6,7 @@ import numpy as np
 from torch.distributions import Normal
 import math
 import matplotlib.pyplot as plt
+from pvlib import solarposition
 
 # Import the refactored simulation modules
 from environment import sim_env
@@ -69,32 +70,15 @@ for episode in range(1, TOTAL_EPISODES + 1):
     steps_taken = 0
     total_ep_reward = 0.0
 
-    v_dist = int(env.view_dist)
-    grid_2d = env.obfuscation_array[0].reshape((env.dim, env.dim))
-    padded_grid = np.ones((env.dim + 2 * v_dist, env.dim + 2 * v_dist), dtype=np.float32)
-    padded_grid[v_dist: v_dist + env.dim, v_dist: v_dist + env.dim] = grid_2d
+    # Extract initial solar azimuth and zenith vectors for the initial state calculation
     ugv_x, ugv_y, _ = env.ch.get_position()
-    next_obs = padded_grid[int(ugv_y): int(ugv_y) + 2 * v_dist + 1, int(ugv_x): int(ugv_x) + 2 * v_dist + 1]
+    lat_offset = ugv_x * env.stp
+    long_offset = ugv_y * env.stp
+    solpos = solarposition.get_solarposition(env.times[0], env.lat_center + lat_offset, env.long_center + long_offset)
+
+    next_obs = env.get_obfuscation(ugv_x, ugv_y, 0, solpos['azimuth'].iloc[0], solpos['apparent_zenith'].iloc[0])
 
     for step in range(MAX_STEPS_PER_EPISODE):
-        # A. Extract the local 2D obfuscation patch centered on the UGV
-
-        # checkpoint_idx = min(int(step / env.chkpt_div), env.obfuscation_array.shape[0] - 1)
-        # grid_2d = env.obfuscation_array[checkpoint_idx].reshape((env.dim, env.dim))
-        #
-        # # Pad boundary matrices with 1.0 values to prevent out-of-bounds indexing crashes
-        # padded_grid = np.ones((env.dim + 2 * v_dist, env.dim + 2 * v_dist), dtype=np.float32)
-        # padded_grid[v_dist: v_dist + env.dim, v_dist: v_dist + env.dim] = grid_2d
-        #
-        # ugv_x, ugv_y, _ = env.ch.get_position()
-        # center_x_padded = int(ugv_x) + v_dist
-        # center_y_padded = int(ugv_y) + v_dist
-        #
-        # local_patch = padded_grid[
-        #     center_y_padded - v_dist: center_y_padded + v_dist + 1,
-        #     center_x_padded - v_dist: center_x_padded + v_dist + 1
-        # ]
-
         # B. Evaluate state and get stochastic action selection from Normal distribution
         model.eval()
         flat_obs = torch.tensor(next_obs.flatten(), dtype=torch.float32).unsqueeze(0).to(device)
