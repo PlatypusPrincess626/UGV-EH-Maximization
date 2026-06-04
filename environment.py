@@ -254,25 +254,38 @@ class sim_env:
                     if h_min > 10.0:
                         break
 
-                    ray_x = global_x + d * step_x
-                    ray_y = global_y + d * step_y
+                    # Map coordinates for the primary ray cell
+                    ray_x_int = int(round(global_x + d * step_x))
+                    ray_y_int = int(round(global_y + d * step_y))
 
-                    for k in range(-5, 6):
-                        check_x = int(round(ray_x + k * perp_x))
-                        check_y = int(round(ray_y + k * perp_y))
+                    # Verify primary ray cell falls within the global boundaries
+                    if ray_x_int < 0 or ray_x_int >= self.dim or ray_y_int < 0 or ray_y_int >= self.dim:
+                        break
 
-                        if check_x < 0 or check_x >= self.dim or check_y < 0 or check_y >= self.dim:
-                            continue
+                    # Fetch the physical object height exactly on the primary sun ray path
+                    ray_center_height = self.obfuscation_array[ray_y_int, ray_x_int]
 
-                        height = self.obfuscation_array[check_y, check_x]
-                        if height > 0:
-                            half_height = int(height / 2)
-                            if -half_height <= k < half_height:
+                    # Only run the lateral canopy checks if an object exists on this ray step
+                    if ray_center_height > 0:
+                        half_height = int(ray_center_height / 2)
+
+                        # Dynamically adjust loop bounds to match object height mapping: range(-x, x + 1)
+                        for k in range(-half_height, half_height + 1):
+                            check_x = int(round((global_x + d * step_x) + k * perp_x))
+                            check_y = int(round((global_y + d * step_y) + k * perp_y))
+
+                            if check_x < 0 or check_x >= self.dim or check_y < 0 or check_y >= self.dim:
+                                continue
+
+                            height = self.obfuscation_array[check_y, check_x]
+                            if height > 0:
+                                # Validate line-of-sight threshold requirement
                                 if height >= h_min:
                                     block_strength = 1.0 - (abs(k) * (1.0 / height))
                                     if block_strength > max_block_strength:
                                         max_block_strength = block_strength
                                         found_block = True
+
                     if found_block:
                         obfuscation_patch[j, i] = max_block_strength
                         break
