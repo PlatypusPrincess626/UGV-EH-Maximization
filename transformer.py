@@ -3,6 +3,7 @@ import torch
 import torch.nn as nn
 import copy
 import math
+from torch.nn.utils import spectral_norm
 
 
 class TransformerEncoder(nn.Module):
@@ -40,7 +41,7 @@ class TransformerEncoder(nn.Module):
         self.reward_fn = None
 
         # 1. Custom Input Projection
-        self.input_projection = nn.Linear(self.input_dim, d_model)
+        self.input_projection = spectral_norm(nn.Linear(self.input_dim, d_model))
 
         # Build encoder layer by layer
         encoder_layer = nn.TransformerEncoderLayer(
@@ -58,7 +59,7 @@ class TransformerEncoder(nn.Module):
         self.norm = nn.LayerNorm(d_model)
 
         # 2. Custom Output Projection
-        self.output_projection = nn.Linear(d_model, output_dim)
+        self.output_projection = spectral_norm(nn.Linear(d_model, output_dim))
 
         # Apply default weight initialization (includes new projections)
         self._default_weight_init()

@@ -15,6 +15,13 @@ from scipy import signal
 from scipy.signal import windows
 import math
 import datetime
+import ee
+from scipy.ndimage import zoom
+
+try:
+    ee.Initialize()
+except Exception:
+    print("GEE not initialized. Please authenticate.")
 
 # Custom Packages
 import ugv_simulator
@@ -73,6 +80,7 @@ class sim_env:
         self.view_dist = self.dim
 
         # insert interference creation loop
+        self.topo_mask, self.foliage_mask = None, None
         self.obfuscation_array = self.init_interference()
 
 
@@ -135,24 +143,46 @@ class sim_env:
 
         return flg_done
 
+    def fetch_topography_from_gee(self, lat, lon, buffer_meters=5000):
+        """Fetches SRTM data via GEE and returns an 800x800 numpy array."""
+        roi = ee.Geometry.Point([lon, lat]).buffer(buffer_meters)
+        dem = ee.Image('USGS/SRTMGL1_003')
+
+        # Reduce region to get elevation data as a dictionary
+        # Note: For larger areas, consider exporting to Drive or using getDownloadURL
+        topo_dict = dem.reduceRegion(
+            reducer=ee.Reducer.mean(),
+            geometry=roi,
+            scale=30,
+            maxPixels=1e9
+        ).getInfo()
+
+        # Placeholder: Assuming you extract the value to a 2D array format.
+        # If reduceRegion returns a flat value, you may need to use 
+        # ee.Image.sampleRectangle or similar to get a 2D grid.
+        # For this example, let's assume 'raw_grid' is your retrieved 2D array.
+        raw_grid = np.array(topo_dict.get('elevation', [[0]]))
+
+        # Calculate zoom factors to reach 800x800
+        zoom_factors = (self.dim / raw_grid.shape[0], self.dim / raw_grid.shape[1])
+
+        # Resize to 800x800
+        processed_dem_data = zoom(raw_grid, zoom_factors, order=1)
+
+        return processed_dem_data
+
     def init_interference(self):
-        # Base matrix initialized to 0 (ground level)
-        envStaticInter = np.zeros((self.dim, self.dim), dtype=np.int32)
+        """
+        Initializes two distinct masks: Topography and Foliage.
+        """
+        # 1. Topography: (From GEE, loaded as 800x800)
+        self.topo_mask = self.fetch_topography_from_gee(self.lat_center, self.long_center)
 
-        obstacles_count = int(self.dim)
-        print("Placing Discrete Height Points")
-        for _ in range(obstacles_count):
-            pt_x = random.randint(0, self.dim - 1)
-            pt_y = random.randint(0, self.dim - 1)
+        # 2. Foliage: Randomly assigned heights (e.g., 0-5 units)
+        # Using a sparsity factor to prevent the whole map from being covered
+        self.foliage_mask = np.random.choice([0, 2, 5], size=(self.dim, self.dim), p=[0.7, 0.2, 0.1])
 
-            # Select discrete integer height profile
-            obstacle_height = random.choice([3, 5, 10])
-
-            # Direct single point assignment. If a coordinate is selected twice,
-            # it resolves to the higher obstacle.
-            envStaticInter[pt_y, pt_x] = max(envStaticInter[pt_y, pt_x], obstacle_height)
-
-        return envStaticInter
+        return True  # Masks are now separate attributes
 
     # Place obstructions and devices in initial positions
     def place_devices(self) -> list:
@@ -214,10 +244,6 @@ class sim_env:
         return spectra, solpos
 
     def get_obfuscation(self, x: int, y: int, step, azimuth: float, zenith: float):
-        """
-        Generates a 2D float matrix of shape (2 * view_dist + 1, 2 * view_dist + 1)
-        representing localized solar block weights based on object height canopy projections.
-        """
         v_dist = int(self.view_dist)
         patch_size = 2 * v_dist + 1
         obfuscation_patch = np.zeros((patch_size, patch_size), dtype=np.float32)
@@ -225,61 +251,53 @@ class sim_env:
         if zenith >= 90.0:
             return np.ones((patch_size, patch_size), dtype=np.float32)
 
-        azimuth_rad = math.radians(90.0 - azimuth)
-        step_x = math.cos(azimuth_rad)
-        step_y = math.sin(azimuth_rad)
+        # Coordinate setup
+        az_rad = math.radians(90.0 - azimuth)
+        el_rad = math.radians(90.0 - zenith)
+        tan_elevation = math.tan(el_rad)
 
-        perp_x = -step_y
-        perp_y = step_x
+        step_x, step_y = math.cos(az_rad), math.sin(az_rad)
+        perp_x, perp_y = -step_y, step_x
 
-        elevation_rad = math.radians(90.0 - zenith)
-        tan_elevation = math.tan(elevation_rad) if zenith > 0 else float('inf')
+        center_x, center_y = int(x), int(y)
 
-        center_x = int(x)
-        center_y = int(y)
+        combined_mask = self.topo_mask + self.foliage_mask
 
+        # Iterate through the patch centered on the UGV
         for j in range(patch_size):
             for i in range(patch_size):
                 global_x = center_x - v_dist + i
                 global_y = center_y - v_dist + j
 
-                if global_x < 0 or global_x >= self.dim or global_y < 0 or global_y >= self.dim:
+                if not (0 <= global_x < self.dim and 0 <= global_y < self.dim):
                     continue
 
                 max_block_strength = 0.0
                 found_block = False
 
+                # Ray-casting search
                 for d in range(1, self.dim):
                     h_min = d * tan_elevation
-                    if h_min > 10.0:
+                    if h_min > 10.0: break  # Height limit of obstacles
+
+                    # Coordinates of the point along the ray
+                    ray_x = int(round(global_x + d * step_x))
+                    ray_y = int(round(global_y + d * step_y))
+
+                    if not (0 <= ray_x < self.dim and 0 <= ray_y < self.dim):
                         break
 
-                    # Map coordinates for the primary ray cell
-                    ray_x_int = int(round(global_x + d * step_x))
-                    ray_y_int = int(round(global_y + d * step_y))
+                    ray_center_height = combined_mask[ray_y, ray_x]
 
-                    # Verify primary ray cell falls within the global boundaries
-                    if ray_x_int < 0 or ray_x_int >= self.dim or ray_y_int < 0 or ray_y_int >= self.dim:
-                        break
-
-                    # Fetch the physical object height exactly on the primary sun ray path
-                    ray_center_height = self.obfuscation_array[ray_y_int, ray_x_int]
-
-                    # Only run the lateral canopy checks if an object exists on this ray step
+                    # Perform lateral canopy checks
                     if ray_center_height > 0:
                         half_height = int(ray_center_height / 2)
-
-                        # Dynamically adjust loop bounds to match object height mapping: range(-x, x + 1)
                         for k in range(-half_height, half_height + 1):
-                            check_x = int(round((global_x + d * step_x) + k * perp_x))
-                            check_y = int(round((global_y + d * step_y) + k * perp_y))
+                            check_x = int(round(ray_x + k * perp_x))
+                            check_y = int(round(ray_y + k * perp_y))
 
-                            if check_x < 0 or check_x >= self.dim or check_y < 0 or check_y >= self.dim:
-                                continue
-
-                            height = self.obfuscation_array[check_y, check_x]
-                            if height > 0:
-                                # Validate line-of-sight threshold requirement
+                            if 0 <= check_x < self.dim and 0 <= check_y < self.dim:
+                                height = combined_mask[check_y, check_x]
                                 if height >= h_min:
                                     block_strength = 1.0 - (abs(k) * (1.0 / height))
                                     if block_strength > max_block_strength:
@@ -289,5 +307,4 @@ class sim_env:
                     if found_block:
                         obfuscation_patch[j, i] = max_block_strength
                         break
-
         return obfuscation_patch
