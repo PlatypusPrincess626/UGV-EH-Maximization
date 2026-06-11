@@ -15,14 +15,8 @@ from scipy import signal
 from scipy.signal import windows
 import math
 import datetime
-import ee
+import requests
 from scipy.ndimage import zoom
-
-ee.Authenticate(auth_mode='localhost')
-try:
-    ee.Initialize()
-except Exception:
-    print("GEE not initialized. Please authenticate.")
 
 # Custom Packages
 import ugv_simulator
@@ -144,40 +138,47 @@ class sim_env:
 
         return flg_done
 
-    def fetch_topography_from_gee(self, lat, lon, buffer_meters=5000):
-        """Fetches SRTM data via GEE and returns an 800x800 numpy array."""
-        roi = ee.Geometry.Point([lon, lat]).buffer(buffer_meters)
-        dem = ee.Image('USGS/SRTMGL1_003')
+    def fetch_topography_from_usgs(self, lat_center, lon_center, grid_size=800, step_deg=0.0003):
+        """
+        Fetches elevation grid using USGS EPQS API.
+        Note: This is slow. Cache the result to avoid repeated API calls.
+        """
+        elevation_grid = np.zeros((grid_size, grid_size))
 
-        # Reduce region to get elevation data as a dictionary
-        # Note: For larger areas, consider exporting to Drive or using getDownloadURL
-        topo_dict = dem.reduceRegion(
-            reducer=ee.Reducer.mean(),
-            geometry=roi,
-            scale=30,
-            maxPixels=1e9
-        ).getInfo()
+        # Define bounds (simple approximation of area around center)
+        # Adjust step_deg to cover your desired physical area
+        start_lat = lat_center + (grid_size / 2) * step_deg
+        start_lon = lon_center - (grid_size / 2) * step_deg
 
-        # Placeholder: Assuming you extract the value to a 2D array format.
-        # If reduceRegion returns a flat value, you may need to use
-        # ee.Image.sampleRectangle or similar to get a 2D grid.
-        # For this example, let's assume 'raw_grid' is your retrieved 2D array.
-        raw_grid = np.array(topo_dict.get('elevation', [[0]]))
+        url = "https://epqs.nationalmap.gov/v1/json"
 
-        # Calculate zoom factors to reach 800x800
-        zoom_factors = (self.dim / raw_grid.shape[0], self.dim / raw_grid.shape[1])
+        print("Fetching topography from USGS (this may take time)...")
+        for y in range(grid_size):
+            for x in range(grid_size):
+                lat = start_lat - (y * step_deg)
+                lon = start_lon + (x * step_deg)
 
-        # Resize to 800x800
-        processed_dem_data = zoom(raw_grid, zoom_factors, order=1)
+                params = {'x': lon, 'y': lat, 'units': 'Meters', 'output': 'json'}
 
-        return processed_dem_data
+                try:
+                    response = requests.get(url, params=params)
+                    data = response.json()
+                    elevation_grid[y, x] = data['value']
+                except Exception as e:
+                    # Fallback to 0 if individual point fails
+                    elevation_grid[y, x] = 0
+
+            if y % 100 == 0:
+                print(f"Progress: {y / grid_size * 100:.1f}%")
+
+        return elevation_grid
 
     def init_interference(self):
         """
         Initializes two distinct masks: Topography and Foliage.
         """
         # 1. Topography: (From GEE, loaded as 800x800)
-        self.topo_mask = self.fetch_topography_from_gee(self.lat_center, self.long_center)
+        self.topo_mask = self.fetch_topography_from_usgs(self.lat_center, self.long_center, self.dim, self.stp)
 
         # 2. Foliage: Randomly assigned heights (e.g., 0-5 units)
         # Using a sparsity factor to prevent the whole map from being covered
