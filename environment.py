@@ -158,7 +158,7 @@ class sim_env:
         ).getInfo()
 
         # Placeholder: Assuming you extract the value to a 2D array format.
-        # If reduceRegion returns a flat value, you may need to use 
+        # If reduceRegion returns a flat value, you may need to use
         # ee.Image.sampleRectangle or similar to get a 2D grid.
         # For this example, let's assume 'raw_grid' is your retrieved 2D array.
         raw_grid = np.array(topo_dict.get('elevation', [[0]]))
@@ -244,67 +244,174 @@ class sim_env:
         return spectra, solpos
 
     def get_obfuscation(self, x: int, y: int, step, azimuth: float, zenith: float):
+
         v_dist = int(self.view_dist)
         patch_size = 2 * v_dist + 1
-        obfuscation_patch = np.zeros((patch_size, patch_size), dtype=np.float32)
 
+        obfuscation_patch = np.zeros(
+            (patch_size, patch_size),
+            dtype=np.float32
+        )
+
+        # Sun below horizon
         if zenith >= 90.0:
-            return np.ones((patch_size, patch_size), dtype=np.float32)
+            return np.ones(
+                (patch_size, patch_size),
+                dtype=np.float32
+            )
 
-        # Coordinate setup
+        # --------------------------------------------------
+        # Solar geometry
+        # --------------------------------------------------
+
         az_rad = math.radians(90.0 - azimuth)
         el_rad = math.radians(90.0 - zenith)
+
         tan_elevation = math.tan(el_rad)
 
-        step_x, step_y = math.cos(az_rad), math.sin(az_rad)
-        perp_x, perp_y = -step_y, step_x
+        step_x = math.cos(az_rad)
+        step_y = math.sin(az_rad)
 
-        center_x, center_y = int(x), int(y)
+        perp_x = -step_y
+        perp_y = step_x
 
-        combined_mask = self.topo_mask + self.foliage_mask
+        center_x = int(x)
+        center_y = int(y)
 
-        # Iterate through the patch centered on the UGV
+        MAX_FOLIAGE_ATTENUATION = 0.25
+
+        # --------------------------------------------------
+        # Iterate through visible patch
+        # --------------------------------------------------
+
         for j in range(patch_size):
+
             for i in range(patch_size):
+
                 global_x = center_x - v_dist + i
                 global_y = center_y - v_dist + j
 
-                if not (0 <= global_x < self.dim and 0 <= global_y < self.dim):
+                if not (
+                        0 <= global_x < self.dim
+                        and
+                        0 <= global_y < self.dim
+                ):
                     continue
 
-                max_block_strength = 0.0
-                found_block = False
+                # Remaining sunlight after attenuation
+                transmittance = 1.0
 
-                # Ray-casting search
+                # --------------------------------------------------
+                # Ray cast toward sun
+                # --------------------------------------------------
+
                 for d in range(1, self.dim):
-                    h_min = d * tan_elevation
-                    if h_min > 10.0: break  # Height limit of obstacles
 
-                    # Coordinates of the point along the ray
+                    h_min = d * tan_elevation
+
+                    # Nothing in the environment exceeds this
+                    if h_min > 10.0:
+                        break
+
                     ray_x = int(round(global_x + d * step_x))
                     ray_y = int(round(global_y + d * step_y))
 
-                    if not (0 <= ray_x < self.dim and 0 <= ray_y < self.dim):
+                    if not (
+                            0 <= ray_x < self.dim
+                            and
+                            0 <= ray_y < self.dim
+                    ):
                         break
 
-                    ray_center_height = combined_mask[ray_y, ray_x]
+                    # ==================================================
+                    # TERRAIN CHECK
+                    # ==================================================
 
-                    # Perform lateral canopy checks
-                    if ray_center_height > 0:
-                        half_height = int(ray_center_height / 2)
-                        for k in range(-half_height, half_height + 1):
-                            check_x = int(round(ray_x + k * perp_x))
-                            check_y = int(round(ray_y + k * perp_y))
+                    terrain_height = self.topo_mask[ray_y, ray_x]
 
-                            if 0 <= check_x < self.dim and 0 <= check_y < self.dim:
-                                height = combined_mask[check_y, check_x]
-                                if height >= h_min:
-                                    block_strength = 1.0 - (abs(k) * (1.0 / height))
-                                    if block_strength > max_block_strength:
-                                        max_block_strength = block_strength
-                                        found_block = True
-
-                    if found_block:
-                        obfuscation_patch[j, i] = max_block_strength
+                    if terrain_height >= h_min:
+                        obfuscation_patch[j, i] = 1.0
+                        transmittance = 0.0
                         break
+
+                    # ==================================================
+                    # FOLIAGE CHECK
+                    # ==================================================
+
+                    foliage_height = self.foliage_mask[ray_y, ray_x]
+
+                    if foliage_height <= 0:
+                        continue
+
+                    canopy_start = foliage_height / 3.0
+                    canopy_radius = foliage_height / 2.0
+
+                    # Ray passes below foliage
+                    if h_min < canopy_start:
+                        continue
+
+                    # Ray passes above tree
+                    if h_min > foliage_height:
+                        continue
+
+                    # --------------------------------------------------
+                    # Sample canopy cross-section
+                    # --------------------------------------------------
+
+                    half_width = int(math.ceil(canopy_radius))
+
+                    local_attenuation = 0.0
+
+                    for k in range(-half_width, half_width + 1):
+
+                        check_x = int(round(ray_x + k * perp_x))
+                        check_y = int(round(ray_y + k * perp_y))
+
+                        if not (
+                                0 <= check_x < self.dim
+                                and
+                                0 <= check_y < self.dim
+                        ):
+                            continue
+
+                        if self.foliage_mask[check_y, check_x] <= 0:
+                            continue
+
+                        r = abs(k)
+
+                        if r > canopy_radius:
+                            continue
+
+                        r_norm = r / canopy_radius
+
+                        # Dense near trunk
+                        density = math.exp(
+                            -2.0 * r_norm * r_norm
+                        )
+
+                        attenuation = (
+                                density *
+                                MAX_FOLIAGE_ATTENUATION
+                        )
+
+                        if attenuation > local_attenuation:
+                            local_attenuation = attenuation
+
+                    # --------------------------------------------------
+                    # Beer-Lambert style accumulation
+                    # --------------------------------------------------
+
+                    transmittance *= (
+                            1.0 - local_attenuation
+                    )
+
+                    # Early exit if nearly opaque
+                    if transmittance < 0.01:
+                        transmittance = 0.0
+                        break
+
+                obfuscation_patch[j, i] = (
+                        1.0 - transmittance
+                )
+
         return obfuscation_patch
