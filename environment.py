@@ -18,6 +18,7 @@ import datetime
 import ee
 from scipy.ndimage import zoom
 
+ee.Authenticate()
 try:
     ee.Initialize()
 except Exception:
