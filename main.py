@@ -268,4 +268,4 @@ def main():
         run_pso_training(env, device)
 
 if __name__ == "__main__":
-    run_rl_training()
+    main()
