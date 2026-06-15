@@ -138,53 +138,22 @@ class sim_env:
 
         return flg_done
 
-    def fetch_topography_from_usgs(self, lat_center, lon_center, grid_size=800, step_deg=0.0003):
-        """
-        Fetches elevation grid using USGS EPQS API.
-        Note: This is slow. Cache the result to avoid repeated API calls.
-        """
-        elevation_grid = np.zeros((grid_size, grid_size))
-
-        # Define bounds (simple approximation of area around center)
-        # Adjust step_deg to cover your desired physical area
-        start_lat = lat_center + (grid_size / 2) * step_deg
-        start_lon = lon_center - (grid_size / 2) * step_deg
-
-        url = "https://epqs.nationalmap.gov/v1/json"
-
-        print("Fetching topography from USGS (this may take time)...")
-        for y in range(grid_size):
-            for x in range(grid_size):
-                lat = start_lat - (y * step_deg)
-                lon = start_lon + (x * step_deg)
-
-                params = {'x': lon, 'y': lat, 'units': 'Meters', 'output': 'json'}
-
-                try:
-                    response = requests.get(url, params=params)
-                    data = response.json()
-                    elevation_grid[y, x] = data['value']
-                except Exception as e:
-                    # Fallback to 0 if individual point fails
-                    elevation_grid[y, x] = 0
-
-            if y % 100 == 0:
-                print(f"Progress: {y / grid_size * 100:.1f}%")
-
-        return elevation_grid
-
     def init_interference(self):
         """
-        Initializes two distinct masks: Topography and Foliage.
+        Initializes two distinct masks: Topography (loaded from CSV) and Foliage.
         """
-        # 1. Topography: (From GEE, loaded as 800x800)
-        self.topo_mask = self.fetch_topography_from_usgs(self.lat_center, self.long_center, self.dim, self.stp)
+        # 1. Topography: Load from local CSV for speed
+        try:
+            self.topo_mask = pd.read_csv("yellowstone_topo.csv", header=None).values
+        except FileNotFoundError:
+            print("CSV not found! Falling back to API fetch.")
+            self.topo_mask = self.fetch_topography_from_usgs(self.lat_center, self.long_center, self.dim, self.stp)
+            pd.DataFrame(self.topo_mask).to_csv("yellowstone_topo.csv", index=False, header=False)
 
-        # 2. Foliage: Randomly assigned heights (e.g., 0-5 units)
-        # Using a sparsity factor to prevent the whole map from being covered
+        # 2. Foliage: Randomly assigned heights
         self.foliage_mask = np.random.choice([0, 2, 5], size=(self.dim, self.dim), p=[0.7, 0.2, 0.1])
 
-        return True  # Masks are now separate attributes
+        return True
 
     # Place obstructions and devices in initial positions
     def place_devices(self) -> list:
