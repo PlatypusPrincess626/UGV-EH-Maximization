@@ -14,9 +14,9 @@ from sklearn.cluster import KMeans
 from scipy import signal
 from scipy.signal import windows
 import math
-import datetime
-import requests
+import rasterio
 from scipy.ndimage import zoom
+from pathlib import Path
 
 # Custom Packages
 import ugv_simulator
@@ -76,6 +76,8 @@ class sim_env:
 
         # insert interference creation loop
         self.topo_mask, self.foliage_mask = None, None
+        script_dir = Path(__file__).resolve().parent
+        self.topo_file_path = script_dir / 'topo_data.tif'
         self.obfuscation_array = self.init_interference()
 
 
@@ -144,11 +146,24 @@ class sim_env:
         """
         # 1. Topography: Load from local CSV for speed
         try:
-            self.topo_mask = pd.read_csv("yellowstone_topo.csv", header=None).values
-        except FileNotFoundError:
-            print("CSV not found! Falling back to API fetch.")
-            self.topo_mask = self.fetch_topography_from_usgs(self.lat_center, self.long_center, self.dim, self.stp)
-            pd.DataFrame(self.topo_mask).to_csv("yellowstone_topo.csv", index=False, header=False)
+            with rasterio.open(self.topo_file_path) as src:
+                # Read the first band (elevation data)
+                data = src.read(1)
+
+                # Check if dimensions match; if not, resize or crop
+                if data.shape != (self.dim, self.dim):
+                    print(
+                        f"Warning: File shape {data.shape} does not match sim dim ({self.dim}, {self.dim}). Resizing...")
+                    # Use scipy.ndimage.zoom to resize to 800x800
+                    zoom_factors = (self.dim / data.shape[0], self.dim / data.shape[1])
+                    self.topo_mask = zoom(data, zoom_factors, order=1)
+                else:
+                    self.topo_mask = data
+
+                print(f"Successfully loaded topography: {self.topo_mask.shape}")
+        except Exception as e:
+            print(f"Error loading topography file: {e}")
+            self.topo_mask = np.zeros((self.dim, self.dim))
 
         # 2. Foliage: Randomly assigned heights
         self.foliage_mask = np.random.choice([0, 2, 5], size=(self.dim, self.dim), p=[0.7, 0.2, 0.1])
