@@ -1,4 +1,5 @@
 import requests
+import rasterio
 
 # 1. Fetch the data once using your bounding box
 url = "https://portal.opentopography.org/API/globaldem"
@@ -11,16 +12,21 @@ params = {
 }
 response = requests.get(url, params=params)
 
-# Check if the request was successful
 if response.status_code == 200:
-    # Check if the content is actually a TIFF
-    if 'image/tiff' in response.headers.get('Content-Type', ''):
-        with open('topo_data.tif', 'wb') as f:
-            f.write(response.content)
-        print("File downloaded successfully.")
-    else:
-        print("Error: Expected GeoTIFF but received:")
-        print(response.text) # This will print the XML error message
+    # Save the binary content correctly
+    output_path = 'topo_data.tif'
+    with open(output_path, 'wb') as f:
+        f.write(response.content)
+
+    print(f"File saved successfully to {output_path}")
+
+    # Now verify with rasterio
+    try:
+        with rasterio.open(output_path) as src:
+            print("Successfully opened TIFF!")
+            print(f"Dimensions: {src.width} x {src.height}")
+            print(f"CRS: {src.crs}")
+    except Exception as e:
+        print(f"Rasterio still failing: {e}")
 else:
-    print(f"Request failed with status code {response.status_code}")
-    print(response.text)
+    print(f"Server returned error {response.status_code}: {response.text}")

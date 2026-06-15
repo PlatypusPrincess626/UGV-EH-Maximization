@@ -153,11 +153,16 @@ class sim_env:
                 # Read the first band (elevation data)
                 data = src.read(1)
 
-                # Check if dimensions match; if not, resize or crop
+                # 1. Convert to relative height (subtract the minimum elevation)
+                # This centers your terrain around 0, making it compatible with your ray-casting height checks
+                data = data - np.min(data)
+
+                max_val = np.max(data)
+                if max_val > 0:
+                    data = (data / max_val) * 50.0
+
+                # 2. Resizing logic
                 if data.shape != (self.dim, self.dim):
-                    print(
-                        f"Warning: File shape {data.shape} does not match sim dim ({self.dim}, {self.dim}). Resizing...")
-                    # Use scipy.ndimage.zoom to resize to 800x800
                     zoom_factors = (self.dim / data.shape[0], self.dim / data.shape[1])
                     self.topo_mask = zoom(data, zoom_factors, order=1)
                 else:
@@ -299,8 +304,8 @@ class sim_env:
                     h_min = d * tan_elevation
 
                     # Nothing in the environment exceeds this
-                    if h_min > 10.0:
-                        break
+                    # if h_min > 10.0:
+                    #     break
 
                     ray_x = int(round(global_x + d * step_x))
                     ray_y = int(round(global_y + d * step_y))
