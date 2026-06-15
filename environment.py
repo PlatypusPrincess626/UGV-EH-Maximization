@@ -144,8 +144,9 @@ class sim_env:
         """
         Initializes two distinct masks: Topography (loaded from CSV) and Foliage.
         """
-        print(f"DEBUG: Looking for file at: {self.topo_file_path}")
-        print(f"DEBUG: Does file exist? {self.topo_file_path.exists()}")
+        with open(self.topo_file_path, 'rb') as f:
+            header = f.read(4)
+            print(f"File header (hex): {header.hex()}")
         # 1. Topography: Load from local CSV for speed
         try:
             with rasterio.open(self.topo_file_path) as src:
