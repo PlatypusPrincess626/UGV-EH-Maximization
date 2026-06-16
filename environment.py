@@ -13,6 +13,7 @@ import random
 from sklearn.cluster import KMeans
 from scipy import signal
 from scipy.signal import windows
+from scipy.ndimage import gaussian_filter
 import math
 import rasterio
 from scipy.ndimage import zoom
@@ -174,8 +175,11 @@ class sim_env:
             self.topo_mask = np.zeros((self.dim, self.dim))
 
         # 2. Foliage: Randomly assigned heights
-        self.foliage_mask = np.random.choice([0, 2, 5], size=(self.dim, self.dim), p=[0.7, 0.2, 0.1])
+        # 2.a Create raw random values
+        raw_foliage = np.random.choice([0, 5, 10, 15, 20], size=(self.dim, self.dim), p=[0.4, 0.3, 0.15, 0.1, 0.05])
 
+        # 2.b Apply a Gaussian filter to create "patches" of density
+        self.foliage_mask = gaussian_filter(raw_foliage, sigma=2)
         return True
 
     # Place obstructions and devices in initial positions
