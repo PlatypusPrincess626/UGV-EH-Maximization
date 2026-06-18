@@ -148,49 +148,71 @@ class UGVSimulator:
     def find_power(self, env, x, y, step,
                    sol_area, tilt, azimuth):
 
-        try:
-            spectra, solpos = env.get_spectrum(
-                self.x, self.y, tilt, azimuth, step
-            )
+        spectra, solpos = env.get_spectrum(
+            self.x, self.y, tilt, azimuth, step
+        )
 
-            wavelengths = np.atleast_1d(
-                spectra["wavelength"]
-            ).flatten()
+        sun_azimuth = solpos["azimuth"].iloc[0]
+        sun_zenith = solpos["apparent_zenith"].iloc[0]
 
-            poa = np.atleast_1d(
-                spectra["poa_global"]
-            ).flatten()
+        obfuscation_patch = env.get_obfuscation(
+            x, y, step, sun_azimuth, sun_zenith
+        )
 
-            if len(poa) != len(wavelengths):
-                poa = poa[:len(wavelengths)]
+        interference = obfuscation_patch[
+            int(env.view_dist),
+            int(env.view_dist)
+        ]
 
-            response = np.interp(
+        wavelengths = np.atleast_1d(
+            spectra["wavelength"]
+        ).flatten()
+
+        poa_global = np.atleast_1d(
+            spectra["poa_global"]
+        ).flatten()
+
+        if len(poa_global) != len(wavelengths):
+            poa_global = poa_global[:len(wavelengths)]
+
+        raw_response = self.spectral_response.flatten()
+
+        if len(raw_response) == len(wavelengths):
+            response_1d = raw_response
+        else:
+            response_1d = np.interp(
                 wavelengths,
                 np.linspace(
                     wavelengths[0],
                     wavelengths[-1],
-                    len(self.spectral_response)
+                    len(raw_response)
                 ),
-                self.spectral_response
+                raw_response
             )
 
-            current = trapezoid(
-                poa * response,
-                wavelengths
-            )
+        integrand = poa_global * response_1d
 
-            if np.isnan(current):
-                current = 0.0
+        cell_current = trapezoid(
+            integrand,
+            wavelengths
+        )
 
-            power = current * sol_area
+        if np.isnan(cell_current):
+            cell_current = 0.0
 
-            # cap realistic solar harvest
-            power = min(power, 30.0)
+        a = step / 60 + 2
+        alpha = abs(
+            104 - 65 * a + 47 * a ** 2 - 12 * a ** 3 + a ** 4
+        )
 
-            return power
+        power = (
+                abs(alpha / 100.0)
+                * (1.0 - interference)
+                * cell_current
+                * sol_area
+        )
 
-        except Exception:
-            return 0.0
+        return max(0.0, power)
 
     def harvest_energy(self, env, step):
 
