@@ -1,5 +1,5 @@
 
-import csv, math
+import csv, math, random
 from collections import deque
 from pathlib import Path
 import numpy as np
@@ -9,11 +9,13 @@ import torch.optim as optim
 from pvlib import solarposition
 from environment import sim_env
 from transformer import TransformerActorCritic
+import time
 
 TOTAL_EPISODES=1000; MAX_STEPS_PER_EPISODE=720; VIEW_DISTANCE=20
 SEQUENCE_LENGTH=12; UPDATE_EVERY_EPISODES=5; GAMMA=.99; GAE_LAMBDA=.95
 LR=3e-4; MAX_MOVE_PER_STEP=20.0; ENTROPY_COEF=.01; VALUE_COEF=.5
-OUT=Path("rl_csv"); OUT.mkdir(exist_ok=True)
+timestamp = time.time()
+OUT=Path("rl_csv"+timestamp); OUT.mkdir(exist_ok=True)
 
 def obs(env, x, y, yaw, step):
     sol=solarposition.get_solarposition(env.times[min(step,len(env.times)-1)], env.lat_center+x*env.stp, env.long_center+y*env.stp)
