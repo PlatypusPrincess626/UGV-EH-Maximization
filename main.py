@@ -1,271 +1,92 @@
-# train.py
-import torch
-import torch.nn as nn
-import torch.optim as optim
+
+import csv, math
+from collections import deque
+from pathlib import Path
 import numpy as np
-from torch.distributions import Normal
-import math
-import matplotlib.pyplot as plt
+import torch
+import torch.nn.functional as F
+import torch.optim as optim
 from pvlib import solarposition
-
-# Import the refactored simulation modules
 from environment import sim_env
-from transformer import TransformerEncoder
-from pso_policy import PSOPolicy
+from transformer import TransformerActorCritic
 
-# =====================================================================
-# 1. HYPERPARAMETERS & CONFIGURATION (For easy tuning)
-# =====================================================================
-# --- Configuration ---
-MODEL_TYPE = "TRANSFORMER"  # Set to "PSO" or "TRANSFORMER"
-TOTAL_EPISODES = 1000
-TRAIN_EVERY_X_EPISODES = 5
-LEARNING_RATE = 5e-4
-GAMMA = 0.99                # Discount factor for future battery rewards
+TOTAL_EPISODES=1000; MAX_STEPS_PER_EPISODE=720; VIEW_DISTANCE=20
+SEQUENCE_LENGTH=12; UPDATE_EVERY_EPISODES=5; GAMMA=.99; GAE_LAMBDA=.95
+LR=3e-4; MAX_MOVE_PER_STEP=20.0; ENTROPY_COEF=.01; VALUE_COEF=.5
+OUT=Path("rl_csv"); OUT.mkdir(exist_ok=True)
 
-# Simulation Settings
-SCENE = "test"  # Scenario setup name inside the environment matrix
-NUM_SENSORS = 20  # Count of static ground nodes distributed on map
-MAX_STEPS_PER_EPISODE = 720  # Upper frame ceiling limit per iteration
-VIEW_DISTANCE = 20
+def obs(env, x, y, yaw, step):
+    sol=solarposition.get_solarposition(env.times[min(step,len(env.times)-1)], env.lat_center+x*env.stp, env.long_center+y*env.stp)
+    patch=env.get_obfuscation(x,y,min(step,len(env.times)-1),sol.azimuth.iloc[0],sol.apparent_zenith.iloc[0]).flatten()
+    scalars=np.array([x/(env.dim-1),y/(env.dim-1),math.sin(yaw),math.cos(yaw),
+                      env.ch.get_battery()/100, sol.azimuth.iloc[0]/360, sol.apparent_zenith.iloc[0]/90],np.float32)
+    return np.concatenate([patch.astype(np.float32),scalars])
 
-# Transformer Model Specifications
-D_MODEL = 64  # Internal feature width sizing
-NHEAD = 4  # Multihead partition factor
-NUM_LAYERS = 2  # Stack sequence sizing for encoder tracking
-DIM_FEEDFORWARD = 256  # Dense inner width for position-wise networks
-DROPOUT = 0.1  # Regulation dropout probability fraction
+def seq_tensor(history, device):
+    return torch.tensor(np.asarray(history),dtype=torch.float32,device=device).unsqueeze(0)
 
-def run_transformer_training(env, device):
-    model = TransformerEncoder(VIEW_DISTANCE, d_model=D_MODEL, num_layers=NUM_LAYERS,
-                                   dim_feedforward=DIM_FEEDFORWARD).to(device)
+def reward_fn(before, after, telemetry, action):
+    # Dense, scaled reward: energy gain, movement cost, survival, and boundary discouragement.
+    delta=after-before
+    px,py,_=telemetry["previous_position"]; nx,ny,_=telemetry["new_position"]
+    distance=math.hypot(nx-px,ny-py)
+    boundary=min(nx,ny,800-nx,800-ny)/800
+    return 25.0*delta - .015*distance + .20*(after/100) + .10*boundary
 
-    # Initialize log_std as a trainable parameter for 2D continuous actions (x, y)
-    log_std = torch.zeros(2, requires_grad=True, device=device)
+def update(model,opt,rollouts,device):
+    # GAE advantages are normalized once across the complete rollout batch, not per episode.
+    states=[]; actions=[]; oldlp=[]; adv=[]; returns=[]
+    for r in rollouts:
+        gae=0.; ret=0.
+        for i in reversed(range(len(r["rewards"]))):
+            ret=r["rewards"][i]+GAMMA*ret
+            nxt=0 if i==len(r["rewards"])-1 else r["values"][i+1]
+            gae=r["rewards"][i]+GAMMA*nxt-r["values"][i]+GAMMA*GAE_LAMBDA*gae
+            adv.insert(0,gae); returns.insert(0,ret)
+        states+=r["states"]; actions+=r["actions"]; oldlp+=r["logps"]
+    adv=torch.tensor(adv,device=device); adv=(adv-adv.mean())/(adv.std(unbiased=False)+1e-8)
+    returns=torch.tensor(returns,device=device); actions=torch.tensor(np.asarray(actions),dtype=torch.float32,device=device)
+    oldlp=torch.tensor(oldlp,device=device); states=torch.tensor(np.asarray(states),dtype=torch.float32,device=device)
+    lp,entropy,values=model.evaluate_actions(states,actions)
+    # Single efficient batched actor-critic update; no duplicate forward pass per step.
+    loss=-(lp*adv.detach()).mean()+VALUE_COEF*F.mse_loss(values,returns)+-ENTROPY_COEF*entropy.mean()
+    opt.zero_grad(); loss.backward(); torch.nn.utils.clip_grad_norm_(model.parameters(),1.0); opt.step()
+    return float(loss.item())
 
-    # Define the optimizer to update both model parameters AND log_std
-    optimizer = optim.Adam(
-        list(model.parameters()) + [log_std],
-        lr=LEARNING_RATE
-    )
-
-    all_batch_log_probs = []
-    episode_step_counts = []
-    episode_rewards = []
-    all_batch_rewards = []
-
-    # =====================================================================
-    # 2. MAIN SIMULATION TRAINING LOOP
-    # =====================================================================
-    for episode in range(1, TOTAL_EPISODES + 1):
-        # Reset environment components back to baseline parameters
-        env.place_devices()
-        env.ch.reset()
-
-        ep_log_probs = []
-        ep_rewards = []
-        steps_taken = 0
-        total_ep_reward = 0.0
-
-        # Extract initial solar azimuth and zenith vectors for the initial state calculation
-        ugv_x, ugv_y, _ = env.ch.get_position()
-        lat_offset = ugv_x * env.stp
-        long_offset = ugv_y * env.stp
-        solpos = solarposition.get_solarposition(env.times[0], env.lat_center + lat_offset, env.long_center + long_offset)
-
-        next_obs = env.get_obfuscation(ugv_x, ugv_y, 0, solpos['azimuth'].iloc[0], solpos['apparent_zenith'].iloc[0])
-
+def run():
+    device=torch.device("cuda" if torch.cuda.is_available() else "cpu")
+    env=sim_env("test",20,MAX_STEPS_PER_EPISODE); env.set_view_dist(VIEW_DISTANCE)
+    model=TransformerActorCritic(VIEW_DISTANCE).to(device); opt=optim.Adam(model.parameters(),lr=LR)
+    epfile=open(OUT/"episode_metrics.csv","w",newline=""); epw=csv.DictWriter(epfile,fieldnames=["episode","steps","final_battery","total_reward","loss"]); epw.writeheader()
+    rollouts=[]
+    for ep in range(1,TOTAL_EPISODES+1):
+        env.place_devices(); env.ch.reset(); x,y,yaw=env.ch.get_position()
+        h=deque([obs(env,x,y,yaw,0)]*SEQUENCE_LENGTH,maxlen=SEQUENCE_LENGTH); r={"states":[],"actions":[],"logps":[],"values":[],"rewards":[]}; total=0
         for step in range(MAX_STEPS_PER_EPISODE):
-            # B. Evaluate state and get stochastic action selection from Normal distribution
-            model.eval()
-            flat_obs = torch.tensor(next_obs.flatten(), dtype=torch.float32).unsqueeze(0).to(device)
-
-            with torch.no_grad():
-                action_mean = model.forward(flat_obs).squeeze(0)
-
-            std = torch.exp(log_std)
-            dist_distribution = Normal(action_mean, std)
-
-            # Sample continuous target coordinates and calculate its mathematical log probability
-            action = dist_distribution.sample()
-
-            # Re-enable gradient tracking context explicitly for the step log-prob evaluation
-            model.train()
-            action_mean_grad = model.forward(flat_obs).squeeze(0)
-            dist_distribution_grad = Normal(action_mean_grad, std)
-            log_prob = dist_distribution_grad.log_prob(action).sum()
-
-            # Clip generated coordinates safely to maintain placement bounds on the grid map
-            target_x = max(0.0, min(float(action[0].item()), float(env.dim - 1)))
-            target_y = max(0.0, min(float(action[1].item()), float(env.dim - 1)))
-
-            # C. Capture battery metrics baseline prior to advancing physics environment
-            battery_before = env.ch.get_battery()
-
-            # Advance simulation execution (updates location, draws physical current, samples solar irradiance)
-            telemetry, next_obs = env.step_simulation(step, target_x, target_y)
-            steps_taken += 1
-
-            battery_after = env.ch.get_battery()
-
-            # D. Reward Equation Calculation: Net capacity delta scaled for stable gradients
-            reward = (battery_after - battery_before) * 100.0
-
-            ep_log_probs.append(log_prob)
-            ep_rewards.append(reward)
-            total_ep_reward += reward
-
-            # Break rollout if UGV runs completely out of battery
-            if battery_after <= 0.0:
-                break
-
-        # Register metrics history
-        episode_step_counts.append(steps_taken)
-        episode_rewards.append(total_ep_reward)
-
-        all_batch_log_probs.append(ep_log_probs)
-        all_batch_rewards.append(ep_rewards)
-
-        print(
-            f"Episode {episode:03d}/{TOTAL_EPISODES:03d} | Steps Survived: {steps_taken:03d} | Final Battery: "
-            f"{telemetry['battery_after']:.2f}% | Cumulative Reward: {total_ep_reward:.2f}")
-
-        # =====================================================================
-        # 3. POLICY GRADIENT UPDATE STEP (Triggered every X Episodes)
-        # =====================================================================
-        if episode % TRAIN_EVERY_X_EPISODES == 0:
-            model.train()
-            policy_loss = []
-
-            for ep_lp, ep_r in zip(all_batch_log_probs, all_batch_rewards):
-                # Compute discounted future returns tracking back from timeline limits
-                discounted_rewards = []
-                G = 0
-                for r in reversed(ep_r):
-                    G = r + GAMMA * G
-                    discounted_rewards.insert(0, G)
-
-                discounted_rewards = torch.tensor(discounted_rewards, dtype=torch.float32).to(device)
-
-                # Standardize array vectors to normalize variance scales across batches
-                if len(discounted_rewards) > 1:
-                    discounted_rewards = (discounted_rewards - discounted_rewards.mean()) / (
-                                discounted_rewards.std() + 1e-6)
-
-                for lp, return_val in zip(ep_lp, discounted_rewards):
-                    policy_loss.append(-lp * return_val)
-
-            if len(policy_loss) > 0:
-                optimizer.zero_grad()
-                total_loss = torch.stack(policy_loss).sum()
-                total_loss.backward()
-
-                # Apply standard gradient clipping to protect stability across long horizons (720 steps max)
-                nn.utils.clip_grad_norm_(model.parameters(), max_norm=1.0)
-                optimizer.step()
-                print(
-                    f" >>> [POLICY UPDATE] Complete. Gradients optimized for step slice batch. Total Loss: {total_loss.item():.4f}")
-
-            # Evict processed rollout records from buffer memory structures
-            all_batch_log_probs.clear()
-            all_batch_rewards.clear()
-
-    # =====================================================================
-    # 4. POST-RUN EVALUATION GRAPHING
-    # =====================================================================
-    print("\nTraining complete. Generating evaluation analytics plot...")
-
-    fig, ax1 = plt.subplots(figsize=(12, 6))
-
-    color = 'tab:blue'
-    ax1.set_xlabel('Episodes')
-    ax1.set_ylabel('Steps per Episode', color=color)
-    ax1.plot(range(1, TOTAL_EPISODES + 1), episode_step_counts, color=color, alpha=0.6, label='Steps Limit')
-    ax1.tick_params(axis='y', labelcolor=color)
-
-    ax2 = ax1.twinx()
-    color = 'tab:green'
-    ax2.set_ylabel('Total Cumulative Reward', color=color)
-    ax2.plot(range(1, TOTAL_EPISODES + 1), episode_rewards, color=color, linestyle='--', alpha=0.6, label='Rewards Index')
-    ax2.tick_params(axis='y', labelcolor=color)
-
-    plt.title('UGV Battery Maximization Training Metrics (Transformer Policy Gradient)')
-    fig.tight_layout()
-    plt.grid(True, alpha=0.3)
-    plt.show()
-
-
-def run_pso_training(env, device):
-    flat_size = (2 * VIEW_DISTANCE + 1) ** 2
-    model = PSOPolicy(flat_size)
-
-    # Tracking metrics for comparison
-    history_rewards = []
-
-    print(f"Starting PSO Training: Swarm Size = {model.swarm_size}")
-
-    for episode in range(1, TOTAL_EPISODES + 1):
-        # 1. Select the particle for this episode
-        particle_idx = (episode - 1) % model.swarm_size
-        model.current_particle = particle_idx
-
-        # 2. Reset environment
-        env.place_devices()
-        env.ch.reset()
-
-        ugv_x, ugv_y, _ = env.ch.get_position()
-        # Initial solar position calculation
-        solpos = solarposition.get_solarposition(env.times[0], env.lat_center, env.long_center)
-        next_obs = env.get_obfuscation(ugv_x, ugv_y, 0, solpos['azimuth'].iloc[0], solpos['apparent_zenith'].iloc[0])
-
-        total_ep_reward = 0.0
-
-        # 3. Episode rollout
+            s=seq_tensor(h,device)
+            with torch.no_grad(): a,lp,v=model.act(s)
+            # normalized action -> local, physically scaled target; no global-coordinate clipping mismatch
+            dx,dy=a[0].cpu().numpy()*MAX_MOVE_PER_STEP
+            tx=float(np.clip(x+dx,0,env.dim-1)); ty=float(np.clip(y+dy,0,env.dim-1))
+            before=env.ch.get_battery(); tel,nxt=env.step_simulation(step,tx,ty); after=env.ch.get_battery()
+            rew=reward_fn(before,after,tel,a[0]); total+=rew
+            r["states"].append(np.asarray(h)); r["actions"].append(a[0].cpu().numpy()); r["logps"].append(lp.item()); r["values"].append(v.item()); r["rewards"].append(rew)
+            x,y,yaw=env.ch.get_position(); h.append(obs(env,x,y,yaw,min(step+1,MAX_STEPS_PER_EPISODE-1)))
+            if after<=0: break
+        rollouts.append(r); loss=""
+        if ep%UPDATE_EVERY_EPISODES==0: loss=update(model,opt,rollouts,device); rollouts=[]
+        epw.writerow(dict(episode=ep,steps=len(r["rewards"]),final_battery=after,total_reward=total,loss=loss)); epfile.flush()
+    # final deterministic evaluation, step-level telemetry CSV
+    env.place_devices(); env.ch.reset(); x,y,yaw=env.ch.get_position(); h=deque([obs(env,x,y,yaw,0)]*SEQUENCE_LENGTH,maxlen=SEQUENCE_LENGTH)
+    with open(OUT/"final_evaluation_steps.csv","w",newline="") as f:
+        fields=["step","x_before","y_before","target_x","target_y","x_after","y_after","battery_before","battery_after","battery_delta","reward","action_dx_norm","action_dy_norm"]
+        w=csv.DictWriter(f,fieldnames=fields); w.writeheader()
         for step in range(MAX_STEPS_PER_EPISODE):
-            # Deterministic action from the current particle
-            flat_obs = torch.tensor(next_obs.flatten(), dtype=torch.float32).unsqueeze(0)
-
-            with torch.no_grad():
-                action = model.forward(flat_obs).squeeze(0).numpy()
-
-            # Clip and execute
-            target_x = max(0.0, min(float(action[0]), float(env.dim - 1)))
-            target_y = max(0.0, min(float(action[1]), float(env.dim - 1)))
-
-            battery_before = env.ch.get_battery()
-            _, next_obs = env.step_simulation(step, target_x, target_y)
-            battery_after = env.ch.get_battery()
-
-            reward = (battery_after - battery_before) * 100.0
-            total_ep_reward += reward
-
-            if battery_after <= 0.0:
-                break
-
-        # 4. Evaluate the particle after the episode ends
-        model.evaluate_particle(particle_idx, total_ep_reward)
-        history_rewards.append(total_ep_reward)
-
-        # 5. Update swarm if full generation finished
-        if episode % model.swarm_size == 0:
-            model.update_swarm()
-            print(f"Episode {episode:03d} | Swarm updated. Global Best Fitness: {model.global_best_fit:.2f}")
-
-    return history_rewards
-
-
-def main():
-    # Ensure hardware acceleration is leveraged if accessible
-    device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-    print(f"Using device execution target: {device}")
-
-    env = sim_env(SCENE, NUM_SENSORS, MAX_STEPS_PER_EPISODE)
-    env.set_view_dist(VIEW_DISTANCE)
-
-    if MODEL_TYPE == "TRANSFORMER":
-        run_transformer_training(env, device)
-    elif MODEL_TYPE == "PSO":
-        run_pso_training(env, device)
-
-if __name__ == "__main__":
-    main()
+            with torch.no_grad(): a,_,_=model.act(seq_tensor(h,device),True)
+            dx,dy=a[0].cpu().numpy()*MAX_MOVE_PER_STEP; tx=float(np.clip(x+dx,0,env.dim-1)); ty=float(np.clip(y+dy,0,env.dim-1))
+            b=env.ch.get_battery(); tel,_=env.step_simulation(step,tx,ty); aft=env.ch.get_battery(); nx,ny,nyaw=env.ch.get_position(); rew=reward_fn(b,aft,tel,a[0])
+            w.writerow(dict(step=step,x_before=x,y_before=y,target_x=tx,target_y=ty,x_after=nx,y_after=ny,battery_before=b,battery_after=aft,battery_delta=aft-b,reward=rew,action_dx_norm=a[0,0].item(),action_dy_norm=a[0,1].item()))
+            x,y,yaw=nx,ny,nyaw; h.append(obs(env,x,y,yaw,min(step+1,MAX_STEPS_PER_EPISODE-1)))
+            if aft<=0: break
+    epfile.close()
+if __name__=="__main__": run()
