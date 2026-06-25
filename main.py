@@ -18,9 +18,10 @@ LR=3e-4; MAX_MOVE_PER_STEP=20.0; ENTROPY_COEF=.01; VALUE_COEF=.5
 timestamp = datetime.datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
 OUT=Path("rl_csv_"+timestamp); OUT.mkdir(exist_ok=True)
 
-def log_status(ep, total_episodes, avg_reward, final_batt, loss, is_eval=False):
+def log_status(ep, total_episodes, steps, avg_reward, final_batt, loss, is_eval=False):
     prefix = "[EVALUATION]" if is_eval else f"[Episode {ep}/{total_episodes}]"
-    print(f"{prefix} Reward: {avg_reward:7.2f} | Final Battery: {final_batt:6.2f}% | Loss: {loss}")
+    loss_str = f"{loss:.4f}" if isinstance(loss, (float, int)) else loss
+    print(f"{prefix} Steps: {steps:3} | Reward: {avg_reward:7.2f} | Battery: {final_batt:6.2f}% | Loss: {loss_str}")
 
 def obs(env, x, y, yaw, step):
     sol=solarposition.get_solarposition(env.times[min(step,len(env.times)-1)], env.lat_center+x*env.stp, env.long_center+y*env.stp)
@@ -82,7 +83,7 @@ def run():
             if after<=0: break
         rollouts.append(r); loss=""
         if ep%UPDATE_EVERY_EPISODES==0: loss=update(model,opt,rollouts,device); rollouts=[]
-        log_status(ep, TOTAL_EPISODES, total, after, loss)
+        steps_taken = len(r["rewards"]); log_status(ep, TOTAL_EPISODES, steps_taken, total, after, loss)
         epw.writerow(dict(episode=ep,steps=len(r["rewards"]),final_battery=after,total_reward=total,loss=loss)); epfile.flush()
     # final deterministic evaluation, step-level telemetry CSV
     env.place_devices(); env.ch.reset(); x,y,yaw=env.ch.get_position(); h=deque([obs(env,x,y,yaw,0)]*SEQUENCE_LENGTH,maxlen=SEQUENCE_LENGTH)
@@ -103,9 +104,10 @@ def run():
     print("=" * 30)
     import pandas as pd
     df_eval = pd.read_csv(OUT / "final_evaluation_steps.csv")
-    print(f"Total Steps Taken: {len(df_eval)}")
-    print(f"Final Battery Level: {df_eval['battery_after'].iloc[-1]:.2f}%")
-    print(f"Average Reward per Step: {df_eval['reward'].mean():.4f}")
-    print(f"Total Episode Reward: {df_eval['reward'].sum():.2f}")
+    total_steps = len(df_eval)
+    print("\n" + "=" * 30)
+    print("FINAL EVALUATION COMPLETE")
     print("=" * 30)
+    print(f"Total Steps Performed: {total_steps}")
+    print(f"Final Battery Level: {df_eval['battery_after'].iloc[-1]:.2f}%")
 if __name__=="__main__": run()
