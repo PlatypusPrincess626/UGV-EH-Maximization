@@ -9,12 +9,12 @@ import torch.optim as optim
 from pvlib import solarposition
 from environment import sim_env
 from transformer import TransformerActorCritic
-import time
+import datetime
 
 TOTAL_EPISODES=1000; MAX_STEPS_PER_EPISODE=720; VIEW_DISTANCE=20
 SEQUENCE_LENGTH=12; UPDATE_EVERY_EPISODES=5; GAMMA=.99; GAE_LAMBDA=.95
 LR=3e-4; MAX_MOVE_PER_STEP=20.0; ENTROPY_COEF=.01; VALUE_COEF=.5
-timestamp = time.time()
+timestamp = datetime.datetime.now()
 OUT=Path("rl_csv"+timestamp); OUT.mkdir(exist_ok=True)
 
 def obs(env, x, y, yaw, step):
