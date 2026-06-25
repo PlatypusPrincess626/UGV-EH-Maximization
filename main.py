@@ -18,6 +18,10 @@ LR=3e-4; MAX_MOVE_PER_STEP=20.0; ENTROPY_COEF=.01; VALUE_COEF=.5
 timestamp = datetime.datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
 OUT=Path("rl_csv_"+timestamp); OUT.mkdir(exist_ok=True)
 
+def log_status(ep, total_episodes, avg_reward, final_batt, loss, is_eval=False):
+    prefix = "[EVALUATION]" if is_eval else f"[Episode {ep}/{total_episodes}]"
+    print(f"{prefix} Reward: {avg_reward:7.2f} | Final Battery: {final_batt:6.2f}% | Loss: {loss}")
+
 def obs(env, x, y, yaw, step):
     sol=solarposition.get_solarposition(env.times[min(step,len(env.times)-1)], env.lat_center+x*env.stp, env.long_center+y*env.stp)
     patch=env.get_obfuscation(x,y,min(step,len(env.times)-1),sol.azimuth.iloc[0],sol.apparent_zenith.iloc[0]).flatten()
@@ -40,15 +44,15 @@ def update(model,opt,rollouts,device):
     # GAE advantages are normalized once across the complete rollout batch, not per episode.
     states=[]; actions=[]; oldlp=[]; adv=[]; returns=[]
     for r in rollouts:
-        gae=0.; ret=0.
+        gae=0.0; ret=0.0
         for i in reversed(range(len(r["rewards"]))):
             ret=r["rewards"][i]+GAMMA*ret
             nxt=0 if i==len(r["rewards"])-1 else r["values"][i+1]
             gae=r["rewards"][i]+GAMMA*nxt-r["values"][i]+GAMMA*GAE_LAMBDA*gae
             adv.insert(0,gae); returns.insert(0,ret)
         states+=r["states"]; actions+=r["actions"]; oldlp+=r["logps"]
-    adv=torch.tensor(adv,device=device); adv=(adv-adv.mean())/(adv.std(unbiased=False)+1e-8)
-    returns=torch.tensor(returns,device=device); actions=torch.tensor(np.asarray(actions),dtype=torch.float32,device=device)
+    adv = torch.tensor(adv,device=device,dtype=torch.float32); adv=(adv-adv.mean())/(adv.std(unbiased=False)+1e-8)
+    returns=torch.tensor(returns,device=device,dtype=torch.float32); actions=torch.tensor(np.asarray(actions),dtype=torch.float32,device=device)
     oldlp=torch.tensor(oldlp,device=device); states=torch.tensor(np.asarray(states),dtype=torch.float32,device=device)
     lp,entropy,values=model.evaluate_actions(states,actions)
     # Single efficient batched actor-critic update; no duplicate forward pass per step.
@@ -78,6 +82,7 @@ def run():
             if after<=0: break
         rollouts.append(r); loss=""
         if ep%UPDATE_EVERY_EPISODES==0: loss=update(model,opt,rollouts,device); rollouts=[]
+        log_status(ep, TOTAL_EPISODES, total, after, loss)
         epw.writerow(dict(episode=ep,steps=len(r["rewards"]),final_battery=after,total_reward=total,loss=loss)); epfile.flush()
     # final deterministic evaluation, step-level telemetry CSV
     env.place_devices(); env.ch.reset(); x,y,yaw=env.ch.get_position(); h=deque([obs(env,x,y,yaw,0)]*SEQUENCE_LENGTH,maxlen=SEQUENCE_LENGTH)
@@ -92,4 +97,15 @@ def run():
             x,y,yaw=nx,ny,nyaw; h.append(obs(env,x,y,yaw,min(step+1,MAX_STEPS_PER_EPISODE-1)))
             if aft<=0: break
     epfile.close()
+    # ADD THIS SECTION:
+    print("\n" + "=" * 30)
+    print("FINAL EVALUATION COMPLETE")
+    print("=" * 30)
+    import pandas as pd
+    df_eval = pd.read_csv(OUT / "final_evaluation_steps.csv")
+    print(f"Total Steps Taken: {len(df_eval)}")
+    print(f"Final Battery Level: {df_eval['battery_after'].iloc[-1]:.2f}%")
+    print(f"Average Reward per Step: {df_eval['reward'].mean():.4f}")
+    print(f"Total Episode Reward: {df_eval['reward'].sum():.2f}")
+    print("=" * 30)
 if __name__=="__main__": run()

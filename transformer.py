@@ -19,6 +19,7 @@ class TransformerActorCritic(nn.Module):
         self.log_std = nn.Parameter(torch.full((action_dim,), -0.5))
 
     def forward(self, sequence):
+        sequence = sequence.to(torch.float32)
         x = self.encoder(self.input_projection(sequence))[:, -1]
         # bounded mean: action is normalized relative displacement in [-1, 1]
         return torch.tanh(self.actor(x)), self.critic(x).squeeze(-1)
