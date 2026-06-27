@@ -18,7 +18,7 @@ import datetime
 # NOTE: This is a scaffold showing where to integrate PSO while
 # preserving transformer logic. Replace model initialization and
 # action selection as described.
-POLICY_TYPE = "transformer"
+POLICY_TYPE = "pso"
 # ============================================================
 
 TOTAL_EPISODES=1000; MAX_STEPS_PER_EPISODE=720; VIEW_DISTANCE=20
