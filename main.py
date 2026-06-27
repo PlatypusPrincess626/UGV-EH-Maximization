@@ -9,7 +9,17 @@ import torch.optim as optim
 from pvlib import solarposition
 from environment import sim_env
 from transformer import TransformerActorCritic
+from pso_policy import PSOPolicy
 import datetime
+
+# ============================================================
+# PSO SUPPORT ADDED
+# Set POLICY_TYPE = "transformer" or "pso"
+# NOTE: This is a scaffold showing where to integrate PSO while
+# preserving transformer logic. Replace model initialization and
+# action selection as described.
+POLICY_TYPE = "transformer"
+# ============================================================
 
 TOTAL_EPISODES=1000; MAX_STEPS_PER_EPISODE=720; VIEW_DISTANCE=20
 SEQUENCE_LENGTH=12; UPDATE_EVERY_EPISODES=5; GAMMA=.99; GAE_LAMBDA=.95
@@ -64,7 +74,18 @@ def update(model,opt,rollouts,device):
 def run():
     device=torch.device("cuda" if torch.cuda.is_available() else "cpu")
     env=sim_env("test",20,MAX_STEPS_PER_EPISODE); env.set_view_dist(VIEW_DISTANCE)
-    model=TransformerActorCritic(VIEW_DISTANCE).to(device); opt=optim.Adam(model.parameters(),lr=LR)
+
+    # 1. Initialization Logic
+    if POLICY_TYPE == "transformer":
+        model = TransformerActorCritic(VIEW_DISTANCE).to(device)
+        opt = optim.Adam(model.parameters(), lr=LR)
+    else:
+        # Assuming observation dimension is flattened patch size + scalars
+        # Calculate based on your obs function (e.g., 20x20 patch + 7 scalars)
+        input_dim = (VIEW_DISTANCE * 2 + 1) ** 2 + 7
+        model = PSOPolicy(input_dim=input_dim).to(device)
+        opt = None  # PSO does not use torch.optim
+
     epfile=open(OUT/"episode_metrics.csv","w",newline=""); epw=csv.DictWriter(epfile,fieldnames=["episode","steps","final_battery","total_reward","loss"]); epw.writeheader()
     rollouts=[]
     for ep in range(1,TOTAL_EPISODES+1):
@@ -72,7 +93,18 @@ def run():
         h=deque([obs(env,x,y,yaw,0)]*SEQUENCE_LENGTH,maxlen=SEQUENCE_LENGTH); r={"states":[],"actions":[],"logps":[],"values":[],"rewards":[]}; total=0
         for step in range(MAX_STEPS_PER_EPISODE):
             s=seq_tensor(h,device)
-            with torch.no_grad(): a,lp,v=model.act(s)
+
+            # 2. Action Selection Logic
+            if POLICY_TYPE == "transformer":
+                with torch.no_grad():
+                    a, lp, v = model.act(s)
+            else:
+                # Set the current particle for the forward pass
+                model.current_particle = (ep - 1) % model.swarm_size
+                with torch.no_grad():
+                    a = model(s)
+                    lp, v = torch.tensor(0.0), torch.tensor(0.0)  # Dummy values
+
             # normalized action -> local, physically scaled target; no global-coordinate clipping mismatch
             dx,dy=a[0].cpu().numpy()*MAX_MOVE_PER_STEP
             tx=float(np.clip(x+dx,0,env.dim-1)); ty=float(np.clip(y+dy,0,env.dim-1))
@@ -82,7 +114,19 @@ def run():
             x,y,yaw=env.ch.get_position(); h.append(obs(env,x,y,yaw,min(step+1,MAX_STEPS_PER_EPISODE-1)))
             if after<=0: break
         rollouts.append(r); loss=""
-        if ep%UPDATE_EVERY_EPISODES==0: loss=update(model,opt,rollouts,device); rollouts=[]
+
+        # 3. Training Update Logic
+        if POLICY_TYPE == "transformer":
+            if ep % UPDATE_EVERY_EPISODES == 0:
+                loss = update(model, opt, rollouts, device)
+                rollouts = []
+        else:
+            # PSO Update: Evaluate current particle and update swarm
+            model.evaluate_particle(model.current_particle, total)
+            if ep % model.swarm_size == 0:
+                model.update_swarm()
+            loss = "N/A (PSO)"
+
         steps_taken = len(r["rewards"]); log_status(ep, TOTAL_EPISODES, steps_taken, total, after, loss)
         epw.writerow(dict(episode=ep,steps=len(r["rewards"]),final_battery=after,total_reward=total,loss=loss)); epfile.flush()
     # final deterministic evaluation, step-level telemetry CSV
