@@ -174,26 +174,26 @@ class sim_env:
             print(f"Error loading topography file: {e}")
             self.topo_mask = np.zeros((self.dim, self.dim))
 
-            # 2. Foliage: Clustered distribution
-            # Create a base distribution of potential tree locations
-            # Weights: [Empty, 5m, 10m, 15m, 20m]
-            choices = [0, 5, 10, 15, 20]
-            probs = [0.4, 0.3, 0.15, 0.1, 0.05]
+        # 2. Foliage: Clustered distribution
+        # Create a base distribution of potential tree locations
+        # Weights: [Empty, 5m, 10m, 15m, 20m]
+        choices = [0, 5, 10, 15, 20]
+        probs = [0.4, 0.3, 0.15, 0.1, 0.05]
 
-            # Create raw random height map
-            raw_foliage = np.random.choice(choices, size=(self.dim, self.dim), p=probs)
+        # Create raw random height map
+        raw_foliage = np.random.choice(choices, size=(self.dim, self.dim), p=probs)
 
-            # Apply Gaussian filter to create "patches" (Spatial Correlation)
-            # Sigma controls the size of the tree clumps
-            smoothed = gaussian_filter(raw_foliage.astype(float), sigma=3)
+        # Apply Gaussian filter to create "patches" (Spatial Correlation)
+        # Sigma controls the size of the tree clumps
+        smoothed = gaussian_filter(raw_foliage.astype(float), sigma=3)
 
-            # Re-quantize to snap back to our height classes
-            # This keeps the "patches" but ensures the ray-caster gets expected height values
-            bins = [0, 2.5, 7.5, 12.5, 17.5, 25]
-            self.foliage_mask = np.digitize(smoothed, bins)
-            # Map indices to height values: 0->0, 1->5, 2->10, 3->15, 4->20
-            height_map = np.array([0, 5, 10, 15, 20])
-            self.foliage_mask = height_map[np.clip(self.foliage_mask - 1, 0, 4)]
+        # Re-quantize to snap back to our height classes
+        # This keeps the "patches" but ensures the ray-caster gets expected height values
+        bins = [0, 2.5, 7.5, 12.5, 17.5, 25]
+        self.foliage_mask = np.digitize(smoothed, bins)
+        # Map indices to height values: 0->0, 1->5, 2->10, 3->15, 4->20
+        height_map = np.array([0, 5, 10, 15, 20])
+        self.foliage_mask = height_map[np.clip(self.foliage_mask - 1, 0, 4)]
         return True
 
     # Place obstructions and devices in initial positions
