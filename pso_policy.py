@@ -78,7 +78,7 @@ class PSOPolicy(nn.Module):
         particle = self.positions[self.current_particle]
         W1, b1, W2, b2 = self._decode(particle)
 
-        x_np = x.detach().cpu().numpy()
+        x_np = x[:, -1, :].detach().cpu().numpy()
 
         h = np.tanh(x_np @ W1 + b1)
         y = h @ W2 + b2
