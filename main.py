@@ -9,7 +9,7 @@ import torch.optim as optim
 from pvlib import solarposition
 from environment import sim_env
 from transformer import TransformerActorCritic
-from chen_transformer import ChenTransformer
+from chebyshev_transformer import ChebyshevTransformer
 from pso_policy import PSOPolicy
 import datetime
 
@@ -85,7 +85,7 @@ def run():
             model = TransformerActorCritic(VIEW_DISTANCE).to(device)
             opt = optim.Adam(model.parameters(), lr=LR)
         else:
-            model = ChenTransformer(VIEW_DISTANCE).to(device)
+            model = ChebyshevTransformer(VIEW_DISTANCE).to(device)
             opt = optim.Adam(model.parameters(), lr=LR)
     else:
         # Assuming observation dimension is flattened patch size + scalars

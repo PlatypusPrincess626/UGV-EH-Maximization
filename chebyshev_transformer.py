@@ -5,63 +5,59 @@ from torch.distributions import Normal
 import numpy as np
 
 
-def chen_sequence(length, a=35.0, b=3.0, c=28.0, dt=0.005, discard=500):
+def chebyshev_sequence(length, degree=4, seed=0.723456, discard=200):
     """
-    Generates a chaotic sequence using the Chen attractor.
+    Generate a bounded chaotic sequence using the Chebyshev map.
 
-    dx/dt = a(y-x)
-    dy/dt = (c-a)x - xz + cy
-    dz/dt = xy - bz
+        x_(n+1) = cos(degree * arccos(x_n))
+
+    Output is normalized to [-1,1].
     """
 
-    x = 0.11
-    y = 0.17
-    z = 0.23
+    x = np.clip(seed, -0.999999, 0.999999)
 
     seq = []
 
-    total = discard + length
-
-    for _ in range(total):
-        dx = a * (y - x)
-        dy = (c - a) * x - x * z + c * y
-        dz = x * y - b * z
-
-        x += dx * dt
-        y += dy * dt
-        z += dz * dt
-
+    for _ in range(discard + length):
+        x = math.cos(degree * math.acos(x))
+        x = np.clip(x, -0.999999, 0.999999)
         seq.append(x)
 
-    seq = np.asarray(seq[discard:])
+    seq = np.asarray(seq[discard:], dtype=np.float32)
 
-    # Normalize to [-1,1]
-    seq = (seq - seq.min()) / (seq.max() - seq.min())
-    seq = seq * 2.0 - 1.0
+    # Numerical safety
+    seq = np.nan_to_num(seq)
 
     return seq
 
 
-def chen_init_tensor(tensor):
+def chaotic_xavier_init(tensor, order=4, seed=None):
+    """
+        Xavier initialization whose ordering comes from a Chebyshev chaotic map.
+    """
+    if seed is None:
+        seed = np.random.uniform(-0.95, 0.95)
 
-    fan_in = tensor.size(1)
-    fan_out = tensor.size(0)
+    if tensor.ndim < 2:
+        return
 
-    limit = math.sqrt(6.0/(fan_in+fan_out))
+    fan_out, fan_in = tensor.shape[:2]
 
-    seq = chen_sequence(tensor.numel())
+    limit = math.sqrt(6.0 / (fan_in + fan_out))
 
-    weights = torch.tensor(
-        seq,
-        dtype=tensor.dtype,
-        device=tensor.device
-    ).reshape(tensor.shape)
+    seq = chebyshev_sequence(
+        tensor.numel(),
+        degree=order,
+        seed=seed
+    )
+
+    weights = torch.from_numpy(seq).reshape(tensor.shape)
 
     with torch.no_grad():
-        tensor.copy_(weights * limit)
+        tensor.copy_(weights.to(tensor.device, tensor.dtype) * limit)
 
 
-class ChenTransformer(nn.Module):
+class ChebyshevTransformer(nn.Module):
     """Temporal actor-critic. Input: [batch, sequence, flattened_patch + scalar_features]."""
     def __init__(self, view_dist, scalar_dim=7, action_dim=2, d_model=128, nhead=4,
                  num_layers=2, dim_feedforward=256, dropout=0.1):
@@ -78,24 +74,25 @@ class ChenTransformer(nn.Module):
 
     def initialize_weights(self):
 
-        for module in self.modules():
+        for m in self.modules():
 
-            if isinstance(module, nn.Linear):
+            if isinstance(m, nn.Linear):
 
-                chen_init_tensor(module.weight)
+                chaotic_xavier_init(m.weight)
 
-                if module.bias is not None:
-                    nn.init.zeros_(module.bias)
+                if m.bias is not None:
+                    nn.init.zeros_(m.bias)
 
-            elif isinstance(module, nn.LayerNorm):
+            elif isinstance(m, nn.LayerNorm):
 
-                nn.init.ones_(module.weight)
-                nn.init.zeros_(module.bias)
+                nn.init.ones_(m.weight)
+                nn.init.zeros_(m.bias)
 
     def forward(self, sequence):
         sequence = sequence.to(torch.float32)
         x = self.encoder(self.input_projection(sequence))[:, -1]
         # bounded mean: action is normalized relative displacement in [-1, 1]
+        x = torch.clamp(x, -10.0, 10.0)
         return torch.tanh(self.actor(x)), self.critic(x).squeeze(-1)
 
     def distribution(self, sequence):
