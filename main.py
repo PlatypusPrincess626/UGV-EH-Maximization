@@ -9,6 +9,7 @@ import torch.optim as optim
 from pvlib import solarposition
 from environment import sim_env
 from transformer import TransformerActorCritic
+from chen_transformer import ChenTransformer
 from pso_policy import PSOPolicy
 import datetime
 
@@ -18,7 +19,10 @@ import datetime
 # NOTE: This is a scaffold showing where to integrate PSO while
 # preserving transformer logic. Replace model initialization and
 # action selection as described.
-POLICY_TYPE = "pso"
+POLICY_TYPE = "transformer"
+if POLICY_TYPE == "transformer":
+    # Set TRANSFORMER_VARIANT = "normal" or "chen"
+    TRANSFORMER_VARIANT = "chen"
 # ============================================================
 
 TOTAL_EPISODES=1000; MAX_STEPS_PER_EPISODE=720; VIEW_DISTANCE=20
@@ -77,8 +81,12 @@ def run():
 
     # 1. Initialization Logic
     if POLICY_TYPE == "transformer":
-        model = TransformerActorCritic(VIEW_DISTANCE).to(device)
-        opt = optim.Adam(model.parameters(), lr=LR)
+        if TRANSFORMER_VARIANT == "normal":
+            model = TransformerActorCritic(VIEW_DISTANCE).to(device)
+            opt = optim.Adam(model.parameters(), lr=LR)
+        else:
+            model = ChenTransformer(VIEW_DISTANCE).to(device)
+            opt = optim.Adam(model.parameters(), lr=LR)
     else:
         # Assuming observation dimension is flattened patch size + scalars
         # Calculate based on your obs function (e.g., 20x20 patch + 7 scalars)
@@ -135,7 +143,15 @@ def run():
         fields=["step","x_before","y_before","target_x","target_y","x_after","y_after","battery_before","battery_after","battery_delta","reward","action_dx_norm","action_dy_norm"]
         w=csv.DictWriter(f,fieldnames=fields); w.writeheader()
         for step in range(MAX_STEPS_PER_EPISODE):
-            with torch.no_grad(): a,_,_=model.act(seq_tensor(h,device),True)
+            if POLICY_TYPE == "transformer":
+                with torch.no_grad():
+                    a, lp, v = model.act(seq_tensor(h,device),True)
+            else:
+                # Set the current particle for the forward pass
+                model.current_particle = (TOTAL_EPISODES - 1) % model.swarm_size
+                with torch.no_grad():
+                    a = model(seq_tensor(h,device))
+                    lp, v = torch.tensor(0.0), torch.tensor(0.0)  # Dummy values
             dx,dy=a[0].cpu().numpy()*MAX_MOVE_PER_STEP; tx=float(np.clip(x+dx,0,env.dim-1)); ty=float(np.clip(y+dy,0,env.dim-1))
             b=env.ch.get_battery(); tel,_=env.step_simulation(step,tx,ty); aft=env.ch.get_battery(); nx,ny,nyaw=env.ch.get_position(); rew=reward_fn(b,aft,tel,a[0])
             w.writerow(dict(step=step,x_before=x,y_before=y,target_x=tx,target_y=ty,x_after=nx,y_after=ny,battery_before=b,battery_after=aft,battery_delta=aft-b,reward=rew,action_dx_norm=a[0,0].item(),action_dy_norm=a[0,1].item()))
