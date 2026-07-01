@@ -10,6 +10,7 @@ from pvlib import solarposition
 from environment import sim_env
 from transformer import TransformerActorCritic
 from chebyshev_transformer import ChebyshevTransformer
+from lyupnov_transformer import LyapunovTransformerActorCritic
 from pso_policy import PSOPolicy
 import datetime
 
@@ -21,13 +22,24 @@ import datetime
 # action selection as described.
 POLICY_TYPE = "transformer"
 if POLICY_TYPE == "transformer":
-    # Set TRANSFORMER_VARIANT = "normal" or "chen"
-    TRANSFORMER_VARIANT = "chen"
+    # Set TRANSFORMER_VARIANT = "normal" or "chaotic" or "lyapunov"
+    TRANSFORMER_VARIANT = "lyapunov"
+else:
+    TRANSFORMER_VARIANT = "normal"
 # ============================================================
 
 TOTAL_EPISODES=1000; MAX_STEPS_PER_EPISODE=720; VIEW_DISTANCE=20
 SEQUENCE_LENGTH=12; UPDATE_EVERY_EPISODES=5; GAMMA=.99; GAE_LAMBDA=.95
 LR=3e-4; MAX_MOVE_PER_STEP=20.0; ENTROPY_COEF=.01; VALUE_COEF=.5
+
+###############################################################
+# Lyapunov Hyperparameters
+###############################################################
+LYAPUNOV_COEF = 0.25; DYNAMICS_COEF = 0.10; LATENT_COEF = 0.05
+BARRIER_COEF = 0.20; ACTION_SMOOTHNESS = 0.01; LYAPUNOV_MARGIN = 0.01
+BATTERY_MARGIN = 0.10; BOUNDARY_MARGIN = 0.10; VEGETATION_MARGIN = 0.05
+VELOCITY_MARGIN = 0.05; COMM_MARGIN = 0.10
+
 # Format as YYYY-MM-DD_HH-MM-SS
 timestamp = datetime.datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
 OUT=Path("rl_csv_"+timestamp); OUT.mkdir(exist_ok=True)
@@ -55,9 +67,9 @@ def reward_fn(before, after, telemetry, action):
     boundary=min(nx,ny,800-nx,800-ny)/800
     return 25.0*delta - .015*distance + .20*(after/100) + .10*boundary
 
-def update(model,opt,rollouts,device):
+def update(model,opt,rollouts,device, ep):
     # GAE advantages are normalized once across the complete rollout batch, not per episode.
-    states=[]; actions=[]; oldlp=[]; adv=[]; returns=[]
+    states=[]; next_states=[]; actions=[]; oldlp=[]; adv=[]; returns=[]
     for r in rollouts:
         gae=0.0; ret=0.0
         for i in reversed(range(len(r["rewards"]))):
@@ -65,13 +77,58 @@ def update(model,opt,rollouts,device):
             nxt=0 if i==len(r["rewards"])-1 else r["values"][i+1]
             gae=r["rewards"][i]+GAMMA*nxt-r["values"][i]+GAMMA*GAE_LAMBDA*gae
             adv.insert(0,gae); returns.insert(0,ret)
-        states+=r["states"]; actions+=r["actions"]; oldlp+=r["logps"]
+        states+=r["states"]; next_states+=r["next_states"]; actions+=r["actions"]; oldlp+=r["logps"]
     adv = torch.tensor(adv,device=device,dtype=torch.float32); adv=(adv-adv.mean())/(adv.std(unbiased=False)+1e-8)
     returns=torch.tensor(returns,device=device,dtype=torch.float32); actions=torch.tensor(np.asarray(actions),dtype=torch.float32,device=device)
     oldlp=torch.tensor(oldlp,device=device); states=torch.tensor(np.asarray(states),dtype=torch.float32,device=device)
-    lp,entropy,values=model.evaluate_actions(states,actions)
-    # Single efficient batched actor-critic update; no duplicate forward pass per step.
-    loss=-(lp*adv.detach()).mean()+VALUE_COEF*F.mse_loss(values,returns)+-ENTROPY_COEF*entropy.mean()
+    next_states = torch.tensor(np.asarray(next_states), dtype=torch.float32, device=device)
+    if TRANSFORMER_VARIANT == "lyapunov":
+        if ep < 100:
+            lyap_weight = 0.0
+            barrier_weight = 0.0
+        elif ep < 300:
+            lyap_weight = 0.10
+            barrier_weight = 0.05
+        else:
+            lyap_weight = LYAPUNOV_COEF
+            barrier_weight = BARRIER_COEF
+
+        (lp, entropy, values, lyapunov, barrier, latent, predicted_next) = model.evaluate_actions(states,actions)
+        (V_now, V_next, delta_V, predicted_latent, actual_latent) = model.evaluate_transition(states,next_states)
+        lyapunov_loss = torch.relu(
+            delta_V + LYAPUNOV_MARGIN
+        ).mean()
+        dynamics_loss = F.mse_loss(
+            predicted_latent,
+            actual_latent,
+        )
+        battery_loss = torch.relu(BATTERY_MARGIN - barrier[:, 0]).mean()
+        boundary_loss = torch.relu(BOUNDARY_MARGIN - barrier[:, 1]).mean()
+        vegetation_loss = torch.relu(VEGETATION_MARGIN - barrier[:, 2]).mean()
+        velocity_loss = torch.relu(VELOCITY_MARGIN - barrier[:, 3]).mean()
+        communication_loss = torch.relu(COMM_MARGIN - barrier[:, 4]).mean()
+        barrier_loss = (1.0 * battery_loss + 0.5 * boundary_loss + 0.25 * vegetation_loss
+                + 0.25 * velocity_loss + 0.75 * communication_loss)
+        latent_loss = F.mse_loss(
+            predicted_latent,
+            actual_latent
+        )
+        loss = (-(lp * adv.detach()).mean()
+                + VALUE_COEF * F.mse_loss(values, returns)
+                + -ENTROPY_COEF * entropy.mean()
+                + lyap_weight * lyapunov_loss
+                + DYNAMICS_COEF * dynamics_loss
+                + barrier_weight * barrier_loss
+                + LATENT_COEF * latent_loss)
+        print(
+            f"Lyapunov {lyapunov_loss:.4f} | "
+            f"Dynamics {dynamics_loss:.4f} | "
+            f"Barrier {barrier_loss:.4f}"
+        )
+    else:
+        lp,entropy,values=model.evaluate_actions(states,actions)
+        # Single efficient batched actor-critic update; no duplicate forward pass per step.
+        loss=-(lp*adv.detach()).mean()+VALUE_COEF*F.mse_loss(values,returns)+-ENTROPY_COEF*entropy.mean()
     opt.zero_grad(); loss.backward(); torch.nn.utils.clip_grad_norm_(model.parameters(),1.0); opt.step()
     return float(loss.item())
 
@@ -81,12 +138,16 @@ def run():
 
     # 1. Initialization Logic
     if POLICY_TYPE == "transformer":
-        if TRANSFORMER_VARIANT == "normal":
-            model = TransformerActorCritic(VIEW_DISTANCE).to(device)
-            opt = optim.Adam(model.parameters(), lr=LR)
-        else:
+        if TRANSFORMER_VARIANT == "lyapunov":
+            model = LyapunovTransformerActorCritic(
+                view_dist=VIEW_DISTANCE,
+                sequence_length=SEQUENCE_LENGTH,
+            ).to(device)
+        elif TRANSFORMER_VARIANT == "chaotic":
             model = ChebyshevTransformer(VIEW_DISTANCE).to(device)
-            opt = optim.Adam(model.parameters(), lr=LR)
+        else:
+            model = TransformerActorCritic(VIEW_DISTANCE).to(device)
+        opt = optim.Adam(model.parameters(), lr=LR)
     else:
         # Assuming observation dimension is flattened patch size + scalars
         # Calculate based on your obs function (e.g., 20x20 patch + 7 scalars)
@@ -98,14 +159,27 @@ def run():
     rollouts=[]
     for ep in range(1,TOTAL_EPISODES+1):
         env.place_devices(); env.ch.reset(); x,y,yaw=env.ch.get_position()
-        h=deque([obs(env,x,y,yaw,0)]*SEQUENCE_LENGTH,maxlen=SEQUENCE_LENGTH); r={"states":[],"actions":[],"logps":[],"values":[],"rewards":[]}; total=0
+        h=deque([obs(env,x,y,yaw,0)]*SEQUENCE_LENGTH,maxlen=SEQUENCE_LENGTH);total=0;
+        r={"states":[],"next_states":[],"actions":[],"logps":[],"values":[],"rewards":[],"lyapunov":[], "barrier":[]};
+        previous_action = None; smoothness = 0.0
         for step in range(MAX_STEPS_PER_EPISODE):
             s=seq_tensor(h,device)
 
             # 2. Action Selection Logic
             if POLICY_TYPE == "transformer":
                 with torch.no_grad():
-                    a, lp, v = model.act(s)
+                    if TRANSFORMER_VARIANT == "lyapunov":
+                        (a, lp, v, lyapunov, barrier, latent, predicted_next) = model.act(s)
+                        current_action = a[0].detach().cpu().numpy()
+                        if previous_action is None:
+                            smoothness = 0.0
+                        else:
+                            smoothness = np.sum(((current_action - previous_action) / MAX_MOVE_PER_STEP) ** 2)
+                        r["lyapunov"].append(lyapunov.cpu().numpy()); r["barrier"].append(barrier.cpu().numpy())
+                    else:
+                        a, lp, v = model.act(s)
+                        lyapunov = None
+                        barrier = None
             else:
                 # Set the current particle for the forward pass
                 model.current_particle = (ep - 1) % model.swarm_size
@@ -117,16 +191,19 @@ def run():
             dx,dy=a[0].cpu().numpy()*MAX_MOVE_PER_STEP
             tx=float(np.clip(x+dx,0,env.dim-1)); ty=float(np.clip(y+dy,0,env.dim-1))
             before=env.ch.get_battery(); tel,nxt=env.step_simulation(step,tx,ty); after=env.ch.get_battery()
-            rew=reward_fn(before,after,tel,a[0]); total+=rew
-            r["states"].append(np.asarray(h)); r["actions"].append(a[0].cpu().numpy()); r["logps"].append(lp.item()); r["values"].append(v.item()); r["rewards"].append(rew)
+            rew=reward_fn(before,after,tel,a[0])-ACTION_SMOOTHNESS*smoothness;
+            total+=rew; previous_action=current_action
+            r["states"].append(np.asarray(h)); r["actions"].append(a[0].cpu().numpy())
+            r["logps"].append(lp.item()); r["values"].append(v.item()); r["rewards"].append(rew)
             x,y,yaw=env.ch.get_position(); h.append(obs(env,x,y,yaw,min(step+1,MAX_STEPS_PER_EPISODE-1)))
+            r["next_states"].append(np.asarray(h))
             if after<=0: break
         rollouts.append(r); loss=""
 
         # 3. Training Update Logic
         if POLICY_TYPE == "transformer":
             if ep % UPDATE_EVERY_EPISODES == 0:
-                loss = update(model, opt, rollouts, device)
+                loss = update(model, opt, rollouts, device, ep)
                 rollouts = []
         else:
             # PSO Update: Evaluate current particle and update swarm
@@ -145,7 +222,10 @@ def run():
         for step in range(MAX_STEPS_PER_EPISODE):
             if POLICY_TYPE == "transformer":
                 with torch.no_grad():
-                    a, lp, v = model.act(seq_tensor(h,device),True)
+                    if TRANSFORMER_VARIANT == "lyapunov":
+                        (a, lp, v, lyapunov, barrier, latent, predicted_next) = model.act(seq_tensor(h,device), True)
+                    else:
+                        a, lp, v = model.act(seq_tensor(h,device),True)
             else:
                 # Set the current particle for the forward pass
                 model.current_particle = (TOTAL_EPISODES - 1) % model.swarm_size
