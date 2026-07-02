@@ -23,29 +23,96 @@ class UGVSimulator:
             "current_sleep_lora": 1200,  # uA
         }
 
-        # -----------------------------
+        # --------------------------------------------------
         # Battery Model
-        # -----------------------------
-        self.max_capacity_mAh = 12000.0
-        self.battery_mAh = self.max_capacity_mAh * (battery_level / 100.0)
+        # --------------------------------------------------
 
-        self.battery_voltage = 15.0
+        self.capacity_Ah = 12.0
+        self.max_capacity_mAh = self.capacity_Ah * 1000.0
 
-        # energy accumulated during current step
-        self.energy_used_mAh = 0.0
-        self.energy_gained_mAh = 0.0
+        self.battery_mAh = (
+                self.max_capacity_mAh *
+                battery_level / 100.0
+        )
 
-        # -----------------------------
-        # Motion
-        # -----------------------------
-        self.r_max = r_move
+        # State of Charge
+        self.soc = self.battery_mAh / self.max_capacity_mAh
 
-        self.speed = 20 / 60.0  # m/s
-        self.yaw_speed = math.pi / 10
+        # Battery parameters
+        self.nominal_voltage = 14.8
+        self.cutoff_voltage = 12.0
+        self.full_voltage = 16.8
 
-        # Replace rolling-resistance approximation
-        # with realistic motor power draw
-        self.motor_power_w = 150.0
+        # Internal resistance (Ohms)
+        self.internal_resistance = 0.045
+
+        # Coulombic efficiencies
+        self.charge_efficiency = 0.97
+        self.discharge_efficiency = 0.98
+
+        # Capacity fade
+        self.capacity_loss = 0.0
+
+        # Peak charging current
+        self.max_charge_current = 8.0  # Amps
+
+        # Peak discharge current
+        self.max_discharge_current = 25.0
+
+        # --------------------------------------------------
+        # Solar Charge Controller
+        # --------------------------------------------------
+
+        # MPPT efficiency
+        self.mppt_efficiency = 0.96
+
+        # Controller voltage
+        self.charge_voltage = 16.8  # V
+
+        # Wiring losses
+        self.wiring_efficiency = 0.99
+
+        # Dust/aging on panel
+        self.panel_efficiency_factor = 0.98
+
+        # --------------------------------------------------
+        # Vehicle Dynamics
+        # --------------------------------------------------
+
+        # Vehicle Properties
+        self.mass = 85.0  # kg
+        self.gravity = 9.81
+
+        # Forest terrain
+        self.rolling_coeff = 0.09  # forest floor
+        self.turn_drag_coeff = 18.0
+
+        # Drivetrain
+        self.motor_efficiency = 0.90
+        self.gearbox_efficiency = 0.95
+        self.controller_efficiency = 0.97
+
+        self.drivetrain_efficiency = (
+                self.motor_efficiency *
+                self.gearbox_efficiency *
+                self.controller_efficiency
+        )
+
+        # Velocity State
+        self.velocity = 0.0  # m/s
+        self.target_velocity = 0.0
+
+        self.max_velocity = 0.50  # m/s
+        self.max_acceleration = 0.25  # m/s²
+        self.max_deceleration = 0.35  # m/s²
+
+        # Turning
+        self.angular_velocity = 0.0
+        self.max_turn_rate = math.pi / 8
+        self.max_turn_accel = math.pi / 12
+
+        # Simulation timestep
+        self.dt = 1.0  # seconds
 
         # -----------------------------
         # CPU
@@ -88,44 +155,310 @@ class UGVSimulator:
         return self.x, self.y, self.yaw
 
     def get_battery(self):
-        return 100.0 * self.battery_mAh / self.max_capacity_mAh
+        return self.soc * 100.0
+
+    def update_soc(self):
+
+        self.soc = max(
+            0.0,
+            min(
+                1.0,
+                self.battery_mAh /
+                self.max_capacity_mAh
+            )
+        )
+
+    def compute_open_circuit_voltage(self):
+
+        s = self.soc
+
+        voltage = (
+                12.0
+                + 3.0 * s
+                + 1.2 * s ** 2
+                + 0.6 * s ** 3
+        )
+
+        return min(
+            self.full_voltage,
+            max(
+                self.cutoff_voltage,
+                voltage
+            )
+        )
+
+    def compute_internal_resistance(self):
+
+        s = self.soc
+
+        return (
+                self.internal_resistance *
+                (
+                        1.0 +
+                        1.8 * (1 - s) ** 2
+                )
+        )
+
+    def compute_terminal_voltage(
+            self,
+            current_A=0.0
+    ):
+
+        ocv = self.compute_open_circuit_voltage()
+
+        resistance = (
+            self.compute_internal_resistance()
+        )
+
+        terminal = (
+                ocv -
+                current_A * resistance
+        )
+
+        return max(
+            self.cutoff_voltage,
+            terminal
+        )
+
+    def compute_charge_acceptance(self):
+
+        s = self.soc
+
+        if s < 0.80:
+            return 1.00
+
+        elif s < 0.90:
+            return 0.90
+
+        elif s < 0.95:
+            return 0.65
+
+        elif s < 0.98:
+            return 0.35
+
+        else:
+            return 0.15
 
     def move(self, target_x, target_y, duration):
+
+        elapsed = 0.0
+
+        while elapsed < duration:
+            self.update_vehicle_dynamics(target_x, target_y)
+
+            elapsed += self.dt
+
+        return self.x, self.y, self.yaw
+
+    def update_vehicle_dynamics(
+            self,
+            target_x,
+            target_y
+    ):
 
         dx = target_x - self.x
         dy = target_y - self.y
 
-        target_angle = math.atan2(dy, dx)
+        distance = math.hypot(dx, dy)
 
-        delta = target_angle - self.yaw
-        delta = math.atan2(math.sin(delta), math.cos(delta))
+        if distance < 0.05:
 
-        turn_time = abs(delta) / self.yaw_speed
+            self.target_velocity = 0.0
 
-        travel_time = max(0.0, duration - turn_time)
-
-        self.movement_times = [turn_time, 0.0]
-
-        if travel_time <= 0:
-            self.yaw = target_angle
-            return self.x, self.y, self.yaw
-
-        total_distance = math.hypot(dx, dy)
-        distance_possible = self.speed * travel_time
-
-        self.yaw = target_angle
-
-        if total_distance <= distance_possible:
-            self.x = target_x
-            self.y = target_y
-            self.movement_times[1] = total_distance / self.speed
         else:
-            frac = distance_possible / total_distance
-            self.x += dx * frac
-            self.y += dy * frac
-            self.movement_times[1] = travel_time
 
-        return self.x, self.y, self.yaw
+            self.target_velocity = self.max_velocity
+
+        desired_heading = math.atan2(
+            dy,
+            dx
+        )
+
+        heading_error = desired_heading - self.yaw
+
+        heading_error = math.atan2(
+            math.sin(heading_error),
+            math.cos(heading_error)
+        )
+
+        desired_turn_rate = max(
+            -self.max_turn_rate,
+            min(
+                self.max_turn_rate,
+                heading_error
+            )
+        )
+
+        delta_turn = (
+                desired_turn_rate -
+                self.angular_velocity
+        )
+
+        max_turn_change = (
+                self.max_turn_accel *
+                self.dt
+        )
+
+        delta_turn = max(
+            -max_turn_change,
+            min(
+                max_turn_change,
+                delta_turn
+            )
+        )
+
+        self.angular_velocity += delta_turn
+
+        self.yaw += (
+                self.angular_velocity *
+                self.dt
+        )
+
+        speed_error = (
+                self.target_velocity -
+                self.velocity
+        )
+
+        if speed_error >= 0:
+
+            accel = min(
+                self.max_acceleration,
+                speed_error
+            )
+
+        else:
+
+            accel = max(
+                -self.max_deceleration,
+                speed_error
+            )
+
+        self.velocity += (
+                accel *
+                self.dt
+        )
+
+        self.velocity = max(
+            0.0,
+            min(
+                self.velocity,
+                self.max_velocity
+            )
+        )
+
+        self.x += (
+                self.velocity *
+                math.cos(self.yaw) *
+                self.dt
+        )
+
+        self.y += (
+                self.velocity *
+                math.sin(self.yaw) *
+                self.dt
+        )
+
+    def compute_drive_forces(self):
+
+        #
+        # Rolling resistance
+        #
+
+        rolling_force = (
+                self.rolling_coeff *
+                self.mass *
+                self.gravity
+        )
+
+        #
+        # Acceleration force
+        #
+
+        acceleration = (
+                self.target_velocity -
+                self.velocity
+        )
+
+        acceleration_force = (
+                self.mass *
+                acceleration
+        )
+
+        #
+        # Turning resistance
+        #
+
+        turning_force = (
+                self.turn_drag_coeff *
+                abs(self.angular_velocity) *
+                self.velocity
+        )
+
+        total_force = (
+                rolling_force +
+                max(0.0, acceleration_force) +
+                turning_force
+        )
+
+        return {
+            "rolling": rolling_force,
+            "acceleration": acceleration_force,
+            "turning": turning_force,
+            "total": total_force
+        }
+
+    def compute_motor_power(self):
+
+        forces = self.compute_drive_forces()
+
+        mechanical_power = (
+                forces["total"] *
+                self.velocity
+        )
+
+        battery_power = (
+                mechanical_power /
+                self.drivetrain_efficiency
+        )
+
+        return max(
+            0.0,
+            battery_power
+        )
+
+    def update_battery_state(self):
+
+        #
+        # Charging
+        #
+
+        charge = (
+                self.energy_gained_mAh *
+                self.compute_charge_acceptance() *
+                self.charge_efficiency
+        )
+
+        #
+        # Discharging
+        #
+
+        discharge = (
+                self.energy_used_mAh /
+                self.discharge_efficiency
+        )
+
+        self.battery_mAh += charge
+        self.battery_mAh -= discharge
+
+        self.battery_mAh = max(
+            0.0,
+            min(
+                self.max_capacity_mAh,
+                self.battery_mAh
+            )
+        )
+
+        self.update_soc()
 
     def update_telemetry(self, new_x, new_y, new_yaw):
         self.x = new_x
@@ -141,8 +474,8 @@ class UGVSimulator:
     def __str__(self):
         return (f"UGV Position: ({self.x:.2f}m, {self.y:.2f}m)\n"
                 f"Orientation: {self.yaw:.1f} rad\n"
-                f"Speed: {self.speed:.2f} m/s\n"
-                f"Battery: {self.battery_level:.1f}%\n"
+                f"Velocity: {self.velocity:.2f} m/s\n"
+                f"Battery: {self.get_battery():.1f}%\n"
                 f"Status: {self.status.capitalize()}")
 
     def find_power(self, env, x, y, step,
@@ -200,26 +533,27 @@ class UGVSimulator:
         if np.isnan(cell_current):
             cell_current = 0.0
 
-        a = step / 60 + 2
-        alpha = abs(
-            104 - 65 * a + 47 * a ** 2 - 12 * a ** 3 + a ** 4
+        photo_current = (
+                cell_current *
+                sol_area *
+                (1.0 - interference)
         )
 
-        power = (
-                abs(alpha / 100.0)
-                * (1.0 - interference)
-                * cell_current
-                * sol_area
+        mpp_voltage = 0.82 * self.full_voltage
+
+        panel_power = (
+                photo_current *
+                mpp_voltage
         )
 
-        return max(0.0, power)
+        return max(0.0, panel_power)
 
     def harvest_energy(self, env, step):
 
         curr_x = int(max(0, min(self.x, env.dim - 1)))
         curr_y = int(max(0, min(self.y, env.dim - 1)))
 
-        solar_power_w = self.find_power(
+        panel_power = self.find_power(
             env,
             curr_x,
             curr_y,
@@ -229,22 +563,27 @@ class UGVSimulator:
             self.azimuth
         )
 
-        charge_current_mA = (solar_power_w / self.battery_voltage) * 1000.0
+        panel_power *= (
+                self.panel_efficiency_factor *
+                self.wiring_efficiency *
+                self.mppt_efficiency
+        )
 
-        self.energy_gained_mAh += (charge_current_mA * (1.0 / 60.0))
+        terminal_voltage = self.compute_terminal_voltage()
+        charge_current = panel_power / max(terminal_voltage, 0.1)
+        if self.soc >= 0.999:
+            charge_current = 0.0
+
+        self.energy_gained_mAh += (
+                charge_current *
+                self.dt /
+                3600.0 *
+                1000.0
+        )
 
     def battery_step(self):
 
-        self.battery_mAh += self.energy_gained_mAh
-        self.battery_mAh -= self.energy_used_mAh
-
-        self.battery_mAh = max(
-            0.0,
-            min(
-                self.max_capacity_mAh,
-                self.battery_mAh
-            )
-        )
+        self.update_battery_state()
 
     def consume_idle_energy(self):
 
@@ -259,35 +598,61 @@ class UGVSimulator:
 
     def consume_motion_energy(self):
 
-        move_seconds = sum(self.movement_times)
+        #
+        # Instantaneous battery power (W)
+        #
+        battery_power = self.compute_motor_power()
 
-        energy_wh = (
-            self.motor_power_w *
-            move_seconds / 3600.0
+        #
+        # Estimate battery current
+        #
+        voltage = self.compute_open_circuit_voltage()
+
+        current_A = battery_power / max(voltage, 1e-6)
+        current_A = min(current_A, self.max_discharge_current)
+
+        #
+        # Include voltage sag
+        #
+        terminal_voltage = self.compute_terminal_voltage(current_A)
+
+        #
+        # Actual electrical power drawn
+        #
+        battery_power = terminal_voltage * current_A
+
+        #
+        # Energy for THIS timestep
+        #
+        energy_Wh = battery_power * self.dt / 3600.0
+
+        #
+        # Convert to mAh
+        #
+        self.energy_used_mAh += (
+                energy_Wh * 1000.0 / terminal_voltage
         )
 
-        current_mAh = (
-            energy_wh * 1000.0
-        ) / self.battery_voltage
-
-        self.energy_used_mAh += current_mAh
-
-    def step(self, env, step, target_x, target_y):
+    def step(self,
+             env,
+             target_x,
+             target_y,
+             sim_step):
 
         self.energy_used_mAh = 0.0
         self.energy_gained_mAh = 0.0
 
-        self.move(
-            float(target_x),
-            float(target_y),
-            60.0
-        )
+        for second in range(60):
 
-        self.consume_motion_energy()
-        self.consume_idle_energy()
-        self.harvest_energy(env, step)
+            self.update_vehicle_dynamics(target_x, target_y)
 
-        self.battery_step()
+            self.consume_motion_energy()
+
+            self.consume_idle_energy()
+
+            self.harvest_energy(env, sim_step + second / 60.0)
+
+            self.update_battery_state()
 
         return (
             self.get_position(),
