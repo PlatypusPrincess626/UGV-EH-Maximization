@@ -592,7 +592,7 @@ class UGVSimulator:
         current_mA = (
             self.current_cpu +
             self._comms["current_active_lora"]
-        ) * 1000.0
+        ) / 1000.0
 
         self.energy_used_mAh += (
             current_mA * (1.0 / 3600.0)
