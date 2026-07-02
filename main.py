@@ -79,7 +79,7 @@ def update(model,opt,rollouts,device, ep):
             adv.insert(0,gae); returns.insert(0,ret)
         states+=r["states"]; next_states+=r["next_states"]; actions+=r["actions"]; oldlp+=r["logps"]
     adv = torch.tensor(adv,device=device,dtype=torch.float32); adv=(adv-adv.mean())/(adv.std(unbiased=False)+1e-8)
-    returns=torch.tensor(returns,device=device,dtype=torch.float32); returns = (returns - returns.mean()) / (returns.std() + 1e-8)
+    returns=torch.tensor(returns,device=device,dtype=torch.float32); # returns = (returns - returns.mean()) / (returns.std() + 1e-8)
     actions=torch.tensor(np.asarray(actions),dtype=torch.float32,device=device)
     oldlp=torch.tensor(oldlp,device=device); states=torch.tensor(np.asarray(states),dtype=torch.float32,device=device)
     next_states = torch.tensor(np.asarray(next_states), dtype=torch.float32, device=device)
@@ -154,6 +154,8 @@ def update(model,opt,rollouts,device, ep):
                 + VALUE_COEF * F.mse_loss(values, returns)
                 - ENTROPY_COEF * entropy.mean())
     opt.zero_grad(); loss.backward(); torch.nn.utils.clip_grad_norm_(model.parameters(),1.0); opt.step()
+    print(f"Returns: mean={returns.mean():.2f}, max={returns.max():.2f}, min={returns.min():.2f}")
+    print(f"Values : mean={values.mean():.2f}, max={values.max():.2f}, min={values.min():.2f}")
     return float(loss.item())
 
 def run():
@@ -227,6 +229,9 @@ def run():
         # 3. Training Update Logic
         if POLICY_TYPE == "transformer":
             if ep % UPDATE_EVERY_EPISODES == 0:
+                print(f"Reward mean: {np.mean(r['rewards']):.3f}")
+                print(f"Reward max : {np.max(r['rewards']):.3f}")
+                print(f"Reward min : {np.min(r['rewards']):.3f}")
                 loss = update(model, opt, rollouts, device, ep)
                 rollouts = []
         else:
