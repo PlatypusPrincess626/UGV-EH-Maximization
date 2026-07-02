@@ -38,7 +38,7 @@ LR=3e-4; MAX_MOVE_PER_STEP=20.0; ENTROPY_COEF=.01; VALUE_COEF=.5
 LYAPUNOV_COEF = 0.25; DYNAMICS_COEF = 0.10; LATENT_COEF = 0.05
 BARRIER_COEF = 0.20; ACTION_SMOOTHNESS = 0.01; LYAPUNOV_MARGIN = 0.01
 BATTERY_MARGIN = 0.10; BOUNDARY_MARGIN = 0.10; VEGETATION_MARGIN = 0.05
-VELOCITY_MARGIN = 0.05; COMM_MARGIN = 0.10
+VELOCITY_MARGIN = 0.05; COMM_MARGIN = 0.10; CLIP_EPS =0.20; LYAPUNOV_ALPHA = 0.02
 
 # Format as YYYY-MM-DD_HH-MM-SS
 timestamp = datetime.datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
@@ -86,21 +86,36 @@ def update(model,opt,rollouts,device, ep):
         if ep < 100:
             lyap_weight = 0.0
             barrier_weight = 0.0
+            dynamics_weight = 0.0
         elif ep < 300:
             lyap_weight = 0.10
             barrier_weight = 0.05
+            dynamics_weight = 0.05
         else:
             lyap_weight = LYAPUNOV_COEF
             barrier_weight = BARRIER_COEF
+            dynamics_weight = DYNAMICS_COEF
 
         (lp, entropy, values, lyapunov, barrier, latent, predicted_next) = model.evaluate_actions(states,actions)
         (V_now, V_next, delta_V, predicted_latent, actual_latent) = model.evaluate_transition(states,next_states)
-        lyapunov_loss = torch.relu(
-            delta_V + LYAPUNOV_MARGIN
-        ).mean()
+
+        ratio = torch.exp(lp - oldlp)
+        approx_kl = (oldlp - lp).mean()
+        clip_fraction = ((torch.abs(ratio - 1.0) > CLIP_EPS).float().mean())
+        surr1 = ratio * adv
+        surr2 = torch.clamp(
+            ratio,
+            1.0 - CLIP_EPS,
+            1.0 + CLIP_EPS,
+        ) * adv
+        policy_loss = -torch.min(surr1, surr2).mean()
+        lyapunov_penalty = F.relu(delta_V
+                                  + LYAPUNOV_ALPHA * V_now
+                                  + LYAPUNOV_MARGIN).mean()
+        value_loss = F.mse_loss(values, returns.detach())
         dynamics_loss = F.mse_loss(
             predicted_latent,
-            actual_latent,
+            actual_latent.detach(),
         )
         battery_loss = torch.relu(BATTERY_MARGIN - barrier[:, 0]).mean()
         boundary_loss = torch.relu(BOUNDARY_MARGIN - barrier[:, 1]).mean()
@@ -108,27 +123,35 @@ def update(model,opt,rollouts,device, ep):
         velocity_loss = torch.relu(VELOCITY_MARGIN - barrier[:, 3]).mean()
         communication_loss = torch.relu(COMM_MARGIN - barrier[:, 4]).mean()
         barrier_loss = (1.0 * battery_loss + 0.5 * boundary_loss + 0.25 * vegetation_loss
-                + 0.25 * velocity_loss + 0.75 * communication_loss)
-        latent_loss = F.mse_loss(
-            predicted_latent,
-            actual_latent
-        )
-        loss = (-(lp * adv.detach()).mean()
-                + VALUE_COEF * F.mse_loss(values, returns)
-                + -ENTROPY_COEF * entropy.mean()
-                + lyap_weight * lyapunov_loss
-                + DYNAMICS_COEF * dynamics_loss
-                + barrier_weight * barrier_loss
-                + LATENT_COEF * latent_loss)
+                        + 0.25 * velocity_loss + 0.75 * communication_loss)
+
+        loss = (policy_loss
+                + VALUE_COEF * value_loss
+                - ENTROPY_COEF * entropy.mean()
+                + lyap_weight * lyapunov_penalty
+                + dynamics_weight * dynamics_loss
+                + barrier_weight * barrier_loss)
         print(
-            f"Lyapunov {lyapunov_loss:.4f} | "
+            f"Policy {policy_loss:.4f} | "
+            f"Value {value_loss:.4f} | "
+            f"Lyap {lyapunov_penalty:.4f} | "
             f"Dynamics {dynamics_loss:.4f} | "
-            f"Barrier {barrier_loss:.4f}"
+            f"Barrier {barrier_loss:.4f} | "
+            f"KL {approx_kl:.5f}"
+            f"CF {clip_fraction:.4f}"
         )
     else:
         lp,entropy,values=model.evaluate_actions(states,actions)
         # Single efficient batched actor-critic update; no duplicate forward pass per step.
-        loss=-(lp*adv.detach()).mean()+VALUE_COEF*F.mse_loss(values,returns)+-ENTROPY_COEF*entropy.mean()
+        ratio = torch.exp(lp - oldlp)
+        surr1 = ratio * adv
+        surr2 = torch.clamp(ratio,
+                            1.0 - CLIP_EPS,
+                            1.0 + CLIP_EPS) * adv
+        policy_loss = -torch.min(surr1, surr2).mean()
+        loss = (policy_loss
+                + VALUE_COEF * F.mse_loss(values, returns)
+                - ENTROPY_COEF * entropy.mean())
     opt.zero_grad(); loss.backward(); torch.nn.utils.clip_grad_norm_(model.parameters(),1.0); opt.step()
     return float(loss.item())
 
@@ -158,7 +181,7 @@ def run():
     epfile=open(OUT/"episode_metrics.csv","w",newline=""); epw=csv.DictWriter(epfile,fieldnames=["episode","steps","final_battery","total_reward","loss"]); epw.writeheader()
     rollouts=[]
     for ep in range(1,TOTAL_EPISODES+1):
-        env.place_devices(); env.ch.reset(); x,y,yaw=env.ch.get_position()
+        env.place_devices(); env.reset(); x,y,yaw=env.ch.get_position()
         h=deque([obs(env,x,y,yaw,0)]*SEQUENCE_LENGTH,maxlen=SEQUENCE_LENGTH);total=0;
         r={"states":[],"next_states":[],"actions":[],"logps":[],"values":[],"rewards":[],"lyapunov":[], "barrier":[]};
         previous_action = None; smoothness = 0.0
@@ -215,7 +238,7 @@ def run():
         steps_taken = len(r["rewards"]); log_status(ep, TOTAL_EPISODES, steps_taken, total, after, loss)
         epw.writerow(dict(episode=ep,steps=len(r["rewards"]),final_battery=after,total_reward=total,loss=loss)); epfile.flush()
     # final deterministic evaluation, step-level telemetry CSV
-    env.place_devices(); env.ch.reset(); x,y,yaw=env.ch.get_position(); h=deque([obs(env,x,y,yaw,0)]*SEQUENCE_LENGTH,maxlen=SEQUENCE_LENGTH)
+    env.place_devices(); env.reset(); x,y,yaw=env.ch.get_position(); h=deque([obs(env,x,y,yaw,0)]*SEQUENCE_LENGTH,maxlen=SEQUENCE_LENGTH)
     with open(OUT/"final_evaluation_steps.csv","w",newline="") as f:
         fields=["step","x_before","y_before","target_x","target_y","x_after","y_after","battery_before","battery_after","battery_delta","reward","action_dx_norm","action_dy_norm"]
         w=csv.DictWriter(f,fieldnames=fields); w.writeheader()

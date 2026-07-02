@@ -81,7 +81,18 @@ class sim_env:
         self.topo_file_path = script_dir / 'topo_data.tif'
         self.obfuscation_array = self.init_interference()
 
+    def reset(self):
+        self.ch.reset()
 
+        theta = np.random.uniform(0.0, 2.0 * np.pi)
+        r = self.ch.r_max * np.sqrt(np.random.rand())
+        new_x = self.ch.origin[0] + r * np.cos(theta)
+        new_y = self.ch.origin[1] + r * np.sin(theta)
+        new_x = np.clip(new_x, 0, self.dim - 1)
+        new_y = np.clip(new_y, 0, self.dim - 1)
+        self.ch.update_telemetry(new_x, new_y, np.random.uniform(-np.pi, np.pi))
+
+        self.reset_foliage()
 
     def step_simulation(self, current_step: int, target_x: float, target_y: float):
         """
@@ -177,6 +188,10 @@ class sim_env:
         # 2. Foliage: Clustered distribution
         # Create a base distribution of potential tree locations
         # Weights: [Empty, 5m, 10m, 15m, 20m]
+        self.reset_foliage()
+        return True
+
+    def reset_foliage(self):
         choices = [0, 5, 10, 15, 20]
         probs = [0.4, 0.3, 0.15, 0.1, 0.05]
 
