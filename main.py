@@ -79,7 +79,8 @@ def update(model,opt,rollouts,device, ep):
             adv.insert(0,gae); returns.insert(0,ret)
         states+=r["states"]; next_states+=r["next_states"]; actions+=r["actions"]; oldlp+=r["logps"]
     adv = torch.tensor(adv,device=device,dtype=torch.float32); adv=(adv-adv.mean())/(adv.std(unbiased=False)+1e-8)
-    returns=torch.tensor(returns,device=device,dtype=torch.float32); actions=torch.tensor(np.asarray(actions),dtype=torch.float32,device=device)
+    returns=torch.tensor(returns,device=device,dtype=torch.float32); returns = (returns - returns.mean()) / (returns.std() + 1e-8)
+    actions=torch.tensor(np.asarray(actions),dtype=torch.float32,device=device)
     oldlp=torch.tensor(oldlp,device=device); states=torch.tensor(np.asarray(states),dtype=torch.float32,device=device)
     next_states = torch.tensor(np.asarray(next_states), dtype=torch.float32, device=device)
     if TRANSFORMER_VARIANT == "lyapunov":
@@ -133,11 +134,11 @@ def update(model,opt,rollouts,device, ep):
                 + barrier_weight * barrier_loss)
         print(
             f"Policy {policy_loss:.4f} | "
-            f"Value {value_loss:.4f} | "
+            f"Value {value_loss:.4f} | " # 925016.2500
             f"Lyap {lyapunov_penalty:.4f} | "
             f"Dynamics {dynamics_loss:.4f} | "
             f"Barrier {barrier_loss:.4f} | "
-            f"KL {approx_kl:.5f}"
+            f"KL {approx_kl:.5f} | "
             f"CF {clip_fraction:.4f}"
         )
     else:
