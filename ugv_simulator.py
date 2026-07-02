@@ -8,6 +8,7 @@ class UGVSimulator:
     """
     def __init__(self, x=0.0, y=0.0, yaw=3.14159/4, battery_level=75, r_move=800.0):
 
+        self.r_max = r_move
         self.origin = [x, y, yaw]
         self.x = x
         self.y = y
