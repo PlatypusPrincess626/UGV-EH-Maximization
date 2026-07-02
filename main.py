@@ -59,13 +59,13 @@ def obs(env, x, y, yaw, step):
 def seq_tensor(history, device):
     return torch.tensor(np.asarray(history),dtype=torch.float32,device=device).unsqueeze(0)
 
-def reward_fn(before, after, telemetry, action):
+def reward_fn(before, after, telemetry, env):
     # Dense, scaled reward: energy gain, movement cost, survival, and boundary discouragement.
     delta=after-before
     px,py,_=telemetry["previous_position"]; nx,ny,_=telemetry["new_position"]
     distance=math.hypot(nx-px,ny-py)
-    boundary=min(nx,ny,800-nx,800-ny)/800
-    return 25.0*delta - .015*distance + .20*(after/100) + .10*boundary
+    boundary=min(nx,ny,env.dim-nx,env.dim-ny)/env.dim
+    return 2.0*delta - .015*distance + .20*(after/100) + .10*boundary
 
 def update(model,opt,rollouts,device, ep):
     # GAE advantages are normalized once across the complete rollout batch, not per episode.
@@ -217,7 +217,7 @@ def run():
             dx,dy=a[0].cpu().numpy()*MAX_MOVE_PER_STEP
             tx=float(np.clip(x+dx,0,env.dim-1)); ty=float(np.clip(y+dy,0,env.dim-1))
             before=env.ch.get_battery(); tel,nxt=env.step_simulation(step,tx,ty); after=env.ch.get_battery()
-            rew=reward_fn(before,after,tel,a[0])-ACTION_SMOOTHNESS*smoothness;
+            rew=reward_fn(before,after,tel,env)-ACTION_SMOOTHNESS*smoothness;
             total+=rew; previous_action=current_action
             r["states"].append(np.asarray(h)); r["actions"].append(a[0].cpu().numpy())
             r["logps"].append(lp.item()); r["values"].append(v.item()); r["rewards"].append(rew)
@@ -262,7 +262,7 @@ def run():
                     a = model(seq_tensor(h,device))
                     lp, v = torch.tensor(0.0), torch.tensor(0.0)  # Dummy values
             dx,dy=a[0].cpu().numpy()*MAX_MOVE_PER_STEP; tx=float(np.clip(x+dx,0,env.dim-1)); ty=float(np.clip(y+dy,0,env.dim-1))
-            b=env.ch.get_battery(); tel,_=env.step_simulation(step,tx,ty); aft=env.ch.get_battery(); nx,ny,nyaw=env.ch.get_position(); rew=reward_fn(b,aft,tel,a[0])
+            b=env.ch.get_battery(); tel,_=env.step_simulation(step,tx,ty); aft=env.ch.get_battery(); nx,ny,nyaw=env.ch.get_position(); rew=reward_fn(b,aft,tel,env)
             w.writerow(dict(step=step,x_before=x,y_before=y,target_x=tx,target_y=ty,x_after=nx,y_after=ny,battery_before=b,battery_after=aft,battery_delta=aft-b,reward=rew,action_dx_norm=a[0,0].item(),action_dy_norm=a[0,1].item()))
             x,y,yaw=nx,ny,nyaw; h.append(obs(env,x,y,yaw,min(step+1,MAX_STEPS_PER_EPISODE-1)))
             if aft<=0: break
