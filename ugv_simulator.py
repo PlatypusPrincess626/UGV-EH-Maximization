@@ -483,7 +483,7 @@ class UGVSimulator:
                    sol_area, tilt, azimuth):
 
         spectra, solpos = env.get_spectrum(
-            self.x, self.y, tilt, azimuth, step
+            round(self.x), round(self.y), tilt, azimuth, step
         )
 
         sun_azimuth = solpos["azimuth"].iloc[0]
