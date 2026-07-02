@@ -58,7 +58,7 @@ class UGVSimulator:
         self.max_charge_current = 8.0  # Amps
 
         # Peak discharge current
-        self.max_discharge_current = 25.0
+        self.max_discharge_current = 10.0
 
         # --------------------------------------------------
         # Solar Charge Controller
@@ -85,7 +85,7 @@ class UGVSimulator:
         self.gravity = 9.81
 
         # Forest terrain
-        self.rolling_coeff = 0.09  # forest floor
+        self.rolling_coeff = 0.04  # forest floor
         self.turn_drag_coeff = 18.0
 
         # Drivetrain

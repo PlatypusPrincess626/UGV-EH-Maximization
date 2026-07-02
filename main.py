@@ -154,8 +154,6 @@ def update(model,opt,rollouts,device, ep):
                 + VALUE_COEF * F.mse_loss(values, returns)
                 - ENTROPY_COEF * entropy.mean())
     opt.zero_grad(); loss.backward(); torch.nn.utils.clip_grad_norm_(model.parameters(),1.0); opt.step()
-    print(f"Returns: mean={returns.mean():.2f}, max={returns.max():.2f}, min={returns.min():.2f}")
-    print(f"Values : mean={values.mean():.2f}, max={values.max():.2f}, min={values.min():.2f}")
     return float(loss.item())
 
 def run():
@@ -229,9 +227,6 @@ def run():
         # 3. Training Update Logic
         if POLICY_TYPE == "transformer":
             if ep % UPDATE_EVERY_EPISODES == 0:
-                print(f"Reward mean: {np.mean(r['rewards']):.3f}")
-                print(f"Reward max : {np.max(r['rewards']):.3f}")
-                print(f"Reward min : {np.min(r['rewards']):.3f}")
                 loss = update(model, opt, rollouts, device, ep)
                 rollouts = []
         else:
