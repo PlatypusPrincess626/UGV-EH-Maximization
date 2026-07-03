@@ -635,11 +635,7 @@ class UGVSimulator:
                 energy_Wh * 1000.0 / terminal_voltage
         )
 
-    def step(self,
-             env,
-             target_x,
-             target_y,
-             sim_step):
+    def step(self, env, sim_step, target_x, target_y):
 
         self.energy_used_mAh = 0.0
         self.energy_gained_mAh = 0.0
