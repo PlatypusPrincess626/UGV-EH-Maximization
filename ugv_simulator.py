@@ -553,13 +553,13 @@ class UGVSimulator:
 
         curr_x = int(max(0, min(self.x, env.dim - 1)))
         curr_y = int(max(0, min(self.y, env.dim - 1)))
-        curr_step = int(round(step))
+        safe_step = min(int(math.floor(step)), len(env.times)-1)
 
         panel_power = self.find_power(
             env,
             curr_x,
             curr_y,
-            curr_step,
+            safe_step,
             self.solar_area,
             self.tilt,
             self.azimuth
