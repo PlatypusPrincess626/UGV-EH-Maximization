@@ -579,7 +579,7 @@ class UGVSimulator:
         self.energy_gained_mAh += (
                 charge_current *
                 self.dt /
-                3600.0 *
+                60.0 *
                 1000.0
         )
 
@@ -648,9 +648,9 @@ class UGVSimulator:
 
             self.consume_idle_energy()
 
-            self.harvest_energy(env, sim_step + second / 60.0)
+        self.harvest_energy(env, sim_step)
 
-            self.update_battery_state()
+        self.update_battery_state()
 
         return (
             self.get_position(),

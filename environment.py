@@ -337,8 +337,8 @@ class sim_env:
                     h_min = d * tan_elevation
 
                     # Nothing in the environment exceeds this
-                    # if h_min > 10.0:
-                    #     break
+                    if h_min > 50.0:
+                        break
 
                     ray_x = int(round(global_x + d * step_x))
                     ray_y = int(round(global_y + d * step_y))
