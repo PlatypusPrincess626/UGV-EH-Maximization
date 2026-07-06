@@ -210,6 +210,7 @@ def run():
                 with torch.no_grad():
                     a = model(s)
                     lp, v = torch.tensor(0.0), torch.tensor(0.0)  # Dummy values
+                    current_action = a[0].detach().cpu().numpy()
 
             # normalized action -> local, physically scaled target; no global-coordinate clipping mismatch
             dx,dy=a[0].cpu().numpy()*MAX_MOVE_PER_STEP
