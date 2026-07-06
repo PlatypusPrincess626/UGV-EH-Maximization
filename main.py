@@ -204,6 +204,7 @@ def run():
                         a, lp, v = model.act(s)
                         lyapunov = None
                         barrier = None
+                        current_action = a[0].detach().cpu().numpy()
             else:
                 # Set the current particle for the forward pass
                 model.current_particle = (ep - 1) % model.swarm_size
