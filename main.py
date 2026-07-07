@@ -20,7 +20,7 @@ import datetime
 # NOTE: This is a scaffold showing where to integrate PSO while
 # preserving transformer logic. Replace model initialization and
 # action selection as described.
-POLICY_TYPE = "transformer"
+POLICY_TYPE = "pso"
 if POLICY_TYPE == "transformer":
     # Set TRANSFORMER_VARIANT = "normal" or "chaotic" or "lyapunov"
     TRANSFORMER_VARIANT = "chaotic"
