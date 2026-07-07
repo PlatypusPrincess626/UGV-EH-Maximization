@@ -23,7 +23,7 @@ import datetime
 POLICY_TYPE = "transformer"
 if POLICY_TYPE == "transformer":
     # Set TRANSFORMER_VARIANT = "normal" or "chaotic" or "lyapunov"
-    TRANSFORMER_VARIANT = "normal"
+    TRANSFORMER_VARIANT = "chaotic"
 else:
     TRANSFORMER_VARIANT = "normal"
 # ============================================================
