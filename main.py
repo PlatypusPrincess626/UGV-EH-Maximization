@@ -14,13 +14,10 @@ from lyupnov_transformer import LyapunovTransformerActorCritic
 from chaotic_lyupnov_transformer import ChebyshevLyapunovTransformerActorCritic
 from pso_policy import PSOPolicy
 import datetime
+import time
 
 # ============================================================
-# PSO SUPPORT ADDED
 # Set POLICY_TYPE = "transformer" or "pso"
-# NOTE: This is a scaffold showing where to integrate PSO while
-# preserving transformer logic. Replace model initialization and
-# action selection as described.
 POLICY_TYPE = "pso"
 if POLICY_TYPE == "transformer":
     # Set TRANSFORMER_VARIANT = "normal" or "chaotic" or "lyapunov"
@@ -189,6 +186,8 @@ def run():
         model = PSOPolicy(input_dim=input_dim).to(device)
         opt = None  # PSO does not use torch.optim
 
+    total_inference_time = 0.0
+    total_inference_steps = 0
     epfile=open(OUT/"episode_metrics.csv","w",newline=""); epw=csv.DictWriter(epfile,fieldnames=["episode","steps","final_battery","total_reward","loss"]); epw.writeheader()
     rollouts=[]
     for ep in range(1,TOTAL_EPISODES+1):
@@ -199,6 +198,7 @@ def run():
         for step in range(MAX_STEPS_PER_EPISODE):
             s=seq_tensor(h,device)
 
+            start = time.perf_counter()
             # 2. Action Selection Logic
             if POLICY_TYPE == "transformer":
                 with torch.no_grad():
@@ -223,6 +223,13 @@ def run():
                     lp, v = torch.tensor(0.0), torch.tensor(0.0)  # Dummy values
                     current_action = a[0].detach().cpu().numpy()
 
+            if device.type == "cuda":
+                torch.cuda.synchronize()
+
+            elapsed = time.perf_counter() - start
+            total_inference_time += elapsed
+            total_inference_steps += 1
+
             # normalized action -> local, physically scaled target; no global-coordinate clipping mismatch
             dx,dy=a[0].cpu().numpy()*MAX_MOVE_PER_STEP
             tx=float(np.clip(x+dx,0,env.dim-1)); ty=float(np.clip(y+dy,0,env.dim-1))
@@ -236,6 +243,7 @@ def run():
             if after<=0: break
         rollouts.append(r); loss=""
 
+        start = time.perf_counter()
         # 3. Training Update Logic
         if POLICY_TYPE == "transformer":
             if ep % UPDATE_EVERY_EPISODES == 0:
@@ -248,6 +256,10 @@ def run():
                 model.update_swarm()
             loss = "N/A (PSO)"
 
+        elapsed = time.perf_counter() - start
+        total_inference_time += elapsed
+        total_inference_steps += 1
+
         steps_taken = len(r["rewards"]); log_status(ep, TOTAL_EPISODES, steps_taken, total, after, loss)
         epw.writerow(dict(episode=ep,steps=len(r["rewards"]),final_battery=after,total_reward=total,loss=loss)); epfile.flush()
     # final deterministic evaluation, step-level telemetry CSV
@@ -255,7 +267,11 @@ def run():
     with open(OUT/"final_evaluation_steps.csv","w",newline="") as f:
         fields=["step","x_before","y_before","target_x","target_y","x_after","y_after","battery_before","battery_after","battery_delta","reward","action_dx_norm","action_dy_norm"]
         w=csv.DictWriter(f,fieldnames=fields); w.writeheader()
+
+        final_inference_time = 0.0
+        final_inference_steps = 0
         for step in range(MAX_STEPS_PER_EPISODE):
+            start = time.perf_counter()
             if POLICY_TYPE == "transformer":
                 with torch.no_grad():
                     if TRANSFORMER_VARIANT == "lyapunov":
@@ -268,6 +284,13 @@ def run():
                 with torch.no_grad():
                     a = model(seq_tensor(h,device))
                     lp, v = torch.tensor(0.0), torch.tensor(0.0)  # Dummy values
+
+            elapsed = time.perf_counter() - start
+            total_inference_time += elapsed
+            total_inference_steps += 1
+            final_inference_time += elapsed
+            final_inference_steps += 1
+
             dx,dy=a[0].cpu().numpy()*MAX_MOVE_PER_STEP; tx=float(np.clip(x+dx,0,env.dim-1)); ty=float(np.clip(y+dy,0,env.dim-1))
             b=env.ch.get_battery(); tel,_=env.step_simulation(step,tx,ty); aft=env.ch.get_battery(); nx,ny,nyaw=env.ch.get_position(); rew=reward_fn(b,aft,tel,env)
             w.writerow(dict(step=step,x_before=x,y_before=y,target_x=tx,target_y=ty,x_after=nx,y_after=ny,battery_before=b,battery_after=aft,battery_delta=aft-b,reward=rew,action_dx_norm=a[0,0].item(),action_dy_norm=a[0,1].item()))
@@ -286,4 +309,12 @@ def run():
     print("=" * 30)
     print(f"Total Steps Performed: {total_steps}")
     print(f"Final Battery Level: {df_eval['battery_after'].iloc[-1]:.2f}%")
+    avg_inference = total_inference_time / total_inference_steps
+    avg_final_inference = final_inference_time / final_inference_steps
+    print(f"Total inference calls : {total_inference_steps}")
+    print(f"Total inference time  : {total_inference_time:.6f} s")
+    print(f"Average inference     : {avg_inference * 1000:.3f} ms/step")
+    print(f"Final inference calls : {final_inference_steps}")
+    print(f"Final inference time  : {final_inference_time:.6f} s")
+    print(f"Final Avg inference   : {avg_final_inference * 1000:.3f} ms/step")
 if __name__=="__main__": run()
