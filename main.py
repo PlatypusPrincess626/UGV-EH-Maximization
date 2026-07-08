@@ -11,6 +11,7 @@ from environment import sim_env
 from transformer import TransformerActorCritic
 from chebyshev_transformer import ChebyshevTransformer
 from lyupnov_transformer import LyapunovTransformerActorCritic
+from chaotic_lyupnov_transformer import ChebyshevLyapunovTransformerActorCritic
 from pso_policy import PSOPolicy
 import datetime
 
@@ -24,6 +25,9 @@ POLICY_TYPE = "pso"
 if POLICY_TYPE == "transformer":
     # Set TRANSFORMER_VARIANT = "normal" or "chaotic" or "lyapunov"
     TRANSFORMER_VARIANT = "chaotic"
+    # Set TRANSFORMER_INIT = "normal" or "chaotic"
+    if TRANSFORMER_VARIANT == "lyapunov":
+        TRANSFORMER_INIT = "chaotic"
 else:
     TRANSFORMER_VARIANT = "normal"
 # ============================================================
@@ -163,10 +167,16 @@ def run():
     # 1. Initialization Logic
     if POLICY_TYPE == "transformer":
         if TRANSFORMER_VARIANT == "lyapunov":
-            model = LyapunovTransformerActorCritic(
-                view_dist=VIEW_DISTANCE,
-                sequence_length=SEQUENCE_LENGTH,
-            ).to(device)
+            if TRANSFORMER_INIT == "chaotic":
+                model = ChebyshevLyapunovTransformerActorCritic(
+                    view_dist=VIEW_DISTANCE,
+                    sequence_length=SEQUENCE_LENGTH,
+                ).to(device)
+            else:
+                model = LyapunovTransformerActorCritic(
+                    view_dist=VIEW_DISTANCE,
+                    sequence_length=SEQUENCE_LENGTH,
+                ).to(device)
         elif TRANSFORMER_VARIANT == "chaotic":
             model = ChebyshevTransformer(VIEW_DISTANCE).to(device)
         else:
