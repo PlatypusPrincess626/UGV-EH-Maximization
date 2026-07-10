@@ -18,7 +18,7 @@ import time
 
 # ============================================================
 # Set POLICY_TYPE = "transformer" or "pso"
-POLICY_TYPE = "pso"
+POLICY_TYPE = "transformer"
 if POLICY_TYPE == "transformer":
     # Set TRANSFORMER_VARIANT = "normal" or "chaotic" or "lyapunov"
     TRANSFORMER_VARIANT = "lyapunov"
