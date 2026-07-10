@@ -494,6 +494,47 @@ class ChebyshevLyapunovTransformerActorCritic(nn.Module):
     ############################################################
     # Action Selection
     ############################################################
+    def fast_act(self,
+                 sequence
+                 ):
+        sequence = sequence.float()
+
+        x = self.input_projection(sequence)
+
+        # Add learnable positional encoding
+        x = x + self.position_embedding[:, :x.size(1)]
+
+        # Transformer encoding
+        x = self.encoder(x)
+
+        # Last token summarizes recent history
+        latent = x[:, -1]
+
+        mean = torch.tanh(
+            self.actor(latent)
+        )
+
+        dist = Normal(
+            mean,
+            self.log_std.exp().expand_as(mean),
+        )
+
+        raw_action = dist.mean
+
+        action = raw_action.clamp(
+            -0.999,
+            0.999,
+        )
+
+        return (
+            action,
+            None,
+            None,
+            None,
+            None,
+            None,
+            None,
+        )
 
     def act(
         self,

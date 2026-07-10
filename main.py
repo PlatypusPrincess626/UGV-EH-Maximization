@@ -275,7 +275,7 @@ def run():
             if POLICY_TYPE == "transformer":
                 with torch.no_grad():
                     if TRANSFORMER_VARIANT == "lyapunov":
-                        (a, lp, v, lyapunov, barrier, latent, predicted_next) = model.act(seq_tensor(h,device), True)
+                        (a, lp, v, lyapunov, barrier, latent, predicted_next) = model.fast_act(seq_tensor(h,device))
                     else:
                         a, lp, v = model.act(seq_tensor(h,device),True)
             else:
