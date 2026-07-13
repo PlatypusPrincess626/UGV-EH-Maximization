@@ -87,11 +87,11 @@ class ChebyshevLyapunovTransformerActorCritic(nn.Module):
         scalar_dim=7,
         action_dim=2,
         sequence_length=12,
-        d_model=64,
-        energy_dim=32,
+        d_model=64,  #128
+        energy_dim=32,  #64
         nhead=4,
         num_layers=2,
-        dim_feedforward=64,
+        dim_feedforward=64,  #256
         dropout=0.1,
     ):
         super().__init__()
