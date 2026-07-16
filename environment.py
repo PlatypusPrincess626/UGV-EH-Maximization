@@ -193,14 +193,14 @@ class sim_env:
 
     def reset_foliage(self):
         choices = [0, 5, 10, 15, 20]
-        probs = [0.4, 0.3, 0.15, 0.1, 0.05]
+        probs = [0.65, 0.20, 0.10, 0.04, 0.01]
 
         # Create raw random height map
         raw_foliage = np.random.choice(choices, size=(self.dim, self.dim), p=probs)
 
         # Apply Gaussian filter to create "patches" (Spatial Correlation)
         # Sigma controls the size of the tree clumps
-        smoothed = gaussian_filter(raw_foliage.astype(float), sigma=3)
+        smoothed = gaussian_filter(raw_foliage.astype(float), sigma=2)
 
         # Re-quantize to snap back to our height classes
         # This keeps the "patches" but ensures the ray-caster gets expected height values
@@ -305,7 +305,7 @@ class sim_env:
         center_x = int(x)
         center_y = int(y)
 
-        MAX_FOLIAGE_ATTENUATION = 0.25
+        MAX_FOLIAGE_ATTENUATION = 0.10
 
         # --------------------------------------------------
         # Iterate through visible patch
@@ -371,7 +371,7 @@ class sim_env:
                         continue
 
                     canopy_start = foliage_height / 3.0
-                    canopy_radius = foliage_height / 2.0
+                    canopy_radius = foliage_height / 4.0
 
                     # Ray passes below foliage
                     if h_min < canopy_start:
@@ -416,9 +416,8 @@ class sim_env:
                             -2.0 * r_norm * r_norm
                         )
 
-                        attenuation = (
-                                density *
-                                MAX_FOLIAGE_ATTENUATION
+                        attenuation = density * MAX_FOLIAGE_ATTENUATION * (
+                                (h_min - canopy_start) / (foliage_height - canopy_start)
                         )
 
                         if attenuation > local_attenuation:

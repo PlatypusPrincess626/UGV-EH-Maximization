@@ -160,305 +160,107 @@ class UGVSimulator:
 
     def update_soc(self):
 
-        self.soc = max(
-            0.0,
-            min(
-                1.0,
-                self.battery_mAh /
-                self.max_capacity_mAh
-            )
-        )
+        self.soc = max(0.0, min(1.0, self.battery_mAh / self.max_capacity_mAh))
 
     def compute_open_circuit_voltage(self):
-
         s = self.soc
+        voltage = (12.0 + 3.0 * s + 1.2 * s ** 2 + 0.6 * s ** 3)
 
-        voltage = (
-                12.0
-                + 3.0 * s
-                + 1.2 * s ** 2
-                + 0.6 * s ** 3
-        )
-
-        return min(
-            self.full_voltage,
-            max(
-                self.cutoff_voltage,
-                voltage
-            )
-        )
+        return min(self.full_voltage, max(self.cutoff_voltage, voltage))
 
     def compute_internal_resistance(self):
-
         s = self.soc
+        return self.internal_resistance * (1.0 + 1.8 * (1 - s) ** 2)
 
-        return (
-                self.internal_resistance *
-                (
-                        1.0 +
-                        1.8 * (1 - s) ** 2
-                )
-        )
-
-    def compute_terminal_voltage(
-            self,
-            current_A=0.0
-    ):
-
+    def compute_terminal_voltage(self, current_A=0.0):
         ocv = self.compute_open_circuit_voltage()
+        resistance = self.compute_internal_resistance()
+        terminal = ocv - current_A * resistance
 
-        resistance = (
-            self.compute_internal_resistance()
-        )
-
-        terminal = (
-                ocv -
-                current_A * resistance
-        )
-
-        return max(
-            self.cutoff_voltage,
-            terminal
-        )
+        return max(self.cutoff_voltage, terminal)
 
     def compute_charge_acceptance(self):
-
         s = self.soc
 
         if s < 0.80:
             return 1.00
-
         elif s < 0.90:
             return 0.90
-
         elif s < 0.95:
             return 0.65
-
         elif s < 0.98:
             return 0.35
-
         else:
             return 0.15
 
     def move(self, target_x, target_y, duration):
-
         elapsed = 0.0
-
         while elapsed < duration:
             self.update_vehicle_dynamics(target_x, target_y)
-
             elapsed += self.dt
 
         return self.x, self.y, self.yaw
 
-    def update_vehicle_dynamics(
-            self,
-            target_x,
-            target_y
-    ):
-
+    def update_vehicle_dynamics(self, target_x, target_y):
         dx = target_x - self.x
         dy = target_y - self.y
 
         distance = math.hypot(dx, dy)
-
         if distance < 0.05:
-
             self.target_velocity = 0.0
-
         else:
-
             self.target_velocity = self.max_velocity
 
-        desired_heading = math.atan2(
-            dy,
-            dx
-        )
-
+        desired_heading = math.atan2(dy, dx)
         heading_error = desired_heading - self.yaw
-
-        heading_error = math.atan2(
-            math.sin(heading_error),
-            math.cos(heading_error)
-        )
-
-        desired_turn_rate = max(
-            -self.max_turn_rate,
-            min(
-                self.max_turn_rate,
-                heading_error
-            )
-        )
-
-        delta_turn = (
-                desired_turn_rate -
-                self.angular_velocity
-        )
-
-        max_turn_change = (
-                self.max_turn_accel *
-                self.dt
-        )
-
-        delta_turn = max(
-            -max_turn_change,
-            min(
-                max_turn_change,
-                delta_turn
-            )
-        )
+        heading_error = math.atan2(math.sin(heading_error), math.cos(heading_error))
+        desired_turn_rate = max(-self.max_turn_rate, min(self.max_turn_rate, heading_error))
+        delta_turn = (desired_turn_rate - self.angular_velocity)
+        max_turn_change = self.max_turn_accel * self.dt
+        delta_turn = max(-max_turn_change, min(max_turn_change, delta_turn))
 
         self.angular_velocity += delta_turn
+        self.yaw += (self.angular_velocity * self.dt)
 
-        self.yaw += (
-                self.angular_velocity *
-                self.dt
-        )
-
-        speed_error = (
-                self.target_velocity -
-                self.velocity
-        )
+        speed_error = self.target_velocity - self.velocity
 
         if speed_error >= 0:
-
-            accel = min(
-                self.max_acceleration,
-                speed_error
-            )
+            accel = min(self.max_acceleration, speed_error)
 
         else:
+            accel = max(-self.max_deceleration, speed_error)
 
-            accel = max(
-                -self.max_deceleration,
-                speed_error
-            )
-
-        self.velocity += (
-                accel *
-                self.dt
-        )
-
-        self.velocity = max(
-            0.0,
-            min(
-                self.velocity,
-                self.max_velocity
-            )
-        )
-
-        self.x += (
-                self.velocity *
-                math.cos(self.yaw) *
-                self.dt
-        )
-
-        self.y += (
-                self.velocity *
-                math.sin(self.yaw) *
-                self.dt
-        )
+        self.velocity += accel * self.dt
+        self.velocity = max(0.0, min(self.velocity, self.max_velocity))
+        self.x += self.velocity * math.cos(self.yaw) * self.dt
+        self.y += self.velocity * math.sin(self.yaw) * self.dt
 
     def compute_drive_forces(self):
+        rolling_force = self.rolling_coeff * self.mass * self.gravity
+        acceleration = self.target_velocity - self.velocity
+        acceleration_force = self.mass * acceleration
+        turning_force = self.turn_drag_coeff * abs(self.angular_velocity) * self.velocity
+        total_force = rolling_force + max(0.0, acceleration_force) + turning_force
 
-        #
-        # Rolling resistance
-        #
-
-        rolling_force = (
-                self.rolling_coeff *
-                self.mass *
-                self.gravity
-        )
-
-        #
-        # Acceleration force
-        #
-
-        acceleration = (
-                self.target_velocity -
-                self.velocity
-        )
-
-        acceleration_force = (
-                self.mass *
-                acceleration
-        )
-
-        #
-        # Turning resistance
-        #
-
-        turning_force = (
-                self.turn_drag_coeff *
-                abs(self.angular_velocity) *
-                self.velocity
-        )
-
-        total_force = (
-                rolling_force +
-                max(0.0, acceleration_force) +
-                turning_force
-        )
-
-        return {
-            "rolling": rolling_force,
-            "acceleration": acceleration_force,
-            "turning": turning_force,
-            "total": total_force
-        }
+        return {"rolling": rolling_force,
+                "acceleration": acceleration_force,
+                "turning": turning_force,
+                "total": total_force}
 
     def compute_motor_power(self):
-
         forces = self.compute_drive_forces()
+        mechanical_power = forces["total"] * self.velocity
+        battery_power = mechanical_power / self.drivetrain_efficiency
 
-        mechanical_power = (
-                forces["total"] *
-                self.velocity
-        )
-
-        battery_power = (
-                mechanical_power /
-                self.drivetrain_efficiency
-        )
-
-        return max(
-            0.0,
-            battery_power
-        )
+        return max(0.0, battery_power)
 
     def update_battery_state(self):
-
-        #
-        # Charging
-        #
-
-        charge = (
-                self.energy_gained_mAh *
-                self.compute_charge_acceptance() *
-                self.charge_efficiency
-        )
-
-        #
-        # Discharging
-        #
-
-        discharge = (
-                self.energy_used_mAh /
-                self.discharge_efficiency
-        )
+        charge = self.energy_gained_mAh * self.compute_charge_acceptance() * self.charge_efficiency
+        discharge = self.energy_used_mAh / self.discharge_efficiency
 
         self.battery_mAh += charge
         self.battery_mAh -= discharge
-
-        self.battery_mAh = max(
-            0.0,
-            min(
-                self.max_capacity_mAh,
-                self.battery_mAh
-            )
-        )
-
+        self.battery_mAh = max(0.0, min(self.max_capacity_mAh, self.battery_mAh))
         self.update_soc()
 
     def update_telemetry(self, new_x, new_y, new_yaw):
@@ -479,36 +281,18 @@ class UGVSimulator:
                 f"Battery: {self.get_battery():.1f}%\n"
                 f"Status: {self.status.capitalize()}")
 
-    def find_power(self, env, x, y, step,
-                   sol_area, tilt, azimuth):
-
-        spectra, solpos = env.get_spectrum(
-            x, y, tilt, azimuth, step
-        )
+    def find_power(self, env, x, y, step, sol_area, tilt, azimuth):
+        spectra, solpos = env.get_spectrum(x, y, tilt, azimuth, step)
 
         sun_azimuth = solpos["azimuth"].iloc[0]
         sun_zenith = solpos["apparent_zenith"].iloc[0]
-
-        obfuscation_patch = env.get_obfuscation(
-            x, y, step, sun_azimuth, sun_zenith
-        )
-
-        interference = obfuscation_patch[
-            int(env.view_dist),
-            int(env.view_dist)
-        ]
-
-        wavelengths = np.atleast_1d(
-            spectra["wavelength"]
-        ).flatten()
-
-        poa_global = np.atleast_1d(
-            spectra["poa_global"]
-        ).flatten()
+        obfuscation_patch = env.get_obfuscation(x, y, step, sun_azimuth, sun_zenith)
+        interference = obfuscation_patch[int(env.view_dist), int(env.view_dist)]
+        wavelengths = np.atleast_1d(spectra["wavelength"]).flatten()
+        poa_global = np.atleast_1d(spectra["poa_global"]).flatten()
 
         if len(poa_global) != len(wavelengths):
             poa_global = poa_global[:len(wavelengths)]
-
         raw_response = self.spectral_response.flatten()
 
         if len(raw_response) == len(wavelengths):
@@ -525,27 +309,14 @@ class UGVSimulator:
             )
 
         integrand = poa_global * response_1d
-
-        cell_current = trapezoid(
-            integrand,
-            wavelengths
-        )
+        cell_current = trapezoid(integrand, wavelengths)
 
         if np.isnan(cell_current):
             cell_current = 0.0
 
-        photo_current = (
-                cell_current *
-                sol_area *
-                (1.0 - interference)
-        )
-
+        photo_current = cell_current * sol_area * (1.0 - interference)
         mpp_voltage = 0.82 * self.full_voltage
-
-        panel_power = (
-                photo_current *
-                mpp_voltage
-        )
+        panel_power = photo_current * mpp_voltage
 
         return max(0.0, panel_power)
 
