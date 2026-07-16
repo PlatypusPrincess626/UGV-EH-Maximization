@@ -235,7 +235,7 @@ class sim_env:
             if pt_dist > pt_max_dist:
                 pt_max_dist = pt_dist
 
-        self.r_move = max_dist_ambc - pt_max_dist
+        self.r_move = 500
         self.sensor_pts = sensor_pts
         self.ch_pt = cluster.astype(int).tolist()  # FIXED: Removed undefined 'centroids' reference
 

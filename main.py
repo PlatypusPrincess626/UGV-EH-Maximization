@@ -24,7 +24,7 @@ if POLICY_TYPE == "transformer":
     TRANSFORMER_VARIANT = "lyapunov"
     # Set TRANSFORMER_INIT = "normal" or "chaotic"
     if TRANSFORMER_VARIANT == "lyapunov":
-        TRANSFORMER_INIT = "normal"
+        TRANSFORMER_INIT = "chaotic"
 else:
     TRANSFORMER_VARIANT = "normal"
 # ============================================================
