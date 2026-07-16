@@ -640,20 +640,18 @@ class UGVSimulator:
         self.energy_used_mAh = 0.0
         self.energy_gained_mAh = 0.0
 
+        dx = target_x - self.origin[0]
+        dy = target_y - self.origin[1]
+        dist = math.hypot(dx, dy)
+
+        if dist > self.r_max:
+            scale = self.r_max / dist
+            target_x = self.origin[0] + dx * scale
+            target_y = self.origin[1] + dy * scale
+
         for second in range(60):
 
             self.update_vehicle_dynamics(target_x, target_y)
-
-            dx = self.x-self.origin[0]
-            dy = self.y-self.origin[1]
-            dist = math.hypot(dx, dy)
-
-            if dist > self.r_max:
-                scale = self.r_max/dist
-                self.x = self.origin[0] + dx * scale
-                self.y = self.origin[1] + dy * scale
-
-                self.velocity = 0
 
             self.consume_motion_energy()
 
