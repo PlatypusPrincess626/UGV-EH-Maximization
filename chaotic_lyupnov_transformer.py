@@ -146,6 +146,12 @@ class ChebyshevLyapunovTransformerActorCritic(nn.Module):
         )
 
         ############################################################
+        # Attention Pooling
+        ############################################################
+
+        self.attention_pool = nn.Linear(d_model, 1)
+
+        ############################################################
         # Energy Encoder
         #
         # Compresses the transformer latent into an energy manifold.
@@ -177,13 +183,19 @@ class ChebyshevLyapunovTransformerActorCritic(nn.Module):
         ############################################################
         # Critic Head
         ############################################################
-
+        L1 = int(2 * d_model)
+        L3 = int(d_model / 2)
         self.critic = nn.Sequential(
-
-            nn.Linear(d_model, d_model),
+            nn.Linear(d_model, L1),
             nn.GELU(),
 
-            nn.Linear(d_model, 1),
+            nn.Linear(L1, d_model),
+            nn.GELU(),
+
+            nn.Linear(d_model, L3),
+            nn.GELU(),
+
+            nn.Linear(L3, 1),
         )
 
         ############################################################
@@ -302,8 +314,17 @@ class ChebyshevLyapunovTransformerActorCritic(nn.Module):
         # Transformer encoding
         x = self.encoder(x)
 
-        # Last token summarizes recent history
-        latent = x[:, -1]
+        attention_scores = self.attention_pool(x)
+
+        attention_weights = torch.softmax(
+            attention_scores,
+            dim=1
+        )
+
+        latent = torch.sum(
+            attention_weights * x,
+            dim=1
+        )
 
         return latent
 
@@ -388,13 +409,12 @@ class ChebyshevLyapunovTransformerActorCritic(nn.Module):
 
         latent = self.encode(sequence)
 
-        energy = self.energy_representation(latent)
-
+        latent_aux = latent.detach()
+        energy = self.energy_representation(latent_aux)
         V = self.lyapunov(energy).squeeze(-1)
-
-        barrier = self.barrier(latent)
-
-        return latent, energy, V, barrier
+        barrier = self.barrier(latent_aux)
+        next_latent = self.dynamics(latent_aux)
+        return latent, energy, V, barrier, next_latent
 
     ############################################################
     # Forward Pass
@@ -427,7 +447,7 @@ class ChebyshevLyapunovTransformerActorCritic(nn.Module):
             Predicted next latent representation
         """
 
-        latent, energy, V, barrier = self.encode_state(sequence)
+        latent, energy, V, barrier, next_latent = self.encode_state(sequence)
 
         ##########################################
         # Actor
@@ -442,12 +462,6 @@ class ChebyshevLyapunovTransformerActorCritic(nn.Module):
         ##########################################
 
         critic = self.critic(latent).squeeze(-1)
-
-        ##########################################
-        # Dynamics
-        ##########################################
-
-        next_latent = self.predict_next_latent(latent)
 
         return (
             mean,
@@ -497,18 +511,7 @@ class ChebyshevLyapunovTransformerActorCritic(nn.Module):
     def fast_act(self,
                  sequence
                  ):
-        sequence = sequence.float()
-
-        x = self.input_projection(sequence)
-
-        # Add learnable positional encoding
-        x = x + self.position_embedding[:, :x.size(1)]
-
-        # Transformer encoding
-        x = self.encoder(x)
-
-        # Last token summarizes recent history
-        latent = x[:, -1]
+        latent = self.encode(sequence)
 
         mean = torch.tanh(
             self.actor(latent)

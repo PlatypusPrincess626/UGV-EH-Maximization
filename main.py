@@ -30,7 +30,7 @@ else:
 # ============================================================
 
 TOTAL_EPISODES=1000; MAX_STEPS_PER_EPISODE=720; VIEW_DISTANCE=20
-SEQUENCE_LENGTH=12; UPDATE_EVERY_EPISODES=5; GAMMA=.99; GAE_LAMBDA=.95
+SEQUENCE_LENGTH=32; UPDATE_EVERY_EPISODES=5; GAMMA=.99; GAE_LAMBDA=.95
 LR=3e-4; MAX_MOVE_PER_STEP=20.0; ENTROPY_COEF=.01; VALUE_COEF=.5
 
 ###############################################################
@@ -174,11 +174,36 @@ def run():
                     view_dist=VIEW_DISTANCE,
                     sequence_length=SEQUENCE_LENGTH,
                 ).to(device)
+            actor_params = list(model.actor.parameters()) + [
+                model.log_std
+            ]
+
+            critic_params = list(model.critic.parameters())
+
+            transformer_params = (
+                    list(model.input_projection.parameters()) +
+                    list(model.encoder.parameters()) +
+                    list(model.position_embedding)
+            )
+
+            auxiliary_params = (
+                    list(model.energy_encoder.parameters()) +
+                    list(model.lyapunov.parameters()) +
+                    list(model.barrier.parameters()) +
+                    list(model.dynamics.parameters())
+            )
+
+            opt = optim.AdamW([{"params": transformer_params, "lr": 3e-4, "weight_decay":1e-5},
+                               {"params": actor_params,       "lr": 3e-4, "weight_decay":1e-5},
+                               {"params": critic_params,      "lr": 1e-3, "weight_decay":1e-5},
+                               {"params": auxiliary_params,   "lr": 1e-4, "weight_decay":1e-5},],
+                              eps=1e-5,)
         elif TRANSFORMER_VARIANT == "chaotic":
             model = ChebyshevTransformer(VIEW_DISTANCE).to(device)
+            opt = optim.Adam(model.parameters(), lr=LR)
         else:
             model = TransformerActorCritic(VIEW_DISTANCE).to(device)
-        opt = optim.Adam(model.parameters(), lr=LR)
+            opt = optim.Adam(model.parameters(), lr=LR)
     else:
         # Assuming observation dimension is flattened patch size + scalars
         # Calculate based on your obs function (e.g., 20x20 patch + 7 scalars)

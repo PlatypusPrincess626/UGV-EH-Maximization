@@ -321,7 +321,6 @@ class UGVSimulator:
         return max(0.0, panel_power)
 
     def harvest_energy(self, env, step):
-
         curr_x = int(max(0, min(self.x, env.dim - 1)))
         curr_y = int(max(0, min(self.y, env.dim - 1)))
         safe_step = min(int(math.floor(step)), len(env.times)-1)
@@ -336,26 +335,16 @@ class UGVSimulator:
             self.azimuth
         )
 
-        panel_power *= (
-                self.panel_efficiency_factor *
-                self.wiring_efficiency *
-                self.mppt_efficiency
-        )
-
+        panel_power *= self.panel_efficiency_factor * self.wiring_efficiency * self.mppt_efficiency
         terminal_voltage = self.compute_terminal_voltage()
         charge_current = panel_power / max(terminal_voltage, 0.1)
+
         if self.soc >= 0.999:
             charge_current = 0.0
 
-        self.energy_gained_mAh += (
-                charge_current *
-                self.dt /
-                60.0 *
-                1000.0
-        )
+        self.energy_gained_mAh += charge_current * self.dt / 60.0 * 1000.0
 
     def battery_step(self):
-
         self.update_battery_state()
 
     def consume_idle_energy(self):
@@ -370,44 +359,19 @@ class UGVSimulator:
         )
 
     def consume_motion_energy(self):
-
-        #
-        # Instantaneous battery power (W)
-        #
         battery_power = self.compute_motor_power()
-
-        #
-        # Estimate battery current
-        #
         voltage = self.compute_open_circuit_voltage()
 
         current_A = battery_power / max(voltage, 1e-6)
         current_A = min(current_A, self.max_discharge_current)
 
-        #
-        # Include voltage sag
-        #
         terminal_voltage = self.compute_terminal_voltage(current_A)
-
-        #
-        # Actual electrical power drawn
-        #
         battery_power = terminal_voltage * current_A
-
-        #
-        # Energy for THIS timestep
-        #
         energy_Wh = battery_power * self.dt / 3600.0
 
-        #
-        # Convert to mAh
-        #
-        self.energy_used_mAh += (
-                energy_Wh * 1000.0 / terminal_voltage
-        )
+        self.energy_used_mAh += energy_Wh * 1000.0 / terminal_voltage
 
     def step(self, env, sim_step, target_x, target_y):
-
         self.energy_used_mAh = 0.0
         self.energy_gained_mAh = 0.0
 
@@ -421,18 +385,11 @@ class UGVSimulator:
             target_y = self.origin[1] + dy * scale
 
         for second in range(60):
-
             self.update_vehicle_dynamics(target_x, target_y)
-
             self.consume_motion_energy()
-
             self.consume_idle_energy()
 
         self.harvest_energy(env, sim_step)
-
         self.update_battery_state()
 
-        return (
-            self.get_position(),
-            self.get_battery()
-        )
+        return self.get_position(), self.get_battery()
