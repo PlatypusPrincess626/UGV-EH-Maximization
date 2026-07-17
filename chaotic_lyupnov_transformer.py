@@ -410,10 +410,10 @@ class ChebyshevLyapunovTransformerActorCritic(nn.Module):
         latent = self.encode(sequence)
 
         latent_aux = latent.detach()
-        energy = self.energy_representation(latent_aux)
+        energy = self.energy_representation(latent)
         V = self.lyapunov(energy).squeeze(-1)
-        barrier = self.barrier(latent_aux)
-        next_latent = self.dynamics(latent_aux)
+        barrier = self.barrier(latent)
+        next_latent = self.dynamics(latent)
         return latent, energy, V, barrier, next_latent
 
     ############################################################

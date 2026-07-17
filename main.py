@@ -174,16 +174,15 @@ def run():
                     view_dist=VIEW_DISTANCE,
                     sequence_length=SEQUENCE_LENGTH,
                 ).to(device)
-            actor_params = list(model.actor.parameters()) + [
-                model.log_std
-            ]
+            actor_params = (list(model.actor.parameters()) + [model.log_std])
 
             critic_params = list(model.critic.parameters())
 
             transformer_params = (
                     list(model.input_projection.parameters()) +
                     list(model.encoder.parameters()) +
-                    list(model.position_embedding)
+                    list(model.attention_pool.parameters()) +
+                    [model.position_embedding]
             )
 
             auxiliary_params = (
