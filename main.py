@@ -303,7 +303,7 @@ def run():
             r["logps"].append(lp.item()); r["values"].append(v.item()); r["rewards"].append(rew)
             x,y,yaw=env.ch.get_position(); h.append(obs(env,x,y,yaw,min(step+1,MAX_STEPS_PER_EPISODE-1)))
             r["next_states"].append(np.asarray(h))
-            if after<=0: break
+            if aft_batt<=0: break
         rollouts.append(r); loss=""
 
         start = time.perf_counter()
@@ -378,7 +378,7 @@ def run():
                             battery_before=b_batt,battery_after=aft_batt,battery_delta=aft_batt-b_batt,reward=rew,
                             action_dx_norm=a[0,0].item(),action_dy_norm=a[0,1].item()))
             x,y,yaw=nx,ny,nyaw; h.append(obs(env,x,y,yaw,min(step+1,MAX_STEPS_PER_EPISODE-1)))
-            if aft<=0: break
+            if aft_batt<=0: break
     epfile.close()
     # ADD THIS SECTION:
     print("\n" + "=" * 30)
