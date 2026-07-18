@@ -323,13 +323,14 @@ def run():
         total_inference_time += elapsed
         total_inference_steps += 1
 
-        steps_taken = len(r["rewards"]); log_status(ep, TOTAL_EPISODES, steps_taken, total, after, loss)
-        epw.writerow(dict(episode=ep,steps=len(r["rewards"]),final_battery=after,total_reward=total,loss=loss)); epfile.flush()
+        steps_taken = len(r["rewards"]); log_status(ep, TOTAL_EPISODES, steps_taken, total, aft_batt, loss)
+        epw.writerow(dict(episode=ep,steps=len(r["rewards"]),final_battery=aft_batt,total_reward=total,loss=loss)); epfile.flush()
 
     # final deterministic evaluation, step-level telemetry CSV
     env.place_devices(); env.reset(); x,y,yaw=env.ch.get_position(); h=deque([obs(env,x,y,yaw,0)]*SEQUENCE_LENGTH,maxlen=SEQUENCE_LENGTH)
     with open(OUT/"final_evaluation_steps.csv","w",newline="") as f:
-        fields=["step","x_before","y_before","target_x","target_y","x_after","y_after","battery_before","battery_after","battery_delta","reward","action_dx_norm","action_dy_norm"]
+        fields=["step","x_before","y_before","target_x","target_y","x_after","y_after","battery_before",
+                "battery_after","battery_delta","reward","action_dx_norm","action_dy_norm"]
         w=csv.DictWriter(f,fieldnames=fields); w.writeheader()
 
         final_inference_time = 0.0
