@@ -69,7 +69,7 @@ def obs(env, x, y, yaw, step):
 def seq_tensor(history, device):
     return torch.tensor(np.asarray(history),dtype=torch.float32,device=device).unsqueeze(0)
 
-def reward_fn(before, after, telemetry, env):
+def reward_fn(before, after, telemetry, delta_batt):
     # Dense, scaled reward: energy gain, movement cost, survival, and boundary discouragement.
     potential_before = 1.0 - before
     potential_after = 1.0 - after
@@ -86,7 +86,7 @@ def reward_fn(before, after, telemetry, env):
 
     movement_penalty = 0.002 * distance
 
-    battery_reward = 2.0 * telemetry["battery_delta"]
+    battery_reward = 2.0 * delta_batt
 
     return directional_reward + battery_reward - movement_penalty
 
@@ -286,6 +286,7 @@ def run():
                                                   env.lat_center + x * env.stp, env.long_center + y * env.stp)
             before = env.get_obfuscation(x,y,min(step,len(env.times)-1),sol.azimuth.iloc[0],
                                          sol.apparent_zenith.iloc[0]).flatten()
+            b_batt = env.ch.get_battery()
 
             tel, nxt= env.step_simulation(step,tx,ty)
 
@@ -294,8 +295,9 @@ def run():
                                                   env.lat_center + x_new * env.stp, env.long_center + y_new * env.stp)
             after = env.get_obfuscation(x_new, y_new, min(step, len(env.times) - 1), sol.azimuth.iloc[0],
                                          sol.apparent_zenith.iloc[0]).flatten()
+            aft_batt = env.ch.get_battery()
 
-            rew=reward_fn(before, after, tel, env) - ACTION_SMOOTHNESS*smoothness
+            rew=reward_fn(before, after, tel, aft_batt-b_batt) - ACTION_SMOOTHNESS*smoothness
             total+=rew; previous_action=current_action
             r["states"].append(np.asarray(h)); r["actions"].append(a[0].cpu().numpy())
             r["logps"].append(lp.item()); r["values"].append(v.item()); r["rewards"].append(rew)
@@ -370,7 +372,7 @@ def run():
                                         sol.apparent_zenith.iloc[0]).flatten()
             aft_batt = env.ch.get_battery()
 
-            rew=reward_fn(b,aft,tel,env)
+            rew=reward_fn(b, aft, tel, aft_batt-b_batt)
 
             w.writerow(dict(step=step,x_before=x,y_before=y,target_x=tx,target_y=ty,x_after=nx,y_after=ny,
                             battery_before=b_batt,battery_after=aft_batt,battery_delta=aft_batt-b_batt,reward=rew,
