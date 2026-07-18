@@ -74,8 +74,8 @@ def reward_fn(before, after, telemetry, delta_batt):
     potential_before = 1.0 - before
     potential_after = 1.0 - after
 
-    score_before = np.dot(GAUSSIAN_KERNEL, potential_before)
-    score_after = np.dot(GAUSSIAN_KERNEL, potential_after)
+    score_before = float(np.dot(GAUSSIAN_KERNEL, potential_before))
+    score_after = float(np.dot(GAUSSIAN_KERNEL, potential_after))
 
     directional_reward = 10 * (score_after - score_before)
 
@@ -88,7 +88,7 @@ def reward_fn(before, after, telemetry, delta_batt):
 
     battery_reward = 2.0 * delta_batt
 
-    return directional_reward + battery_reward - movement_penalty
+    return float(directional_reward + battery_reward - movement_penalty)
 
 def update(model,opt,rollouts,device, ep):
     # GAE advantages are normalized once across the complete rollout batch, not per episode.
