@@ -30,7 +30,7 @@ else:
 # ============================================================
 
 TOTAL_EPISODES=1000; MAX_STEPS_PER_EPISODE=720; VIEW_DISTANCE=20
-SEQUENCE_LENGTH=32; UPDATE_EVERY_EPISODES=5; GAMMA=.99; GAE_LAMBDA=.95
+SEQUENCE_LENGTH=32; UPDATE_EVERY_EPISODES=2; GAMMA=.99; GAE_LAMBDA=.95
 LR=3e-4; MAX_MOVE_PER_STEP=20.0; ENTROPY_COEF=.01; VALUE_COEF=.5
 
 ###############################################################
@@ -45,6 +45,14 @@ VELOCITY_MARGIN = 0.05; COMM_MARGIN = 0.10; CLIP_EPS =0.20; LYAPUNOV_ALPHA = 0.0
 timestamp = datetime.datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
 OUT=Path("rl_csv_"+timestamp); OUT.mkdir(exist_ok=True)
 
+size = 2 * VIEW_DISTANCE + 1
+y, x = np.mgrid[-VIEW_DISTANCE:VIEW_DISTANCE+1,
+                -VIEW_DISTANCE:VIEW_DISTANCE+1]
+sigma = 6.0
+kernel = np.exp(-(x**2 + y**2)/(2*sigma**2))
+kernel /= kernel.sum()
+GAUSSIAN_KERNEL = kernel.flatten()
+
 def log_status(ep, total_episodes, steps, avg_reward, final_batt, loss, is_eval=False):
     prefix = "[EVALUATION]" if is_eval else f"[Episode {ep}/{total_episodes}]"
     loss_str = f"{loss:.4f}" if isinstance(loss, (float, int)) else loss
@@ -53,20 +61,34 @@ def log_status(ep, total_episodes, steps, avg_reward, final_batt, loss, is_eval=
 def obs(env, x, y, yaw, step):
     sol=solarposition.get_solarposition(env.times[min(step,len(env.times)-1)], env.lat_center+x*env.stp, env.long_center+y*env.stp)
     patch=env.get_obfuscation(x,y,min(step,len(env.times)-1),sol.azimuth.iloc[0],sol.apparent_zenith.iloc[0]).flatten()
+    potential = 1.0 - patch
     scalars=np.array([x/(env.dim-1),y/(env.dim-1),math.sin(yaw),math.cos(yaw),
                       env.ch.get_battery()/100, sol.azimuth.iloc[0]/360, sol.apparent_zenith.iloc[0]/90],np.float32)
-    return np.concatenate([patch.astype(np.float32),scalars])
+    return np.concatenate([potential.astype(np.float32),scalars])
 
 def seq_tensor(history, device):
     return torch.tensor(np.asarray(history),dtype=torch.float32,device=device).unsqueeze(0)
 
 def reward_fn(before, after, telemetry, env):
     # Dense, scaled reward: energy gain, movement cost, survival, and boundary discouragement.
-    delta=after-before
-    px,py,_=telemetry["previous_position"]; nx,ny,_=telemetry["new_position"]
-    distance=math.hypot(nx-px,ny-py)
-    boundary=min(nx,ny,env.dim-nx,env.dim-ny)/env.dim
-    return 2.0*delta - .015*distance + .20*(after/100) + .10*boundary
+    potential_before = 1.0 - before
+    potential_after = 1.0 - after
+
+    score_before = np.dot(GAUSSIAN_KERNEL, potential_before)
+    score_after = np.dot(GAUSSIAN_KERNEL, potential_after)
+
+    directional_reward = 10 * (score_after - score_before)
+
+    px, py, _ = telemetry["previous_position"]
+    nx, ny, _ = telemetry["new_position"]
+
+    distance = math.hypot(nx - px, ny - py)
+
+    movement_penalty = 0.002 * distance
+
+    battery_reward = 2.0 * telemetry["battery_delta"]
+
+    return directional_reward + battery_reward - movement_penalty
 
 def update(model,opt,rollouts,device, ep):
     # GAE advantages are normalized once across the complete rollout batch, not per episode.
@@ -192,10 +214,10 @@ def run():
                     list(model.dynamics.parameters())
             )
 
-            opt = optim.AdamW([{"params": transformer_params, "lr": 3e-4, "weight_decay":1e-5},
+            opt = optim.AdamW([{"params": transformer_params, "lr": 1e-3, "weight_decay":1e-5},
                                {"params": actor_params,       "lr": 3e-4, "weight_decay":1e-5},
-                               {"params": critic_params,      "lr": 1e-3, "weight_decay":1e-5},
-                               {"params": auxiliary_params,   "lr": 1e-4, "weight_decay":1e-5},],
+                               {"params": critic_params,      "lr": 3e-4, "weight_decay":1e-5},
+                               {"params": auxiliary_params,   "lr": 5e-5, "weight_decay":1e-5},],
                               eps=1e-5,)
         elif TRANSFORMER_VARIANT == "chaotic":
             model = ChebyshevTransformer(VIEW_DISTANCE).to(device)
@@ -212,7 +234,9 @@ def run():
 
     total_inference_time = 0.0
     total_inference_steps = 0
-    epfile=open(OUT/"episode_metrics.csv","w",newline=""); epw=csv.DictWriter(epfile,fieldnames=["episode","steps","final_battery","total_reward","loss"]); epw.writeheader()
+    epfile=open(OUT/"episode_metrics.csv","w",newline="")
+    epw=csv.DictWriter(epfile,fieldnames=["episode","steps","final_battery","total_reward","loss"])
+    epw.writeheader()
     rollouts=[]
     for ep in range(1,TOTAL_EPISODES+1):
         env.place_devices(); env.reset(); x,y,yaw=env.ch.get_position()
@@ -257,8 +281,21 @@ def run():
             # normalized action -> local, physically scaled target; no global-coordinate clipping mismatch
             dx,dy=a[0].cpu().numpy()*MAX_MOVE_PER_STEP
             tx=float(np.clip(x+dx,0,env.dim-1)); ty=float(np.clip(y+dy,0,env.dim-1))
-            before=env.ch.get_battery(); tel,nxt=env.step_simulation(step,tx,ty); after=env.ch.get_battery()
-            rew=reward_fn(before,after,tel,env)-ACTION_SMOOTHNESS*smoothness;
+
+            sol = solarposition.get_solarposition(env.times[min(step, len(env.times) - 1)],
+                                                  env.lat_center + x * env.stp, env.long_center + y * env.stp)
+            before = env.get_obfuscation(x,y,min(step,len(env.times)-1),sol.azimuth.iloc[0],
+                                         sol.apparent_zenith.iloc[0]).flatten()
+
+            tel, nxt= env.step_simulation(step,tx,ty)
+
+            x_new, y_new, yaw_new = env.ch.get_position()
+            sol = solarposition.get_solarposition(env.times[min(step, len(env.times) - 1)],
+                                                  env.lat_center + x_new * env.stp, env.long_center + y_new * env.stp)
+            after = env.get_obfuscation(x_new, y_new, min(step, len(env.times) - 1), sol.azimuth.iloc[0],
+                                         sol.apparent_zenith.iloc[0]).flatten()
+
+            rew=reward_fn(before, after, tel, env) - ACTION_SMOOTHNESS*smoothness
             total+=rew; previous_action=current_action
             r["states"].append(np.asarray(h)); r["actions"].append(a[0].cpu().numpy())
             r["logps"].append(lp.item()); r["values"].append(v.item()); r["rewards"].append(rew)

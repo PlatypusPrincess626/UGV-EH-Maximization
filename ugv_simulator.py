@@ -6,8 +6,7 @@ class UGVSimulator:
     """
     Simulator for an Unmanned Ground Vehicle with movement control and telemetry capabilities.
     """
-    def __init__(self, x=0.0, y=0.0, yaw=3.14159/4, battery_level=75, r_move=800.0):
-
+    def __init__(self, env, x=0.0, y=0.0, yaw=3.14159/4, battery_level=75, r_move=800.0):
         self.r_max = r_move
         self.origin = [x, y, yaw]
         self.x = x
@@ -146,6 +145,23 @@ class UGVSimulator:
                                            [0.0], [0.0], [0.0], [0.0], [0.0], [0.0], [0.0], [0.0], [0.0], [0.0], [0.0],
                                            [0.0], [0.0], [0.0], [0.0], [0.0], [0.0], [0.0], [0.0]])
 
+        curr_x = int(max(0, min(self.x, env.dim - 1)))
+        curr_y = int(max(0, min(self.y, env.dim - 1)))
+        safe_step = min(int(math.floor(0.0)), len(env.times) - 1)
+
+        panel_power = self.find_power(
+            env,
+            curr_x,
+            curr_y,
+            safe_step,
+            self.solar_area,
+            self.tilt,
+            self.azimuth
+        )
+
+        panel_power *= self.panel_efficiency_factor * self.wiring_efficiency * self.mppt_efficiency
+        self.solar_potential = panel_power
+
     def reset(self):
         self.battery_mAh = self.max_capacity_mAh
         self.x, self.y, self.yaw = self.origin
@@ -157,6 +173,9 @@ class UGVSimulator:
 
     def get_battery(self):
         return self.soc * 100.0
+
+    def get_solar_potential(self):
+        return self.solar_potential
 
     def update_soc(self):
 
@@ -336,6 +355,7 @@ class UGVSimulator:
         )
 
         panel_power *= self.panel_efficiency_factor * self.wiring_efficiency * self.mppt_efficiency
+        self.solar_potential = panel_power
         terminal_voltage = self.compute_terminal_voltage()
         charge_current = panel_power / max(terminal_voltage, 0.1)
 

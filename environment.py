@@ -174,6 +174,7 @@ class sim_env:
 
         # FIXED: Pass r_move parameter directly to initialization safely
         self.ch = ugv_simulator.UGVSimulator(
+            self,
             x=float(self.ch_pt[0]),
             y=float(self.ch_pt[1]),
             yaw=np.pi / 4,
