@@ -323,6 +323,7 @@ def run():
 
         steps_taken = len(r["rewards"]); log_status(ep, TOTAL_EPISODES, steps_taken, total, after, loss)
         epw.writerow(dict(episode=ep,steps=len(r["rewards"]),final_battery=after,total_reward=total,loss=loss)); epfile.flush()
+
     # final deterministic evaluation, step-level telemetry CSV
     env.place_devices(); env.reset(); x,y,yaw=env.ch.get_position(); h=deque([obs(env,x,y,yaw,0)]*SEQUENCE_LENGTH,maxlen=SEQUENCE_LENGTH)
     with open(OUT/"final_evaluation_steps.csv","w",newline="") as f:
@@ -353,8 +354,27 @@ def run():
             final_inference_steps += 1
 
             dx,dy=a[0].cpu().numpy()*MAX_MOVE_PER_STEP; tx=float(np.clip(x+dx,0,env.dim-1)); ty=float(np.clip(y+dy,0,env.dim-1))
-            b=env.ch.get_battery(); tel,_=env.step_simulation(step,tx,ty); aft=env.ch.get_battery(); nx,ny,nyaw=env.ch.get_position(); rew=reward_fn(b,aft,tel,env)
-            w.writerow(dict(step=step,x_before=x,y_before=y,target_x=tx,target_y=ty,x_after=nx,y_after=ny,battery_before=b,battery_after=aft,battery_delta=aft-b,reward=rew,action_dx_norm=a[0,0].item(),action_dy_norm=a[0,1].item()))
+
+            sol = solarposition.get_solarposition(env.times[min(step, len(env.times) - 1)],
+                                                  env.lat_center + x * env.stp, env.long_center + y * env.stp)
+            b = env.get_obfuscation(x, y, min(step, len(env.times) - 1), sol.azimuth.iloc[0],
+                                         sol.apparent_zenith.iloc[0]).flatten()
+            b_batt = env.ch.get_battery()
+
+            tel,_=env.step_simulation(step,tx,ty)
+
+            nx, ny, nyaw = env.ch.get_position()
+            sol = solarposition.get_solarposition(env.times[min(step, len(env.times) - 1)],
+                                                  env.lat_center + nx * env.stp, env.long_center + ny * env.stp)
+            aft = env.get_obfuscation(nx, ny, min(step, len(env.times) - 1), sol.azimuth.iloc[0],
+                                        sol.apparent_zenith.iloc[0]).flatten()
+            aft_batt = env.ch.get_battery()
+
+            rew=reward_fn(b,aft,tel,env)
+
+            w.writerow(dict(step=step,x_before=x,y_before=y,target_x=tx,target_y=ty,x_after=nx,y_after=ny,
+                            battery_before=b_batt,battery_after=aft_batt,battery_delta=aft_batt-b_batt,reward=rew,
+                            action_dx_norm=a[0,0].item(),action_dy_norm=a[0,1].item()))
             x,y,yaw=nx,ny,nyaw; h.append(obs(env,x,y,yaw,min(step+1,MAX_STEPS_PER_EPISODE-1)))
             if aft<=0: break
     epfile.close()
