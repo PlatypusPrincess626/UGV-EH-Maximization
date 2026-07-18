@@ -69,6 +69,7 @@ class sim_env:
         new_y = np.clip(new_y, 0, self.dim - 1)
         self.ch.update_telemetry(new_x, new_y, np.random.uniform(-np.pi, np.pi))
         self.reset_foliage()
+        self.ch.init_solar_potential(self)
 
     def step_simulation(self, current_step: int, target_x: float, target_y: float):
         battery_before = self.ch.get_battery()

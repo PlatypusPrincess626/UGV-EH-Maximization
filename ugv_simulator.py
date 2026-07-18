@@ -145,6 +145,16 @@ class UGVSimulator:
                                            [0.0], [0.0], [0.0], [0.0], [0.0], [0.0], [0.0], [0.0], [0.0], [0.0], [0.0],
                                            [0.0], [0.0], [0.0], [0.0], [0.0], [0.0], [0.0], [0.0]])
 
+        self.solar_potential = 0.0
+
+
+    def reset(self):
+        self.battery_mAh = self.max_capacity_mAh
+        self.x, self.y, self.yaw = self.origin
+        self.energy_used_mAh = 0.0
+        self.energy_gained_mAh = 0.0
+
+    def init_solar_potential(self, env):
         curr_x = int(max(0, min(self.x, env.dim - 1)))
         curr_y = int(max(0, min(self.y, env.dim - 1)))
         safe_step = min(int(math.floor(0.0)), len(env.times) - 1)
@@ -161,12 +171,7 @@ class UGVSimulator:
 
         panel_power *= self.panel_efficiency_factor * self.wiring_efficiency * self.mppt_efficiency
         self.solar_potential = panel_power
-
-    def reset(self):
-        self.battery_mAh = self.max_capacity_mAh
-        self.x, self.y, self.yaw = self.origin
-        self.energy_used_mAh = 0.0
-        self.energy_gained_mAh = 0.0
+        return True
 
     def get_position(self):
         return self.x, self.y, self.yaw
