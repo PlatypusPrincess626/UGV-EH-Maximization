@@ -17,6 +17,9 @@ from pathlib import Path
 import ugv_simulator
 
 
+MIN_USABLE_ELEVATION = 12
+
+
 def dist(pt1: NDArray[np.int32], pt2: NDArray[np.int32]):
     assert pt1.shape == (2,)
     assert pt2.shape == (2,)
@@ -54,7 +57,6 @@ class sim_env:
         self.boundary_center = np.array([0.0, 0.0])
         self.boundary_radius = self.dim/2.0
 
-        MIN_USABLE_ELEVATION = 12
         self.PAD = math.ceil(50.0 / math.tan(math.radians(MIN_USABLE_ELEVATION)))
 
         self.r_move = self.dim
