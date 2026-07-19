@@ -50,6 +50,9 @@ class sim_env:
             self.times = pd.date_range('2021-01-01 8:00', freq=self.stepSize, periods=self.max_num_steps, tz="MST")
             random.seed('2021-01-01 8:00')
 
+        self.boundary_center = np.array([0.0, 0.0])
+        self.boundary_radius = self.dim/2.0
+
         self.r_move = self.dim
         self.env_map = self.make_map()
         self.view_dist = self.dim
@@ -62,11 +65,9 @@ class sim_env:
     def reset(self):
         self.ch.reset()
         theta = np.random.uniform(0.0, 2.0 * np.pi)
-        r = self.ch.r_max * np.sqrt(np.random.rand())
-        new_x = self.ch.origin[0] + r * np.cos(theta)
-        new_y = self.ch.origin[1] + r * np.sin(theta)
-        new_x = np.clip(new_x, 0, self.dim - 1)
-        new_y = np.clip(new_y, 0, self.dim - 1)
+        r = self.boundary_radius * np.sqrt(np.random.rand())
+        new_x = self.boundary_center[0] + r * np.cos(theta)
+        new_y = self.boundary_center[1] + r * np.sin(theta)
         self.ch.update_telemetry(new_x, new_y, np.random.uniform(-np.pi, np.pi))
         self.reset_foliage()
         self.ch.init_solar_potential(self)
@@ -107,6 +108,9 @@ class sim_env:
     def make_map(self):
         if self.dim % 2 == 0:
             self.dim += 1
+
+        self.boundary_center = np.array([self.dim / 2.0, self.dim / 2.0])
+        self.boundary_radius = 250.0
 
         flg_done = self.place_devices()
         return flg_done
