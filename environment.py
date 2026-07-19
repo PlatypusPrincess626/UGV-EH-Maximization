@@ -210,7 +210,7 @@ class sim_env:
     def get_obfuscation(self, x: int, y: int, step, azimuth: float, zenith: float):
         v_dist = int(self.view_dist)
         patch_size = 2 * v_dist + 1
-        obfuscation_patch = np.zeros((patch_size, patch_size), dtype=np.float32)
+        obfuscation_patch = np.ones((patch_size, patch_size), dtype=np.float32)
 
         if zenith >= 90.0:
             return np.ones((patch_size, patch_size), dtype=np.float32)
