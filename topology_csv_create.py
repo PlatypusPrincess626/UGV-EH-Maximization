@@ -1,12 +1,27 @@
 import requests
 import rasterio
+import math
+
+center_lat = 44.424
+center_lon = -110.589
+
+side = 800 + math.ceil(50.0 / math.tan(math.radians(12)))  # 1036 m
+half = side / 2.0
+
+meters_per_deg_lat = 111320.0
+meters_per_deg_lon = 111320.0 * math.cos(math.radians(center_lat))
+
+lat_offset = half / meters_per_deg_lat
+lon_offset = half / meters_per_deg_lon
 
 # 1. Fetch the data once using your bounding box
 url = "https://portal.opentopography.org/API/globaldem"
 params = {
-    'demtype': 'SRTMGL1', # Or other preferred DEM
-    'south': 44.419338, 'north': 44.428662,
-    'west': -110.593792, 'east': -110.584208,
+    'demtype': 'SRTMGL1',
+    'south': center_lat - lat_offset,
+    'north': center_lat + lat_offset,
+    'west': center_lon - lon_offset,
+    'east': center_lon + lon_offset,
     'outputFormat': 'GTiff',
     'API_Key': '7c40b10aed445fd24fa9a7b13286e64f'
 }
