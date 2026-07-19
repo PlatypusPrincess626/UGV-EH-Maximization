@@ -33,29 +33,19 @@ def chebyshev_sequence(length, degree=4, seed=0.723456, discard=200):
 
 
 def chaotic_xavier_init(tensor, order=4, seed=None):
-    """
-        Xavier initialization whose ordering comes from a Chebyshev chaotic map.
-    """
     if seed is None:
         seed = np.random.uniform(-0.95, 0.95)
-
     if tensor.ndim < 2:
         return
-
     fan_out, fan_in = tensor.shape[:2]
-
     limit = math.sqrt(6.0 / (fan_in + fan_out))
-
-    seq = chebyshev_sequence(
-        tensor.numel(),
-        degree=order,
-        seed=seed
-    )
-
+    seq = chebyshev_sequence(tensor.numel(), degree=order, seed=seed)
+    # normalize to zero-mean, unit-variance before rescaling to Xavier limit
+    seq = (seq - seq.mean()) / (seq.std() + 1e-8)
+    seq = seq * (limit / math.sqrt(3.0))  # matches uniform(-limit,limit) variance
     weights = torch.from_numpy(seq).reshape(tensor.shape)
-
     with torch.no_grad():
-        tensor.copy_(weights.to(tensor.device, tensor.dtype) * limit)
+        tensor.copy_(weights.to(tensor.device, tensor.dtype))
 
 
 class ChebyshevLyapunovTransformerActorCritic(nn.Module):
@@ -270,20 +260,15 @@ class ChebyshevLyapunovTransformerActorCritic(nn.Module):
     ############################################################
 
     def initialize_weights(self):
-        """
-        Xavier initialization for all Linear layers.
-        LayerNorm defaults are preserved.
-        """
         for module in self.modules():
             if isinstance(module, nn.Linear):
                 chaotic_xavier_init(module.weight)
-
                 if module.bias is not None:
                     nn.init.zeros_(module.bias)
-
-            elif isinstance(module, nn.LayerNorm):
-                nn.init.ones_(module.weight)
-                nn.init.zeros_(module.bias)
+        # override: keep the actor output layer small/unsaturated at init
+        last_actor_layer = self.actor[-1]
+        nn.init.orthogonal_(last_actor_layer.weight, gain=0.01)
+        nn.init.zeros_(last_actor_layer.bias)
 
     ############################################################
     # Shared Transformer Encoder
