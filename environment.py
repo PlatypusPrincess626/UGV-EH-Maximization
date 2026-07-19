@@ -132,8 +132,8 @@ class sim_env:
                 if max_val > 0:
                     data = (data / max_val) * 50.0
 
-                if data.shape != (self.dim, self.dim):
-                    zoom_factors = (self.dim / data.shape[0], self.dim / data.shape[1])
+                if data.shape != (self.dim+self.PAD, self.dim+self.PAD):
+                    zoom_factors = ((self.dim+self.PAD) / data.shape[0], (self.dim+self.PAD) / data.shape[1])
                     self.topo_mask = zoom(data, zoom_factors, order=1)
                 else:
                     self.topo_mask = data
@@ -141,9 +141,8 @@ class sim_env:
                 print(f"Successfully loaded topography: {self.topo_mask.shape}")
         except Exception as e:
             print(f"Error loading topography file: {e}")
-            self.topo_mask = np.zeros((self.dim, self.dim))
+            self.topo_mask = np.zeros((self.dim+self.PAD, self.dim+self.PAD))
 
-        self.topo_mask = np.pad(self.topo_mask, self.PAD, mode='edge')
         self.reset_foliage()
         return True
 
