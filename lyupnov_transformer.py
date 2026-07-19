@@ -29,17 +29,17 @@ class LyapunovTransformerActorCritic(nn.Module):
     """
 
     def __init__(
-        self,
-        view_dist,
-        scalar_dim=7,
-        action_dim=2,
-        sequence_length=12,
-        d_model=128,
-        energy_dim=64,
-        nhead=4,
-        num_layers=2,
-        dim_feedforward=256,
-        dropout=0.1,
+            self,
+            view_dist,
+            scalar_dim=7,
+            action_dim=2,
+            sequence_length=12,
+            d_model=128,  # 128
+            energy_dim=64,  # 64
+            nhead=4,
+            num_layers=2,
+            dim_feedforward=256,  # 256
+            dropout=0.1,
     ):
         super().__init__()
 
@@ -93,6 +93,12 @@ class LyapunovTransformerActorCritic(nn.Module):
         )
 
         ############################################################
+        # Attention Pooling
+        ############################################################
+
+        self.attention_pool = nn.Linear(d_model, 1)
+
+        ############################################################
         # Energy Encoder
         #
         # Compresses the transformer latent into an energy manifold.
@@ -124,13 +130,19 @@ class LyapunovTransformerActorCritic(nn.Module):
         ############################################################
         # Critic Head
         ############################################################
-
+        L1 = int(2 * d_model)
+        L3 = int(d_model / 2)
         self.critic = nn.Sequential(
-
-            nn.Linear(d_model, d_model),
+            nn.Linear(d_model, L1),
             nn.GELU(),
 
-            nn.Linear(d_model, 1),
+            nn.Linear(L1, d_model),
+            nn.GELU(),
+
+            nn.Linear(d_model, L3),
+            nn.GELU(),
+
+            nn.Linear(L3, 1),
         )
 
         ############################################################
@@ -220,9 +232,9 @@ class LyapunovTransformerActorCritic(nn.Module):
             nn.init.ones_(module.weight)
             nn.init.zeros_(module.bias)
 
-    ############################################################
-    # Shared Transformer Encoder
-    ############################################################
+        ############################################################
+        # Shared Transformer Encoder
+        ############################################################
 
     def encode(self, sequence):
         """
@@ -249,8 +261,17 @@ class LyapunovTransformerActorCritic(nn.Module):
         # Transformer encoding
         x = self.encoder(x)
 
-        # Last token summarizes recent history
-        latent = x[:, -1]
+        attention_scores = self.attention_pool(x)
+
+        attention_weights = torch.softmax(
+            attention_scores,
+            dim=1
+        )
+
+        latent = torch.sum(
+            attention_weights * x,
+            dim=1
+        )
 
         return latent
 
@@ -335,13 +356,12 @@ class LyapunovTransformerActorCritic(nn.Module):
 
         latent = self.encode(sequence)
 
+        latent_aux = latent.detach()
         energy = self.energy_representation(latent)
-
         V = self.lyapunov(energy).squeeze(-1)
-
         barrier = self.barrier(latent)
-
-        return latent, energy, V, barrier
+        next_latent = self.dynamics(latent)
+        return latent, energy, V, barrier, next_latent
 
     ############################################################
     # Forward Pass
@@ -374,7 +394,7 @@ class LyapunovTransformerActorCritic(nn.Module):
             Predicted next latent representation
         """
 
-        latent, energy, V, barrier = self.encode_state(sequence)
+        latent, energy, V, barrier, next_latent = self.encode_state(sequence)
 
         ##########################################
         # Actor
@@ -389,12 +409,6 @@ class LyapunovTransformerActorCritic(nn.Module):
         ##########################################
 
         critic = self.critic(latent).squeeze(-1)
-
-        ##########################################
-        # Dynamics
-        ##########################################
-
-        next_latent = self.predict_next_latent(latent)
 
         return (
             mean,
@@ -444,18 +458,7 @@ class LyapunovTransformerActorCritic(nn.Module):
     def fast_act(self,
                  sequence
                  ):
-        sequence = sequence.float()
-
-        x = self.input_projection(sequence)
-
-        # Add learnable positional encoding
-        x = x + self.position_embedding[:, :x.size(1)]
-
-        # Transformer encoding
-        x = self.encoder(x)
-
-        # Last token summarizes recent history
-        latent = x[:, -1]
+        latent = self.encode(sequence)
 
         mean = torch.tanh(
             self.actor(latent)
@@ -484,9 +487,9 @@ class LyapunovTransformerActorCritic(nn.Module):
         )
 
     def act(
-        self,
-        sequence,
-        deterministic=False,
+            self,
+            sequence,
+            deterministic=False,
     ):
         """
         Samples an action.
@@ -539,9 +542,9 @@ class LyapunovTransformerActorCritic(nn.Module):
     ############################################################
 
     def evaluate_actions(
-        self,
-        sequence,
-        actions,
+            self,
+            sequence,
+            actions,
     ):
         """
         Evaluates previously sampled actions.
@@ -583,9 +586,9 @@ class LyapunovTransformerActorCritic(nn.Module):
     ############################################################
 
     def evaluate_transition(
-        self,
-        current_sequence,
-        next_sequence,
+            self,
+            current_sequence,
+            next_sequence,
     ):
         """
         Computes Lyapunov quantities for a transition.
