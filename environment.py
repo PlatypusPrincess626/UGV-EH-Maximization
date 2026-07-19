@@ -22,6 +22,7 @@ def dist(pt1: NDArray[np.int32], pt2: NDArray[np.int32]):
     assert pt2.shape == (2,)
     return math.sqrt((pt1[0] - pt2[0]) ** 2 + (pt1[1] - pt2[1]) ** 2)
 
+
 class sim_env:
     def __init__(self, scene, num_sensors, max_num_steps):
 
@@ -52,6 +53,9 @@ class sim_env:
 
         self.boundary_center = np.array([0.0, 0.0])
         self.boundary_radius = self.dim/2.0
+
+        MIN_USABLE_ELEVATION = 12
+        self.PAD = math.ceil(50.0 / math.tan(math.radians(MIN_USABLE_ELEVATION)))
 
         self.r_move = self.dim
         self.env_map = self.make_map()
@@ -139,6 +143,7 @@ class sim_env:
             print(f"Error loading topography file: {e}")
             self.topo_mask = np.zeros((self.dim, self.dim))
 
+        self.topo_mask = np.pad(self.topo_mask, self.PAD, mode='edge')
         self.reset_foliage()
         return True
 
@@ -146,7 +151,8 @@ class sim_env:
         choices = [0, 5, 10, 15, 20]
         probs = [0.65, 0.20, 0.10, 0.04, 0.01]
 
-        raw_foliage = np.random.choice(choices, size=(self.dim, self.dim), p=probs)
+        dim_padded = self.dim + 2 * self.PAD
+        raw_foliage = np.random.choice(choices, size=(dim_padded, dim_padded), p=probs)
         smoothed = gaussian_filter(raw_foliage.astype(float), sigma=1.5)
 
         bins = [0, 2.5, 7.5, 12.5, 17.5, 25]
@@ -216,7 +222,7 @@ class sim_env:
         patch_size = 2 * v_dist + 1
         obfuscation_patch = np.ones((patch_size, patch_size), dtype=np.float32)
 
-        if zenith >= 90.0:
+        if zenith >= 90.0 - MIN_USABLE_ELEVATION:
             return np.ones((patch_size, patch_size), dtype=np.float32)
 
         az_rad = math.radians(90.0 - azimuth)
@@ -230,8 +236,8 @@ class sim_env:
         perp_x = -step_y
         perp_y = step_x
 
-        center_x = int(x)
-        center_y = int(y)
+        center_x, center_y = int(x), int(y)
+        center_x_arr, center_y_arr = center_x + self.PAD, center_y + self.PAD
 
         MAX_FOLIAGE_ATTENUATION = 0.10
 
@@ -253,17 +259,19 @@ class sim_env:
 
                     ray_x = int(round(global_x + d * step_x))
                     ray_y = int(round(global_y + d * step_y))
-                    if not (0 <= ray_x < self.dim and 0 <= ray_y < self.dim):
+                    ray_x_arr, ray_y_arr = ray_x + self.PAD, ray_y + self.PAD
+
+                    if not (0 <= ray_x_arr < self.topo_mask.shape[1] and 0 <= ray_y_arr < self.topo_mask.shape[0]):
                         break
 
-                    terrain_height = self.topo_mask[ray_y, ray_x]
+                    terrain_height = self.topo_mask[ray_y_arr, ray_x_arr]
 
                     if terrain_height >= h_min:
                         obfuscation_patch[j, i] = 1.0
                         transmittance = 0.0
                         break
 
-                    foliage_height = self.foliage_mask[ray_y, ray_x]
+                    foliage_height = self.foliage_mask[ray_y_arr, ray_x_arr]
                     if foliage_height <= 0:
                         continue
 
@@ -283,10 +291,12 @@ class sim_env:
                     for k in range(-half_width, half_width + 1):
                         check_x = int(round(ray_x + k * perp_x))
                         check_y = int(round(ray_y + k * perp_y))
+                        check_x_arr, check_y_arr = check_x + self.PAD, check_y + self.PAD
 
-                        if not (0 <= check_x < self.dim and 0 <= check_y < self.dim):
+                        if not (0 <= check_x_arr < self.foliage_mask.shape[1] and
+                                0 <= check_y_arr < self.foliage_mask.shape[0]):
                             continue
-                        if self.foliage_mask[check_y, check_x] <= 0:
+                        if self.foliage_mask[check_y_arr, check_x_arr] <= 0:
                             continue
 
                         r = abs(k)

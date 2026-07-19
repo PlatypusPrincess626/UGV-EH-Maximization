@@ -5,8 +5,8 @@ import rasterio
 url = "https://portal.opentopography.org/API/globaldem"
 params = {
     'demtype': 'SRTMGL1', # Or other preferred DEM
-    'south': 44.4204, 'north': 44.4276,
-    'west': -110.5926, 'east': -110.5854,
+    'south': 44.419338, 'north': 44.428662,
+    'west': -110.593792, 'east': -110.584208,
     'outputFormat': 'GTiff',
     'API_Key': '7c40b10aed445fd24fa9a7b13286e64f'
 }
