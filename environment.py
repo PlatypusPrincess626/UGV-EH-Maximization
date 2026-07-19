@@ -143,7 +143,7 @@ class sim_env:
         probs = [0.65, 0.20, 0.10, 0.04, 0.01]
 
         raw_foliage = np.random.choice(choices, size=(self.dim, self.dim), p=probs)
-        smoothed = gaussian_filter(raw_foliage.astype(float), sigma=2)
+        smoothed = gaussian_filter(raw_foliage.astype(float), sigma=1.5)
 
         bins = [0, 2.5, 7.5, 12.5, 17.5, 25]
         self.foliage_mask = np.digitize(smoothed, bins)
