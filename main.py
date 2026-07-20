@@ -28,7 +28,7 @@ else:
     TRANSFORMER_VARIANT = "normal"
 # ============================================================
 
-TOTAL_EPISODES=500; MAX_STEPS_PER_EPISODE=720; VIEW_DISTANCE=20
+TOTAL_EPISODES=1000; MAX_STEPS_PER_EPISODE=720; VIEW_DISTANCE=20
 SEQUENCE_LENGTH=32; UPDATE_EVERY_EPISODES=2; GAMMA=.99; GAE_LAMBDA=.95
 LR=3e-4; MAX_MOVE_PER_STEP=20.0; ENTROPY_COEF=.01; VALUE_COEF=.5
 
@@ -256,7 +256,25 @@ def run():
                                {"params": actor_params,       "lr": 3e-4, "weight_decay":1e-5},
                                {"params": critic_params,      "lr": 3e-4, "weight_decay":1e-5},
                                {"params": auxiliary_params,   "lr": 5e-5, "weight_decay":1e-5},
-                               {"params": alpha_params,       "lr": 3e-4, "weight_decay":0.0},],
+                               # log_alpha is a single scalar, not a
+                               # full parameter tensor. Calibrated for
+                               # TOTAL_EPISODES=1000 (500 updates):
+                               # targets alpha reaching a relaxed
+                               # value by ~update 100 (episode ~200),
+                               # comfortably before the full Lyapunov/
+                               # barrier weights activate at episode
+                               # 300, so that phase starts with
+                               # exploration already settled rather
+                               # than still fighting entropy pressure.
+                               # Not pushed faster than this: alpha
+                               # and Std are a two-timescale coupled
+                               # system (alpha reacts to entropy,
+                               # which depends on Std, which only
+                               # moves at the much slower actor LR of
+                               # 3e-4) -- too large a multiplier here
+                               # risks alpha overshooting/oscillating
+                               # around the target instead of settling.
+                               {"params": alpha_params,       "lr": 7e-3, "weight_decay":0.0},],
                               eps=1e-5,)
         elif TRANSFORMER_VARIANT == "chaotic":
             model = ChebyshevTransformer(VIEW_DISTANCE).to(device)
