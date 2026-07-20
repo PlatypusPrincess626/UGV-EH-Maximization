@@ -240,7 +240,26 @@ class LyapunovTransformerActorCritic(nn.Module):
         # the alpha_loss that trains this.
         ############################################################
 
-        self.target_entropy = -float(action_dim)
+        # target_entropy = -action_dim is the standard SAC heuristic,
+        # but it's calibrated for entropy estimated on the actual
+        # bounded action via -log pi(a) sampled post-squash. We're
+        # using the analytic entropy of the pre-squash Gaussian
+        # instead (see distribution()), which lives on a different
+        # scale: for a d-dim diagonal Normal, H = d*(0.5*log(2*pi*e)
+        # + log_std). Given our own [LOG_STD_MIN, LOG_STD_MAX] bound,
+        # the achievable range for action_dim=2 is roughly [-1.16,
+        # 3.84] -- -action_dim=-2 sits BELOW that floor, so it can
+        # never be satisfied: alpha gets driven toward 0 forever with
+        # no equilibrium, instead of settling once entropy is
+        # reasonable. Anchor the target at the midpoint of our own
+        # bound instead, which is reachable by construction and
+        # corresponds to a moderate, not-maximal exploration level
+        # (std ~= exp(midpoint) per dimension) rather than the two
+        # extremes.
+        target_log_std = 0.5 * (LOG_STD_MIN + LOG_STD_MAX)
+        self.target_entropy = action_dim * (
+            0.5 * math.log(2.0 * math.pi * math.e) + target_log_std
+        )
         self.log_alpha = nn.Parameter(torch.zeros(1))
 
         ############################################################
