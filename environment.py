@@ -54,9 +54,6 @@ class sim_env:
             self.times = pd.date_range('2021-01-01 8:00', freq=self.stepSize, periods=self.max_num_steps, tz="MST")
             random.seed('2021-01-01 8:00')
 
-        self.boundary_center = np.array([0.0, 0.0])
-        self.boundary_radius = self.dim/2.0
-
         self.PAD = math.ceil(50.0 / math.tan(math.radians(MIN_USABLE_ELEVATION)))
 
         self.r_move = self.dim
@@ -83,8 +80,8 @@ class sim_env:
         ugv_x, ugv_y, ugv_yaw = self.ch.get_position()
         new_position, battery_after = self.ch.step(self, current_step, float(target_x), float(target_y))
 
-        lat_offset = new_position[0] * self.stp
-        long_offset = new_position[1] * self.stp
+        lat_offset = new_position[1] * self.stp
+        long_offset = new_position[0] * self.stp
         solpos = solarposition.get_solarposition(self.times[current_step],
                                                  self.lat_center + lat_offset,
                                                  self.long_center + long_offset)
@@ -187,12 +184,6 @@ class sim_env:
         k_means = KMeans(n_clusters=1, random_state=0, n_init=10).fit(sensor_pts)
         cluster = k_means.cluster_centers_[0]
 
-        pt_max_dist = 0
-        for true_pt in sensor_pts:
-            pt_dist = dist(true_pt, cluster)
-            if pt_dist > pt_max_dist:
-                pt_max_dist = pt_dist
-
         self.r_move = 500
         self.sensor_pts = sensor_pts
         self.ch_pt = cluster.astype(int).tolist()  # FIXED: Removed undefined 'centroids' reference
@@ -209,8 +200,8 @@ class sim_env:
         return True
 
     def get_spectrum(self, x, y, tilt, azimuth, step):
-        lat_offset = x * self.stp
-        long_offset = y * self.stp
+        lat_offset = y * self.stp
+        long_offset = x * self.stp
 
         solpos = solarposition.get_solarposition(self.times[step],
                                                  self.lat_center + lat_offset,

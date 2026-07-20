@@ -28,7 +28,7 @@ else:
     TRANSFORMER_VARIANT = "normal"
 # ============================================================
 
-TOTAL_EPISODES=1; MAX_STEPS_PER_EPISODE=720; VIEW_DISTANCE=20
+TOTAL_EPISODES=1000; MAX_STEPS_PER_EPISODE=720; VIEW_DISTANCE=20
 SEQUENCE_LENGTH=32; UPDATE_EVERY_EPISODES=2; GAMMA=.99; GAE_LAMBDA=.95
 LR=3e-4; MAX_MOVE_PER_STEP=20.0; ENTROPY_COEF=.01; VALUE_COEF=.5
 
@@ -58,7 +58,7 @@ def log_status(ep, total_episodes, steps, avg_reward, final_batt, loss, is_eval=
     print(f"{prefix} Steps: {steps:3} | Reward: {avg_reward:7.2f} | Battery: {final_batt:6.2f}% | Loss: {loss_str}")
 
 def obs(env, x, y, yaw, step):
-    sol=solarposition.get_solarposition(env.times[min(step,len(env.times)-1)], env.lat_center+x*env.stp, env.long_center+y*env.stp)
+    sol=solarposition.get_solarposition(env.times[min(step,len(env.times)-1)], env.lat_center+y*env.stp, env.long_center+x*env.stp)
     patch=env.get_obfuscation(x,y,min(step,len(env.times)-1),sol.azimuth.iloc[0],sol.apparent_zenith.iloc[0]).flatten()
     potential = 1.0 - patch
     scalars=np.array([x/(env.dim-1),y/(env.dim-1),math.sin(yaw),math.cos(yaw),
@@ -96,7 +96,7 @@ def update(model,opt,rollouts,device, ep):
         gae=0.0; ret=0.0
         for i in reversed(range(len(r["rewards"]))):
             ret=r["rewards"][i]+GAMMA*ret
-            nxt=0 if i==len(r["rewards"])-1 else r["values"][i+1]
+            nxt=r.get("bootstrap_value",0.0) if i==len(r["rewards"])-1 else r["values"][i+1]
             gae=r["rewards"][i]+GAMMA*nxt-r["values"][i]+GAMMA*GAE_LAMBDA*gae
             adv.insert(0,gae); returns.insert(0,ret)
         states+=r["states"]; next_states+=r["next_states"]; actions+=r["actions"]; oldlp+=r["logps"]
@@ -298,7 +298,7 @@ def run():
             tx=float(np.clip(x+dx,0,env.dim-1)); ty=float(np.clip(y+dy,0,env.dim-1))
 
             sol = solarposition.get_solarposition(env.times[min(step, len(env.times) - 1)],
-                                                  env.lat_center + x * env.stp, env.long_center + y * env.stp)
+                                                  env.lat_center + y * env.stp, env.long_center + x * env.stp)
             before = env.get_obfuscation(x,y,min(step,len(env.times)-1),sol.azimuth.iloc[0],
                                          sol.apparent_zenith.iloc[0]).flatten()
             b_batt = env.ch.get_battery()
@@ -307,7 +307,7 @@ def run():
 
             x_new, y_new, yaw_new = env.ch.get_position()
             sol = solarposition.get_solarposition(env.times[min(step, len(env.times) - 1)],
-                                                  env.lat_center + x_new * env.stp, env.long_center + y_new * env.stp)
+                                                  env.lat_center + y_new * env.stp, env.long_center + x_new * env.stp)
             after = env.get_obfuscation(x_new, y_new, min(step, len(env.times) - 1), sol.azimuth.iloc[0],
                                          sol.apparent_zenith.iloc[0]).flatten()
             aft_batt = env.ch.get_battery()
@@ -319,6 +319,24 @@ def run():
             x,y,yaw=env.ch.get_position(); h.append(obs(env,x,y,yaw,min(step+1,MAX_STEPS_PER_EPISODE-1)))
             r["next_states"].append(np.asarray(h))
             if aft_batt<=0: break
+
+        # GAE needs a bootstrap value for whatever comes after the last
+        # recorded step. If the battery genuinely died (aft_batt<=0),
+        # there truly is no future reward -- 0 is correct. If the loop
+        # only ended because MAX_STEPS_PER_EPISODE was reached, the
+        # environment did not actually terminate; bootstrapping with 0
+        # would tell the value function "no more reward is possible
+        # here" when that isn't true. Use the critic's own estimate of
+        # the real next state in that case instead.
+        if POLICY_TYPE == "transformer" and TRANSFORMER_VARIANT == "lyapunov":
+            if aft_batt <= 0:
+                bootstrap_value = 0.0
+            else:
+                with torch.no_grad():
+                    (_, bootstrap_value_t, _, _, _, _) = model.distribution(seq_tensor(h, device))
+                bootstrap_value = bootstrap_value_t.item()
+            r["bootstrap_value"] = bootstrap_value
+
         rollouts.append(r); loss=""
 
         start = time.perf_counter()
@@ -374,7 +392,7 @@ def run():
             dx,dy=a[0].cpu().numpy()*MAX_MOVE_PER_STEP; tx=float(np.clip(x+dx,0,env.dim-1)); ty=float(np.clip(y+dy,0,env.dim-1))
 
             sol = solarposition.get_solarposition(env.times[min(step, len(env.times) - 1)],
-                                                  env.lat_center + x * env.stp, env.long_center + y * env.stp)
+                                                  env.lat_center + y * env.stp, env.long_center + x * env.stp)
             b = env.get_obfuscation(x, y, min(step, len(env.times) - 1), sol.azimuth.iloc[0],
                                          sol.apparent_zenith.iloc[0]).flatten()
             b_batt = env.ch.get_battery()
@@ -383,7 +401,7 @@ def run():
 
             nx, ny, nyaw = env.ch.get_position()
             sol = solarposition.get_solarposition(env.times[min(step, len(env.times) - 1)],
-                                                  env.lat_center + nx * env.stp, env.long_center + ny * env.stp)
+                                                  env.lat_center + ny * env.stp, env.long_center + nx * env.stp)
             aft = env.get_obfuscation(nx, ny, min(step, len(env.times) - 1), sol.azimuth.iloc[0],
                                         sol.apparent_zenith.iloc[0]).flatten()
             aft_batt = env.ch.get_battery()

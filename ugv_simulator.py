@@ -114,6 +114,13 @@ class UGVSimulator:
         # Simulation timestep
         self.dt = 1.0  # seconds
 
+        # Number of dt-second physics ticks each call to step() advances
+        # through. Referenced explicitly here AND in step()'s inner loop
+        # AND in harvest_energy()'s duration conversion, so all three
+        # stay in sync by construction rather than by two hardcoded
+        # numbers (a `range(60)` and a `/60.0`) happening to agree.
+        self.ticks_per_step = 60
+
         # -----------------------------
         # CPU
         # -----------------------------
@@ -150,7 +157,11 @@ class UGVSimulator:
 
     def reset(self):
         self.battery_mAh = self.max_capacity_mAh
+        self.update_soc()
         self.x, self.y, self.yaw = self.origin
+        self.velocity = 0.0
+        self.angular_velocity = 0.0
+        self.target_velocity = 0.0
         self.energy_used_mAh = 0.0
         self.energy_gained_mAh = 0.0
 
@@ -216,14 +227,6 @@ class UGVSimulator:
             return 0.35
         else:
             return 0.15
-
-    def move(self, target_x, target_y, duration):
-        elapsed = 0.0
-        while elapsed < duration:
-            self.update_vehicle_dynamics(target_x, target_y)
-            elapsed += self.dt
-
-        return self.x, self.y, self.yaw
 
     def update_vehicle_dynamics(self, target_x, target_y):
         dx = target_x - self.x
@@ -367,7 +370,15 @@ class UGVSimulator:
         if self.soc >= 0.999:
             charge_current = 0.0
 
-        self.energy_gained_mAh += charge_current * self.dt / 60.0 * 1000.0
+        # This call represents the whole step() window, not a single
+        # dt tick -- derive that duration explicitly (ticks_per_step *
+        # dt seconds) and convert seconds->hours with /3600, exactly
+        # like consume_motion_energy/consume_idle_energy do. The
+        # previous `self.dt / 60.0` only worked because dt==1.0 and
+        # step()'s loop happened to run 60 times; this ties the two
+        # together instead of relying on that coincidence.
+        seconds_per_step = self.ticks_per_step * self.dt
+        self.energy_gained_mAh += charge_current * (seconds_per_step / 3600.0) * 1000.0
 
     def battery_step(self):
         self.update_battery_state()
@@ -409,7 +420,7 @@ class UGVSimulator:
             target_x = env.boundary_center[0] + dx * scale
             target_y = env.boundary_center[1] + dy * scale
 
-        for second in range(60):
+        for second in range(self.ticks_per_step):
             self.update_vehicle_dynamics(target_x, target_y)
             self.consume_motion_energy()
             self.consume_idle_energy()

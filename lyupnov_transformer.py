@@ -105,6 +105,11 @@ class LyapunovTransformerActorCritic(nn.Module):
             # something the architecture controls -- and that
             # unnormalized latent feeds straight into the actor head.
             norm=nn.LayerNorm(d_model),
+            # The nested-tensor fast path only supports norm_first=False,
+            # so it can never actually be used here -- disabling the
+            # attempt just silences the "enable_nested_tensor is True,
+            # but..." warning without changing any computation.
+            enable_nested_tensor=False,
         )
 
         ############################################################
