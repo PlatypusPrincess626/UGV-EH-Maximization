@@ -90,6 +90,7 @@ class LyapunovTransformerActorCritic(nn.Module):
         self.encoder = nn.TransformerEncoder(
             encoder_layer,
             num_layers=num_layers,
+            norm=nn.LayerNorm(d_model),
         )
 
         ############################################################
