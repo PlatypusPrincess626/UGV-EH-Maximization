@@ -119,7 +119,7 @@ def update(model,opt,rollouts,device, ep):
             barrier_weight = BARRIER_COEF
             dynamics_weight = DYNAMICS_COEF
 
-        (lp, entropy, values, lyapunov, barrier, latent, predicted_next) = model.evaluate_actions(states,actions)
+        (lp, entropy, values, lyapunov, barrier, latent, predicted_next, mean_std) = model.evaluate_actions(states,actions)
         (V_now, V_next, delta_V, predicted_latent, actual_latent) = model.evaluate_transition(states,next_states)
 
         ratio = torch.exp(lp - oldlp)
@@ -148,9 +148,20 @@ def update(model,opt,rollouts,device, ep):
         barrier_loss = (1.0 * battery_loss + 0.5 * boundary_loss + 0.25 * vegetation_loss
                         + 0.25 * velocity_loss + 0.75 * communication_loss)
 
+        # Automatic entropy temperature (SAC-style): alpha adjusts
+        # itself to hold entropy near model.target_entropy, instead
+        # of relying on a fixed ENTROPY_COEF guess. alpha is detached
+        # in the policy bonus (it should only shape the actor, not
+        # get a gradient from the policy loss); entropy is detached
+        # in alpha_loss (alpha should only be adjusted based on the
+        # current entropy level, not try to change it directly).
+        alpha = model.log_alpha.exp()
+        alpha_loss = -(model.log_alpha * (model.target_entropy - entropy.detach())).mean()
+
         loss = (policy_loss
                 + VALUE_COEF * value_loss
-                - ENTROPY_COEF * entropy.mean()
+                - alpha.detach() * entropy.mean()
+                + alpha_loss
                 + lyap_weight * lyapunov_penalty
                 + dynamics_weight * dynamics_loss
                 + barrier_weight * barrier_loss)
@@ -161,7 +172,9 @@ def update(model,opt,rollouts,device, ep):
             f"Dynamics {dynamics_loss:.4f} | "
             f"Barrier {barrier_loss:.4f} | "
             f"KL {approx_kl:.5f} | "
-            f"CF {clip_fraction:.4f}"
+            f"CF {clip_fraction:.4f} | "
+            f"Std {mean_std:.4f} | "
+            f"Alpha {alpha.item():.4f}"
         )
     else:
         lp,entropy,values=model.evaluate_actions(states,actions)
@@ -195,9 +208,11 @@ def run():
                     view_dist=VIEW_DISTANCE,
                     sequence_length=SEQUENCE_LENGTH,
                 ).to(device)
-            actor_params = (list(model.actor.parameters()) + [model.log_std])
+            actor_params = (list(model.actor.parameters()) + list(model.log_std_head.parameters()))
 
             critic_params = list(model.critic.parameters())
+
+            alpha_params = [model.log_alpha]
 
             transformer_params = (
                     list(model.input_projection.parameters()) +
@@ -216,7 +231,8 @@ def run():
             opt = optim.AdamW([{"params": transformer_params, "lr": 1e-3, "weight_decay":1e-5},
                                {"params": actor_params,       "lr": 3e-4, "weight_decay":1e-5},
                                {"params": critic_params,      "lr": 3e-4, "weight_decay":1e-5},
-                               {"params": auxiliary_params,   "lr": 5e-5, "weight_decay":1e-5},],
+                               {"params": auxiliary_params,   "lr": 5e-5, "weight_decay":1e-5},
+                               {"params": alpha_params,       "lr": 3e-4, "weight_decay":0.0},],
                               eps=1e-5,)
         elif TRANSFORMER_VARIANT == "chaotic":
             model = ChebyshevTransformer(VIEW_DISTANCE).to(device)

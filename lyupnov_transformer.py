@@ -4,6 +4,13 @@ import torch.nn as nn
 import torch.nn.functional as F
 from torch.distributions import Normal
 
+# Soft bounds for the state-dependent log_std head (see distribution()).
+# Same numeric range as the earlier hard clamp (std in ~[0.135, 1.65]),
+# but enforced with a smooth tanh squash instead of a hard clamp so
+# there's no dead-gradient zone at the edges.
+LOG_STD_MIN = -2.0
+LOG_STD_MAX = 0.5
+
 
 class LyapunovTransformerActorCritic(nn.Module):
     """
@@ -90,6 +97,13 @@ class LyapunovTransformerActorCritic(nn.Module):
         self.encoder = nn.TransformerEncoder(
             encoder_layer,
             num_layers=num_layers,
+            # norm_first=True (Pre-LN) only normalizes each sublayer's
+            # input -- the residual stream itself is never renormalized
+            # unless a closing norm is supplied here. Without it, the
+            # scale of the encoder's output is whatever falls out of
+            # accumulated residual additions at initialization, not
+            # something the architecture controls -- and that
+            # unnormalized latent feeds straight into the actor head.
             norm=nn.LayerNorm(d_model),
         )
 
@@ -201,11 +215,28 @@ class LyapunovTransformerActorCritic(nn.Module):
 
         ############################################################
         # Gaussian exploration
+        #
+        # log_std is now a function of the latent (like the mean),
+        # not a single global scalar -- the policy can stay
+        # exploratory in states it hasn't resolved yet and sharpen
+        # up in states it has, rather than PPO being forced to pick
+        # one exploration level for every state at once.
         ############################################################
 
-        self.log_std = nn.Parameter(
-            torch.full((action_dim,), -0.5)
-        )
+        self.log_std_head = nn.Linear(d_model, action_dim)
+
+        ############################################################
+        # Automatic Entropy Temperature (SAC-style)
+        #
+        # Replaces a fixed ENTROPY_COEF with a learned multiplier
+        # that targets a specific entropy level directly: alpha
+        # grows when entropy drifts below target_entropy, shrinks
+        # when it's comfortably above. See update() in main.py for
+        # the alpha_loss that trains this.
+        ############################################################
+
+        self.target_entropy = -float(action_dim)
+        self.log_alpha = nn.Parameter(torch.zeros(1))
 
         ############################################################
         # Weight Initialization
@@ -379,8 +410,16 @@ class LyapunovTransformerActorCritic(nn.Module):
 
         Returns
         -------
-        mean : Tensor
-            Mean action in [-1,1]
+        raw_mean : Tensor
+            Unbounded location parameter of the pre-squash Gaussian.
+            NOT itself the action -- see `act()`/`fast_act()`, which
+            apply `tanh` once, to the sample drawn from this Gaussian,
+            so the bound to (-1, 1) is enforced exactly once and
+            training/execution always see the identical value.
+
+        raw_log_std : Tensor
+            Unbounded, per-state log_std output. Squashed into
+            [LOG_STD_MIN, LOG_STD_MAX] in `distribution()`, not here.
 
         critic : Tensor
             PPO value estimate
@@ -399,11 +438,13 @@ class LyapunovTransformerActorCritic(nn.Module):
 
         ##########################################
         # Actor
+        #
+        # No tanh here -- squashing happens once,
+        # at the sampled point, in act()/fast_act().
         ##########################################
 
-        mean = torch.tanh(
-            self.actor(latent)
-        )
+        raw_mean = self.actor(latent)
+        raw_log_std = self.log_std_head(latent)
 
         ##########################################
         # Critic
@@ -412,7 +453,8 @@ class LyapunovTransformerActorCritic(nn.Module):
         critic = self.critic(latent).squeeze(-1)
 
         return (
-            mean,
+            raw_mean,
+            raw_log_std,
             critic,
             V,
             barrier,
@@ -426,12 +468,15 @@ class LyapunovTransformerActorCritic(nn.Module):
 
     def distribution(self, sequence):
         """
-        Returns the policy distribution together with all
-        auxiliary outputs.
+        Returns the pre-squash policy distribution together with all
+        auxiliary outputs. This Normal lives in unbounded space --
+        actions are obtained by sampling from it and then applying
+        `tanh` (see `_squash`), never by clamping.
         """
 
         (
-            mean,
+            raw_mean,
+            raw_log_std,
             critic,
             lyapunov,
             barrier,
@@ -439,9 +484,17 @@ class LyapunovTransformerActorCritic(nn.Module):
             next_latent,
         ) = self(sequence)
 
+        # Smooth bound instead of a hard clamp: tanh saturates
+        # gracefully and always has a nonzero gradient pointing back
+        # toward the interior, so raw_log_std can never get stuck at
+        # a dead boundary the way a plain .clamp() can.
+        log_std = LOG_STD_MIN + 0.5 * (LOG_STD_MAX - LOG_STD_MIN) * (
+            torch.tanh(raw_log_std) + 1.0
+        )
+
         dist = Normal(
-            mean,
-            self.log_std.exp().expand_as(mean),
+            raw_mean,
+            log_std.exp(),
         )
 
         return (
@@ -452,6 +505,19 @@ class LyapunovTransformerActorCritic(nn.Module):
             latent,
             next_latent,
         )
+
+    ############################################################
+    # Tanh Squashing
+    #
+    # Applied once, to a sample z from the pre-squash Gaussian,
+    # never to the mean and never via a hard clamp. Returns the
+    # bounded action together with the log-det-Jacobian correction
+    # needed to turn log N(z) into a correct log-density on
+    # tanh(z). Using this consistently in act()/fast_act() and
+    # evaluate_actions() means the value scored for training and
+    # the value sent to the environment are always literally the
+    # same tensor -- there is nothing else to keep in sync.
+    ############################################################
 
     _TANH_EPS = 1e-6
 
@@ -470,6 +536,10 @@ class LyapunovTransformerActorCritic(nn.Module):
 
         raw_mean = self.actor(latent)
 
+        # Deterministic action: squash the mean directly. tanh
+        # guarantees this lands in (-1, 1) on its own -- no clamp
+        # step, so there's no separate "training value" vs
+        # "execution value" to reconcile.
         action, _ = self._squash(raw_mean)
 
         return (
@@ -493,11 +563,17 @@ class LyapunovTransformerActorCritic(nn.Module):
 
         Returns
         -------
-        action
-        log_probability
+        action : Tensor
+            Bounded to (-1, 1) by construction (tanh), no clamp.
+        raw_z : Tensor
+            The pre-squash Gaussian sample. Store this in the
+            rollout buffer (not `action`) -- `evaluate_actions`
+            needs it to recompute an exact, correctly-corrected
+            log_prob for this same physical action under updated
+            policy parameters.
+        log_prob
         critic
         lyapunov
-        latent
         """
 
         (
@@ -510,20 +586,20 @@ class LyapunovTransformerActorCritic(nn.Module):
         ) = self.distribution(sequence)
 
         if deterministic:
-            raw_action = dist.mean
+            z = dist.mean
         else:
-            raw_action = dist.rsample()
+            z = dist.rsample()
 
-        action, correction = self._squash(raw_action)
+        action, correction = self._squash(z)
 
         log_prob = (
-            (dist.log_prob(raw_action) - correction)
+            (dist.log_prob(z) - correction)
             .sum(dim=-1)
         )
 
         return (
             action,
-            raw_action,
+            z,
             log_prob,
             critic,
             lyapunov,
@@ -546,13 +622,23 @@ class LyapunovTransformerActorCritic(nn.Module):
 
         Used during PPO optimization.
 
-        `actions` must be the *raw* (pre-clamp) actions returned as
-        `raw_action` by `act()`/`fast_act()` -- not the clamped values
-        that were sent to the environment. Evaluating on the clamped
-        values here would reintroduce the same boundary-density bias
-        the log_prob fix in `act()` was meant to remove, since old and
-        new log-probs would then disagree about which distribution
-        actually produced the stored action.
+        `actions` here must be `z`, the pre-squash Gaussian sample
+        returned by `act()` -- not `tanh(z)`. The physical action
+        actually executed was `tanh(z)`; passing `z` back in lets us
+        recompute `log N(z; new_mean, new_std) - correction(z)`,
+        which is the exact, Jacobian-corrected log-probability of
+        that same physical action under the updated policy. There is
+        no clamp anywhere in this path, so nothing here needs to be
+        kept in sync with a separately-clipped execution value.
+
+        Entropy is reported for the pre-squash Gaussian, which is the
+        usual practical proxy for the (harder to compute in closed
+        form) entropy of the squashed distribution -- it still serves
+        its purpose as an exploration bonus.
+
+        `mean_std` is included purely for logging (e.g. printing
+        exploration level during training) -- it plays no role in
+        any loss.
         """
 
         (
@@ -564,11 +650,11 @@ class LyapunovTransformerActorCritic(nn.Module):
             next_latent,
         ) = self.distribution(sequence)
 
-        raw_actions = actions
-        _, correction = self._squash(raw_actions)
+        z = actions
+        _, correction = self._squash(z)
 
         log_probs = (
-            (dist.log_prob(raw_actions) - correction)
+            (dist.log_prob(z) - correction)
             .sum(dim=-1)
         )
 
@@ -576,6 +662,8 @@ class LyapunovTransformerActorCritic(nn.Module):
             dist.entropy()
             .sum(dim=-1)
         )
+
+        mean_std = dist.stddev.mean().detach()
 
         return (
             log_probs,
@@ -585,6 +673,7 @@ class LyapunovTransformerActorCritic(nn.Module):
             barrier,
             latent,
             next_latent,
+            mean_std,
         )
 
     ############################################################
@@ -615,6 +704,7 @@ class LyapunovTransformerActorCritic(nn.Module):
         (
             _,
             _,
+            _,
             V_current,
             _,
             latent,
@@ -622,6 +712,7 @@ class LyapunovTransformerActorCritic(nn.Module):
         ) = self(current_sequence)
 
         (
+            _,
             _,
             _,
             V_next,
@@ -663,12 +754,14 @@ class LyapunovTransformerActorCritic(nn.Module):
             _,
             _,
             _,
+            _,
             barrier_now,
             _,
             _,
         ) = self(current_sequence)
 
         (
+            _,
             _,
             _,
             _,
