@@ -1,4 +1,3 @@
-
 import csv, math, random
 from collections import deque
 from pathlib import Path
@@ -251,7 +250,7 @@ def run():
             if POLICY_TYPE == "transformer":
                 with torch.no_grad():
                     if TRANSFORMER_VARIANT == "lyapunov":
-                        (a, lp, v, lyapunov, barrier, latent, predicted_next) = model.act(s)
+                        (a, raw_a, lp, v, lyapunov, barrier, latent, predicted_next) = model.act(s)
                         current_action = a[0].detach().cpu().numpy()
                         if previous_action is None:
                             smoothness = 0.0
@@ -299,7 +298,7 @@ def run():
 
             rew=reward_fn(before, after, tel, aft_batt-b_batt) - ACTION_SMOOTHNESS*smoothness
             total+=rew; previous_action=current_action
-            r["states"].append(np.asarray(h)); r["actions"].append(a[0].cpu().numpy())
+            r["states"].append(np.asarray(h)); r["actions"].append(raw_a[0].cpu().numpy())
             r["logps"].append(lp.item()); r["values"].append(v.item()); r["rewards"].append(rew)
             x,y,yaw=env.ch.get_position(); h.append(obs(env,x,y,yaw,min(step+1,MAX_STEPS_PER_EPISODE-1)))
             r["next_states"].append(np.asarray(h))
@@ -340,7 +339,7 @@ def run():
             if POLICY_TYPE == "transformer":
                 with torch.no_grad():
                     if TRANSFORMER_VARIANT == "lyapunov":
-                        (a, lp, v, lyapunov, barrier, latent, predicted_next) = model.fast_act(seq_tensor(h,device))
+                        (a, raw_a, lp, v, lyapunov, barrier, latent, predicted_next) = model.fast_act(seq_tensor(h,device))
                     else:
                         a, lp, v = model.act(seq_tensor(h,device),True)
             else:

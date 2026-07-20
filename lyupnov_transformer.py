@@ -452,6 +452,13 @@ class LyapunovTransformerActorCritic(nn.Module):
             next_latent,
         )
 
+    _TANH_EPS = 1e-6
+
+    def _squash(self, z):
+        action = torch.tanh(z)
+        correction = torch.log(1.0 - action.pow(2) + self._TANH_EPS)
+        return action, correction
+
     ############################################################
     # Action Selection
     ############################################################
@@ -460,24 +467,13 @@ class LyapunovTransformerActorCritic(nn.Module):
                  ):
         latent = self.encode(sequence)
 
-        mean = torch.tanh(
-            self.actor(latent)
-        )
+        raw_mean = self.actor(latent)
 
-        dist = Normal(
-            mean,
-            self.log_std.exp().expand_as(mean),
-        )
-
-        raw_action = dist.mean
-
-        action = raw_action.clamp(
-            -0.999,
-            0.999,
-        )
+        action, _ = self._squash(raw_mean)
 
         return (
             action,
+            raw_mean,
             None,
             None,
             None,
@@ -517,18 +513,16 @@ class LyapunovTransformerActorCritic(nn.Module):
         else:
             raw_action = dist.rsample()
 
-        action = raw_action.clamp(
-            -0.999,
-            0.999,
-        )
+        action, correction = self._squash(raw_action)
 
         log_prob = (
-            dist.log_prob(action)
+            (dist.log_prob(raw_action) - correction)
             .sum(dim=-1)
         )
 
         return (
             action,
+            raw_action,
             log_prob,
             critic,
             lyapunov,
@@ -550,6 +544,14 @@ class LyapunovTransformerActorCritic(nn.Module):
         Evaluates previously sampled actions.
 
         Used during PPO optimization.
+
+        `actions` must be the *raw* (pre-clamp) actions returned as
+        `raw_action` by `act()`/`fast_act()` -- not the clamped values
+        that were sent to the environment. Evaluating on the clamped
+        values here would reintroduce the same boundary-density bias
+        the log_prob fix in `act()` was meant to remove, since old and
+        new log-probs would then disagree about which distribution
+        actually produced the stored action.
         """
 
         (
@@ -561,8 +563,11 @@ class LyapunovTransformerActorCritic(nn.Module):
             next_latent,
         ) = self.distribution(sequence)
 
+        raw_actions = actions
+        _, correction = self._squash(raw_actions)
+
         log_probs = (
-            dist.log_prob(actions)
+            (dist.log_prob(raw_actions) - correction)
             .sum(dim=-1)
         )
 
