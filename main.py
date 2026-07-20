@@ -28,7 +28,7 @@ else:
     TRANSFORMER_VARIANT = "normal"
 # ============================================================
 
-TOTAL_EPISODES=1; MAX_STEPS_PER_EPISODE=720; VIEW_DISTANCE=20
+TOTAL_EPISODES=1000; MAX_STEPS_PER_EPISODE=720; VIEW_DISTANCE=20
 SEQUENCE_LENGTH=32; UPDATE_EVERY_EPISODES=2; GAMMA=.99; GAE_LAMBDA=.95
 LR=3e-4; MAX_MOVE_PER_STEP=20.0; ENTROPY_COEF=.01; VALUE_COEF=.5
 
@@ -39,6 +39,26 @@ LYAPUNOV_COEF = 0.25; DYNAMICS_COEF = 0.10; LATENT_COEF = 0.05
 BARRIER_COEF = 0.20; ACTION_SMOOTHNESS = 0.01; LYAPUNOV_MARGIN = 0.01
 BATTERY_MARGIN = 0.10; BOUNDARY_MARGIN = 0.10; VEGETATION_MARGIN = 0.05
 VELOCITY_MARGIN = 0.05; COMM_MARGIN = 0.10; CLIP_EPS =0.20; LYAPUNOV_ALPHA = 0.02
+
+###############################################################
+# Convergence Monitoring / Checkpointing
+#
+# Rather than guessing an episode count up front: track moving
+# averages of reward and of the Lyapunov/barrier penalties, save
+# the best-so-far model whenever the reward average improves, and
+# flag (and optionally stop on) convergence once the stability
+# constraints are comfortably satisfied AND reward has stopped
+# improving for a while. Convergence is only ever checked once the
+# full-weight regime (ep>=300) is active -- checking earlier would
+# just be measuring the pre-curriculum warmup, not real convergence.
+###############################################################
+REWARD_WINDOW = 50              # episodes averaged for the reward moving average
+STABILITY_WINDOW = 20           # update() calls averaged for Lyapunov/barrier stability
+CONVERGENCE_PATIENCE = 10       # consecutive stability checks with no new best reward
+LYAPUNOV_STABLE_THRESHOLD = 2 * LYAPUNOV_MARGIN
+BARRIER_STABLE_THRESHOLD = 0.05
+CHECKPOINT_EVERY = 100          # periodic safety-net checkpoint, regardless of performance
+AUTO_STOP_ON_CONVERGENCE = True # set False to just log/checkpoint without ending the run
 
 # Format as YYYY-MM-DD_HH-MM-SS
 timestamp = datetime.datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
@@ -176,6 +196,8 @@ def update(model,opt,rollouts,device, ep):
             f"Std {mean_std:.4f} | "
             f"Alpha {alpha.item():.4f}"
         )
+        diag_lyap = float(lyapunov_penalty.item())
+        diag_barrier = float(barrier_loss.item())
     else:
         lp,entropy,values=model.evaluate_actions(states,actions)
         # Single efficient batched actor-critic update; no duplicate forward pass per step.
@@ -188,8 +210,10 @@ def update(model,opt,rollouts,device, ep):
         loss = (policy_loss
                 + VALUE_COEF * F.mse_loss(values, returns)
                 - ENTROPY_COEF * entropy.mean())
+        diag_lyap = None
+        diag_barrier = None
     opt.zero_grad(); loss.backward(); torch.nn.utils.clip_grad_norm_(model.parameters(),1.0); opt.step()
-    return float(loss.item())
+    return float(loss.item()), diag_lyap, diag_barrier
 
 def run():
     device=torch.device("cuda" if torch.cuda.is_available() else "cpu")
@@ -253,6 +277,16 @@ def run():
     epw=csv.DictWriter(epfile,fieldnames=["episode","steps","final_battery","total_reward","loss"])
     epw.writeheader()
     rollouts=[]
+
+    # Convergence monitoring / checkpointing state
+    ckpt_dir = OUT / "checkpoints"; ckpt_dir.mkdir(exist_ok=True)
+    reward_history = deque(maxlen=REWARD_WINDOW)
+    lyap_history = deque(maxlen=STABILITY_WINDOW)
+    barrier_history = deque(maxlen=STABILITY_WINDOW)
+    best_avg_reward = -float("inf")
+    checks_since_best = 0
+    converged = False
+
     for ep in range(1,TOTAL_EPISODES+1):
         env.place_devices(); env.reset(); x,y,yaw=env.ch.get_position()
         h=deque([obs(env,x,y,yaw,0)]*SEQUENCE_LENGTH,maxlen=SEQUENCE_LENGTH);total=0;
@@ -338,13 +372,59 @@ def run():
             r["bootstrap_value"] = bootstrap_value
 
         rollouts.append(r); loss=""
+        reward_history.append(total)
 
         start = time.perf_counter()
         # 3. Training Update Logic
         if POLICY_TYPE == "transformer":
             if ep % UPDATE_EVERY_EPISODES == 0:
-                loss = update(model, opt, rollouts, device, ep)
+                loss, diag_lyap, diag_barrier = update(model, opt, rollouts, device, ep)
                 rollouts = []
+
+                if diag_lyap is not None:
+                    lyap_history.append(diag_lyap)
+                    barrier_history.append(diag_barrier)
+
+                    ready = (
+                        ep >= 300
+                        and len(lyap_history) == STABILITY_WINDOW
+                        and len(reward_history) == REWARD_WINDOW
+                    )
+                    if ready:
+                        avg_lyap = sum(lyap_history) / len(lyap_history)
+                        avg_barrier = sum(barrier_history) / len(barrier_history)
+                        avg_reward = sum(reward_history) / len(reward_history)
+                        stable = (
+                            avg_lyap <= LYAPUNOV_STABLE_THRESHOLD
+                            and avg_barrier <= BARRIER_STABLE_THRESHOLD
+                        )
+
+                        if avg_reward > best_avg_reward:
+                            best_avg_reward = avg_reward
+                            checks_since_best = 0
+                            torch.save(model.state_dict(), ckpt_dir / "best.pt")
+                        else:
+                            checks_since_best += 1
+
+                        print(
+                            f"[Convergence check] ep {ep} | "
+                            f"avg_reward(last {REWARD_WINDOW}) {avg_reward:.2f} "
+                            f"(best {best_avg_reward:.2f}) | "
+                            f"avg_lyap(last {STABILITY_WINDOW}) {avg_lyap:.4f} | "
+                            f"avg_barrier(last {STABILITY_WINDOW}) {avg_barrier:.4f} | "
+                            f"stable={stable} | "
+                            f"checks_since_best={checks_since_best}/{CONVERGENCE_PATIENCE}"
+                        )
+
+                        if stable and checks_since_best >= CONVERGENCE_PATIENCE:
+                            print(
+                                f"\n[Convergence] Lyapunov/barrier stable and reward "
+                                f"plateaued at episode {ep} -- "
+                                f"avg_reward={avg_reward:.2f}, avg_lyap={avg_lyap:.4f}, "
+                                f"avg_barrier={avg_barrier:.4f}."
+                            )
+                            torch.save(model.state_dict(), ckpt_dir / "converged.pt")
+                            converged = True
         else:
             # PSO Update: Evaluate current particle and update swarm
             model.evaluate_particle(model.current_particle, total)
@@ -352,12 +432,19 @@ def run():
                 model.update_swarm()
             loss = "N/A (PSO)"
 
+        if ep % CHECKPOINT_EVERY == 0:
+            torch.save(model.state_dict(), ckpt_dir / f"episode_{ep}.pt")
+
         elapsed = time.perf_counter() - start
         total_inference_time += elapsed
         total_inference_steps += 1
 
         steps_taken = len(r["rewards"]); log_status(ep, TOTAL_EPISODES, steps_taken, total, aft_batt, loss)
         epw.writerow(dict(episode=ep,steps=len(r["rewards"]),final_battery=aft_batt,total_reward=total,loss=loss)); epfile.flush()
+
+        if converged and AUTO_STOP_ON_CONVERGENCE:
+            print(f"[Convergence] Stopping training early at episode {ep}/{TOTAL_EPISODES}.")
+            break
 
     # final deterministic evaluation, step-level telemetry CSV
     env.place_devices(); env.reset(); x,y,yaw=env.ch.get_position(); h=deque([obs(env,x,y,yaw,0)]*SEQUENCE_LENGTH,maxlen=SEQUENCE_LENGTH)
