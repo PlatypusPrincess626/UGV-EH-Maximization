@@ -134,8 +134,21 @@ class sim_env:
                 if max_val > 0:
                     data = (data / max_val) * 50.0
 
-                if data.shape != (self.dim+self.PAD, self.dim+self.PAD):
-                    zoom_factors = ((self.dim+self.PAD) / data.shape[0], (self.dim+self.PAD) / data.shape[1])
+                # topo_mask must be padded on BOTH sides (2*PAD), matching
+                # foliage_mask in reset_foliage() -- get_obfuscation()'s
+                # ray march can travel up to `self.dim` cells from the
+                # sample point and converts coordinates with a single
+                # `+ self.PAD` offset, which only stays in-bounds if
+                # there's PAD of room on both the negative AND positive
+                # side. With only 1*PAD, any ray heading toward the
+                # positive side runs out of array before it's actually
+                # left the map, and the ray march silently terminates
+                # early (reporting whatever partial transmittance it had
+                # so far as if that were the true line-of-sight result).
+                target_shape = (self.dim + 2 * self.PAD, self.dim + 2 * self.PAD)
+
+                if data.shape != target_shape:
+                    zoom_factors = (target_shape[0] / data.shape[0], target_shape[1] / data.shape[1])
                     self.topo_mask = zoom(data, zoom_factors, order=1)
                 else:
                     self.topo_mask = data
@@ -143,7 +156,7 @@ class sim_env:
                 print(f"Successfully loaded topography: {self.topo_mask.shape}")
         except Exception as e:
             print(f"Error loading topography file: {e}")
-            self.topo_mask = np.zeros((self.dim+self.PAD, self.dim+self.PAD))
+            self.topo_mask = np.zeros((self.dim + 2 * self.PAD, self.dim + 2 * self.PAD))
 
         self.reset_foliage()
         return True
