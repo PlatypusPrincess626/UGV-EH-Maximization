@@ -404,7 +404,7 @@ def run():
                 bootstrap_value = 0.0
             else:
                 with torch.no_grad():
-                    (_, bootstrap_value_t, _, _, _, _) = model.distribution(seq_tensor(h, device))
+                    (_, bootstrap_value_t, _, _, _, _, _) = model.distribution(seq_tensor(h, device))
                 bootstrap_value = bootstrap_value_t.item()
             r["bootstrap_value"] = bootstrap_value
 
