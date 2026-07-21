@@ -8,10 +8,8 @@ from sklearn.cluster import KMeans
 from scipy import signal
 from scipy.signal import windows
 from scipy.ndimage import gaussian_filter
-import math
-import rasterio
 from scipy.ndimage import zoom
-from pathlib import Path
+import math
 
 # Custom Packages
 import ugv_simulator
@@ -88,8 +86,6 @@ class sim_env:
         self.view_dist = self.dim
 
         self.topo_mask, self.foliage_mask = None, None
-        script_dir = Path(__file__).resolve().parent
-        self.topo_file_path = script_dir / 'topo_data.tif'
         self.obfuscation_array = self.init_interference()
 
     def reset(self):
@@ -99,6 +95,7 @@ class sim_env:
         new_x = self.boundary_center[0] + r * np.cos(theta)
         new_y = self.boundary_center[1] + r * np.sin(theta)
         self.ch.update_telemetry(new_x, new_y, np.random.uniform(-np.pi, np.pi))
+        self.reset_terrain()
         self.reset_foliage()
         self.ch.init_solar_potential(self)
 
@@ -146,44 +143,74 @@ class sim_env:
         return flg_done
 
     def init_interference(self):
-        with open(self.topo_file_path, 'rb') as f:
-            header = f.read(4)
-            print(f"File header (hex): {header.hex()}")
-        try:
-            with rasterio.open(self.topo_file_path) as src:
-                data = src.read(1)
-                data = data - np.min(data)
-                max_val = np.max(data)
-
-                if max_val > 0:
-                    data = (data / max_val) * 50.0
-
-                # topo_mask must be padded on BOTH sides (2*PAD), matching
-                # foliage_mask in reset_foliage() -- get_obfuscation()'s
-                # ray march can travel up to `self.dim` cells from the
-                # sample point and converts coordinates with a single
-                # `+ self.PAD` offset, which only stays in-bounds if
-                # there's PAD of room on both the negative AND positive
-                # side. With only 1*PAD, any ray heading toward the
-                # positive side runs out of array before it's actually
-                # left the map, and the ray march silently terminates
-                # early (reporting whatever partial transmittance it had
-                # so far as if that were the true line-of-sight result).
-                target_shape = (self.dim + 2 * self.PAD, self.dim + 2 * self.PAD)
-
-                if data.shape != target_shape:
-                    zoom_factors = (target_shape[0] / data.shape[0], target_shape[1] / data.shape[1])
-                    self.topo_mask = zoom(data, zoom_factors, order=1)
-                else:
-                    self.topo_mask = data
-
-                print(f"Successfully loaded topography: {self.topo_mask.shape}")
-        except Exception as e:
-            print(f"Error loading topography file: {e}")
-            self.topo_mask = np.zeros((self.dim + 2 * self.PAD, self.dim + 2 * self.PAD))
-
+        self.reset_terrain()
         self.reset_foliage()
         return True
+
+    def reset_terrain(self):
+        # topo_mask must be padded on BOTH sides (2*PAD), matching
+        # foliage_mask in reset_foliage() -- get_obfuscation()'s ray
+        # march can travel up to `self.dim` cells from the sample
+        # point and converts coordinates with a single `+ self.PAD`
+        # offset, which only stays in-bounds if there's PAD of room
+        # on both the negative AND positive side.
+        target_shape = (self.dim + 2 * self.PAD, self.dim + 2 * self.PAD)
+
+        data = self._generate_woodland_terrain(target_shape)
+        data = data - np.min(data)
+        max_val = np.max(data)
+        if max_val > 0:
+            data = (data / max_val) * 50.0
+
+        self.topo_mask = data
+        return True
+
+    def _generate_woodland_terrain(self, shape, base_res=64, num_octaves=5, persistence=0.55):
+        """
+        Procedurally generates rolling, natural-looking terrain --
+        multiple octaves of isotropic Gaussian-smoothed noise
+        (fractional-Brownian-motion style) -- instead of loading a
+        real DEM. This specifically avoids the kind of large, one-
+        directional slope a real topo_data.tif turned out to have
+        (~97m west-to-east across the whole map, ~3m north-to-south),
+        which was confounding the RL task: it made "always move this
+        way" a trivially reward-optimal strategy on its own, largely
+        independent of the foliage dynamics the scenario is actually
+        meant to be about. Isotropic Gaussian smoothing has no
+        preferred direction by construction, so any residual slope
+        here is finite-sample noise, not a structural feature.
+
+        No fixed seed -- uses the ambient numpy random state, same
+        as reset_foliage(), so a fresh draw is generated every call
+        rather than reusing one fixed terrain the whole run. Called
+        every reset() (like foliage), not just once at __init__, so
+        no single draw's structure can be memorized or exploited as
+        a persistent bias across training.
+
+        Generated at a small base_res and upsampled (zoom) to the
+        full target shape rather than smoothed directly at full
+        resolution -- the broad, low-frequency octaves need large
+        Gaussian sigmas, which are cheap on a small grid and very
+        expensive (multiple seconds) directly on a ~1273x1273 array.
+        Terrain doesn't need cell-level detail for this to look and
+        behave like natural rolling terrain once upsampled.
+        """
+        result = np.zeros((base_res, base_res), dtype=float)
+        amplitude = 1.0
+        total_amplitude = 0.0
+
+        for octave in range(num_octaves):
+            sigma = max(base_res / (4.0 * (2 ** octave)), 1.0)
+            noise = np.random.standard_normal((base_res, base_res))
+            smoothed = gaussian_filter(noise, sigma=sigma)
+            result += amplitude * smoothed
+            total_amplitude += amplitude
+            amplitude *= persistence
+
+        result /= total_amplitude
+
+        zoom_factors = (shape[0] / base_res, shape[1] / base_res)
+        return zoom(result, zoom_factors, order=1)
 
     def reset_foliage(self):
         choices = [0, 5, 10, 15, 20]
