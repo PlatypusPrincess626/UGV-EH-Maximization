@@ -528,6 +528,7 @@ class LyapunovTransformerActorCritic(nn.Module):
             barrier,
             latent,
             next_latent,
+            raw_log_std,
         )
 
     ############################################################
@@ -607,6 +608,7 @@ class LyapunovTransformerActorCritic(nn.Module):
             barrier,
             latent,
             next_latent,
+            _,
         ) = self.distribution(sequence)
 
         if deterministic:
@@ -660,9 +662,13 @@ class LyapunovTransformerActorCritic(nn.Module):
         form) entropy of the squashed distribution -- it still serves
         its purpose as an exploration bonus.
 
-        `mean_std` is included purely for logging (e.g. printing
-        exploration level during training) -- it plays no role in
-        any loss.
+        `mean_std` and `mean_raw_log_std` are included purely for
+        logging (exploration level during training) -- neither plays
+        any role in any loss. `mean_raw_log_std` in particular is the
+        pre-tanh log_std_head output, logged directly rather than
+        inferred backward from Std, so saturation of the smooth bound
+        can be confirmed (or ruled out) from a real number instead of
+        a guess.
         """
 
         (
@@ -672,6 +678,7 @@ class LyapunovTransformerActorCritic(nn.Module):
             barrier,
             latent,
             next_latent,
+            raw_log_std,
         ) = self.distribution(sequence)
 
         z = actions
@@ -688,6 +695,7 @@ class LyapunovTransformerActorCritic(nn.Module):
         )
 
         mean_std = dist.stddev.mean().detach()
+        mean_raw_log_std = raw_log_std.mean().detach()
 
         return (
             log_probs,
@@ -698,6 +706,7 @@ class LyapunovTransformerActorCritic(nn.Module):
             latent,
             next_latent,
             mean_std,
+            mean_raw_log_std,
         )
 
     ############################################################
