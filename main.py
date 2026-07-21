@@ -39,6 +39,12 @@ LYAPUNOV_COEF = 0.25; DYNAMICS_COEF = 0.10; LATENT_COEF = 0.05
 BARRIER_COEF = 0.20; ACTION_SMOOTHNESS = 0.01; LYAPUNOV_MARGIN = 0.01
 BATTERY_MARGIN = 0.10; BOUNDARY_MARGIN = 0.10; VEGETATION_MARGIN = 0.05
 VELOCITY_MARGIN = 0.05; COMM_MARGIN = 0.10; CLIP_EPS =0.20; LYAPUNOV_ALPHA = 0.02
+# Direct L2 pull on raw_log_std toward the unsaturated region -- see
+# evaluate_actions()'s raw_log_std_reg docstring. Small and constant
+# on purpose: it's meant to be a background restoring force, not to
+# dominate the entropy/reward-driven terms that actually determine
+# where log_std should settle.
+RAW_LOG_STD_REG_COEF = 1e-2
 
 ###############################################################
 # Convergence Monitoring / Checkpointing
@@ -139,7 +145,7 @@ def update(model,opt,rollouts,device, ep):
             barrier_weight = BARRIER_COEF
             dynamics_weight = DYNAMICS_COEF
 
-        (lp, entropy, values, lyapunov, barrier, latent, predicted_next, mean_std, mean_raw_log_std) = model.evaluate_actions(states,actions)
+        (lp, entropy, values, lyapunov, barrier, latent, predicted_next, mean_std, mean_raw_log_std, raw_log_std_reg) = model.evaluate_actions(states,actions)
         (V_now, V_next, delta_V, predicted_latent, actual_latent) = model.evaluate_transition(states,next_states)
 
         ratio = torch.exp(lp - oldlp)
@@ -182,6 +188,7 @@ def update(model,opt,rollouts,device, ep):
                 + VALUE_COEF * value_loss
                 - alpha.detach() * entropy.mean()
                 + alpha_loss
+                + RAW_LOG_STD_REG_COEF * raw_log_std_reg
                 + lyap_weight * lyapunov_penalty
                 + dynamics_weight * dynamics_loss
                 + barrier_weight * barrier_loss)
@@ -261,20 +268,21 @@ def run():
                                {"params": auxiliary_params,   "lr": 5e-5, "weight_decay":1e-5},
                                # log_std_head is a full weight matrix
                                # (Linear(d_model, action_dim)), not a
-                               # single scalar like log_alpha -- sized
-                               # more conservatively (~3-4x, not ~17x)
-                               # to raise the step-size ceiling for a
-                               # tanh-attenuated gradient without
-                               # risking destabilizing an actual
-                               # weight matrix. Diagnostic, not a
-                               # confirmed fix: if Std still doesn't
-                               # move after this, the bottleneck isn't
-                               # step size (see mean_raw_log_std in
-                               # the print line -- if it's frozen even
-                               # with this LR, that points at a weak
-                               # upstream gradient or a genuine
-                               # temporary equilibrium instead).
-                               {"params": log_std_params,     "lr": 1e-3, "weight_decay":1e-5},
+                               # single scalar like log_alpha.
+                               # Previously bumped to 1e-3 as a
+                               # diagnostic for a step-size-capped
+                               # gradient; observed behavior (large,
+                               # non-convergent swings in
+                               # mean_raw_log_std across checks, not a
+                               # frozen value) pointed at noise
+                               # amplification instead, so pulled back
+                               # toward the original shared rate.
+                               # raw_log_std_reg (see loss above) now
+                               # supplies a noise-independent
+                               # restoring force instead of relying on
+                               # a larger step size through a noisy
+                               # gradient.
+                               {"params": log_std_params,     "lr": 3e-4, "weight_decay":1e-5},
                                # log_alpha is a single scalar, not a
                                # full parameter tensor. Calibrated for
                                # TOTAL_EPISODES=1000 (500 updates):

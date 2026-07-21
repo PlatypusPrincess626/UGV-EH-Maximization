@@ -669,6 +669,15 @@ class LyapunovTransformerActorCritic(nn.Module):
         inferred backward from Std, so saturation of the smooth bound
         can be confirmed (or ruled out) from a real number instead of
         a guess.
+
+        `raw_log_std_reg` (NOT detached) is a direct L2 penalty on
+        raw_log_std itself, meant to be added to the loss in
+        main.py. Its gradient (proportional to raw_log_std) reaches
+        log_std_head without passing through tanh's saturating
+        derivative at all -- unlike the entropy bonus or the reward-
+        driven policy gradient, it can't be drowned out by noise in
+        either of those pathways. It's a small, constant, always-
+        present pull back toward the unsaturated region.
         """
 
         (
@@ -696,6 +705,7 @@ class LyapunovTransformerActorCritic(nn.Module):
 
         mean_std = dist.stddev.mean().detach()
         mean_raw_log_std = raw_log_std.mean().detach()
+        raw_log_std_reg = raw_log_std.pow(2).mean()
 
         return (
             log_probs,
@@ -707,6 +717,7 @@ class LyapunovTransformerActorCritic(nn.Module):
             next_latent,
             mean_std,
             mean_raw_log_std,
+            raw_log_std_reg,
         )
 
     ############################################################
