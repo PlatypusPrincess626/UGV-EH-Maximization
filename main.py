@@ -65,6 +65,22 @@ LYAPUNOV_STABLE_THRESHOLD = 2 * LYAPUNOV_MARGIN
 BARRIER_STABLE_THRESHOLD = 0.05
 CHECKPOINT_EVERY = 100          # periodic safety-net checkpoint, regardless of performance
 AUTO_STOP_ON_CONVERGENCE = True # set False to just log/checkpoint without ending the run
+# Reward readings are not trustworthy evidence of a real plateau while
+# Std is still pinned near the exploration ceiling (LOG_STD_MAX=0.5 ->
+# Std~1.65) -- a flat reward there can mean "hasn't started learning
+# yet" just as easily as "found the optimum," and the two are
+# indistinguishable from reward alone. Require avg_std to have
+# actually come down substantially before convergence is even
+# eligible to fire, on top of the existing Lyapunov/barrier/reward
+# checks.
+STD_CLEARED_THRESHOLD = 1.0
+# Lyapunov/barrier being stable and reward "not improving" are both
+# satisfied just as easily by "found the optimum" as by "hasn't
+# started learning yet" -- as seen at episode 378, where reward was
+# still indistinguishable from the pre-fix stuck baseline. Require
+# avg_reward to have actually cleared a real bar, not just plateaued
+# anywhere, before convergence can fire.
+REWARD_CONVERGENCE_THRESHOLD = -150.0
 
 # Format as YYYY-MM-DD_HH-MM-SS
 timestamp = datetime.datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
@@ -206,6 +222,7 @@ def update(model,opt,rollouts,device, ep):
         )
         diag_lyap = float(lyapunov_penalty.item())
         diag_barrier = float(barrier_loss.item())
+        diag_std = float(mean_std.item())
     else:
         lp,entropy,values=model.evaluate_actions(states,actions)
         # Single efficient batched actor-critic update; no duplicate forward pass per step.
@@ -220,8 +237,9 @@ def update(model,opt,rollouts,device, ep):
                 - ENTROPY_COEF * entropy.mean())
         diag_lyap = None
         diag_barrier = None
+        diag_std = None
     opt.zero_grad(); loss.backward(); torch.nn.utils.clip_grad_norm_(model.parameters(),1.0); opt.step()
-    return float(loss.item()), diag_lyap, diag_barrier
+    return float(loss.item()), diag_lyap, diag_barrier, diag_std
 
 def run():
     device=torch.device("cuda" if torch.cuda.is_available() else "cpu")
@@ -328,6 +346,7 @@ def run():
     reward_history = deque(maxlen=REWARD_WINDOW)
     lyap_history = deque(maxlen=STABILITY_WINDOW)
     barrier_history = deque(maxlen=STABILITY_WINDOW)
+    std_history = deque(maxlen=STABILITY_WINDOW)
     best_avg_reward = -float("inf")
     checks_since_best = 0
     converged = False
@@ -423,12 +442,13 @@ def run():
         # 3. Training Update Logic
         if POLICY_TYPE == "transformer":
             if ep % UPDATE_EVERY_EPISODES == 0:
-                loss, diag_lyap, diag_barrier = update(model, opt, rollouts, device, ep)
+                loss, diag_lyap, diag_barrier, diag_std = update(model, opt, rollouts, device, ep)
                 rollouts = []
 
                 if diag_lyap is not None:
                     lyap_history.append(diag_lyap)
                     barrier_history.append(diag_barrier)
+                    std_history.append(diag_std)
 
                     ready = (
                         ep >= 300
@@ -439,9 +459,14 @@ def run():
                         avg_lyap = sum(lyap_history) / len(lyap_history)
                         avg_barrier = sum(barrier_history) / len(barrier_history)
                         avg_reward = sum(reward_history) / len(reward_history)
+                        avg_std = sum(std_history) / len(std_history)
+                        exploration_cleared = avg_std <= STD_CLEARED_THRESHOLD
+                        reward_above_threshold = avg_reward >= REWARD_CONVERGENCE_THRESHOLD
                         stable = (
                             avg_lyap <= LYAPUNOV_STABLE_THRESHOLD
                             and avg_barrier <= BARRIER_STABLE_THRESHOLD
+                            and exploration_cleared
+                            and reward_above_threshold
                         )
 
                         if avg_reward > best_avg_reward:
@@ -454,9 +479,12 @@ def run():
                         print(
                             f"[Convergence check] ep {ep} | "
                             f"avg_reward(last {REWARD_WINDOW}) {avg_reward:.2f} "
-                            f"(best {best_avg_reward:.2f}) | "
+                            f"(best {best_avg_reward:.2f}, "
+                            f"above_threshold={reward_above_threshold}) | "
                             f"avg_lyap(last {STABILITY_WINDOW}) {avg_lyap:.4f} | "
                             f"avg_barrier(last {STABILITY_WINDOW}) {avg_barrier:.4f} | "
+                            f"avg_std(last {STABILITY_WINDOW}) {avg_std:.4f} "
+                            f"(cleared={exploration_cleared}) | "
                             f"stable={stable} | "
                             f"checks_since_best={checks_since_best}/{CONVERGENCE_PATIENCE}"
                         )
