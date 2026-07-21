@@ -19,6 +19,33 @@ import ugv_simulator
 
 MIN_USABLE_ELEVATION = 12
 
+###############################################################
+# Foliage attenuation calibration
+#
+# Closed-canopy forest transmits roughly 0.5-2% of incident light
+# to the forest floor at dense/rainforest sites, with more open or
+# mixed-temperate stands running higher -- commonly cited figures
+# span roughly 2% up to 10%+ depending on species, season, and
+# canopy closure. TARGET_CANOPY_TRANSMITTANCE picks a point in that
+# range for a "wooded, not dense-rainforest" area; REFERENCE_ELEVATION_DEG
+# and REFERENCE_CANOPY_HEIGHT define the specific crossing (sun
+# angle, tree height, straight through the canopy center) that
+# transmittance is calibrated against. MAX_FOLIAGE_ATTENUATION is
+# then solved for below rather than chosen directly, so the actual
+# tunable knob is a real transmittance percentage, not an opaque
+# per-step constant. Lower TARGET_CANOPY_TRANSMITTANCE for denser/
+# darker forest, raise it for sparser woodland.
+###############################################################
+TARGET_CANOPY_TRANSMITTANCE = 0.15
+REFERENCE_ELEVATION_DEG = 30.0
+REFERENCE_CANOPY_HEIGHT = 15.0
+MAX_FOLIAGE_ATTENUATION = (
+    -math.log(TARGET_CANOPY_TRANSMITTANCE)
+    * 3.0
+    * math.tan(math.radians(REFERENCE_ELEVATION_DEG))
+    / REFERENCE_CANOPY_HEIGHT
+)
+
 
 def dist(pt1: NDArray[np.int32], pt2: NDArray[np.int32]):
     assert pt1.shape == (2,)
@@ -243,8 +270,6 @@ class sim_env:
 
         center_x, center_y = int(x), int(y)
         center_x_arr, center_y_arr = center_x + self.PAD, center_y + self.PAD
-
-        MAX_FOLIAGE_ATTENUATION = 0.10
 
         for j in range(patch_size):
             for i in range(patch_size):
