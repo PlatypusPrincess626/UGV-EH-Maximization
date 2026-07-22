@@ -40,11 +40,18 @@ BARRIER_COEF = 0.20; ACTION_SMOOTHNESS = 0.01; LYAPUNOV_MARGIN = 0.01
 BATTERY_MARGIN = 0.10; BOUNDARY_MARGIN = 0.10; VEGETATION_MARGIN = 0.05
 VELOCITY_MARGIN = 0.05; COMM_MARGIN = 0.10; CLIP_EPS =0.20; LYAPUNOV_ALPHA = 0.02
 # Direct L2 pull on raw_log_std toward the unsaturated region -- see
-# evaluate_actions()'s raw_log_std_reg docstring. Small and constant
-# on purpose: it's meant to be a background restoring force, not to
-# dominate the entropy/reward-driven terms that actually determine
-# where log_std should settle.
-RAW_LOG_STD_REG_COEF = 1e-2
+# evaluate_actions()'s raw_log_std_reg docstring. Doubled from the
+# original 1e-2: at the last checkpoint (ep600, alpha=0.1875,
+# x=1.9453) this pull only beat the entropy bonus by ~1.32x, and the
+# observed decline rate had slowed to ~-0.00074/x per episode --
+# reaching the ~1.5 unsaturated threshold was projecting past the
+# 1000-episode budget at that rate. Unlike raising log_std_head's own
+# LR (which amplifies whatever noise reaches it through tanh's
+# attenuated gradient), this term's gradient is linear in
+# raw_log_std with no tanh in the chain -- strengthening it directly
+# targets the mechanism rather than just hoping more episodes help a
+# rate that's inherently decelerating on its own.
+RAW_LOG_STD_REG_COEF = 2e-2
 
 ###############################################################
 # Convergence Monitoring / Checkpointing
@@ -131,7 +138,7 @@ def reward_fn(before, after, telemetry, delta_batt):
 
     return float(directional_reward + battery_reward - movement_penalty)
 
-def update(model,opt,rollouts,device, ep):
+def update(model,opt,rollouts,device, ep, metrics_writer=None):
     # GAE advantages are normalized once across the complete rollout batch, not per episode.
     states=[]; next_states=[]; actions=[]; oldlp=[]; adv=[]; returns=[]
     for r in rollouts:
@@ -220,6 +227,20 @@ def update(model,opt,rollouts,device, ep):
             f"RawLogStd {mean_raw_log_std.item():.4f} | "
             f"Alpha {alpha.item():.4f}"
         )
+        if metrics_writer is not None:
+            metrics_writer.writerow({
+                "episode": ep,
+                "policy_loss": float(policy_loss.item()),
+                "value_loss": float(value_loss.item()),
+                "lyap_penalty": float(lyapunov_penalty.item()),
+                "dynamics_loss": float(dynamics_loss.item()),
+                "barrier_loss": float(barrier_loss.item()),
+                "approx_kl": float(approx_kl.item()),
+                "clip_fraction": float(clip_fraction.item()),
+                "mean_std": float(mean_std.item()),
+                "mean_raw_log_std": float(mean_raw_log_std.item()),
+                "alpha": float(alpha.item()),
+            })
         diag_lyap = float(lyapunov_penalty.item())
         diag_barrier = float(barrier_loss.item())
         diag_std = float(mean_std.item())
@@ -341,6 +362,24 @@ def run():
     epw.writeheader()
     rollouts=[]
 
+    # Same numbers as the training print line, written to CSV so they
+    # don't have to be read back out of console/log output by hand.
+    metrics_file = open(OUT/"training_metrics.csv","w",newline="")
+    metrics_writer = csv.DictWriter(metrics_file, fieldnames=[
+        "episode","policy_loss","value_loss","lyap_penalty","dynamics_loss",
+        "barrier_loss","approx_kl","clip_fraction","mean_std","mean_raw_log_std","alpha",
+    ])
+    metrics_writer.writeheader()
+
+    # Same numbers as the [Convergence check] print line.
+    convergence_file = open(OUT/"convergence_checks.csv", "w", newline="")
+    convergence_writer = csv.DictWriter(convergence_file, fieldnames=[
+        "episode","avg_reward","best_avg_reward","reward_above_threshold",
+        "avg_lyap","avg_barrier","avg_std","exploration_cleared",
+        "stable","checks_since_best",
+    ])
+    convergence_writer.writeheader()
+
     # Convergence monitoring / checkpointing state
     ckpt_dir = OUT / "checkpoints"; ckpt_dir.mkdir(exist_ok=True)
     reward_history = deque(maxlen=REWARD_WINDOW)
@@ -442,7 +481,8 @@ def run():
         # 3. Training Update Logic
         if POLICY_TYPE == "transformer":
             if ep % UPDATE_EVERY_EPISODES == 0:
-                loss, diag_lyap, diag_barrier, diag_std = update(model, opt, rollouts, device, ep)
+                loss, diag_lyap, diag_barrier, diag_std = update(model, opt, rollouts, device, ep, metrics_writer)
+                metrics_file.flush()
                 rollouts = []
 
                 if diag_lyap is not None:
@@ -488,6 +528,19 @@ def run():
                             f"stable={stable} | "
                             f"checks_since_best={checks_since_best}/{CONVERGENCE_PATIENCE}"
                         )
+                        convergence_writer.writerow({
+                            "episode": ep,
+                            "avg_reward": avg_reward,
+                            "best_avg_reward": best_avg_reward,
+                            "reward_above_threshold": reward_above_threshold,
+                            "avg_lyap": avg_lyap,
+                            "avg_barrier": avg_barrier,
+                            "avg_std": avg_std,
+                            "exploration_cleared": exploration_cleared,
+                            "stable": stable,
+                            "checks_since_best": checks_since_best,
+                        })
+                        convergence_file.flush()
 
                         if stable and checks_since_best >= CONVERGENCE_PATIENCE:
                             print(
@@ -574,6 +627,8 @@ def run():
             x,y,yaw=nx,ny,nyaw; h.append(obs(env,x,y,yaw,min(step+1,MAX_STEPS_PER_EPISODE-1)))
             if aft_batt<=0: break
     epfile.close()
+    metrics_file.close()
+    convergence_file.close()
     # ADD THIS SECTION:
     print("\n" + "=" * 30)
     print("FINAL EVALUATION COMPLETE")

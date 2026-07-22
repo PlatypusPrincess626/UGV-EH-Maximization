@@ -4,7 +4,6 @@ import pandas as pd
 from numpy.typing import NDArray
 import numpy as np
 import random
-from sklearn.cluster import KMeans
 from scipy import signal
 from scipy.signal import windows
 from scipy.ndimage import gaussian_filter
@@ -86,6 +85,7 @@ class sim_env:
         self.view_dist = self.dim
 
         self.topo_mask, self.foliage_mask = None, None
+        self._obfuscation_cache = {}
         self.obfuscation_array = self.init_interference()
 
     def reset(self):
@@ -148,6 +148,11 @@ class sim_env:
         return True
 
     def reset_terrain(self):
+        # topo_mask is about to change -- any cached obfuscation
+        # results were computed against the OLD terrain and are no
+        # longer valid.
+        self._obfuscation_cache = {}
+
         # topo_mask must be padded on BOTH sides (2*PAD), matching
         # foliage_mask in reset_foliage() -- get_obfuscation()'s ray
         # march can travel up to `self.dim` cells from the sample
@@ -213,6 +218,10 @@ class sim_env:
         return zoom(result, zoom_factors, order=1)
 
     def reset_foliage(self):
+        # foliage_mask is about to change -- same invalidation
+        # reasoning as reset_terrain().
+        self._obfuscation_cache = {}
+
         choices = [0, 5, 10, 15, 20]
         probs = [0.65, 0.20, 0.10, 0.04, 0.01]
 
@@ -235,8 +244,13 @@ class sim_env:
             position = random.randint(0, self.dim * self.dim - 1)
             sensor_pts[sensor] = [int(position % self.dim), int(position / self.dim)]
 
-        k_means = KMeans(n_clusters=1, random_state=0, n_init=10).fit(sensor_pts)
-        cluster = k_means.cluster_centers_[0]
+        # KMeans with a single cluster's centroid is, by definition,
+        # just the arithmetic mean of the points -- sklearn's n_init=10
+        # restarts and iterative convergence check have nothing to
+        # search over when there's only one possible partition, so
+        # this was pure overhead for the same answer, re-paid every
+        # episode.
+        cluster = sensor_pts.mean(axis=0)
 
         self.r_move = 500
         self.sensor_pts = sensor_pts
@@ -277,6 +291,46 @@ class sim_env:
         return spectra, solpos
 
     def get_obfuscation(self, x: int, y: int, step, azimuth: float, zenith: float):
+        # get_obfuscation is one of the most expensive calls in the
+        # whole simulation (a per-pixel ray march over the whole
+        # patch), and the same (position, step) query is frequently
+        # made multiple times per environment step: obs() (for the
+        # sequence history), the reward's before/after computation in
+        # main.py, step_simulation()'s own next_local_observation, and
+        # harvest_energy()'s internal call (via find_power()) all
+        # often land on the identical final position and step -- up
+        # to 4-6 full recomputations for what's really only 2 distinct
+        # queries (before-position, after-position) per step. Caching
+        # here, rather than restructuring every call site, fixes the
+        # redundancy in one place regardless of who's calling it.
+        #
+        # This also incidentally fixes the "computes a whole 41x41
+        # patch just to read one center pixel" waste in
+        # find_power()/harvest_energy(): if that query was already
+        # computed elsewhere this step (very likely, per above), it's
+        # now a cache hit instead of a second full ray march.
+        key = (
+            int(x), int(y), int(step),
+            round(float(azimuth), 6), round(float(zenith), 6),
+            int(self.view_dist),
+        )
+        cached = self._obfuscation_cache.get(key)
+        if cached is not None:
+            return cached.copy()
+
+        result = self._compute_obfuscation(x, y, step, azimuth, zenith)
+
+        # Small bound, not unlimited growth -- the redundancy this
+        # matters for is almost entirely within a single step; across
+        # steps, positions differ, so old entries are rarely reused
+        # anyway and don't need to be kept around.
+        if len(self._obfuscation_cache) >= 8:
+            self._obfuscation_cache.pop(next(iter(self._obfuscation_cache)))
+        self._obfuscation_cache[key] = result
+
+        return result.copy()
+
+    def _compute_obfuscation(self, x: int, y: int, step, azimuth: float, zenith: float):
         v_dist = int(self.view_dist)
         patch_size = 2 * v_dist + 1
         obfuscation_patch = np.ones((patch_size, patch_size), dtype=np.float32)
