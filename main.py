@@ -352,23 +352,28 @@ def run():
                                # the entropy bonus, routed through
                                # tanh's saturating, batch-dependent
                                # derivative -- amplifying its LR
-                               # amplified noise. Now the reg term's
-                               # hinge gradient dominates (verified
-                               # constant +-1 via finite difference,
-                               # ratio already 3.5-5x in its favor by
-                               # ep145) and doesn't route through
-                               # tanh at all -- a larger LR on a
-                               # clean, consistently-signed signal is
-                               # a different bet than amplifying a
-                               # noisy one. If mean_raw_log_std starts
-                               # oscillating again at this same value,
-                               # that would mean the earlier diagnosis
-                               # was wrong, or noise remains from
-                               # elsewhere (e.g. the reward-driven
-                               # gradient via the shared encoder) --
-                               # pull back to 3e-4 either way rather
-                               # than pushing further.
-                               {"params": log_std_params,     "lr": 1e-3, "weight_decay":1e-5},],
+                               # amplified noise. The reg term's hinge
+                               # gradient (constant +-1, no tanh in
+                               # the chain) is still clean in itself,
+                               # but the CALIBRATION for 1e-3 being
+                               # safe was made against a noise floor
+                               # that no longer applies: at the time,
+                               # directional_reward was always exactly
+                               # zero (the self-shadowing bug), so the
+                               # only real reward signal was
+                               # battery-driven and comparatively
+                               # smooth. Now that directional_reward is
+                               # real and terrain-dependent (reward
+                               # jumped ~90-100 points after that fix),
+                               # the forward-pass input log_std_head
+                               # reads -- even detached -- is plausibly
+                               # moving faster and less predictably
+                               # than during that calibration. Pulled
+                               # back to 3e-4 preemptively rather than
+                               # waiting to see the same oscillation
+                               # signature reappear from a different
+                               # noise source.
+                               {"params": log_std_params,     "lr": 3e-4, "weight_decay":1e-5},],
                               eps=1e-5,)
         elif TRANSFORMER_VARIANT == "chaotic":
             model = ChebyshevTransformer(VIEW_DISTANCE).to(device)

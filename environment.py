@@ -78,10 +78,10 @@ class sim_env:
             self.times = pd.date_range('2021-01-01 8:00', freq=self.stepSize, periods=self.max_num_steps, tz="MST")
             random.seed('2021-01-01 8:00')
 
-        # Worst-case obstruction height is now terrain (max 50) PLUS
-        # foliage on top of it (max 20) = 70, not just terrain alone --
-        # see the observer-relative fix in _compute_obfuscation().
-        self.PAD = math.ceil(70.0 / math.tan(math.radians(MIN_USABLE_ELEVATION)))
+        # Worst-case obstruction height is terrain (max 50) PLUS
+        # foliage on top of it (max 12, reduced from 20 for a sparser
+        # woodland) = 62.
+        self.PAD = math.ceil(62.0 / math.tan(math.radians(MIN_USABLE_ELEVATION)))
 
         self.r_move = self.dim
         self.env_map = self.make_map()
@@ -225,17 +225,27 @@ class sim_env:
         # reasoning as reset_terrain().
         self._obfuscation_cache = {}
 
-        choices = [0, 5, 10, 15, 20]
+        # Max height reduced from 20 to 12: more realistic for sparse
+        # open woodland (mature/old-growth trees aren't the target
+        # here), and directly cheaper -- smaller PAD, smaller
+        # max_half_width in get_obfuscation's lateral foliage check
+        # (ceil(12/4)=3 vs ceil(20/4)=5, cutting that inner loop from
+        # 11 iterations to 7), and rays reach the foliage-band
+        # termination sooner on average.
+        choices = [0, 3, 6, 9, 12]
         probs = [0.65, 0.20, 0.10, 0.04, 0.01]
 
         dim_padded = self.dim + 2 * self.PAD
         raw_foliage = np.random.choice(choices, size=(dim_padded, dim_padded), p=probs)
         smoothed = gaussian_filter(raw_foliage.astype(float), sigma=1.5)
 
-        bins = [0, 2.5, 7.5, 12.5, 17.5, 25]
+        # Bin edges scaled proportionally to the new height spacing
+        # (3 instead of 5): midpoints between consecutive heights,
+        # plus an upper bound one step past the max.
+        bins = [0, 1.5, 4.5, 7.5, 10.5, 15]
         self.foliage_mask = np.digitize(smoothed, bins)
 
-        height_map = np.array([0, 5, 10, 15, 20])
+        height_map = np.array([0, 3, 6, 9, 12])
         self.foliage_mask = height_map[np.clip(self.foliage_mask - 1, 0, 4)]
         return True
 
@@ -394,12 +404,12 @@ class sim_env:
 
         # Worst case: terrain (max 50) + foliage on top of it (max 20)
         # = 70 possible obstruction height above an observer at 0.
-        d_max = int(math.floor(70.0 / tan_elevation)) + 2
-        max_half_width = 5  # ceil(20/4) -- max possible foliage_height/4
+        d_max = int(math.floor(62.0 / tan_elevation)) + 2
+        max_half_width = 3  # ceil(12/4) -- max possible foliage_height/4
 
         for d in range(1, d_max):
             h_min = d * tan_elevation
-            if h_min > 70.0:
+            if h_min > 62.0:
                 break
 
             active = ~terminated
