@@ -156,7 +156,9 @@ def reward_fn(before, after, telemetry, delta_batt):
 
     battery_reward = 2.0 * delta_batt
 
-    return float(directional_reward + battery_reward - movement_penalty)
+    total = float(directional_reward + battery_reward - movement_penalty)
+
+    return total, float(directional_reward), float(battery_reward), float(movement_penalty)
 
 def update(model,opt,rollouts,device, ep, metrics_writer=None):
     # GAE advantages are normalized once across the complete rollout batch, not per episode.
@@ -384,7 +386,9 @@ def run():
     total_inference_time = 0.0
     total_inference_steps = 0
     epfile=open(OUT/"episode_metrics.csv","w",newline="")
-    epw=csv.DictWriter(epfile,fieldnames=["episode","steps","final_battery","total_reward","loss"])
+    epw=csv.DictWriter(epfile,fieldnames=["episode","steps","final_battery","total_reward",
+                                          "total_directional_reward","total_battery_reward",
+                                          "total_movement_penalty","loss"])
     epw.writeheader()
     rollouts=[]
 
@@ -419,6 +423,7 @@ def run():
     for ep in range(1,TOTAL_EPISODES+1):
         env.place_devices(); env.reset(); x,y,yaw=env.ch.get_position()
         h=deque([obs(env,x,y,yaw,0)]*SEQUENCE_LENGTH,maxlen=SEQUENCE_LENGTH);total=0;
+        total_directional=0.0; total_battery_reward=0.0; total_movement_penalty=0.0
         r={"states":[],"next_states":[],"actions":[],"logps":[],"values":[],"rewards":[],"lyapunov":[], "barrier":[]};
         previous_action = None; smoothness = 0.0
         for step in range(MAX_STEPS_PER_EPISODE):
@@ -475,8 +480,10 @@ def run():
                                          sol.apparent_zenith.iloc[0]).flatten()
             aft_batt = env.ch.get_battery()
 
-            rew=reward_fn(before, after, tel, aft_batt-b_batt) - ACTION_SMOOTHNESS*smoothness
+            rew_total, rew_directional, rew_battery, rew_movement = reward_fn(before, after, tel, aft_batt-b_batt)
+            rew = rew_total - ACTION_SMOOTHNESS*smoothness
             total+=rew; previous_action=current_action
+            total_directional+=rew_directional; total_battery_reward+=rew_battery; total_movement_penalty+=rew_movement
             r["states"].append(np.asarray(h)); r["actions"].append(raw_a[0].cpu().numpy())
             r["logps"].append(lp.item()); r["values"].append(v.item()); r["rewards"].append(rew)
             x,y,yaw=env.ch.get_position(); h.append(obs(env,x,y,yaw,min(step+1,MAX_STEPS_PER_EPISODE-1)))
@@ -592,7 +599,9 @@ def run():
         total_inference_steps += 1
 
         steps_taken = len(r["rewards"]); log_status(ep, TOTAL_EPISODES, steps_taken, total, aft_batt, loss)
-        epw.writerow(dict(episode=ep,steps=len(r["rewards"]),final_battery=aft_batt,total_reward=total,loss=loss)); epfile.flush()
+        epw.writerow(dict(episode=ep,steps=len(r["rewards"]),final_battery=aft_batt,total_reward=total,
+                          total_directional_reward=total_directional,total_battery_reward=total_battery_reward,
+                          total_movement_penalty=total_movement_penalty,loss=loss)); epfile.flush()
 
         if converged and AUTO_STOP_ON_CONVERGENCE:
             print(f"[Convergence] Stopping training early at episode {ep}/{TOTAL_EPISODES}.")
@@ -602,7 +611,8 @@ def run():
     env.place_devices(); env.reset(); x,y,yaw=env.ch.get_position(); h=deque([obs(env,x,y,yaw,0)]*SEQUENCE_LENGTH,maxlen=SEQUENCE_LENGTH)
     with open(OUT/"final_evaluation_steps.csv","w",newline="") as f:
         fields=["step","x_before","y_before","target_x","target_y","x_after","y_after","battery_before",
-                "battery_after","battery_delta","reward","action_dx_norm","action_dy_norm"]
+                "battery_after","battery_delta","reward","directional_reward","battery_reward",
+                "movement_penalty","action_dx_norm","action_dy_norm"]
         w=csv.DictWriter(f,fieldnames=fields); w.writeheader()
 
         final_inference_time = 0.0
@@ -645,10 +655,12 @@ def run():
                                         sol.apparent_zenith.iloc[0]).flatten()
             aft_batt = env.ch.get_battery()
 
-            rew=reward_fn(b, aft, tel, aft_batt-b_batt)
+            rew, rew_directional, rew_battery, rew_movement = reward_fn(b, aft, tel, aft_batt-b_batt)
 
             w.writerow(dict(step=step,x_before=x,y_before=y,target_x=tx,target_y=ty,x_after=nx,y_after=ny,
                             battery_before=b_batt,battery_after=aft_batt,battery_delta=aft_batt-b_batt,reward=rew,
+                            directional_reward=rew_directional,battery_reward=rew_battery,
+                            movement_penalty=rew_movement,
                             action_dx_norm=a[0,0].item(),action_dy_norm=a[0,1].item()))
             x,y,yaw=nx,ny,nyaw; h.append(obs(env,x,y,yaw,min(step+1,MAX_STEPS_PER_EPISODE-1)))
             if aft_batt<=0: break

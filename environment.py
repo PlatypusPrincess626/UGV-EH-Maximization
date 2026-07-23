@@ -78,7 +78,10 @@ class sim_env:
             self.times = pd.date_range('2021-01-01 8:00', freq=self.stepSize, periods=self.max_num_steps, tz="MST")
             random.seed('2021-01-01 8:00')
 
-        self.PAD = math.ceil(50.0 / math.tan(math.radians(MIN_USABLE_ELEVATION)))
+        # Worst-case obstruction height is now terrain (max 50) PLUS
+        # foliage on top of it (max 20) = 70, not just terrain alone --
+        # see the observer-relative fix in _compute_obfuscation().
+        self.PAD = math.ceil(70.0 / math.tan(math.radians(MIN_USABLE_ELEVATION)))
 
         self.r_move = self.dim
         self.env_map = self.make_map()
@@ -333,26 +336,29 @@ class sim_env:
     def _compute_obfuscation(self, x: int, y: int, step, azimuth: float, zenith: float):
         # Vectorized over the whole patch at once, rather than a
         # per-pixel Python loop. The key property that makes this
-        # tractable: d's loop bound (h_min > 50.0) depends only on
-        # tan_elevation, fixed for the whole patch, not per-pixel;
-        # and k's loop bound (half_width = ceil(canopy_radius)) only
-        # takes 5 possible values since foliage_height is drawn from
-        # {0,5,10,15,20} by construction (reset_foliage()). So both
-        # "variable-length" loops are actually fixed-size, and each
-        # (d,k) iteration is done as one numpy operation across the
-        # whole patch, with a persistent `terminated` mask replacing
-        # the original's per-pixel `break` statements -- once a pixel
-        # is marked terminated (by terrain block, going out of
-        # bounds, or dropping below the transmittance threshold), it
-        # stops being updated for all later iterations, exactly
-        # mirroring where the original's break would have stopped it.
+        # tractable: d's loop bound depends only on tan_elevation,
+        # fixed for the whole patch, not per-pixel; and k's loop bound
+        # (half_width = ceil(canopy_radius)) only takes 5 possible
+        # values since foliage_height is drawn from {0,5,10,15,20} by
+        # construction (reset_foliage()). So both "variable-length"
+        # loops are actually fixed-size, and each (d,k) iteration is
+        # done as one numpy operation across the whole patch, with a
+        # persistent `terminated` mask replacing the original's
+        # per-pixel `break` statements -- once a pixel is marked
+        # terminated (by terrain block, going out of bounds, or
+        # dropping below the transmittance threshold), it stops being
+        # updated for all later iterations, exactly mirroring where
+        # the original's break would have stopped it.
         #
-        # Verified numerically identical (max abs diff = 0.0) against
-        # the original per-pixel implementation across: all four map
-        # corners and edge midpoints, the exact MIN_USABLE_ELEVATION
-        # zenith cutoff boundary (77.9/78.0/78.1), all cardinal
-        # azimuths, near-boundary positions under grazing angles, and
-        # 500 fully randomized (position, azimuth, zenith) samples.
+        # Terrain/foliage heights are compared relative to each
+        # patch pixel's OWN terrain elevation (observer_terrain), not
+        # an absolute zero. Without this, terrain averaging ~25 (after
+        # min-max normalization to [0,50]) almost always exceeded the
+        # near-zero sun-clearance height needed at short ray
+        # distances, self-shadowing nearly every pixel regardless of
+        # true line-of-sight -- this was the actual reason
+        # directional_reward computed to exactly zero every step in
+        # real training data, not a scale/weighting issue.
         v_dist = int(self.view_dist)
         patch_size = 2 * v_dist + 1
 
@@ -377,20 +383,30 @@ class sim_env:
         transmittance = np.ones((patch_size, patch_size), dtype=np.float64)
         terminated = ~in_map
 
-        d_max = int(math.floor(50.0 / tan_elevation)) + 2
-        max_half_width = 5  # ceil(20/4) -- max possible foliage_height/4
-
         topo_h, topo_w = self.topo_mask.shape
         fol_h, fol_w = self.foliage_mask.shape
 
+        # Each patch pixel's own terrain elevation, fetched once --
+        # the baseline the sunline-clearance height is measured from.
+        obs_x_safe = np.clip(global_x + self.PAD, 0, topo_w - 1)
+        obs_y_safe = np.clip(global_y + self.PAD, 0, topo_h - 1)
+        observer_terrain = self.topo_mask[obs_y_safe, obs_x_safe]
+
+        # Worst case: terrain (max 50) + foliage on top of it (max 20)
+        # = 70 possible obstruction height above an observer at 0.
+        d_max = int(math.floor(70.0 / tan_elevation)) + 2
+        max_half_width = 5  # ceil(20/4) -- max possible foliage_height/4
+
         for d in range(1, d_max):
             h_min = d * tan_elevation
-            if h_min > 50.0:
+            if h_min > 70.0:
                 break
 
             active = ~terminated
             if not active.any():
                 break
+
+            sunline_height = observer_terrain + h_min
 
             ray_x = np.round(global_x + d * step_x).astype(np.int64)
             ray_y = np.round(global_y + d * step_y).astype(np.int64)
@@ -405,16 +421,20 @@ class sim_env:
             ray_y_safe = np.clip(ray_y_arr, 0, topo_h - 1)
 
             terrain_height = self.topo_mask[ray_y_safe, ray_x_safe]
-            blocked = active & (terrain_height >= h_min)
+            blocked = active & (terrain_height >= sunline_height)
             transmittance = np.where(blocked, 0.0, transmittance)
             terminated = terminated | blocked
             active = ~terminated
 
+            # Foliage sits on top of the ray point's own local terrain,
+            # not at an absolute height -- canopy_start/canopy_top are
+            # therefore terrain_height + (a height above that ground).
             foliage_height = self.foliage_mask[ray_y_safe, ray_x_safe].astype(np.float64)
             has_foliage = active & (foliage_height > 0)
-            canopy_start = foliage_height / 3.0
+            canopy_start_abs = terrain_height + foliage_height / 3.0
+            canopy_top_abs = terrain_height + foliage_height
             canopy_radius = foliage_height / 4.0
-            in_band = has_foliage & (h_min >= canopy_start) & (h_min <= foliage_height)
+            in_band = has_foliage & (sunline_height >= canopy_start_abs) & (sunline_height <= canopy_top_abs)
 
             local_attenuation = np.zeros_like(transmittance)
 
@@ -439,8 +459,8 @@ class sim_env:
                     safe_radius = np.where(canopy_radius > 0, canopy_radius, 1.0)
                     r_norm = r / safe_radius
                     density = np.exp(-2.0 * r_norm * r_norm)
-                    safe_denom = np.where(foliage_height > canopy_start, foliage_height - canopy_start, 1.0)
-                    depth_frac = (h_min - canopy_start) / safe_denom
+                    safe_denom = np.where(canopy_top_abs > canopy_start_abs, canopy_top_abs - canopy_start_abs, 1.0)
+                    depth_frac = (sunline_height - canopy_start_abs) / safe_denom
                     attenuation = density * MAX_FOLIAGE_ATTENUATION * depth_frac
                     attenuation = np.where(valid_k, attenuation, 0.0)
                     local_attenuation = np.maximum(local_attenuation, attenuation)
