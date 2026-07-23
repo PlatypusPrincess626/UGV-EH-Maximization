@@ -39,19 +39,39 @@ LYAPUNOV_COEF = 0.25; DYNAMICS_COEF = 0.10; LATENT_COEF = 0.05
 BARRIER_COEF = 0.20; ACTION_SMOOTHNESS = 0.01; LYAPUNOV_MARGIN = 0.01
 BATTERY_MARGIN = 0.10; BOUNDARY_MARGIN = 0.10; VEGETATION_MARGIN = 0.05
 VELOCITY_MARGIN = 0.05; COMM_MARGIN = 0.10; CLIP_EPS =0.20; LYAPUNOV_ALPHA = 0.02
-# Direct L2 pull on raw_log_std toward the unsaturated region -- see
-# evaluate_actions()'s raw_log_std_reg docstring. Doubled from the
-# original 1e-2: at the last checkpoint (ep600, alpha=0.1875,
-# x=1.9453) this pull only beat the entropy bonus by ~1.32x, and the
-# observed decline rate had slowed to ~-0.00074/x per episode --
-# reaching the ~1.5 unsaturated threshold was projecting past the
-# 1000-episode budget at that rate. Unlike raising log_std_head's own
-# LR (which amplifies whatever noise reaches it through tanh's
-# attenuated gradient), this term's gradient is linear in
-# raw_log_std with no tanh in the chain -- strengthening it directly
-# targets the mechanism rather than just hoping more episodes help a
-# rate that's inherently decelerating on its own.
-RAW_LOG_STD_REG_COEF = 2e-2
+# Constant-force hinge pull on raw_log_std toward RAW_LOG_STD_TARGET --
+# see evaluate_actions()'s raw_log_std_reg docstring. Replaces the
+# earlier L2 penalty (whose gradient was proportional to raw_log_std,
+# and so weakened exactly as it approached the target -- observed
+# twice as a recurring deceleration: doubling that coefficient bought
+# a better starting position, but the same slowdown re-emerged closer
+# to the target as the entropy bonus's recovering leverage caught up
+# again). This form's gradient is a constant +-1 (times this
+# coefficient) everywhere above RAW_LOG_STD_TARGET, not proportional
+# to raw_log_std itself, so it does not taper as raw_log_std declines.
+RAW_LOG_STD_REG_COEF = 3e-2
+
+# Deterministic entropy-temperature schedule, replacing the learned
+# (SAC-style) alpha. Decays exponentially from ALPHA_START to
+# ALPHA_END over ALPHA_DECAY_EPISODES, then holds at ALPHA_END. 300
+# matches the existing curriculum boundary (full Lyapunov/barrier
+# weights activate at episode 300), so exploration pressure is
+# already low by the time that harder phase begins, same intent as
+# before -- just guaranteed by a formula instead of hoped for from a
+# gradient that might not converge in time.
+ALPHA_START = 1.0
+ALPHA_END = 0.05
+ALPHA_DECAY_EPISODES = 300
+# Reactive safety net (see the entropy check in update()): if a
+# batch's mean entropy drops below this floor, alpha jumps to at
+# least SAFETY_ALPHA_BOOST regardless of the schedule. Floor sits
+# between the achievable range's true minimum (~-1.16, full
+# collapse) and the original learned-alpha target (~1.338, the
+# smooth bound's midpoint) -- low enough to only trigger on a real
+# problem, not on ordinary convergence toward a reasonable
+# exploitation level.
+SAFETY_ENTROPY_FLOOR = 0.3
+SAFETY_ALPHA_BOOST = 0.5
 
 ###############################################################
 # Convergence Monitoring / Checkpointing
@@ -197,20 +217,32 @@ def update(model,opt,rollouts,device, ep, metrics_writer=None):
         barrier_loss = (1.0 * battery_loss + 0.5 * boundary_loss + 0.25 * vegetation_loss
                         + 0.25 * velocity_loss + 0.75 * communication_loss)
 
-        # Automatic entropy temperature (SAC-style): alpha adjusts
-        # itself to hold entropy near model.target_entropy, instead
-        # of relying on a fixed ENTROPY_COEF guess. alpha is detached
-        # in the policy bonus (it should only shape the actor, not
-        # get a gradient from the policy loss); entropy is detached
-        # in alpha_loss (alpha should only be adjusted based on the
-        # current entropy level, not try to change it directly).
-        alpha = model.log_alpha.exp()
-        alpha_loss = -(model.log_alpha * (model.target_entropy - entropy.detach())).mean()
+        # alpha follows a fixed schedule (see ALPHA_START/ALPHA_END/
+        # ALPHA_DECAY_EPISODES below), not a learned parameter --
+        # its value at this episode is known in advance, with no
+        # dependence on gradient noise or how fast anything else
+        # happens to be converging.
+        decay_frac = min(ep, ALPHA_DECAY_EPISODES) / ALPHA_DECAY_EPISODES
+        scheduled_alpha = ALPHA_START * (ALPHA_END / ALPHA_START) ** decay_frac
+
+        # Safety net the pure schedule gives up: a learned alpha would
+        # have noticed entropy collapsing too far and raised itself
+        # back up on its own. A schedule has no such awareness -- it
+        # decays regardless of what entropy is actually doing. This
+        # reactive check restores that protection without
+        # reintroducing a convergence-dependent mechanism: it's a
+        # direct threshold, not a gradient, so there's no "will it
+        # correct in time" question -- if entropy is too low this
+        # batch, alpha jumps back up this same update.
+        current_entropy = entropy.mean().item()
+        if current_entropy < SAFETY_ENTROPY_FLOOR:
+            alpha = max(scheduled_alpha, SAFETY_ALPHA_BOOST)
+        else:
+            alpha = scheduled_alpha
 
         loss = (policy_loss
                 + VALUE_COEF * value_loss
-                - alpha.detach() * entropy.mean()
-                + alpha_loss
+                - alpha * entropy.mean()
                 + RAW_LOG_STD_REG_COEF * raw_log_std_reg
                 + lyap_weight * lyapunov_penalty
                 + dynamics_weight * dynamics_loss
@@ -225,7 +257,7 @@ def update(model,opt,rollouts,device, ep, metrics_writer=None):
             f"CF {clip_fraction:.4f} | "
             f"Std {mean_std:.4f} | "
             f"RawLogStd {mean_raw_log_std.item():.4f} | "
-            f"Alpha {alpha.item():.4f}"
+            f"Alpha {alpha:.4f}"
         )
         if metrics_writer is not None:
             metrics_writer.writerow({
@@ -239,7 +271,7 @@ def update(model,opt,rollouts,device, ep, metrics_writer=None):
                 "clip_fraction": float(clip_fraction.item()),
                 "mean_std": float(mean_std.item()),
                 "mean_raw_log_std": float(mean_raw_log_std.item()),
-                "alpha": float(alpha.item()),
+                "alpha": float(alpha),
             })
         diag_lyap = float(lyapunov_penalty.item())
         diag_barrier = float(barrier_loss.item())
@@ -285,8 +317,6 @@ def run():
 
             critic_params = list(model.critic.parameters())
 
-            alpha_params = [model.log_alpha]
-
             transformer_params = (
                     list(model.input_projection.parameters()) +
                     list(model.encoder.parameters()) +
@@ -307,40 +337,20 @@ def run():
                                {"params": auxiliary_params,   "lr": 5e-5, "weight_decay":1e-5},
                                # log_std_head is a full weight matrix
                                # (Linear(d_model, action_dim)), not a
-                               # single scalar like log_alpha.
-                               # Previously bumped to 1e-3 as a
-                               # diagnostic for a step-size-capped
-                               # gradient; observed behavior (large,
-                               # non-convergent swings in
+                               # single scalar. Previously bumped to
+                               # 1e-3 as a diagnostic for a step-size-
+                               # capped gradient; observed behavior
+                               # (large, non-convergent swings in
                                # mean_raw_log_std across checks, not a
                                # frozen value) pointed at noise
                                # amplification instead, so pulled back
                                # toward the original shared rate.
-                               # raw_log_std_reg (see loss above) now
+                               # raw_log_std_reg (see loss above)
                                # supplies a noise-independent
                                # restoring force instead of relying on
                                # a larger step size through a noisy
                                # gradient.
-                               {"params": log_std_params,     "lr": 3e-4, "weight_decay":1e-5},
-                               # log_alpha is a single scalar, not a
-                               # full parameter tensor. Calibrated for
-                               # TOTAL_EPISODES=1000 (500 updates):
-                               # targets alpha reaching a relaxed
-                               # value by ~update 100 (episode ~200),
-                               # comfortably before the full Lyapunov/
-                               # barrier weights activate at episode
-                               # 300, so that phase starts with
-                               # exploration already settled rather
-                               # than still fighting entropy pressure.
-                               # Not pushed faster than this: alpha
-                               # and Std are a two-timescale coupled
-                               # system (alpha reacts to entropy,
-                               # which depends on Std, which only
-                               # moves at the much slower actor LR of
-                               # 3e-4) -- too large a multiplier here
-                               # risks alpha overshooting/oscillating
-                               # around the target instead of settling.
-                               {"params": alpha_params,       "lr": 7e-3, "weight_decay":0.0},],
+                               {"params": log_std_params,     "lr": 3e-4, "weight_decay":1e-5},],
                               eps=1e-5,)
         elif TRANSFORMER_VARIANT == "chaotic":
             model = ChebyshevTransformer(VIEW_DISTANCE).to(device)

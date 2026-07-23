@@ -11,6 +11,14 @@ from torch.distributions import Normal
 LOG_STD_MIN = -2.0
 LOG_STD_MAX = 0.5
 
+# Threshold for the raw_log_std regularizer (see evaluate_actions()'s
+# raw_log_std_reg). Below this, the reg term applies zero force,
+# handing off final convergence to the entropy bonus -- the entropy
+# bonus's own calibrated target (see target_entropy below) works out
+# to an equilibrium near raw_log_std=0, so this just needs to get
+# comfortably close, not all the way to exactly 0.
+RAW_LOG_STD_TARGET = 0.3
+
 
 class LyapunovTransformerActorCritic(nn.Module):
     """
@@ -670,14 +678,28 @@ class LyapunovTransformerActorCritic(nn.Module):
         can be confirmed (or ruled out) from a real number instead of
         a guess.
 
-        `raw_log_std_reg` (NOT detached) is a direct L2 penalty on
-        raw_log_std itself, meant to be added to the loss in
-        main.py. Its gradient (proportional to raw_log_std) reaches
-        log_std_head without passing through tanh's saturating
-        derivative at all -- unlike the entropy bonus or the reward-
-        driven policy gradient, it can't be drowned out by noise in
-        either of those pathways. It's a small, constant, always-
-        present pull back toward the unsaturated region.
+        `raw_log_std_reg` (NOT detached) is added to the loss in
+        main.py. Its gradient reaches log_std_head without passing
+        through tanh's saturating derivative at all -- unlike the
+        entropy bonus or the reward-driven policy gradient, it can't
+        be drowned out by noise in either of those pathways.
+
+        This is a hinge penalty (relu(|raw_log_std| - RAW_LOG_STD_TARGET)),
+        not a plain L2 penalty on raw_log_std^2. That distinction
+        matters: an L2 penalty's gradient is proportional to
+        raw_log_std itself, so it weakens exactly as raw_log_std
+        approaches the target -- precisely when the entropy bonus's
+        own gradient (proportional to 1-tanh(x)^2, which *grows* as
+        x shrinks) has the most relative leverage. In practice this
+        showed up as repeated deceleration: doubling the old L2
+        coefficient bought a better starting position but the same
+        slowdown re-emerged closer to the target, just as the two
+        forces converged again. A hinge penalty instead applies
+        *constant* force everywhere above the target and zero below
+        it -- it doesn't taper as raw_log_std approaches the target,
+        and it hands off cleanly (zero added force, no fighting) once
+        below it, leaving the entropy bonus's own calibrated
+        equilibrium (near raw_log_std=0) to handle final convergence.
         """
 
         (
@@ -705,7 +727,7 @@ class LyapunovTransformerActorCritic(nn.Module):
 
         mean_std = dist.stddev.mean().detach()
         mean_raw_log_std = raw_log_std.mean().detach()
-        raw_log_std_reg = raw_log_std.pow(2).mean()
+        raw_log_std_reg = F.relu(raw_log_std.abs() - RAW_LOG_STD_TARGET).mean()
 
         return (
             log_probs,
