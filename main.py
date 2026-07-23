@@ -337,20 +337,36 @@ def run():
                                {"params": auxiliary_params,   "lr": 5e-5, "weight_decay":1e-5},
                                # log_std_head is a full weight matrix
                                # (Linear(d_model, action_dim)), not a
-                               # single scalar. Previously bumped to
-                               # 1e-3 as a diagnostic for a step-size-
-                               # capped gradient; observed behavior
-                               # (large, non-convergent swings in
-                               # mean_raw_log_std across checks, not a
-                               # frozen value) pointed at noise
-                               # amplification instead, so pulled back
-                               # toward the original shared rate.
-                               # raw_log_std_reg (see loss above)
-                               # supplies a noise-independent
-                               # restoring force instead of relying on
-                               # a larger step size through a noisy
-                               # gradient.
-                               {"params": log_std_params,     "lr": 3e-4, "weight_decay":1e-5},],
+                               # single scalar. Bumped back to 1e-3 --
+                               # the same value tried once before,
+                               # which caused oscillation (large,
+                               # non-convergent swings in
+                               # mean_raw_log_std) and was pulled back
+                               # to 3e-4. Re-attempting the identical
+                               # value deliberately, not a new one:
+                               # what dominates the gradient reaching
+                               # log_std_head has genuinely changed
+                               # since that attempt. Back then it was
+                               # the entropy bonus, routed through
+                               # tanh's saturating, batch-dependent
+                               # derivative -- amplifying its LR
+                               # amplified noise. Now the reg term's
+                               # hinge gradient dominates (verified
+                               # constant +-1 via finite difference,
+                               # ratio already 3.5-5x in its favor by
+                               # ep145) and doesn't route through
+                               # tanh at all -- a larger LR on a
+                               # clean, consistently-signed signal is
+                               # a different bet than amplifying a
+                               # noisy one. If mean_raw_log_std starts
+                               # oscillating again at this same value,
+                               # that would mean the earlier diagnosis
+                               # was wrong, or noise remains from
+                               # elsewhere (e.g. the reward-driven
+                               # gradient via the shared encoder) --
+                               # pull back to 3e-4 either way rather
+                               # than pushing further.
+                               {"params": log_std_params,     "lr": 1e-3, "weight_decay":1e-5},],
                               eps=1e-5,)
         elif TRANSFORMER_VARIANT == "chaotic":
             model = ChebyshevTransformer(VIEW_DISTANCE).to(device)
