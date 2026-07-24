@@ -137,15 +137,43 @@ def obs(env, x, y, yaw, step):
 def seq_tensor(history, device):
     return torch.tensor(np.asarray(history),dtype=torch.float32,device=device).unsqueeze(0)
 
-def reward_fn(before, after, telemetry, delta_batt):
+def reward_fn(after, telemetry, delta_batt):
     # Dense, scaled reward: energy gain, movement cost, survival, and boundary discouragement.
-    potential_before = 1.0 - before
+    #
+    # directional_reward is now the ABSOLUTE, instantaneous exposure
+    # score at the current position, not the difference between this
+    # step's before/after scores. The differenced form telescopes to
+    # exactly (score_final - score_initial) when summed over an
+    # episode -- every intermediate term cancels, so it could never
+    # reward *sustained* good positioning, only the net change from
+    # start to end (confirmed directly: total_directional_reward was
+    # ~0.1-0.2 per full 720-step episode, regardless of how the
+    # episode was actually navigated). This is textbook potential-
+    # based reward shaping (Ng, Harada & Russell 1999) -- valid, but
+    # by construction it doesn't change what the optimal policy
+    # achieves, only how fast training converges to it, and it was
+    # the *only* positional signal here with no absolute term
+    # alongside it.
+    #
+    # Coefficient recalibrated from 10 to 0.05: the old value was
+    # tuned for a step-to-step DIFFERENCE (small, since two nearby
+    # positions' scores are usually close). An ABSOLUTE score is
+    # typically ~0.7-0.9, a much larger and always-positive quantity
+    # -- left at 10, this would total on the order of several
+    # thousand over a 720-step episode, dwarfing battery_reward
+    # (~-53 total) and movement_penalty (~-22 total) by two orders of
+    # magnitude. 0.05 targets a comparable order of magnitude to
+    # those two instead (~0.05 * 0.8avg * 720steps =~ 29 total) so
+    # positioning can actually compete for influence rather than
+    # either vanishing (the old bug) or swamping everything else (the
+    # naive fix). Worth checking total_directional_reward against
+    # total_battery_reward/total_movement_penalty after the next run
+    # and adjusting further if the balance still isn't right --
+    # this is a reasoned starting point, not a precisely derived one.
     potential_after = 1.0 - after
-
-    score_before = float(np.dot(GAUSSIAN_KERNEL, potential_before))
     score_after = float(np.dot(GAUSSIAN_KERNEL, potential_after))
 
-    directional_reward = 10 * (score_after - score_before)
+    directional_reward = 0.05 * score_after
 
     px, py, _ = telemetry["previous_position"]
     nx, ny, _ = telemetry["new_position"]
@@ -470,10 +498,6 @@ def run():
             dx,dy=a[0].cpu().numpy()*MAX_MOVE_PER_STEP
             tx=float(np.clip(x+dx,0,env.dim-1)); ty=float(np.clip(y+dy,0,env.dim-1))
 
-            sol = solarposition.get_solarposition(env.times[min(step, len(env.times) - 1)],
-                                                  env.lat_center + y * env.stp, env.long_center + x * env.stp)
-            before = env.get_obfuscation(x,y,min(step,len(env.times)-1),sol.azimuth.iloc[0],
-                                         sol.apparent_zenith.iloc[0]).flatten()
             b_batt = env.ch.get_battery()
 
             tel, nxt= env.step_simulation(step,tx,ty)
@@ -485,7 +509,7 @@ def run():
                                          sol.apparent_zenith.iloc[0]).flatten()
             aft_batt = env.ch.get_battery()
 
-            rew_total, rew_directional, rew_battery, rew_movement = reward_fn(before, after, tel, aft_batt-b_batt)
+            rew_total, rew_directional, rew_battery, rew_movement = reward_fn(after, tel, aft_batt-b_batt)
             rew = rew_total - ACTION_SMOOTHNESS*smoothness
             total+=rew; previous_action=current_action
             total_directional+=rew_directional; total_battery_reward+=rew_battery; total_movement_penalty+=rew_movement
@@ -645,10 +669,6 @@ def run():
 
             dx,dy=a[0].cpu().numpy()*MAX_MOVE_PER_STEP; tx=float(np.clip(x+dx,0,env.dim-1)); ty=float(np.clip(y+dy,0,env.dim-1))
 
-            sol = solarposition.get_solarposition(env.times[min(step, len(env.times) - 1)],
-                                                  env.lat_center + y * env.stp, env.long_center + x * env.stp)
-            b = env.get_obfuscation(x, y, min(step, len(env.times) - 1), sol.azimuth.iloc[0],
-                                         sol.apparent_zenith.iloc[0]).flatten()
             b_batt = env.ch.get_battery()
 
             tel,_=env.step_simulation(step,tx,ty)
@@ -660,7 +680,7 @@ def run():
                                         sol.apparent_zenith.iloc[0]).flatten()
             aft_batt = env.ch.get_battery()
 
-            rew, rew_directional, rew_battery, rew_movement = reward_fn(b, aft, tel, aft_batt-b_batt)
+            rew, rew_directional, rew_battery, rew_movement = reward_fn(aft, tel, aft_batt-b_batt)
 
             w.writerow(dict(step=step,x_before=x,y_before=y,target_x=tx,target_y=ty,x_after=nx,y_after=ny,
                             battery_before=b_batt,battery_after=aft_batt,battery_delta=aft_batt-b_batt,reward=rew,
