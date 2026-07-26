@@ -343,7 +343,7 @@ def run():
                 ).to(device)
             actor_params = list(model.actor.parameters())
 
-            log_std_params = list(model.log_std_head.parameters())
+            log_std_params = [model.log_std_param]
 
             critic_params = list(model.critic.parameters())
 
@@ -365,42 +365,30 @@ def run():
                                {"params": actor_params,       "lr": 3e-4, "weight_decay":1e-5},
                                {"params": critic_params,      "lr": 3e-4, "weight_decay":1e-5},
                                {"params": auxiliary_params,   "lr": 5e-5, "weight_decay":1e-5},
-                               # log_std_head is a full weight matrix
-                               # (Linear(d_model, action_dim)), not a
-                               # single scalar. Bumped back to 1e-3 --
-                               # the same value tried once before,
-                               # which caused oscillation (large,
-                               # non-convergent swings in
-                               # mean_raw_log_std) and was pulled back
-                               # to 3e-4. Re-attempting the identical
-                               # value deliberately, not a new one:
-                               # what dominates the gradient reaching
-                               # log_std_head has genuinely changed
-                               # since that attempt. Back then it was
-                               # the entropy bonus, routed through
-                               # tanh's saturating, batch-dependent
-                               # derivative -- amplifying its LR
-                               # amplified noise. The reg term's hinge
-                               # gradient (constant +-1, no tanh in
-                               # the chain) is still clean in itself,
-                               # but the CALIBRATION for 1e-3 being
-                               # safe was made against a noise floor
-                               # that no longer applies: at the time,
-                               # directional_reward was always exactly
-                               # zero (the self-shadowing bug), so the
-                               # only real reward signal was
-                               # battery-driven and comparatively
-                               # smooth. Now that directional_reward is
-                               # real and terrain-dependent (reward
-                               # jumped ~90-100 points after that fix),
-                               # the forward-pass input log_std_head
-                               # reads -- even detached -- is plausibly
-                               # moving faster and less predictably
-                               # than during that calibration. Pulled
-                               # back to 3e-4 preemptively rather than
-                               # waiting to see the same oscillation
-                               # signature reappear from a different
-                               # noise source.
+                               # log_std_param is now a fixed, non-
+                               # state-dependent parameter (see the
+                               # model file), not a Linear layer
+                               # reading latent. This removes the
+                               # encoder-coupling problem that caused
+                               # persistent oscillation through every
+                               # previous attempt (a plain 1e-3 LR,
+                               # then 3e-4, then detaching latent's
+                               # gradient -- a full run confirmed
+                               # detach alone didn't resolve it,
+                               # since it only cut the backward path
+                               # and log_std_head still read a
+                               # constantly-moving forward-pass
+                               # target). With no latent dependency
+                               # left at all, the entropy bonus vs.
+                               # hinge regularizer tug-of-war should
+                               # now behave as the clean two-force
+                               # system the math always predicted.
+                               # Kept at the same conservative 3e-4 as
+                               # a starting point for this genuinely
+                               # different dynamic -- no evidence yet
+                               # either way on whether it needs
+                               # adjustment now that the moving-target
+                               # problem is gone.
                                {"params": log_std_params,     "lr": 3e-4, "weight_decay":1e-5},],
                               eps=1e-5,)
         elif TRANSFORMER_VARIANT == "chaotic":

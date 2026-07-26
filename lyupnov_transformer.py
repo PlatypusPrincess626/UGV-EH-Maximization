@@ -229,46 +229,50 @@ class LyapunovTransformerActorCritic(nn.Module):
         ############################################################
         # Gaussian exploration
         #
-        # log_std is now a function of the latent (like the mean),
-        # not a single global scalar -- the policy can stay
-        # exploratory in states it hasn't resolved yet and sharpen
-        # up in states it has, rather than PPO being forced to pick
-        # one exploration level for every state at once.
+        # Fixed, non-state-dependent log_std -- not a function of
+        # latent. A state-dependent version (via a log_std_head
+        # reading latent) was tried first, on the theory that the
+        # policy could stay exploratory in unresolved states and
+        # sharpen up in resolved ones. In practice this created a
+        # persistent coupling problem: latent keeps getting reshaped
+        # every update by policy/value/Lyapunov/barrier/dynamics
+        # losses, and whatever read from it kept getting perturbed by
+        # that reshaping as a side effect, regardless of what the
+        # entropy bonus and hinge regularizer (raw_log_std_reg, see
+        # evaluate_actions()) were actually trying to do to it.
+        # Detaching latent's gradient only cut one direction of that
+        # coupling (log_std_head's own gradient no longer reshaped
+        # the encoder) -- it did nothing about the forward-pass
+        # direction (log_std_head still read a constantly-moving
+        # target), and a full run confirmed the oscillation persisted
+        # regardless. Removing latent from the picture entirely
+        # removes the coupling by construction: there's no forward-
+        # pass dependency left to be a moving target, and the entropy
+        # bonus vs. hinge regularizer tug-of-war (which was already
+        # comfortably favorable in isolation, 2-20x in various
+        # measurements) can now actually play out the way that math
+        # predicted. Also cheaper than the Linear layer it replaces.
         ############################################################
 
-        self.log_std_head = nn.Linear(d_model, action_dim)
+        self.log_std_param = nn.Parameter(torch.zeros(action_dim))
 
-        ############################################################
-        # Automatic Entropy Temperature (SAC-style)
-        #
-        # Replaces a fixed ENTROPY_COEF with a learned multiplier
-        # that targets a specific entropy level directly: alpha
-        # grows when entropy drifts below target_entropy, shrinks
-        # when it's comfortably above. See update() in main.py for
-        # the alpha_loss that trains this.
-        ############################################################
-
-        # target_entropy = -action_dim is the standard SAC heuristic,
-        # but it's calibrated for entropy estimated on the actual
-        # bounded action via -log pi(a) sampled post-squash. We're
-        # using the analytic entropy of the pre-squash Gaussian
-        # instead (see distribution()), which lives on a different
-        # scale: for a d-dim diagonal Normal, H = d*(0.5*log(2*pi*e)
-        # + log_std). Given our own [LOG_STD_MIN, LOG_STD_MAX] bound,
-        # the achievable range for action_dim=2 is roughly [-1.16,
-        # 3.84] -- -action_dim=-2 sits BELOW that floor, so it can
-        # never be satisfied: alpha gets driven toward 0 forever with
-        # no equilibrium, instead of settling once entropy is
-        # reasonable. Anchor the target at the midpoint of our own
-        # bound instead, which is reachable by construction and
-        # corresponds to a moderate, not-maximal exploration level
-        # (std ~= exp(midpoint) per dimension) rather than the two
-        # extremes.
-        target_log_std = 0.5 * (LOG_STD_MIN + LOG_STD_MAX)
-        self.target_entropy = action_dim * (
-            0.5 * math.log(2.0 * math.pi * math.e) + target_log_std
-        )
-        self.log_alpha = nn.Parameter(torch.zeros(1))
+        # Entropy temperature (alpha) is NOT learned here anymore --
+        # see ALPHA_START/ALPHA_END/ALPHA_DECAY_EPISODES in main.py.
+        # A learned (SAC-style) alpha was tried first, but its
+        # convergence rate is inherently sensitive to gradient noise,
+        # and it never had a strong guarantee of reaching a low
+        # enough value within this run's fixed ~500-update budget
+        # (SAC, where this technique comes from, typically runs with
+        # far more updates via a replay buffer). Repeated coefficient
+        # increases on the competing regularizer bought a better
+        # starting position each time but the same deceleration kept
+        # reappearing closer to the target -- a symptom of fighting a
+        # convergence-dependent process rather than removing the
+        # dependency on convergence at all. A schedule tied directly
+        # to episode number has no such dependency: alpha's value at
+        # any point in training is known in advance, regardless of
+        # gradient noise or how the shared encoder's representation
+        # happens to be evolving underneath it.
 
         ############################################################
         # Weight Initialization
@@ -476,7 +480,16 @@ class LyapunovTransformerActorCritic(nn.Module):
         ##########################################
 
         raw_mean = self.actor(latent)
-        raw_log_std = self.log_std_head(latent)
+
+        # Fixed parameter, not read from latent at all -- no forward-
+        # pass dependency on the encoder, so nothing about its
+        # ongoing reshaping (from policy/value/Lyapunov/barrier/
+        # dynamics losses) can perturb this. Expanded to match
+        # raw_mean's batch dimension so everything downstream
+        # (distribution(), the smooth tanh bound, the hinge
+        # regularizer) sees the same per-sample shape as before and
+        # needs no further changes.
+        raw_log_std = self.log_std_param.unsqueeze(0).expand(raw_mean.shape[0], -1)
 
         ##########################################
         # Critic
@@ -673,13 +686,13 @@ class LyapunovTransformerActorCritic(nn.Module):
         `mean_std` and `mean_raw_log_std` are included purely for
         logging (exploration level during training) -- neither plays
         any role in any loss. `mean_raw_log_std` in particular is the
-        pre-tanh log_std_head output, logged directly rather than
+        pre-tanh log_std_param value, logged directly rather than
         inferred backward from Std, so saturation of the smooth bound
         can be confirmed (or ruled out) from a real number instead of
         a guess.
 
         `raw_log_std_reg` (NOT detached) is added to the loss in
-        main.py. Its gradient reaches log_std_head without passing
+        main.py. Its gradient reaches log_std_param without passing
         through tanh's saturating derivative at all -- unlike the
         entropy bonus or the reward-driven policy gradient, it can't
         be drowned out by noise in either of those pathways.
