@@ -91,7 +91,7 @@ CONVERGENCE_PATIENCE = 10       # consecutive stability checks with no new best 
 LYAPUNOV_STABLE_THRESHOLD = 2 * LYAPUNOV_MARGIN
 BARRIER_STABLE_THRESHOLD = 0.05
 CHECKPOINT_EVERY = 100          # periodic safety-net checkpoint, regardless of performance
-AUTO_STOP_ON_CONVERGENCE = True # set False to just log/checkpoint without ending the run
+AUTO_STOP_ON_CONVERGENCE = False # set True to re-enable early stopping once the criteria are recalibrated for how fast training now converges
 # Reward readings are not trustworthy evidence of a real plateau while
 # Std is still pinned near the exploration ceiling (LOG_STD_MAX=0.5 ->
 # Std~1.65) -- a flat reward there can mean "hasn't started learning
