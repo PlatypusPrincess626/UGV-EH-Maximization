@@ -35,7 +35,7 @@ LR=3e-4; MAX_MOVE_PER_STEP=20.0; ENTROPY_COEF=.01; VALUE_COEF=.5
 ###############################################################
 # Lyapunov Hyperparameters
 ###############################################################
-LYAPUNOV_COEF = 0.25; DYNAMICS_COEF = 0.10; LATENT_COEF = 0.05
+LYAPUNOV_COEF = 0.25; DYNAMICS_COEF = 0.015; LATENT_COEF = 0.05
 BARRIER_COEF = 0.20; ACTION_SMOOTHNESS = 0.01; LYAPUNOV_MARGIN = 0.01
 BATTERY_MARGIN = 0.10; BOUNDARY_MARGIN = 0.10; VEGETATION_MARGIN = 0.05
 VELOCITY_MARGIN = 0.05; COMM_MARGIN = 0.10; CLIP_EPS =0.20; LYAPUNOV_ALPHA = 0.02
@@ -188,7 +188,51 @@ def reward_fn(after, telemetry, delta_batt):
 
     return total, float(directional_reward), float(battery_reward), float(movement_penalty)
 
-def update(model,opt,rollouts,device, ep, metrics_writer=None):
+class RunningVariance:
+    """
+    Welford-style running mean/variance estimator, updated in
+    batches. Used to adaptively rescale value_loss's effective
+    weight in the total loss as the raw scale of returns shifts
+    over training (return variance isn't fixed -- it changes as the
+    policy changes), rather than relying on one fixed VALUE_COEF
+    guessed against a single snapshot.
+
+    Deliberately does NOT normalize `values`/`returns` themselves --
+    only the loss term's weighting. The critic's raw output
+    (`values`, collected via `v.item()` during rollout) is mixed
+    directly with raw-scale `r["rewards"]` in GAE
+    (`gae=r["rewards"][i]+GAMMA*nxt-r["values"][i]+...`), computed
+    entirely outside update(). If the critic were trained to predict
+    a normalized target instead, its raw output would silently drift
+    into a different scale than GAE assumes, corrupting every
+    advantage estimate -- and therefore the policy gradient itself.
+    Rescaling only how much the (still raw-scale) MSE contributes to
+    the total loss avoids that risk entirely.
+    """
+    def __init__(self, epsilon=1e-4):
+        self.mean = 0.0
+        self.var = 1.0
+        self.count = epsilon
+
+    def update(self, x):
+        batch_mean = float(x.mean())
+        batch_var = float(x.var(unbiased=False))
+        batch_count = x.numel()
+
+        delta = batch_mean - self.mean
+        tot_count = self.count + batch_count
+
+        new_mean = self.mean + delta * batch_count / tot_count
+        m_a = self.var * self.count
+        m_b = batch_var * batch_count
+        M2 = m_a + m_b + delta * delta * self.count * batch_count / tot_count
+        new_var = M2 / tot_count
+
+        self.mean = new_mean
+        self.var = new_var
+        self.count = tot_count
+
+def update(model,opt,rollouts,device, ep, metrics_writer=None, return_var_tracker=None):
     # GAE advantages are normalized once across the complete rollout batch, not per episode.
     states=[]; next_states=[]; actions=[]; oldlp=[]; adv=[]; returns=[]
     for r in rollouts:
@@ -212,7 +256,14 @@ def update(model,opt,rollouts,device, ep, metrics_writer=None):
         elif ep < 300:
             lyap_weight = 0.10
             barrier_weight = 0.05
-            dynamics_weight = 0.05
+            # Reduced from 0.05: weighted dynamics_loss was measured
+            # at 6.56x policy_loss even at this "light" weight
+            # (dynamics_loss ~1.4, policy_loss ~0.01) -- the encoder's
+            # gradient was dominated by dynamics prediction, not
+            # reward, essentially the whole time this phase has been
+            # active. Kept proportional to DYNAMICS_COEF below (half),
+            # same relationship as before.
+            dynamics_weight = 0.0075
         else:
             lyap_weight = LYAPUNOV_COEF
             barrier_weight = BARRIER_COEF
@@ -234,7 +285,14 @@ def update(model,opt,rollouts,device, ep, metrics_writer=None):
         lyapunov_penalty = F.relu(delta_V
                                   + LYAPUNOV_ALPHA * V_now
                                   + LYAPUNOV_MARGIN).mean()
-        value_loss = F.mse_loss(values, returns.detach())
+        value_loss_raw = F.mse_loss(values, returns.detach())
+        if return_var_tracker is not None:
+            return_var_tracker.update(returns.detach())
+            # +1e-8 guards the very first call, before count has
+            # accumulated enough samples for a meaningful estimate.
+            value_loss = value_loss_raw / (return_var_tracker.var + 1e-8)
+        else:
+            value_loss = value_loss_raw
         dynamics_loss = F.mse_loss(
             predicted_latent,
             actual_latent.detach(),
@@ -279,7 +337,7 @@ def update(model,opt,rollouts,device, ep, metrics_writer=None):
                 + barrier_weight * barrier_loss)
         print(
             f"Policy {policy_loss:.4f} | "
-            f"Value {value_loss:.4f} | " # 925016.2500
+            f"Value {value_loss_raw:.4f} | " # 925016.2500
             f"Lyap {lyapunov_penalty:.4f} | "
             f"Dynamics {dynamics_loss:.4f} | "
             f"Barrier {barrier_loss:.4f} | "
@@ -293,7 +351,7 @@ def update(model,opt,rollouts,device, ep, metrics_writer=None):
             metrics_writer.writerow({
                 "episode": ep,
                 "policy_loss": float(policy_loss.item()),
-                "value_loss": float(value_loss.item()),
+                "value_loss": float(value_loss_raw.item()),
                 "lyap_penalty": float(lyapunov_penalty.item()),
                 "dynamics_loss": float(dynamics_loss.item()),
                 "barrier_loss": float(barrier_loss.item()),
@@ -437,6 +495,7 @@ def run():
     lyap_history = deque(maxlen=STABILITY_WINDOW)
     barrier_history = deque(maxlen=STABILITY_WINDOW)
     std_history = deque(maxlen=STABILITY_WINDOW)
+    return_var_tracker = RunningVariance() if TRANSFORMER_VARIANT == "lyapunov" else None
     best_avg_reward = -float("inf")
     checks_since_best = 0
     converged = False
@@ -531,7 +590,7 @@ def run():
         # 3. Training Update Logic
         if POLICY_TYPE == "transformer":
             if ep % UPDATE_EVERY_EPISODES == 0:
-                loss, diag_lyap, diag_barrier, diag_std = update(model, opt, rollouts, device, ep, metrics_writer)
+                loss, diag_lyap, diag_barrier, diag_std = update(model, opt, rollouts, device, ep, metrics_writer, return_var_tracker)
                 metrics_file.flush()
                 rollouts = []
 
