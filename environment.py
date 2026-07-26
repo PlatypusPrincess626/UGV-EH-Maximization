@@ -17,6 +17,41 @@ import ugv_simulator
 MIN_USABLE_ELEVATION = 12
 
 ###############################################################
+# Episode date
+#
+# The episode window is anchored to solar noon on this date (see
+# sim_env.__init__), not to a hardcoded clock time.
+#
+# The date matters far more than it looks. At the Yellowstone
+# scene's latitude (44.424 N) the sun's peak elevation swings from
+# ~22.5 deg on Jan 1 to ~69 deg on Jun 21, and get_obfuscation()
+# short-circuits to "fully obstructed" below MIN_USABLE_ELEVATION.
+# Hours per day above that threshold, at this latitude:
+#
+#   Jan 1   peak 22.5 deg   5.7 h usable   09:34 - 15:17
+#   Mar 20  peak 45.1 deg   9.7 h usable   07:40 - 17:21
+#   May 1   peak 60.4 deg  11.7 h usable   06:29 - 18:10
+#   Jun 21  peak 69.0 deg  12.8 h usable   05:59 - 18:48
+#   Aug 1   peak 63.8 deg  12.1 h usable   06:25 - 18:33
+#   Sep 22  peak 46.2 deg   9.8 h usable   07:20 - 17:10
+#
+# The previous setting ('2021-01-01 8:00', freq='min', 720 steps)
+# was a full 12-hour episode as intended, but only 5h43m of it had
+# any sun: measured directly in a training run, directional_reward
+# was exactly zero for 374 of 720 steps (51.9%), nonzero only for
+# steps 94-439 -- i.e. 09:34 to 15:19, matching the table above to
+# the minute. Half of every episode carried no positional signal
+# at all, and no harvest was possible during it.
+#
+# Only late May through mid-August gives a usable window that
+# actually covers a 720-minute episode at this latitude. Change
+# EPISODE_DATE to a winter date only if a long dark phase is
+# deliberately part of the scenario.
+###############################################################
+EPISODE_DATE = "2021-06-21"
+EPISODE_TZ = "MST"
+
+###############################################################
 # Foliage attenuation calibration
 #
 # Closed-canopy forest transmits roughly 0.5-2% of incident light
@@ -75,8 +110,32 @@ class sim_env:
             self.dim = 800  # Map dimension n x n
             self.numObst = 500  # Number of obstacles decided
             self.stepSize = 'min'  # Frequency of time steps
-            self.times = pd.date_range('2021-01-01 8:00', freq=self.stepSize, periods=self.max_num_steps, tz="MST")
-            random.seed('2021-01-01 8:00')
+
+            # Centre the episode on solar transit rather than starting
+            # at a fixed clock hour. Starting at a hardcoded 08:00
+            # wasted time at both ends: 96 minutes before the sun
+            # cleared MIN_USABLE_ELEVATION and 4h41m after it dropped
+            # back below.
+            #
+            # Deriving the start from transit keeps the window centred
+            # automatically if max_num_steps, EPISODE_DATE, or the
+            # scene coordinates change later, instead of silently
+            # drifting off-centre again.
+            transit = solarposition.sun_rise_set_transit_spa(
+                pd.DatetimeIndex([
+                    pd.Timestamp(f"{EPISODE_DATE} 12:00", tz=EPISODE_TZ)
+                ]),
+                self.lat_center,
+                self.long_center,
+            )["transit"].iloc[0]
+
+            start = (
+                transit - pd.Timedelta(minutes=self.max_num_steps // 2)
+            ).round("min")
+
+            self.times = pd.date_range(start, freq=self.stepSize,
+                                       periods=self.max_num_steps, tz=EPISODE_TZ)
+            random.seed(EPISODE_DATE)
 
         # Worst-case obstruction height is terrain (max 50) PLUS
         # foliage on top of it (max 12, reduced from 20 for a sparser

@@ -6,14 +6,18 @@ import torch
 import torch.nn.functional as F
 import torch.optim as optim
 from pvlib import solarposition
-from environment import sim_env
-from transformer import TransformerActorCritic
-from chebyshev_transformer import ChebyshevTransformer
+from environment import sim_env, MIN_USABLE_ELEVATION
 from lyupnov_transformer import LyapunovTransformerActorCritic
-from chaotic_lyupnov_transformer import ChebyshevLyapunovTransformerActorCritic
-from pso_policy import PSOPolicy
 import datetime
 import time
+
+# The alternative policy variants are optional -- importing them
+# eagerly means a missing module breaks the lyapunov path too, even
+# though it never touches them. Imported on demand in run() instead.
+TransformerActorCritic = None
+ChebyshevTransformer = None
+ChebyshevLyapunovTransformerActorCritic = None
+PSOPolicy = None
 
 # ============================================================
 # Set POLICY_TYPE = "transformer" or "pso"
@@ -35,8 +39,9 @@ LR=3e-4; MAX_MOVE_PER_STEP=20.0; ENTROPY_COEF=.01; VALUE_COEF=.5
 ###############################################################
 # Lyapunov Hyperparameters
 ###############################################################
-LYAPUNOV_COEF = 0.25; DYNAMICS_COEF = 0.015; LATENT_COEF = 0.05
+LYAPUNOV_COEF = 0.25; DYNAMICS_COEF = 0.015
 BARRIER_COEF = 0.20; ACTION_SMOOTHNESS = 0.01; LYAPUNOV_MARGIN = 0.01
+# (LATENT_COEF was defined here and never referenced anywhere -- removed.)
 BATTERY_MARGIN = 0.10; BOUNDARY_MARGIN = 0.10; VEGETATION_MARGIN = 0.05
 VELOCITY_MARGIN = 0.05; COMM_MARGIN = 0.10; CLIP_EPS =0.20; LYAPUNOV_ALPHA = 0.02
 # Constant-force hinge pull on raw_log_std toward RAW_LOG_STD_TARGET --
@@ -50,6 +55,47 @@ VELOCITY_MARGIN = 0.05; COMM_MARGIN = 0.10; CLIP_EPS =0.20; LYAPUNOV_ALPHA = 0.0
 # coefficient) everywhere above RAW_LOG_STD_TARGET, not proportional
 # to raw_log_std itself, so it does not taper as raw_log_std declines.
 RAW_LOG_STD_REG_COEF = 3e-2
+
+###############################################################
+# PPO optimization budget
+#
+# Previously update() took exactly ONE full-batch gradient step per
+# rollout: 1000 episodes / UPDATE_EVERY_EPISODES=2 = 500 optimizer
+# steps for the entire run. A 2-layer transformer over a 1688-dim
+# input cannot learn anything in 500 steps.
+#
+# It also meant the clipped surrogate was decorative: with a single
+# step per batch, `lp` and `oldlp` come from identical parameters,
+# so ratio == 1 by construction and PPO degenerates to vanilla A2C.
+#
+# Epochs * minibatches turns the same collected data into ~24
+# optimizer steps per update (1440 samples / 256 per minibatch = 6,
+# times 4 epochs), i.e. ~12000 for the run, and makes the ratio
+# meaningful from the second minibatch onward.
+###############################################################
+PPO_EPOCHS = 4
+MINIBATCH_SIZE = 256
+# Early-stop the epoch loop once the updated policy has moved too
+# far from the behaviour policy. Standard PPO practice; matters more
+# here than usual because the rollout is only two episodes.
+TARGET_KL = 0.015
+
+# Penalty on the pre-squash mean, applied to keep tanh out of
+# saturation. Nothing else in this system constrains |raw_mean|.
+#
+# In the previous run the deterministic policy sat at
+# action_dx_norm = -0.99 for all 720 evaluation steps, i.e.
+# raw_mean ~ -2.7. At that point tanh's output is flat: the
+# environment cannot distinguish raw_mean=-2.7 from -3.5, so the
+# reward gradient vanishes, while the log-prob term keeps pushing
+# the mean further out. Exploration was effectively dead --
+# with the logged pre-squash Std of 0.47, sampled actions spanned
+# tanh([-3.6, -1.8]) = [-0.998, -0.947], about 1% of the action
+# range -- even though that Std reads as perfectly healthy and
+# even satisfied the STD_CLEARED_THRESHOLD convergence gate.
+#
+# This is the same term SAC uses for the same reason.
+MEAN_SATURATION_COEF = 1e-3
 
 # Deterministic entropy-temperature schedule, replacing the learned
 # (SAC-style) alpha. Decays exponentially from ALPHA_START to
@@ -108,6 +154,15 @@ STD_CLEARED_THRESHOLD = 1.0
 # avg_reward to have actually cleared a real bar, not just plateaued
 # anywhere, before convergence can fire.
 REWARD_CONVERGENCE_THRESHOLD = -150.0
+# Companion to STD_CLEARED_THRESHOLD, on the OTHER half of the
+# exploration question. STD_CLEARED_THRESHOLD looks at the
+# pre-squash sigma; this looks at mean |tanh(raw_mean)|. The
+# previous run passed the sigma test throughout while executing a
+# constant, fully-saturated action, because a healthy-looking
+# sigma of 0.47 around a raw_mean of -2.7 still spans only ~1% of
+# the action range. A policy whose mean action magnitude averages
+# above this is pinned against the action bounds, not converged.
+ACTION_SATURATION_THRESHOLD = 0.97
 
 # Format as YYYY-MM-DD_HH-MM-SS
 timestamp = datetime.datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
@@ -126,12 +181,37 @@ def log_status(ep, total_episodes, steps, avg_reward, final_batt, loss, is_eval=
     loss_str = f"{loss:.4f}" if isinstance(loss, (float, int)) else loss
     print(f"{prefix} Steps: {steps:3} | Reward: {avg_reward:7.2f} | Battery: {final_batt:6.2f}% | Loss: {loss_str}")
 
+# Number of scalar (non-patch) features appended by obs(). Must match
+# the `scalar_dim` passed to the model -- keep them derived from this
+# constant rather than duplicating the literal in two files.
+SCALAR_DIM = 8
+
 def obs(env, x, y, yaw, step):
     sol=solarposition.get_solarposition(env.times[min(step,len(env.times)-1)], env.lat_center+y*env.stp, env.long_center+x*env.stp)
     patch=env.get_obfuscation(x,y,min(step,len(env.times)-1),sol.azimuth.iloc[0],sol.apparent_zenith.iloc[0]).flatten()
     potential = 1.0 - patch
+
+    # Solar elevation instead of raw zenith/90.
+    #
+    # zenith/90 was intended to normalize to [0,1] but exceeds 1
+    # whenever the sun is below the horizon (zenith > 90, reaching
+    # ~1.5 at the old run's 20:00 endpoint). That was one of only
+    # seven non-patch features, out of range for the entire dark
+    # portion of the episode.
+    #
+    # sun_usable is an explicit flag for whether get_obfuscation is
+    # returning real geometry or its below-threshold short-circuit.
+    # Without it the policy has to infer "there is no sun" from the
+    # patch having gone uniformly zero (potential = 1 - 1), which is
+    # indistinguishable from "fully shaded but the sun is up" and
+    # gives it nothing to switch behaviour on.
+    elevation = 90.0 - sol.apparent_zenith.iloc[0]
+    elevation_norm = max(0.0, elevation) / 90.0
+    sun_usable = 1.0 if elevation >= MIN_USABLE_ELEVATION else 0.0
+
     scalars=np.array([x/(env.dim-1),y/(env.dim-1),math.sin(yaw),math.cos(yaw),
-                      env.ch.get_battery()/100, sol.azimuth.iloc[0]/360, sol.apparent_zenith.iloc[0]/90],np.float32)
+                      env.ch.get_battery()/100, sol.azimuth.iloc[0]/360,
+                      elevation_norm, sun_usable],np.float32)
     return np.concatenate([potential.astype(np.float32),scalars])
 
 def seq_tensor(history, device):
@@ -232,22 +312,88 @@ class RunningVariance:
         self.var = new_var
         self.count = tot_count
 
-def update(model,opt,rollouts,device, ep, metrics_writer=None, return_var_tracker=None):
-    # GAE advantages are normalized once across the complete rollout batch, not per episode.
+def compute_batch(rollouts, device):
+    """
+    Flattens a list of episode rollouts into aligned, batched tensors.
+
+    THE ORDERING BUG THIS FIXES
+    ---------------------------
+    The previous version built the advantage and return lists with
+    `adv.insert(0, gae)` while building the state list with
+    `states += r["states"]`. insert(0, ...) PREPENDS; += APPENDS.
+
+    With a single episode per update those agree by accident. With
+    UPDATE_EVERY_EPISODES=2 they do not:
+
+        states  ['A0','A1','A2','B0','B1','B2']
+        adv     [ B advantages... , A advantages... ]
+
+    Every state/action was therefore paired with an advantage from
+    the OTHER episode, and every value prediction was regressed
+    against the other episode's return. Because both episodes were
+    always exactly MAX_STEPS_PER_EPISODE long, the tensor shapes
+    matched and nothing ever raised -- the policy gradient was
+    simply noise, and the critic was trained on wrong targets.
+
+    Advantages are accumulated per-episode and then extended onto
+    the batch in the same order the states are, so the two can no
+    longer drift apart regardless of how many episodes are batched.
+
+    RETURNS
+    -------
+    `returns` is now adv + values (the TD(lambda) return) rather
+    than a raw Monte Carlo discounted sum seeded at zero.
+
+    The old MC form told the critic "zero future reward after the
+    final step" on every trajectory. Since episodes essentially
+    always hit the 720-step cap rather than dying (steps == 720 for
+    all 1000 episodes of the previous run), that bootstrap was wrong
+    every single time -- and it disagreed with GAE, which did
+    bootstrap correctly from r["bootstrap_value"]. Deriving returns
+    from the advantages makes the two consistent by construction.
+    """
     states=[]; next_states=[]; actions=[]; oldlp=[]; adv=[]; returns=[]
+
     for r in rollouts:
-        gae=0.0; ret=0.0
-        for i in reversed(range(len(r["rewards"]))):
-            ret=r["rewards"][i]+GAMMA*ret
-            nxt=r.get("bootstrap_value",0.0) if i==len(r["rewards"])-1 else r["values"][i+1]
-            gae=r["rewards"][i]+GAMMA*nxt-r["values"][i]+GAMMA*GAE_LAMBDA*gae
-            adv.insert(0,gae); returns.insert(0,ret)
-        states+=r["states"]; next_states+=r["next_states"]; actions+=r["actions"]; oldlp+=r["logps"]
-    adv = torch.tensor(adv,device=device,dtype=torch.float32); adv=(adv-adv.mean())/(adv.std(unbiased=False)+1e-8)
-    returns=torch.tensor(returns,device=device,dtype=torch.float32); # returns = (returns - returns.mean()) / (returns.std() + 1e-8)
-    actions=torch.tensor(np.asarray(actions),dtype=torch.float32,device=device)
-    oldlp=torch.tensor(oldlp,device=device); states=torch.tensor(np.asarray(states),dtype=torch.float32,device=device)
+        T = len(r["rewards"])
+        ep_adv = []
+        gae = 0.0
+        for i in reversed(range(T)):
+            nxt = r.get("bootstrap_value", 0.0) if i == T - 1 else r["values"][i + 1]
+            gae = r["rewards"][i] + GAMMA * nxt - r["values"][i] + GAMMA * GAE_LAMBDA * gae
+            ep_adv.insert(0, gae)
+
+        # Same order as everything else appended below.
+        adv += ep_adv
+        returns += [a + v for a, v in zip(ep_adv, r["values"])]
+        states += r["states"]
+        next_states += r["next_states"]
+        actions += r["actions"]
+        oldlp += r["logps"]
+
+    adv = torch.tensor(adv, device=device, dtype=torch.float32)
+    returns = torch.tensor(returns, device=device, dtype=torch.float32)
+    actions = torch.tensor(np.asarray(actions), dtype=torch.float32, device=device)
+    oldlp = torch.tensor(oldlp, device=device, dtype=torch.float32)
+    states = torch.tensor(np.asarray(states), dtype=torch.float32, device=device)
     next_states = torch.tensor(np.asarray(next_states), dtype=torch.float32, device=device)
+
+    # Normalized once across the complete rollout batch, after
+    # returns have been derived from the raw advantages.
+    adv = (adv - adv.mean()) / (adv.std(unbiased=False) + 1e-8)
+
+    return states, next_states, actions, oldlp, adv, returns
+
+
+def update(model,opt,rollouts,device, ep, metrics_writer=None, return_var_tracker=None):
+    # Dropout must be ACTIVE for the update (it is a regularizer on
+    # the gradient step) and INACTIVE during rollout, where its only
+    # effect is to make the recorded log-probs and values refer to a
+    # policy that does not exist. See the model.eval() calls in run().
+    model.train()
+
+    states, next_states, actions, oldlp, adv, returns = compute_batch(rollouts, device)
+
     if TRANSFORMER_VARIANT == "lyapunov":
         if ep < 100:
             lyap_weight = 0.0
@@ -263,47 +409,17 @@ def update(model,opt,rollouts,device, ep, metrics_writer=None, return_var_tracke
             # reward, essentially the whole time this phase has been
             # active. Kept proportional to DYNAMICS_COEF below (half),
             # same relationship as before.
+            #
+            # Note this weighting matters much less now: the auxiliary
+            # heads read a DETACHED latent (see encode_state in the
+            # model file), so dynamics_loss no longer competes with
+            # policy_loss for control of the shared encoder at all.
+            # It only trains the dynamics head itself.
             dynamics_weight = 0.0075
         else:
             lyap_weight = LYAPUNOV_COEF
             barrier_weight = BARRIER_COEF
             dynamics_weight = DYNAMICS_COEF
-
-        (lp, entropy, values, lyapunov, barrier, latent, predicted_next, mean_std, mean_raw_log_std, raw_log_std_reg) = model.evaluate_actions(states,actions)
-        (V_now, V_next, delta_V, predicted_latent, actual_latent) = model.evaluate_transition(states,next_states)
-
-        ratio = torch.exp(lp - oldlp)
-        approx_kl = (oldlp - lp).mean()
-        clip_fraction = ((torch.abs(ratio - 1.0) > CLIP_EPS).float().mean())
-        surr1 = ratio * adv
-        surr2 = torch.clamp(
-            ratio,
-            1.0 - CLIP_EPS,
-            1.0 + CLIP_EPS,
-        ) * adv
-        policy_loss = -torch.min(surr1, surr2).mean()
-        lyapunov_penalty = F.relu(delta_V
-                                  + LYAPUNOV_ALPHA * V_now
-                                  + LYAPUNOV_MARGIN).mean()
-        value_loss_raw = F.mse_loss(values, returns.detach())
-        if return_var_tracker is not None:
-            return_var_tracker.update(returns.detach())
-            # +1e-8 guards the very first call, before count has
-            # accumulated enough samples for a meaningful estimate.
-            value_loss = value_loss_raw / (return_var_tracker.var + 1e-8)
-        else:
-            value_loss = value_loss_raw
-        dynamics_loss = F.mse_loss(
-            predicted_latent,
-            actual_latent.detach(),
-        )
-        battery_loss = torch.relu(BATTERY_MARGIN - barrier[:, 0]).mean()
-        boundary_loss = torch.relu(BOUNDARY_MARGIN - barrier[:, 1]).mean()
-        vegetation_loss = torch.relu(VEGETATION_MARGIN - barrier[:, 2]).mean()
-        velocity_loss = torch.relu(VELOCITY_MARGIN - barrier[:, 3]).mean()
-        communication_loss = torch.relu(COMM_MARGIN - barrier[:, 4]).mean()
-        barrier_loss = (1.0 * battery_loss + 0.5 * boundary_loss + 0.25 * vegetation_loss
-                        + 0.25 * velocity_loss + 0.75 * communication_loss)
 
         # alpha follows a fixed schedule (see ALPHA_START/ALPHA_END/
         # ALPHA_DECAY_EPISODES below), not a learned parameter --
@@ -313,74 +429,227 @@ def update(model,opt,rollouts,device, ep, metrics_writer=None, return_var_tracke
         decay_frac = min(ep, ALPHA_DECAY_EPISODES) / ALPHA_DECAY_EPISODES
         scheduled_alpha = ALPHA_START * (ALPHA_END / ALPHA_START) ** decay_frac
 
-        # Safety net the pure schedule gives up: a learned alpha would
-        # have noticed entropy collapsing too far and raised itself
-        # back up on its own. A schedule has no such awareness -- it
-        # decays regardless of what entropy is actually doing. This
-        # reactive check restores that protection without
-        # reintroducing a convergence-dependent mechanism: it's a
-        # direct threshold, not a gradient, so there's no "will it
-        # correct in time" question -- if entropy is too low this
-        # batch, alpha jumps back up this same update.
-        current_entropy = entropy.mean().item()
-        if current_entropy < SAFETY_ENTROPY_FLOOR:
-            alpha = max(scheduled_alpha, SAFETY_ALPHA_BOOST)
+        # Return-scale tracker is updated once per rollout batch, not
+        # once per minibatch -- otherwise the same data would be
+        # counted PPO_EPOCHS * n_minibatches times and the running
+        # count would race ahead of the actual sample count.
+        if return_var_tracker is not None:
+            return_var_tracker.update(returns.detach())
+            return_scale = return_var_tracker.var + 1e-8
         else:
-            alpha = scheduled_alpha
+            return_scale = 1.0
 
-        loss = (policy_loss
-                + VALUE_COEF * value_loss
-                - alpha * entropy.mean()
-                + RAW_LOG_STD_REG_COEF * raw_log_std_reg
-                + lyap_weight * lyapunov_penalty
-                + dynamics_weight * dynamics_loss
-                + barrier_weight * barrier_loss)
+        n = states.shape[0]
+        indices = np.arange(n)
+        accum = {}
+        n_minibatches = 0
+        last_loss = 0.0
+        stop_early = False
+
+        for epoch in range(PPO_EPOCHS):
+            np.random.shuffle(indices)
+
+            for start_idx in range(0, n, MINIBATCH_SIZE):
+                mb = torch.as_tensor(
+                    indices[start_idx:start_idx + MINIBATCH_SIZE],
+                    dtype=torch.long, device=device,
+                )
+
+                mb_states = states[mb]
+                mb_adv = adv[mb]
+                mb_returns = returns[mb]
+
+                (lp, entropy, values, lyapunov, barrier, latent,
+                 predicted_latent, mean_std, mean_raw_log_std,
+                 raw_log_std_reg, raw_mean) = model.evaluate_actions(mb_states, actions[mb])
+
+                # Only ONE extra encoder pass, on next_states. V(s) and
+                # the predicted next latent already came back above --
+                # calling evaluate_transition here would re-encode
+                # mb_states for identical results, and that waste would
+                # be multiplied by epochs * minibatches.
+                V_next, actual_latent = model.evaluate_next(next_states[mb])
+                V_now = lyapunov
+                delta_V = V_next - V_now
+
+                ratio = torch.exp(lp - oldlp[mb])
+                approx_kl = (oldlp[mb] - lp).mean()
+                clip_fraction = ((torch.abs(ratio - 1.0) > CLIP_EPS).float().mean())
+                surr1 = ratio * mb_adv
+                surr2 = torch.clamp(
+                    ratio,
+                    1.0 - CLIP_EPS,
+                    1.0 + CLIP_EPS,
+                ) * mb_adv
+                policy_loss = -torch.min(surr1, surr2).mean()
+
+                lyapunov_penalty = F.relu(delta_V
+                                          + LYAPUNOV_ALPHA * V_now
+                                          + LYAPUNOV_MARGIN).mean()
+
+                value_loss_raw = F.mse_loss(values, mb_returns.detach())
+                value_loss = value_loss_raw / return_scale
+
+                dynamics_loss = F.mse_loss(
+                    predicted_latent,
+                    actual_latent.detach(),
+                )
+
+                battery_loss = torch.relu(BATTERY_MARGIN - barrier[:, 0]).mean()
+                boundary_loss = torch.relu(BOUNDARY_MARGIN - barrier[:, 1]).mean()
+                vegetation_loss = torch.relu(VEGETATION_MARGIN - barrier[:, 2]).mean()
+                velocity_loss = torch.relu(VELOCITY_MARGIN - barrier[:, 3]).mean()
+                communication_loss = torch.relu(COMM_MARGIN - barrier[:, 4]).mean()
+                barrier_loss = (1.0 * battery_loss + 0.5 * boundary_loss + 0.25 * vegetation_loss
+                                + 0.25 * velocity_loss + 0.75 * communication_loss)
+
+                # Keeps tanh out of saturation -- see
+                # MEAN_SATURATION_COEF. Without this the mean drifts
+                # outward indefinitely, because past |tanh| ~ 0.99 the
+                # environment cannot tell one raw_mean from another
+                # and only the log-prob term still has an opinion.
+                saturation_loss = raw_mean.pow(2).mean()
+
+                # Safety net the pure schedule gives up: a learned alpha
+                # would have noticed entropy collapsing too far and
+                # raised itself back up on its own. A schedule has no
+                # such awareness -- it decays regardless of what entropy
+                # is actually doing. This reactive check restores that
+                # protection without reintroducing a convergence-
+                # dependent mechanism: it's a direct threshold, not a
+                # gradient, so there's no "will it correct in time"
+                # question.
+                current_entropy = entropy.mean().item()
+                if current_entropy < SAFETY_ENTROPY_FLOOR:
+                    alpha = max(scheduled_alpha, SAFETY_ALPHA_BOOST)
+                else:
+                    alpha = scheduled_alpha
+
+                loss = (policy_loss
+                        + VALUE_COEF * value_loss
+                        - alpha * entropy.mean()
+                        + RAW_LOG_STD_REG_COEF * raw_log_std_reg
+                        + MEAN_SATURATION_COEF * saturation_loss
+                        + lyap_weight * lyapunov_penalty
+                        + dynamics_weight * dynamics_loss
+                        + barrier_weight * barrier_loss)
+
+                opt.zero_grad()
+                loss.backward()
+                torch.nn.utils.clip_grad_norm_(model.parameters(), 1.0)
+                opt.step()
+
+                # tanh(raw_mean) is the diagnostic that actually tracks
+                # exploration. The pre-squash Std does not: at
+                # raw_mean=-2.7 a Std of 0.47 still yields actions
+                # spanning only ~1% of the action range.
+                with torch.no_grad():
+                    mean_abs_action = torch.tanh(raw_mean).abs().mean()
+
+                batch_metrics = {
+                    "policy_loss": float(policy_loss.item()),
+                    "value_loss": float(value_loss_raw.item()),
+                    "lyap_penalty": float(lyapunov_penalty.item()),
+                    "dynamics_loss": float(dynamics_loss.item()),
+                    "barrier_loss": float(barrier_loss.item()),
+                    "approx_kl": float(approx_kl.item()),
+                    "clip_fraction": float(clip_fraction.item()),
+                    "mean_std": float(mean_std.item()),
+                    "mean_raw_log_std": float(mean_raw_log_std.item()),
+                    "mean_abs_action": float(mean_abs_action.item()),
+                    "alpha": float(alpha),
+                }
+                for k, v in batch_metrics.items():
+                    accum[k] = accum.get(k, 0.0) + v
+                n_minibatches += 1
+                last_loss = float(loss.item())
+
+                # Standard PPO early stop. Matters more than usual here
+                # because the rollout is only UPDATE_EVERY_EPISODES
+                # episodes: without it, later epochs can push the policy
+                # a long way from the behaviour policy that generated
+                # the data, and the importance ratios stop being
+                # trustworthy.
+                if abs(float(approx_kl.item())) > TARGET_KL:
+                    stop_early = True
+                    break
+
+            if stop_early:
+                break
+
+        avg = {k: v / max(n_minibatches, 1) for k, v in accum.items()}
+
         print(
-            f"Policy {policy_loss:.4f} | "
-            f"Value {value_loss_raw:.4f} | " # 925016.2500
-            f"Lyap {lyapunov_penalty:.4f} | "
-            f"Dynamics {dynamics_loss:.4f} | "
-            f"Barrier {barrier_loss:.4f} | "
-            f"KL {approx_kl:.5f} | "
-            f"CF {clip_fraction:.4f} | "
-            f"Std {mean_std:.4f} | "
-            f"RawLogStd {mean_raw_log_std.item():.4f} | "
-            f"Alpha {alpha:.4f}"
+            f"Policy {avg['policy_loss']:.4f} | "
+            f"Value {avg['value_loss']:.4f} | "
+            f"Lyap {avg['lyap_penalty']:.4f} | "
+            f"Dynamics {avg['dynamics_loss']:.4f} | "
+            f"Barrier {avg['barrier_loss']:.4f} | "
+            f"KL {avg['approx_kl']:.5f} | "
+            f"CF {avg['clip_fraction']:.4f} | "
+            f"Std {avg['mean_std']:.4f} | "
+            f"RawLogStd {avg['mean_raw_log_std']:.4f} | "
+            f"|a| {avg['mean_abs_action']:.4f} | "
+            f"Alpha {avg['alpha']:.4f} | "
+            f"MB {n_minibatches}"
         )
         if metrics_writer is not None:
-            metrics_writer.writerow({
-                "episode": ep,
-                "policy_loss": float(policy_loss.item()),
-                "value_loss": float(value_loss_raw.item()),
-                "lyap_penalty": float(lyapunov_penalty.item()),
-                "dynamics_loss": float(dynamics_loss.item()),
-                "barrier_loss": float(barrier_loss.item()),
-                "approx_kl": float(approx_kl.item()),
-                "clip_fraction": float(clip_fraction.item()),
-                "mean_std": float(mean_std.item()),
-                "mean_raw_log_std": float(mean_raw_log_std.item()),
-                "alpha": float(alpha),
-            })
-        diag_lyap = float(lyapunov_penalty.item())
-        diag_barrier = float(barrier_loss.item())
-        diag_std = float(mean_std.item())
+            row = {"episode": ep, "minibatches": n_minibatches}
+            row.update(avg)
+            metrics_writer.writerow(row)
+
+        diag_lyap = avg["lyap_penalty"]
+        diag_barrier = avg["barrier_loss"]
+        diag_std = avg["mean_std"]
+        diag_abs_action = avg["mean_abs_action"]
+        loss_value = last_loss
     else:
-        lp,entropy,values=model.evaluate_actions(states,actions)
-        # Single efficient batched actor-critic update; no duplicate forward pass per step.
-        ratio = torch.exp(lp - oldlp)
-        surr1 = ratio * adv
-        surr2 = torch.clamp(ratio,
-                            1.0 - CLIP_EPS,
-                            1.0 + CLIP_EPS) * adv
-        policy_loss = -torch.min(surr1, surr2).mean()
-        loss = (policy_loss
-                + VALUE_COEF * F.mse_loss(values, returns)
-                - ENTROPY_COEF * entropy.mean())
+        n = states.shape[0]
+        indices = np.arange(n)
+        last_loss = 0.0
+        stop_early = False
+
+        for epoch in range(PPO_EPOCHS):
+            np.random.shuffle(indices)
+
+            for start_idx in range(0, n, MINIBATCH_SIZE):
+                mb = torch.as_tensor(
+                    indices[start_idx:start_idx + MINIBATCH_SIZE],
+                    dtype=torch.long, device=device,
+                )
+
+                lp, entropy, values = model.evaluate_actions(states[mb], actions[mb])
+                ratio = torch.exp(lp - oldlp[mb])
+                approx_kl = (oldlp[mb] - lp).mean()
+                surr1 = ratio * adv[mb]
+                surr2 = torch.clamp(ratio,
+                                    1.0 - CLIP_EPS,
+                                    1.0 + CLIP_EPS) * adv[mb]
+                policy_loss = -torch.min(surr1, surr2).mean()
+                loss = (policy_loss
+                        + VALUE_COEF * F.mse_loss(values, returns[mb])
+                        - ENTROPY_COEF * entropy.mean())
+
+                opt.zero_grad()
+                loss.backward()
+                torch.nn.utils.clip_grad_norm_(model.parameters(), 1.0)
+                opt.step()
+                last_loss = float(loss.item())
+
+                if abs(float(approx_kl.item())) > TARGET_KL:
+                    stop_early = True
+                    break
+
+            if stop_early:
+                break
+
         diag_lyap = None
         diag_barrier = None
         diag_std = None
-    opt.zero_grad(); loss.backward(); torch.nn.utils.clip_grad_norm_(model.parameters(),1.0); opt.step()
-    return float(loss.item()), diag_lyap, diag_barrier, diag_std
+        diag_abs_action = None
+        loss_value = last_loss
+
+    return loss_value, diag_lyap, diag_barrier, diag_std, diag_abs_action
 
 def run():
     device=torch.device("cuda" if torch.cuda.is_available() else "cpu")
@@ -390,13 +659,21 @@ def run():
     if POLICY_TYPE == "transformer":
         if TRANSFORMER_VARIANT == "lyapunov":
             if TRANSFORMER_INIT == "chaotic":
+                from chaotic_lyupnov_transformer import ChebyshevLyapunovTransformerActorCritic
                 model = ChebyshevLyapunovTransformerActorCritic(
                     view_dist=VIEW_DISTANCE,
+                    scalar_dim=SCALAR_DIM,
                     sequence_length=SEQUENCE_LENGTH,
                 ).to(device)
             else:
+                # scalar_dim passed explicitly: obs() now appends 8
+                # scalars, not 7 (solar elevation replaced the
+                # out-of-range zenith/90 term, and a sun-usable flag
+                # was added). The model default is still 7, so leaving
+                # this implicit would silently mis-slice the input.
                 model = LyapunovTransformerActorCritic(
                     view_dist=VIEW_DISTANCE,
+                    scalar_dim=SCALAR_DIM,
                     sequence_length=SEQUENCE_LENGTH,
                 ).to(device)
             actor_params = list(model.actor.parameters())
@@ -450,15 +727,18 @@ def run():
                                {"params": log_std_params,     "lr": 3e-4, "weight_decay":1e-5},],
                               eps=1e-5,)
         elif TRANSFORMER_VARIANT == "chaotic":
+            from chebyshev_transformer import ChebyshevTransformer
             model = ChebyshevTransformer(VIEW_DISTANCE).to(device)
             opt = optim.Adam(model.parameters(), lr=LR)
         else:
+            from transformer import TransformerActorCritic
             model = TransformerActorCritic(VIEW_DISTANCE).to(device)
             opt = optim.Adam(model.parameters(), lr=LR)
     else:
+        from pso_policy import PSOPolicy
         # Assuming observation dimension is flattened patch size + scalars
         # Calculate based on your obs function (e.g., 20x20 patch + 7 scalars)
-        input_dim = (VIEW_DISTANCE * 2 + 1) ** 2 + 7
+        input_dim = (VIEW_DISTANCE * 2 + 1) ** 2 + SCALAR_DIM
         model = PSOPolicy(input_dim=input_dim).to(device)
         opt = None  # PSO does not use torch.optim
 
@@ -475,8 +755,9 @@ def run():
     # don't have to be read back out of console/log output by hand.
     metrics_file = open(OUT/"training_metrics.csv","w",newline="")
     metrics_writer = csv.DictWriter(metrics_file, fieldnames=[
-        "episode","policy_loss","value_loss","lyap_penalty","dynamics_loss",
-        "barrier_loss","approx_kl","clip_fraction","mean_std","mean_raw_log_std","alpha",
+        "episode","minibatches","policy_loss","value_loss","lyap_penalty","dynamics_loss",
+        "barrier_loss","approx_kl","clip_fraction","mean_std","mean_raw_log_std",
+        "mean_abs_action","alpha",
     ])
     metrics_writer.writeheader()
 
@@ -484,7 +765,7 @@ def run():
     convergence_file = open(OUT/"convergence_checks.csv", "w", newline="")
     convergence_writer = csv.DictWriter(convergence_file, fieldnames=[
         "episode","avg_reward","best_avg_reward","reward_above_threshold",
-        "avg_lyap","avg_barrier","avg_std","exploration_cleared",
+        "avg_lyap","avg_barrier","avg_std","avg_abs_action","exploration_cleared",
         "stable","checks_since_best",
     ])
     convergence_writer.writeheader()
@@ -495,6 +776,7 @@ def run():
     lyap_history = deque(maxlen=STABILITY_WINDOW)
     barrier_history = deque(maxlen=STABILITY_WINDOW)
     std_history = deque(maxlen=STABILITY_WINDOW)
+    abs_action_history = deque(maxlen=STABILITY_WINDOW)
     return_var_tracker = RunningVariance() if TRANSFORMER_VARIANT == "lyapunov" else None
     best_avg_reward = -float("inf")
     checks_since_best = 0
@@ -512,6 +794,21 @@ def run():
             start = time.perf_counter()
             # 2. Action Selection Logic
             if POLICY_TYPE == "transformer":
+                # eval() disables dropout for action selection.
+                #
+                # Without it, TransformerEncoderLayer(dropout=0.1) is
+                # active here AND again in evaluate_actions() with a
+                # DIFFERENT mask, so the recorded log_prob and value
+                # describe a policy that never existed. The previous
+                # run proved this was firing: with one gradient step
+                # per batch, lp and oldlp come from identical
+                # parameters, so approx_kl and clip_fraction must be
+                # exactly 0 -- they logged 0.083 / 0.458 at episode 2
+                # and 0.006 / 0.053 at episode 1000. Every one of
+                # those clipped samples was clipped by dropout noise,
+                # and r["values"] (the GAE baseline) was corrupted the
+                # same way.
+                model.eval()
                 with torch.no_grad():
                     if TRANSFORMER_VARIANT == "lyapunov":
                         (a, raw_a, lp, v, lyapunov, barrier, latent, predicted_next) = model.act(s)
@@ -519,7 +816,13 @@ def run():
                         if previous_action is None:
                             smoothness = 0.0
                         else:
-                            smoothness = np.sum(((current_action - previous_action) / MAX_MOVE_PER_STEP) ** 2)
+                            # current_action is already normalized to
+                            # (-1,1) by the tanh squash, so the extra
+                            # division by MAX_MOVE_PER_STEP made this
+                            # term ~1e-5 after ACTION_SMOOTHNESS --
+                            # numerically dead. Compare normalized
+                            # actions directly.
+                            smoothness = float(np.sum((current_action - previous_action) ** 2))
                         r["lyapunov"].append(lyapunov.cpu().numpy()); r["barrier"].append(barrier.cpu().numpy())
                     else:
                         a, lp, v = model.act(s)
@@ -578,6 +881,7 @@ def run():
             if aft_batt <= 0:
                 bootstrap_value = 0.0
             else:
+                model.eval()
                 with torch.no_grad():
                     (_, bootstrap_value_t, _, _, _, _, _) = model.distribution(seq_tensor(h, device))
                 bootstrap_value = bootstrap_value_t.item()
@@ -590,7 +894,8 @@ def run():
         # 3. Training Update Logic
         if POLICY_TYPE == "transformer":
             if ep % UPDATE_EVERY_EPISODES == 0:
-                loss, diag_lyap, diag_barrier, diag_std = update(model, opt, rollouts, device, ep, metrics_writer, return_var_tracker)
+                loss, diag_lyap, diag_barrier, diag_std, diag_abs_action = update(
+                    model, opt, rollouts, device, ep, metrics_writer, return_var_tracker)
                 metrics_file.flush()
                 rollouts = []
 
@@ -598,6 +903,7 @@ def run():
                     lyap_history.append(diag_lyap)
                     barrier_history.append(diag_barrier)
                     std_history.append(diag_std)
+                    abs_action_history.append(diag_abs_action)
 
                     ready = (
                         ep >= 300
@@ -609,7 +915,18 @@ def run():
                         avg_barrier = sum(barrier_history) / len(barrier_history)
                         avg_reward = sum(reward_history) / len(reward_history)
                         avg_std = sum(std_history) / len(std_history)
-                        exploration_cleared = avg_std <= STD_CLEARED_THRESHOLD
+                        avg_abs_action = sum(abs_action_history) / len(abs_action_history)
+                        # avg_std alone was not a sufficient test. The
+                        # previous run satisfied avg_std <= 1.0 for its
+                        # entire length while the policy was in fact a
+                        # constant, fully saturated action -- the
+                        # pre-squash Std says nothing about spread in
+                        # ACTION space once tanh is flat. Require the
+                        # mean action to be off the boundary too.
+                        exploration_cleared = (
+                            avg_std <= STD_CLEARED_THRESHOLD
+                            and avg_abs_action <= ACTION_SATURATION_THRESHOLD
+                        )
                         reward_above_threshold = avg_reward >= REWARD_CONVERGENCE_THRESHOLD
                         stable = (
                             avg_lyap <= LYAPUNOV_STABLE_THRESHOLD
@@ -632,7 +949,8 @@ def run():
                             f"above_threshold={reward_above_threshold}) | "
                             f"avg_lyap(last {STABILITY_WINDOW}) {avg_lyap:.4f} | "
                             f"avg_barrier(last {STABILITY_WINDOW}) {avg_barrier:.4f} | "
-                            f"avg_std(last {STABILITY_WINDOW}) {avg_std:.4f} "
+                            f"avg_std(last {STABILITY_WINDOW}) {avg_std:.4f} | "
+                            f"avg|a|(last {STABILITY_WINDOW}) {avg_abs_action:.4f} "
                             f"(cleared={exploration_cleared}) | "
                             f"stable={stable} | "
                             f"checks_since_best={checks_since_best}/{CONVERGENCE_PATIENCE}"
@@ -645,6 +963,7 @@ def run():
                             "avg_lyap": avg_lyap,
                             "avg_barrier": avg_barrier,
                             "avg_std": avg_std,
+                            "avg_abs_action": avg_abs_action,
                             "exploration_cleared": exploration_cleared,
                             "stable": stable,
                             "checks_since_best": checks_since_best,
@@ -696,6 +1015,9 @@ def run():
         for step in range(MAX_STEPS_PER_EPISODE):
             start = time.perf_counter()
             if POLICY_TYPE == "transformer":
+                # Deterministic evaluation must have dropout off, or
+                # it is not deterministic.
+                model.eval()
                 with torch.no_grad():
                     if TRANSFORMER_VARIANT == "lyapunov":
                         (a, raw_a, lp, v, lyapunov, barrier, latent, predicted_next) = model.fast_act(seq_tensor(h,device))

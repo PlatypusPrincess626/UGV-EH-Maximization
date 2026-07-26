@@ -424,11 +424,38 @@ class LyapunovTransformerActorCritic(nn.Module):
 
         latent = self.encode(sequence)
 
+        # The auxiliary heads (energy/Lyapunov, barrier, latent
+        # dynamics) read a DETACHED latent, so their losses train
+        # only their own parameters and never reshape the shared
+        # encoder.
+        #
+        # This was the original intent -- `latent_aux` was already
+        # being computed here and then not used, so every auxiliary
+        # gradient was flowing back into the trunk. Two concrete
+        # problems that caused:
+        #
+        #   1. dynamics_loss has a trivial collapse solution. The
+        #      target is detached, so the only gradient path is
+        #      through dynamics(latent) -> encoder, and the cheapest
+        #      way to make the latent predictable is to make it
+        #      CONSTANT. A constant latent means a state-independent
+        #      actor, which is exactly what the trained policy turned
+        #      out to be.
+        #   2. barrier_loss and lyapunov_penalty were both an order
+        #      of magnitude larger than policy_loss, so the trunk was
+        #      being shaped by constraint satisfaction rather than by
+        #      reward.
+        #
+        # With the detach in place the trunk is trained by the policy
+        # and value losses only; the auxiliary heads still learn to
+        # describe the representation, they just no longer get to
+        # dictate it.
         latent_aux = latent.detach()
-        energy = self.energy_representation(latent)
+
+        energy = self.energy_representation(latent_aux)
         V = self.lyapunov(energy).squeeze(-1)
-        barrier = self.barrier(latent)
-        next_latent = self.dynamics(latent)
+        barrier = self.barrier(latent_aux)
+        next_latent = self.dynamics(latent_aux)
         return latent, energy, V, barrier, next_latent
 
     ############################################################
@@ -725,6 +752,18 @@ class LyapunovTransformerActorCritic(nn.Module):
             raw_log_std,
         ) = self.distribution(sequence)
 
+        # The pre-squash mean. Returned so main.py can apply a
+        # saturation penalty to it: nothing else in this system
+        # constrains |raw_mean|, and once tanh(raw_mean) reaches
+        # +-0.99 the environment can no longer distinguish one
+        # raw_mean from another, so the reward gradient vanishes
+        # while the log-prob term keeps pushing the mean further
+        # out. That runaway is what collapsed exploration in the
+        # previous run (actions pinned at dx=-0.99 for all 720
+        # steps) even though the logged pre-squash Std looked
+        # perfectly healthy at ~0.47.
+        raw_mean = dist.mean
+
         z = actions
         _, correction = self._squash(z)
 
@@ -753,7 +792,43 @@ class LyapunovTransformerActorCritic(nn.Module):
             mean_std,
             mean_raw_log_std,
             raw_log_std_reg,
+            raw_mean,
         )
+
+    ############################################################
+    # Next-State Evaluation
+    ############################################################
+
+    def evaluate_next(self, next_sequence):
+        """
+        Computes only the quantities needed for the NEXT state:
+        V(s') and the actual next latent.
+
+        `evaluate_transition` below runs the encoder twice (once on
+        the current sequence, once on the next), but `evaluate_actions`
+        has already computed everything for the current sequence --
+        V(s) and predicted_next_latent are both in its return tuple.
+        Calling both therefore encodes the current sequence twice per
+        optimizer step for identical results.
+
+        That was tolerable at one gradient step per rollout. With PPO
+        epochs and minibatches it is not: the waste is multiplied by
+        epochs * minibatches. Use this together with `evaluate_actions`
+        instead -- two encoder passes per minibatch (states, next_states)
+        rather than three.
+        """
+
+        (
+            _,
+            _,
+            _,
+            V_next,
+            _,
+            next_latent,
+            _,
+        ) = self(next_sequence)
+
+        return V_next, next_latent
 
     ############################################################
     # Transition Evaluation
