@@ -742,12 +742,37 @@ def run():
         model = PSOPolicy(input_dim=input_dim).to(device)
         opt = None  # PSO does not use torch.optim
 
-    total_inference_time = 0.0
-    total_inference_steps = 0
+    ###############################################################
+    # Timing instrumentation
+    #
+    # Previously a single (total_inference_time, total_inference_steps)
+    # pair accumulated three different things at two different units:
+    # the per-env-step policy forward pass, and -- via a timer opened
+    # before the training block and closed after the checkpoint save --
+    # the per-episode update() call and torch.save() as well, with the
+    # step counter incremented once per env step AND once per episode.
+    # The reported "Average inference ms/step" was therefore a mix of
+    # inference, optimization and disk I/O divided by a count that
+    # mixed episodes and steps.
+    #
+    # Each phase now gets its own accumulator and its own counter, in
+    # consistent units, so the rollout-vs-update split can actually be
+    # read off a run rather than guessed at.
+    ###############################################################
+    total_inference_time = 0.0   # policy forward passes only
+    total_inference_steps = 0    # counted per env step, never per episode
+    total_rollout_time = 0.0     # whole step loop: inference + env + reward
+    total_update_time = 0.0      # update() only
+    total_update_calls = 0
+    total_checkpoint_time = 0.0  # torch.save() only
+    total_episode_time = 0.0     # end-to-end per episode
+    run_start = time.perf_counter()
     epfile=open(OUT/"episode_metrics.csv","w",newline="")
     epw=csv.DictWriter(epfile,fieldnames=["episode","steps","final_battery","total_reward",
                                           "total_directional_reward","total_battery_reward",
-                                          "total_movement_penalty","loss"])
+                                          "total_movement_penalty","loss",
+                                          "episode_time","rollout_time","inference_time",
+                                          "env_time","update_time"])
     epw.writeheader()
     rollouts=[]
 
@@ -783,11 +808,15 @@ def run():
     converged = False
 
     for ep in range(1,TOTAL_EPISODES+1):
+        ep_start = time.perf_counter()
+        ep_inference_time = 0.0
+        ep_update_time = 0.0
         env.place_devices(); env.reset(); x,y,yaw=env.ch.get_position()
         h=deque([obs(env,x,y,yaw,0)]*SEQUENCE_LENGTH,maxlen=SEQUENCE_LENGTH);total=0;
         total_directional=0.0; total_battery_reward=0.0; total_movement_penalty=0.0
         r={"states":[],"next_states":[],"actions":[],"logps":[],"values":[],"rewards":[],"lyapunov":[], "barrier":[]};
         previous_action = None; smoothness = 0.0
+        rollout_start = time.perf_counter()
         for step in range(MAX_STEPS_PER_EPISODE):
             s=seq_tensor(h,device)
 
@@ -842,6 +871,7 @@ def run():
 
             elapsed = time.perf_counter() - start
             total_inference_time += elapsed
+            ep_inference_time += elapsed
             total_inference_steps += 1
 
             # normalized action -> local, physically scaled target; no global-coordinate clipping mismatch
@@ -869,6 +899,9 @@ def run():
             r["next_states"].append(np.asarray(h))
             if aft_batt<=0: break
 
+        rollout_elapsed = time.perf_counter() - rollout_start
+        total_rollout_time += rollout_elapsed
+
         # GAE needs a bootstrap value for whatever comes after the last
         # recorded step. If the battery genuinely died (aft_batt<=0),
         # there truly is no future reward -- 0 is correct. If the loop
@@ -890,12 +923,15 @@ def run():
         rollouts.append(r); loss=""
         reward_history.append(total)
 
-        start = time.perf_counter()
         # 3. Training Update Logic
         if POLICY_TYPE == "transformer":
             if ep % UPDATE_EVERY_EPISODES == 0:
+                update_start = time.perf_counter()
                 loss, diag_lyap, diag_barrier, diag_std, diag_abs_action = update(
                     model, opt, rollouts, device, ep, metrics_writer, return_var_tracker)
+                ep_update_time = time.perf_counter() - update_start
+                total_update_time += ep_update_time
+                total_update_calls += 1
                 metrics_file.flush()
                 rollouts = []
 
@@ -938,7 +974,9 @@ def run():
                         if avg_reward > best_avg_reward:
                             best_avg_reward = avg_reward
                             checks_since_best = 0
+                            ckpt_start = time.perf_counter()
                             torch.save(model.state_dict(), ckpt_dir / "best.pt")
+                            total_checkpoint_time += time.perf_counter() - ckpt_start
                         else:
                             checks_since_best += 1
 
@@ -977,7 +1015,9 @@ def run():
                                 f"avg_reward={avg_reward:.2f}, avg_lyap={avg_lyap:.4f}, "
                                 f"avg_barrier={avg_barrier:.4f}."
                             )
+                            ckpt_start = time.perf_counter()
                             torch.save(model.state_dict(), ckpt_dir / "converged.pt")
+                            total_checkpoint_time += time.perf_counter() - ckpt_start
                             converged = True
         else:
             # PSO Update: Evaluate current particle and update swarm
@@ -987,16 +1027,26 @@ def run():
             loss = "N/A (PSO)"
 
         if ep % CHECKPOINT_EVERY == 0:
+            ckpt_start = time.perf_counter()
             torch.save(model.state_dict(), ckpt_dir / f"episode_{ep}.pt")
+            total_checkpoint_time += time.perf_counter() - ckpt_start
 
-        elapsed = time.perf_counter() - start
-        total_inference_time += elapsed
-        total_inference_steps += 1
+        ep_elapsed = time.perf_counter() - ep_start
+        total_episode_time += ep_elapsed
+
+        # env_time is rollout minus policy inference: environment
+        # stepping, obs(), get_obfuscation and the reward computation.
+        # This is the number that decides whether update() is worth
+        # optimizing at all.
+        ep_env_time = rollout_elapsed - ep_inference_time
 
         steps_taken = len(r["rewards"]); log_status(ep, TOTAL_EPISODES, steps_taken, total, aft_batt, loss)
         epw.writerow(dict(episode=ep,steps=len(r["rewards"]),final_battery=aft_batt,total_reward=total,
                           total_directional_reward=total_directional,total_battery_reward=total_battery_reward,
-                          total_movement_penalty=total_movement_penalty,loss=loss)); epfile.flush()
+                          total_movement_penalty=total_movement_penalty,loss=loss,
+                          episode_time=ep_elapsed, rollout_time=rollout_elapsed,
+                          inference_time=ep_inference_time, env_time=ep_env_time,
+                          update_time=ep_update_time)); epfile.flush()
 
         if converged and AUTO_STOP_ON_CONVERGENCE:
             print(f"[Convergence] Stopping training early at episode {ep}/{TOTAL_EPISODES}.")
@@ -1012,6 +1062,7 @@ def run():
 
         final_inference_time = 0.0
         final_inference_steps = 0
+        final_eval_start = time.perf_counter()
         for step in range(MAX_STEPS_PER_EPISODE):
             start = time.perf_counter()
             if POLICY_TYPE == "transformer":
@@ -1058,27 +1109,66 @@ def run():
                             action_dx_norm=a[0,0].item(),action_dy_norm=a[0,1].item()))
             x,y,yaw=nx,ny,nyaw; h.append(obs(env,x,y,yaw,min(step+1,MAX_STEPS_PER_EPISODE-1)))
             if aft_batt<=0: break
+        final_eval_time = time.perf_counter() - final_eval_start
     epfile.close()
     metrics_file.close()
     convergence_file.close()
     # ADD THIS SECTION:
-    print("\n" + "=" * 30)
-    print("FINAL EVALUATION COMPLETE")
-    print("=" * 30)
     import pandas as pd
     df_eval = pd.read_csv(OUT / "final_evaluation_steps.csv")
     total_steps = len(df_eval)
-    print("\n" + "=" * 30)
+
+    print("\n" + "=" * 46)
     print("FINAL EVALUATION COMPLETE")
-    print("=" * 30)
+    print("=" * 46)
     print(f"Total Steps Performed: {total_steps}")
     print(f"Final Battery Level: {df_eval['battery_after'].iloc[-1]:.2f}%")
-    avg_inference = total_inference_time / total_inference_steps
-    avg_final_inference = final_inference_time / final_inference_steps
-    print(f"Total inference calls : {total_inference_steps}")
-    print(f"Total inference time  : {total_inference_time:.6f} s")
-    print(f"Average inference     : {avg_inference * 1000:.3f} ms/step")
-    print(f"Final inference calls : {final_inference_steps}")
-    print(f"Final inference time  : {final_inference_time:.6f} s")
-    print(f"Final Avg inference   : {avg_final_inference * 1000:.3f} ms/step")
+
+    run_time = time.perf_counter() - run_start
+    training_env_time = total_rollout_time - (total_inference_time - final_inference_time)
+    other_time = run_time - total_rollout_time - total_update_time \
+                 - total_checkpoint_time - final_eval_time
+
+    def pct(x):
+        return 100.0 * x / run_time if run_time > 0 else 0.0
+
+    # Each line is one phase, in consistent units, and the phases sum
+    # to the wall clock. The old single "inference" number mixed the
+    # policy forward pass with update() and torch.save(), divided by a
+    # count that mixed env steps with episodes.
+    print("\n" + "=" * 46)
+    print("WALL CLOCK BREAKDOWN")
+    print("=" * 46)
+    print(f"Total run time        : {run_time:10.2f} s")
+    print(f"  Rollout (training)  : {total_rollout_time:10.2f} s  ({pct(total_rollout_time):5.1f}%)")
+    print(f"    - policy inference: {total_inference_time - final_inference_time:10.2f} s  "
+          f"({pct(total_inference_time - final_inference_time):5.1f}%)")
+    print(f"    - env + reward    : {training_env_time:10.2f} s  ({pct(training_env_time):5.1f}%)")
+    print(f"  PPO update()        : {total_update_time:10.2f} s  ({pct(total_update_time):5.1f}%)")
+    print(f"  Checkpoint saves    : {total_checkpoint_time:10.2f} s  ({pct(total_checkpoint_time):5.1f}%)")
+    print(f"  Final evaluation    : {final_eval_time:10.2f} s  ({pct(final_eval_time):5.1f}%)")
+    print(f"  Other / logging     : {other_time:10.2f} s  ({pct(other_time):5.1f}%)")
+
+    print("\n" + "=" * 46)
+    print("PER-CALL AVERAGES")
+    print("=" * 46)
+    if total_inference_steps:
+        print(f"Policy inference      : {total_inference_steps:8d} calls | "
+              f"{1000 * total_inference_time / total_inference_steps:8.3f} ms/step")
+    if final_inference_steps:
+        print(f"  final eval only     : {final_inference_steps:8d} calls | "
+              f"{1000 * final_inference_time / final_inference_steps:8.3f} ms/step")
+    if total_update_calls:
+        print(f"PPO update()          : {total_update_calls:8d} calls | "
+              f"{1000 * total_update_time / total_update_calls:8.3f} ms/update")
+    if TOTAL_EPISODES:
+        print(f"Episode               : {TOTAL_EPISODES:8d} eps   | "
+              f"{total_episode_time / TOTAL_EPISODES:8.3f} s/episode")
+
+    # The number that decides whether the PPO epoch/minibatch budget is
+    # worth tuning. If update() is a small slice, raising PPO_EPOCHS is
+    # nearly free; if it is a large slice, PPO_EPOCHS=3 with
+    # MINIBATCH_SIZE=512 recovers most of the cost.
+    if run_time > 0:
+        print(f"\nupdate() share of wall clock: {pct(total_update_time):.1f}%")
 if __name__=="__main__": run()
