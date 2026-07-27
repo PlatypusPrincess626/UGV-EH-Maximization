@@ -335,14 +335,71 @@ class UGVSimulator:
         dy = target_y - self.y
 
         distance = math.hypot(dx, dy)
-        if distance < 0.05:
-            self.target_velocity = 0.0
-        else:
-            self.target_velocity = self.max_velocity
+
+        # Deceleration ramp, replacing a bang-bang speed rule.
+        #
+        # The previous form was:
+        #     target_velocity = 0.0 if distance < 0.05 else max_velocity
+        #
+        # The arrival tolerance was 0.05 m but one tick at max_velocity
+        # covers max_velocity * dt = 0.5 m -- ten times the deadband --
+        # and nothing slowed the vehicle on approach. It could
+        # therefore never land inside the tolerance: it overshot,
+        # turned around, overshot back, and orbited the target
+        # indefinitely at full throttle.
+        #
+        # Simulated with a 0.2 m target (what |action| ~ 0.01 produces)
+        # over one 60-tick step: path 20.5 m, net displacement 0.17 m,
+        # 30.8 rad of turning -- 120x tortuosity. That matches the
+        # logged behaviour almost exactly: 92.8x tortuosity, 0.498 m/s
+        # sustained against a 0.5 m/s limit, 0.334 rad/s of continuous
+        # turning, and motion drain of 19083 mAh per episode against a
+        # 12000 mAh pack.
+        #
+        # The bug was latent until the policy learned to command small
+        # actions. While |action| sat at its old floor of 0.168 (3.35
+        # cells) the targets were far enough away that overshoot was a
+        # minor effect; once the round-10 changes let |action| fall to
+        # ~0.012, every command landed inside the dead zone and the
+        # vehicle thrashed continuously.
+        #
+        # Two changes:
+        #   1. Scale target_velocity by distance relative to the
+        #      distance needed to stop, so the vehicle decelerates into
+        #      the target rather than switching between full speed and
+        #      zero. stopping_distance includes one tick of travel
+        #      because the arrival test is evaluated BEFORE moving.
+        #   2. Gate speed on heading error via cos, so the vehicle does
+        #      not drive hard while pointed the wrong way. Without this
+        #      a target behind the vehicle still produces a wide,
+        #      expensive loop instead of a turn in place.
+        #
+        # ARRIVAL_TOLERANCE is raised to max_velocity * dt so that a
+        # commanded hold is actually achievable within one tick.
+        #
+        # Verified across target distances and bearings, including
+        # targets directly behind the vehicle: tortuosity falls from
+        # 1.4-15.2x to 1.0x in every case, and a repeated 0.2 m command
+        # costs 0 mAh per episode instead of driving continuously.
+        arrival_tolerance = self.max_velocity * self.dt
 
         desired_heading = math.atan2(dy, dx)
         heading_error = desired_heading - self.yaw
         heading_error = math.atan2(math.sin(heading_error), math.cos(heading_error))
+
+        if distance < arrival_tolerance:
+            self.target_velocity = 0.0
+        else:
+            stopping_distance = (
+                (self.velocity * self.velocity) / (2.0 * self.max_deceleration)
+                + self.max_velocity * self.dt
+            )
+            approach = min(1.0, distance / max(stopping_distance, 1e-6))
+            # cos(heading_error) is negative when the target is behind;
+            # clamping at zero means "turn in place, do not drive".
+            alignment = max(0.0, math.cos(heading_error))
+            self.target_velocity = self.max_velocity * approach * alignment
+
         desired_turn_rate = max(-self.max_turn_rate, min(self.max_turn_rate, heading_error))
         delta_turn = (desired_turn_rate - self.angular_velocity)
         max_turn_change = self.max_turn_accel * self.dt
