@@ -155,20 +155,39 @@ class UGVSimulator:
         # every other strategy by construction and the battery pinned
         # at ~100% from episode 1 regardless of what the policy did.
         #
-        # At 600 mA the idle tax is ~7200 mAh per episode (60% of the
-        # pack), so surviving requires actually finding and holding
-        # sun rather than simply stopping. 600 mA is the conservative
-        # end of the range considered; raising it makes the task
-        # harder roughly linearly.
+        # RAISED 600 -> 840 mA after the controller fix.
         #
-        # Energy balance at this setting (per minute, with the
-        # reduced panel below and dense canopy):
-        #     harvest, full sun      +18.06 mAh/min
-        #     harvest, dense canopy   +1.08 mAh/min
-        #     idle draw              -10.00 mAh/min
-        #     motion draw (marginal) -16.43 mAh/min
-        # -> parked in sun is the only net-positive state.
-        self.current_payload = 600_000  # uA (600 mA)
+        # 600 mA was calibrated when motion drain was ~16 mAh/min, so
+        # idle and motion together roughly matched harvest. Fixing the
+        # deceleration ramp cut motion drain from 19083 to 1973 mAh per
+        # episode (2.74 mAh/min), leaving idle as the only real cost --
+        # and 10.09 mAh/min sits far below the ~21.7 mAh/min a
+        # stationary robot harvests almost anywhere. The result was
+        # that an untrained policy barely moving (mean_abs_action
+        # 0.007) ended every episode near 90% battery, having never
+        # dipped below its start.
+        #
+        # 840 mA is the MINIMUM that makes the scenario challenging
+        # across the plausible range of harvest reduction from the
+        # taller canopy. With drain at 14.0 + 2.74 = 16.74 mAh/min:
+        #
+        #   harvest reduction   poor spot   mean spot   good spot
+        #         20%             DIES      marginal       ok
+        #         25%             DIES      marginal       ok
+        #         30%             DIES        DIES         ok
+        #
+        # An average position is roughly break-even and a poor one is
+        # fatal, so the agent must actively find and hold good sun.
+        # Lower values (720 mA) leave an average spot survivable if the
+        # canopy costs less harvest than expected; higher values (1080
+        # mA) kill even good spots.
+        #
+        # CALIBRATION NOTE: the harvest reduction from the 32 m canopy
+        # is estimated, not measured -- it could not be simulated here.
+        # Check `mean_solar_w` and `final_battery` on the first run: if
+        # most episodes still end above ~60%, raise toward 960 mA; if
+        # most die before step 720, drop toward 720 mA.
+        self.current_payload = 840_000  # uA (840 mA)
 
         # -----------------------------
         # Solar
