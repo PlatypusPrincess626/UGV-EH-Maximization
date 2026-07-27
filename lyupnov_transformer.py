@@ -301,6 +301,44 @@ class LyapunovTransformerActorCritic(nn.Module):
 
         self.apply(self._initialize_weights)
 
+        ############################################################
+        # Policy head: small-gain output layer
+        ############################################################
+        # Standard Xavier on the actor's final Linear(d_model, 2)
+        # gives weight std ~0.124, so with unit-scale activations
+        # raw_mean is drawn with std ~1.40 -- the policy is SATURATED
+        # AT INITIALIZATION:
+        #
+        #     mean |tanh(raw_mean)|          0.654
+        #     fraction |tanh| > 0.95         19.2%
+        #     fraction |tanh| > 0.99          5.9%
+        #     squash correction log(1-t^2)   mean -1.27, min -11.8
+        #
+        # (Measured mean_abs_action at episode 2 of the previous run
+        # was 0.686, matching this almost exactly.)
+        #
+        # Three consequences, all observed:
+        #   1. The log-prob is dominated by the squash correction,
+        #      whose derivative diverges as |tanh| -> 1, so log-probs
+        #      swing wildly for small parameter changes.
+        #   2. MEAN_SATURATION_COEF then applies a large, consistent
+        #      gradient pulling the mean back toward zero -- a real
+        #      policy change that the KL check reads as divergence.
+        #   3. One Adam step therefore moves raw_mean far enough to
+        #      exceed the emergency KL threshold on minibatch 2, so
+        #      updates logged MB 2/24.
+        #
+        # Scaling the final policy layer down by 0.01 (standard PPO
+        # practice) starts raw_mean at std ~0.014, i.e. tanh ~ 0 with
+        # the full action range reachable via the sampling noise
+        # rather than via a pre-committed saturated mean.
+        POLICY_OUTPUT_GAIN = 0.01
+        policy_out = [m for m in self.actor if isinstance(m, nn.Linear)][-1]
+        with torch.no_grad():
+            policy_out.weight.mul_(POLICY_OUTPUT_GAIN)
+            if policy_out.bias is not None:
+                policy_out.bias.zero_()
+
     ############################################################
     # Weight Initialization
     ############################################################
