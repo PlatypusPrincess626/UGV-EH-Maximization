@@ -148,8 +148,26 @@ SAFETY_ALPHA_BOOST = 0.5
 ###############################################################
 REWARD_WINDOW = 50              # episodes averaged for the reward moving average
 STABILITY_WINDOW = 20           # update() calls averaged for Lyapunov/barrier stability
-CONVERGENCE_PATIENCE = 10       # consecutive stability checks with no new best reward
+CONVERGENCE_PATIENCE = 10       # retained for logging only; see PLATEAU_SLOPE_FRAC
 LYAPUNOV_STABLE_THRESHOLD = 2 * LYAPUNOV_MARGIN
+
+# Lower bound the Lyapunov function must clear on average for the
+# solution to count as non-trivial. Guards the degenerate V == 0
+# optimum described at the lyapunov_collapse_penalty in update().
+LYAPUNOV_V_FLOOR = 0.5
+LYAPUNOV_COLLAPSE_COEF = 1.0
+
+# A Lyapunov penalty this close to LYAPUNOV_MARGIN means V has
+# collapsed: relu(dV + alpha*V + margin) == margin exactly when
+# V == 0. Any avg_lyap inside this band is treated as FAILURE, not
+# convergence -- previously it was the opposite, since it also sits
+# comfortably under LYAPUNOV_STABLE_THRESHOLD.
+LYAPUNOV_COLLAPSE_BAND = 0.05 * LYAPUNOV_MARGIN
+
+# Barrier loss below this is likewise trivially satisfied (constant
+# large barrier outputs clear every margin). The previous run logged
+# 1.8e-6.
+BARRIER_COLLAPSE_FLOOR = 1e-5
 BARRIER_STABLE_THRESHOLD = 0.05
 CHECKPOINT_EVERY = 100          # periodic safety-net checkpoint, regardless of performance
 AUTO_STOP_ON_CONVERGENCE = False # set True to re-enable early stopping once the criteria are recalibrated for how fast training now converges
@@ -169,6 +187,33 @@ STD_CLEARED_THRESHOLD = 1.0
 # avg_reward to have actually cleared a real bar, not just plateaued
 # anywhere, before convergence can fire.
 REWARD_CONVERGENCE_THRESHOLD = -150.0
+
+###############################################################
+# Plateau test
+#
+# Reward is plateaued when its trend over PLATEAU_WINDOW episodes is
+# not significantly positive: regress reward on episode index and
+# compare the slope's t-statistic against PLATEAU_T_CRIT.
+#
+# Two failures in the old CONVERGENCE_PATIENCE mechanism this fixes:
+#
+#   1. It counted checks with no new best. With per-episode reward
+#      std of 11.18, a 2-episode average routinely fails to set a new
+#      best for 20+ checks purely by chance. It declared a plateau at
+#      episode 458 of a run still climbing at +2.56 per 100 episodes
+#      (p=0.043).
+#   2. A 50-episode window has no power to detect that trend. Replayed
+#      on the last run, a t-test over the final window gives
+#      t=+0.48 at W=50, +0.41 at W=100, +1.62 at W=150, and +2.03 at
+#      W=200 -- only the largest window correctly reports that the run
+#      had NOT plateaued.
+#
+# PLATEAU_CONSECUTIVE additionally requires the verdict to persist, so
+# one quiet stretch cannot end the run.
+###############################################################
+PLATEAU_WINDOW = 200
+PLATEAU_T_CRIT = 1.65      # one-sided 95%
+PLATEAU_CONSECUTIVE = 10
 # Companion to STD_CLEARED_THRESHOLD, on the OTHER half of the
 # exploration question. STD_CLEARED_THRESHOLD looks at the
 # pre-squash sigma; this looks at mean |tanh(raw_mean)|. The
@@ -179,6 +224,17 @@ REWARD_CONVERGENCE_THRESHOLD = -150.0
 # above this is pinned against the action bounds, not converged.
 ACTION_SATURATION_THRESHOLD = 0.97
 
+###############################################################
+# Reward coefficients
+#
+# Sized against each term's per-step RANGE. battery_reward spans
+# 0.7635 per step between "parked in sun" and "moving in shade";
+# the other two are set as fractions of that. See reward_fn.
+###############################################################
+DIRECTIONAL_COEF = 0.25   # ~33% of the battery span (was 0.05, ~6.5%)
+BATTERY_COEF = 2.0        # the objective; unchanged
+MOVEMENT_COEF = 0.001     # ~2.6% of the battery span (was 0.002, ~5.2%)
+
 # Format as YYYY-MM-DD_HH-MM-SS
 timestamp = datetime.datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
 OUT=Path("rl_csv_"+timestamp); OUT.mkdir(exist_ok=True)
@@ -186,8 +242,34 @@ OUT=Path("rl_csv_"+timestamp); OUT.mkdir(exist_ok=True)
 size = 2 * VIEW_DISTANCE + 1
 y, x = np.mgrid[-VIEW_DISTANCE:VIEW_DISTANCE+1,
                 -VIEW_DISTANCE:VIEW_DISTANCE+1]
-sigma = 6.0
-kernel = np.exp(-(x**2 + y**2)/(2*sigma**2))
+# Sharpened from 6.0 to 2.0.
+#
+# The exposure score is meant to answer "is the robot in sun?", but at
+# sigma=6.0 the robot's OWN cell carried 0.44% of the kernel weight
+# and only 12% lay within 3 m. The score was effectively the average
+# exposure of a ~12 m radius disc.
+#
+# Clearings are ~7 m across (FOLIAGE_PATCH_SIGMA=2.5), so driving from
+# full shade into the middle of one moved the score by just 0.15 out
+# of a possible 1.0 -- a ~6x dilution of the only positional signal in
+# the reward. Measured over 462 episodes,
+# total_directional_reward had a std of 0.74 against
+# total_battery_reward's 10.13: it barely discriminated between
+# episodes at all, which is why sun-seeking improved at only +0.25 per
+# 100 episodes.
+#
+#   sigma  center weight   within 3 m   shade -> clearing
+#    6.0       0.44%          12.0%          +0.15
+#    3.0       1.77%          40.0%          +0.48
+#    2.0       3.98%          63.2%          +0.71
+#    1.5       7.07%          86.7%          +0.93
+#
+# 2.0 concentrates ~63% of the weight inside 3 m -- matched to the
+# clearing scale -- while still averaging enough neighbourhood to give
+# a gradient the policy can climb rather than a one-cell step
+# function.
+KERNEL_SIGMA = 2.0
+kernel = np.exp(-(x**2 + y**2)/(2*KERNEL_SIGMA**2))
 kernel /= kernel.sum()
 GAUSSIAN_KERNEL = kernel.flatten()
 
@@ -233,51 +315,63 @@ def seq_tensor(history, device):
     return torch.tensor(np.asarray(history),dtype=torch.float32,device=device).unsqueeze(0)
 
 def reward_fn(after, telemetry, delta_batt):
-    # Dense, scaled reward: energy gain, movement cost, survival, and boundary discouragement.
+    # Dense per-step reward: sun exposure (shaping), net energy change
+    # (the true objective), and a small movement cost.
     #
-    # directional_reward is now the ABSOLUTE, instantaneous exposure
-    # score at the current position, not the difference between this
-    # step's before/after scores. The differenced form telescopes to
-    # exactly (score_final - score_initial) when summed over an
-    # episode -- every intermediate term cancels, so it could never
-    # reward *sustained* good positioning, only the net change from
-    # start to end (confirmed directly: total_directional_reward was
-    # ~0.1-0.2 per full 720-step episode, regardless of how the
-    # episode was actually navigated). This is textbook potential-
-    # based reward shaping (Ng, Harada & Russell 1999) -- valid, but
-    # by construction it doesn't change what the optimal policy
-    # achieves, only how fast training converges to it, and it was
-    # the *only* positional signal here with no absolute term
-    # alongside it.
+    # BALANCE
+    # -------
+    # Coefficients are sized against each term's per-step RANGE, not
+    # its episode total, since range is what the policy gradient can
+    # actually discriminate on.
     #
-    # Coefficient recalibrated from 10 to 0.05: the old value was
-    # tuned for a step-to-step DIFFERENCE (small, since two nearby
-    # positions' scores are usually close). An ABSOLUTE score is
-    # typically ~0.7-0.9, a much larger and always-positive quantity
-    # -- left at 10, this would total on the order of several
-    # thousand over a 720-step episode, dwarfing battery_reward
-    # (~-53 total) and movement_penalty (~-22 total) by two orders of
-    # magnitude. 0.05 targets a comparable order of magnitude to
-    # those two instead (~0.05 * 0.8avg * 720steps =~ 29 total) so
-    # positioning can actually compete for influence rather than
-    # either vanishing (the old bug) or swamping everything else (the
-    # naive fix). Worth checking total_directional_reward against
-    # total_battery_reward/total_movement_penalty after the next run
-    # and adjusting further if the balance still isn't right --
-    # this is a reasoned starting point, not a precisely derived one.
+    # battery_reward = 2.0 * delta_batt spans 0.7635 per step across
+    # the four behavioural regimes:
+    #
+    #     parked in sun     +21.17 mAh/min -> reward +0.3528
+    #     moving in sun      +4.75          ->        +0.0792
+    #     parked in shade    -8.21          ->        -0.1368
+    #     moving in shade   -24.64          ->        -0.4107
+    #
+    # At the old DIRECTIONAL_COEF of 0.05 the exposure term spanned
+    # 0.05, i.e. 6.5% of that -- and with the old sigma=6.0 kernel it
+    # realistically moved only ~0.15 of its nominal range, so ~1% in
+    # practice. Measured over 462 episodes,
+    # total_directional_reward had std 0.74 against
+    # total_battery_reward's 10.13, and sun-seeking improved at only
+    # +0.25 per 100 episodes.
+    #
+    # 0.25 gives the exposure term ~33% of the battery term's span:
+    # large enough to steer navigation, still clearly subordinate to
+    # the objective it is shaping toward. Sharpening the kernel to
+    # sigma=2.0 is the other half of this -- the coefficient only
+    # matters if the score actually moves when the robot does.
+    #
+    # MOVEMENT
+    # --------
+    # Halved to 0.001. The energy cost of motion is ALREADY captured
+    # in delta_batt (motion draw is 16.43 mAh/min against 10.09 idle),
+    # so this term double-counts it. It is retained only to discourage
+    # jitter, and at 0.002 it was 5.2% of the battery span -- enough to
+    # compete with real energy decisions. At 0.001 it is 2.6%.
     potential_after = 1.0 - after
     score_after = float(np.dot(GAUSSIAN_KERNEL, potential_after))
 
-    directional_reward = 0.05 * score_after
+    directional_reward = DIRECTIONAL_COEF * score_after
 
     px, py, _ = telemetry["previous_position"]
     nx, ny, _ = telemetry["new_position"]
 
     distance = math.hypot(nx - px, ny - py)
 
-    movement_penalty = 0.002 * distance
+    movement_penalty = MOVEMENT_COEF * distance
 
-    battery_reward = 2.0 * delta_batt
+    # Per-step, this is a local signal: charge minus drain for THIS
+    # step. (Its episode SUM telescopes to 2*(final - start), which is
+    # why total_battery_reward carries ~22% variance from the random
+    # start SOC -- a reporting artifact, not a learning problem, since
+    # the gradient sees the per-step term. start_battery is logged so
+    # the offset can be regressed out when reading the curves.)
+    battery_reward = BATTERY_COEF * delta_batt
 
     total = float(directional_reward + battery_reward - movement_penalty)
 
@@ -513,6 +607,33 @@ def update(model,opt,rollouts,device, ep, metrics_writer=None, return_var_tracke
                                           + LYAPUNOV_ALPHA * V_now
                                           + LYAPUNOV_MARGIN).mean()
 
+                # Positive-definiteness anchor.
+                #
+                # relu(dV + alpha*V + margin) is globally minimized by
+                # V == 0: the penalty then sits at exactly
+                # LYAPUNOV_MARGIN and cannot go lower. That is the
+                # trivial solution, and the previous run found it --
+                # avg_lyap logged 0.010009 against LYAPUNOV_MARGIN =
+                # 0.01 on EVERY convergence check, i.e. Softplus had
+                # collapsed to zero everywhere and the "Lyapunov
+                # converged" signal was certifying a constant function.
+                #
+                # Detaching the latent for the auxiliary heads (needed
+                # to stop them reshaping the shared encoder) made this
+                # easier to reach, not harder: the head now optimizes
+                # only its own parameters against an objective whose
+                # global optimum is the constant zero.
+                #
+                # A real Lyapunov function must be positive away from
+                # equilibrium. This hinge asks V to exceed
+                # LYAPUNOV_V_FLOOR on average, so collapse is no longer
+                # free, while leaving V otherwise unconstrained in
+                # shape. It is a hinge rather than a target so it stops
+                # pushing once V is comfortably non-trivial.
+                lyapunov_collapse_penalty = F.relu(
+                    LYAPUNOV_V_FLOOR - V_now.mean()
+                )
+
                 value_loss_raw = F.mse_loss(values, mb_returns.detach())
                 value_loss = value_loss_raw / return_scale
 
@@ -557,6 +678,7 @@ def update(model,opt,rollouts,device, ep, metrics_writer=None, return_var_tracke
                         + RAW_LOG_STD_REG_COEF * raw_log_std_reg
                         + MEAN_SATURATION_COEF * saturation_loss
                         + lyap_weight * lyapunov_penalty
+                        + lyap_weight * LYAPUNOV_COLLAPSE_COEF * lyapunov_collapse_penalty
                         + dynamics_weight * dynamics_loss
                         + barrier_weight * barrier_loss)
 
@@ -573,6 +695,7 @@ def update(model,opt,rollouts,device, ep, metrics_writer=None, return_var_tracke
                     mean_abs_action = torch.tanh(raw_mean).abs().mean()
 
                 batch_metrics = {
+                    "mean_V": float(V_now.mean().item()),
                     "policy_loss": float(policy_loss.item()),
                     "value_loss": float(value_loss_raw.item()),
                     "lyap_penalty": float(lyapunov_penalty.item()),
@@ -664,6 +787,7 @@ def update(model,opt,rollouts,device, ep, metrics_writer=None, return_var_tracke
         diag_barrier = avg["barrier_loss"]
         diag_std = avg["mean_std"]
         diag_abs_action = avg["mean_abs_action"]
+        diag_mean_V = avg["mean_V"]
         loss_value = last_loss
     else:
         n = states.shape[0]
@@ -718,9 +842,11 @@ def update(model,opt,rollouts,device, ep, metrics_writer=None, return_var_tracke
         diag_barrier = None
         diag_std = None
         diag_abs_action = None
+        diag_mean_V = None
         loss_value = last_loss
 
-    return loss_value, diag_lyap, diag_barrier, diag_std, diag_abs_action
+    return (loss_value, diag_lyap, diag_barrier, diag_std,
+            diag_abs_action, diag_mean_V)
 
 def run():
     device=torch.device("cuda" if torch.cuda.is_available() else "cpu")
@@ -844,7 +970,8 @@ def run():
                                           "total_movement_penalty","loss",
                                           "episode_time","rollout_time","inference_time",
                                           "env_time","update_time",
-                                          "peak_solar_w","mean_solar_w","min_battery"])
+                                          "peak_solar_w","mean_solar_w",
+                                          "start_battery","min_battery"])
     epw.writeheader()
     rollouts=[]
 
@@ -853,7 +980,7 @@ def run():
     metrics_file = open(OUT/"training_metrics.csv","w",newline="")
     metrics_writer = csv.DictWriter(metrics_file, fieldnames=[
         "episode","minibatches","minibatches_possible","first_mb_kl",
-        "policy_loss","value_loss","lyap_penalty","dynamics_loss",
+        "policy_loss","value_loss","mean_V","lyap_penalty","dynamics_loss",
         "barrier_loss","approx_kl","clip_fraction","mean_std","mean_raw_log_std",
         "mean_abs_action","alpha",
     ])
@@ -863,7 +990,9 @@ def run():
     convergence_file = open(OUT/"convergence_checks.csv", "w", newline="")
     convergence_writer = csv.DictWriter(convergence_file, fieldnames=[
         "episode","avg_reward","best_avg_reward","reward_above_threshold",
-        "avg_lyap","avg_barrier","avg_std","avg_abs_action","exploration_cleared",
+        "avg_lyap","avg_barrier","avg_std","avg_abs_action","avg_mean_V",
+        "lyap_collapsed","barrier_collapsed","exploration_cleared",
+        "reward_trend_per_window","reward_trend_t","plateau_streak","plateaued",
         "stable","checks_since_best",
     ])
     convergence_writer.writeheader()
@@ -875,6 +1004,12 @@ def run():
     barrier_history = deque(maxlen=STABILITY_WINDOW)
     std_history = deque(maxlen=STABILITY_WINDOW)
     abs_action_history = deque(maxlen=STABILITY_WINDOW)
+    mean_V_history = deque(maxlen=STABILITY_WINDOW)
+    # Separate, longer history purely for the trend test -- the
+    # REWARD_WINDOW moving average is too short to have statistical
+    # power (see PLATEAU_WINDOW).
+    plateau_history = deque(maxlen=PLATEAU_WINDOW)
+    plateau_streak = 0
     return_var_tracker = RunningVariance() if TRANSFORMER_VARIANT == "lyapunov" else None
     best_avg_reward = -float("inf")
     checks_since_best = 0
@@ -897,6 +1032,13 @@ def run():
         # above that means the panel is over-producing again.
         solar_samples = []
         min_battery = 100.0
+        # Logged so the start-SOC offset can be regressed out of the
+        # reward curve. battery_reward's episode sum telescopes to
+        # 2*(final - start), and start is drawn uniformly over
+        # 30-40%, contributing ~22% of that term's variance with no
+        # relation to policy quality. Without this column a run looks
+        # noisier than it is.
+        start_battery = env.ch.get_battery()
         rollout_start = time.perf_counter()
         for step in range(MAX_STEPS_PER_EPISODE):
             s=seq_tensor(h,device)
@@ -1005,12 +1147,14 @@ def run():
 
         rollouts.append(r); loss=""
         reward_history.append(total)
+        plateau_history.append(total)
 
         # 3. Training Update Logic
         if POLICY_TYPE == "transformer":
             if ep % UPDATE_EVERY_EPISODES == 0:
                 update_start = time.perf_counter()
-                loss, diag_lyap, diag_barrier, diag_std, diag_abs_action = update(
+                (loss, diag_lyap, diag_barrier, diag_std,
+                 diag_abs_action, diag_mean_V) = update(
                     model, opt, rollouts, device, ep, metrics_writer, return_var_tracker)
                 ep_update_time = time.perf_counter() - update_start
                 total_update_time += ep_update_time
@@ -1023,6 +1167,7 @@ def run():
                     barrier_history.append(diag_barrier)
                     std_history.append(diag_std)
                     abs_action_history.append(diag_abs_action)
+                    mean_V_history.append(diag_mean_V)
 
                     ready = (
                         ep >= 300
@@ -1042,39 +1187,108 @@ def run():
                         # pre-squash Std says nothing about spread in
                         # ACTION space once tanh is flat. Require the
                         # mean action to be off the boundary too.
+                        avg_mean_V = sum(mean_V_history) / len(mean_V_history)
                         exploration_cleared = (
                             avg_std <= STD_CLEARED_THRESHOLD
                             and avg_abs_action <= ACTION_SATURATION_THRESHOLD
                         )
                         reward_above_threshold = avg_reward >= REWARD_CONVERGENCE_THRESHOLD
+
+                        # Collapse detection.
+                        #
+                        # relu(dV + alpha*V + margin) equals exactly
+                        # LYAPUNOV_MARGIN when V == 0, and that value
+                        # sits well UNDER LYAPUNOV_STABLE_THRESHOLD
+                        # (2 * margin) -- so the old gate read total
+                        # collapse as the strongest possible evidence
+                        # of stability. The previous run reported
+                        # avg_lyap = 0.010009 on every one of its 82
+                        # checks and declared convergence.
+                        #
+                        # Sitting inside a narrow band around the
+                        # margin, or a barrier loss at machine-epsilon
+                        # scale, now DISQUALIFIES the solution.
+                        lyap_collapsed = (
+                            abs(avg_lyap - LYAPUNOV_MARGIN) < LYAPUNOV_COLLAPSE_BAND
+                            or avg_mean_V < LYAPUNOV_V_FLOOR
+                        )
+                        barrier_collapsed = avg_barrier < BARRIER_COLLAPSE_FLOOR
+                        collapsed = lyap_collapsed or barrier_collapsed
+
                         stable = (
                             avg_lyap <= LYAPUNOV_STABLE_THRESHOLD
                             and avg_barrier <= BARRIER_STABLE_THRESHOLD
+                            and not collapsed
                             and exploration_cleared
                             and reward_above_threshold
                         )
 
+                        # Noise-aware plateau test.
+                        #
+                        # Counting checks-since-best is not a plateau
+                        # test when the signal is noisy. Episode reward
+                        # in the previous run had a std of 11.18, so a
+                        # 2-episode average routinely failed to set a
+                        # new best for 20+ checks while the underlying
+                        # trend was still climbing at +2.56 per 100
+                        # episodes (p=0.043). It declared a plateau at
+                        # episode 458 on a still-improving run.
+                        #
+                        # Regress reward on episode index over the
+                        # window instead, and call it plateaued only
+                        # when the fitted improvement across the whole
+                        # window is small relative to the noise.
+                        trend_slope = float("nan")
+                        trend_t = float("nan")
+                        plateau_now = False
+                        if len(plateau_history) == PLATEAU_WINDOW:
+                            ys = np.asarray(plateau_history, dtype=float)
+                            n_pts = len(ys)
+                            xs = np.arange(n_pts, dtype=float)
+                            x_c = xs - xs.mean()
+                            s_xx = float((x_c ** 2).sum())
+                            if s_xx > 0 and n_pts > 2:
+                                trend_slope = float((x_c * (ys - ys.mean())).sum() / s_xx)
+                                resid = ys - (ys.mean() + trend_slope * x_c)
+                                se = math.sqrt(
+                                    float((resid ** 2).sum()) / (n_pts - 2) / s_xx
+                                ) + 1e-12
+                                trend_t = trend_slope / se
+                                # Plateaued = the slope is not
+                                # significantly POSITIVE. A negative
+                                # trend also satisfies this, which is
+                                # intended: the run is not improving.
+                                plateau_now = trend_t < PLATEAU_T_CRIT
+
+                        plateau_streak = plateau_streak + 1 if plateau_now else 0
+                        plateaued = plateau_streak >= PLATEAU_CONSECUTIVE
+
                         if avg_reward > best_avg_reward:
                             best_avg_reward = avg_reward
-                            checks_since_best = 0
                             ckpt_start = time.perf_counter()
                             torch.save(model.state_dict(), ckpt_dir / "best.pt")
                             total_checkpoint_time += time.perf_counter() - ckpt_start
-                        else:
-                            checks_since_best += 1
+
+                        # Retained for logging only -- no longer gates
+                        # termination.
+                        checks_since_best = 0 if avg_reward >= best_avg_reward else checks_since_best + 1
 
                         print(
                             f"[Convergence check] ep {ep} | "
                             f"avg_reward(last {REWARD_WINDOW}) {avg_reward:.2f} "
                             f"(best {best_avg_reward:.2f}, "
                             f"above_threshold={reward_above_threshold}) | "
-                            f"avg_lyap(last {STABILITY_WINDOW}) {avg_lyap:.4f} | "
+                            f"avg_lyap(last {STABILITY_WINDOW}) {avg_lyap:.4f} "
+                            f"(V={avg_mean_V:.3f}, collapsed={collapsed}) | "
                             f"avg_barrier(last {STABILITY_WINDOW}) {avg_barrier:.4f} | "
                             f"avg_std(last {STABILITY_WINDOW}) {avg_std:.4f} | "
                             f"avg|a|(last {STABILITY_WINDOW}) {avg_abs_action:.4f} "
                             f"(cleared={exploration_cleared}) | "
                             f"stable={stable} | "
-                            f"checks_since_best={checks_since_best}/{CONVERGENCE_PATIENCE}"
+                            f"trend {trend_slope * (PLATEAU_WINDOW - 1):+.2f}/window "
+                            f"t={trend_t:+.2f} "
+                            f"(plateau_streak={plateau_streak}/{PLATEAU_CONSECUTIVE}) | "
+                            f"checks_since_best={checks_since_best}"
                         )
                         convergence_writer.writerow({
                             "episode": ep,
@@ -1085,13 +1299,20 @@ def run():
                             "avg_barrier": avg_barrier,
                             "avg_std": avg_std,
                             "avg_abs_action": avg_abs_action,
+                            "avg_mean_V": avg_mean_V,
+                            "lyap_collapsed": lyap_collapsed,
+                            "barrier_collapsed": barrier_collapsed,
                             "exploration_cleared": exploration_cleared,
+                            "reward_trend_per_window": trend_slope * (PLATEAU_WINDOW - 1),
+                            "reward_trend_t": trend_t,
+                            "plateau_streak": plateau_streak,
+                            "plateaued": plateaued,
                             "stable": stable,
                             "checks_since_best": checks_since_best,
                         })
                         convergence_file.flush()
 
-                        if stable and checks_since_best >= CONVERGENCE_PATIENCE:
+                        if stable and plateaued:
                             print(
                                 f"\n[Convergence] Lyapunov/barrier stable and reward "
                                 f"plateaued at episode {ep} -- "
@@ -1132,6 +1353,7 @@ def run():
                           update_time=ep_update_time,
                           peak_solar_w=max(solar_samples) if solar_samples else 0.0,
                           mean_solar_w=(sum(solar_samples)/len(solar_samples)) if solar_samples else 0.0,
+                          start_battery=start_battery,
                           min_battery=min_battery)); epfile.flush()
 
         if converged and AUTO_STOP_ON_CONVERGENCE:
