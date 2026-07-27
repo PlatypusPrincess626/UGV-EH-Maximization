@@ -1,6 +1,7 @@
 import numpy as np
 from scipy.integrate import trapezoid
 import math
+import random
 
 class UGVSimulator:
     """
@@ -143,6 +144,33 @@ class UGVSimulator:
         self.current_cpu = 1000  # uA
 
         # -----------------------------
+        # Payload (sensing + onboard compute)
+        # -----------------------------
+        # A always-on load representing the sensor suite and compute
+        # the vehicle carries -- the reason it is out here at all.
+        #
+        # Without this, standing still is FREE: cpu + active LoRA is
+        # 5.2 mA, which is 1.04 mAh over a 720-minute episode, or
+        # 0.009% of a 12000 mAh pack. Parking therefore dominated
+        # every other strategy by construction and the battery pinned
+        # at ~100% from episode 1 regardless of what the policy did.
+        #
+        # At 600 mA the idle tax is ~7200 mAh per episode (60% of the
+        # pack), so surviving requires actually finding and holding
+        # sun rather than simply stopping. 600 mA is the conservative
+        # end of the range considered; raising it makes the task
+        # harder roughly linearly.
+        #
+        # Energy balance at this setting (per minute, with the
+        # reduced panel below and dense canopy):
+        #     harvest, full sun      +18.06 mAh/min
+        #     harvest, dense canopy   +1.08 mAh/min
+        #     idle draw              -10.00 mAh/min
+        #     motion draw (marginal) -16.43 mAh/min
+        # -> parked in sun is the only net-positive state.
+        self.current_payload = 600_000  # uA (600 mA)
+
+        # -----------------------------
         # Solar
         # -----------------------------
         self.is_solar = True
@@ -159,7 +187,14 @@ class UGVSimulator:
         # more to the battery outcome, not just to a mostly-decorative
         # reward term riding on top of an outcome the panel size
         # already guaranteed.
-        self.solar_area = (1.020 * 0.520) * 0.65
+        # Reduced again, 0.65 -> 0.45 of nominal. At 0.65 (June
+        # solstice, sparse canopy) a full-sun episode harvested
+        # ~28900 mAh against a 12000 mAh pack -- 2.4x capacity, so
+        # even the worst policy banked a ~17000 mAh surplus and the
+        # battery saturated immediately. At 0.45 full-sun harvest is
+        # ~13005 mAh, roughly parity with capacity, so sun exposure
+        # becomes the binding constraint instead of a formality.
+        self.solar_area = (1.020 * 0.520) * 0.45
         self.solar_voltage = 18
         self.solar_current = 6
 
@@ -181,8 +216,19 @@ class UGVSimulator:
         self.solar_potential = 0.0
 
 
+    # Starting state of charge is drawn per episode rather than fixed
+    # at full. Starting at 100% meant the agent began with the entire
+    # margin already granted and never had to earn any of it; the
+    # randomization also stops the critic from learning a single
+    # episode-position-indexed value curve, since the same step index
+    # now corresponds to different battery states across episodes.
+    START_SOC_MIN = 0.30
+    START_SOC_MAX = 0.40
+
     def reset(self):
-        self.battery_mAh = self.max_capacity_mAh
+        self.battery_mAh = self.max_capacity_mAh * random.uniform(
+            self.START_SOC_MIN, self.START_SOC_MAX
+        )
         self.update_soc()
         self.x, self.y, self.yaw = self.origin
         self.velocity = 0.0
@@ -413,6 +459,7 @@ class UGVSimulator:
 
         current_mA = (
             self.current_cpu +
+            self.current_payload +
             self._comms["current_active_lora"]
         ) / 1000.0
 

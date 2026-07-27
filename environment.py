@@ -291,21 +291,61 @@ class sim_env:
         # (ceil(12/4)=3 vs ceil(20/4)=5, cutting that inner loop from
         # 11 iterations to 7), and rays reach the foliage-band
         # termination sooner on average.
-        choices = [0, 3, 6, 9, 12]
-        probs = [0.65, 0.20, 0.10, 0.04, 0.01]
+        # Density raised; HEIGHTS DELIBERATELY UNCHANGED.
+        #
+        #                mean height   canopy cover   PAD   inner loop
+        #   previous        1.68 m         35%        292       7
+        #   this            5.25 m         80%        292       7
+        #   (with heights   14.0 m         80%        386      17)
+        #
+        # PAD and max_half_width are set by the MAXIMUM foliage
+        # height, not by density, so raising density alone triples
+        # effective canopy at no structural cost: the padded arrays
+        # keep their size and get_obfuscation's lateral foliage check
+        # keeps its 7-iteration inner loop. Raising heights to
+        # [0,8,16,24,32] would grow PAD to 386 and that loop to 17,
+        # roughly doubling runtime -- and with the environment
+        # measured at 94.2% of wall clock, that is the expensive
+        # direction. Revisit only if 80% cover proves insufficient.
+        choices = np.array([0, 3, 6, 9, 12])
+        probs = [0.20, 0.25, 0.25, 0.20, 0.10]
 
         dim_padded = self.dim + 2 * self.PAD
-        raw_foliage = np.random.choice(choices, size=(dim_padded, dim_padded), p=probs)
-        smoothed = gaussian_filter(raw_foliage.astype(float), sigma=1.5)
 
-        # Bin edges scaled proportionally to the new height spacing
-        # (3 instead of 5): midpoints between consecutive heights,
-        # plus an upper bound one step past the max.
-        bins = [0, 1.5, 4.5, 7.5, 10.5, 15]
-        self.foliage_mask = np.digitize(smoothed, bins)
+        # Smooth-then-quantile-map, replacing smooth-then-digitize.
+        #
+        # The previous approach drew heights from `probs` directly and
+        # then ran gaussian_filter over them before binning with fixed
+        # edges. Smoothing collapses variance -- with sigma=1.5 the
+        # field's std fell to ~0.7 -- so the fixed bin edges no longer
+        # matched the intended distribution. Measured on the raised
+        # densities that produced 85% of cells at exactly 6 m and 100%
+        # canopy cover: a uniform ceiling with no clearings at all,
+        # which is a WORSE training environment than the sparse one,
+        # not a harder one. (The same effect was already distorting
+        # the old settings, turning an intended 35% cover into 61%
+        # with only two heights ever appearing.)
+        #
+        # Mapping smoothed uniform noise through its own rank instead
+        # decouples the two concerns: `probs` sets the marginal
+        # distribution exactly, at any sigma, while sigma alone
+        # controls patch size. Clearings come out ~5-12 m across,
+        # comfortably larger than the ~4.6 m shadow a 12 m tree casts
+        # at June-noon elevation, so open ground genuinely receives
+        # sun, and smaller than the 20 m view distance, so the agent
+        # can perceive one when adjacent to it.
+        FOLIAGE_PATCH_SIGMA = 2.5
 
-        height_map = np.array([0, 3, 6, 9, 12])
-        self.foliage_mask = height_map[np.clip(self.foliage_mask - 1, 0, 4)]
+        field = gaussian_filter(
+            np.random.rand(dim_padded, dim_padded), sigma=FOLIAGE_PATCH_SIGMA
+        )
+
+        # Rank each cell within the field, then cut at the cumulative
+        # target probabilities.
+        ranks = field.ravel().argsort().argsort().reshape(field.shape)
+        quantiles = ranks / (field.size - 1)
+        self.foliage_mask = choices[np.digitize(quantiles, np.cumsum(probs)[:-1])]
+
         return True
 
     def place_devices(self) -> list:

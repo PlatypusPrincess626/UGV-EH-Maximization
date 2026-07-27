@@ -54,7 +54,28 @@ class LyapunovTransformerActorCritic(nn.Module):
             nhead=4,
             num_layers=2,
             dim_feedforward=256,  # 256
-            dropout=0.1,
+            # Dropout disabled.
+            #
+            # Rollout log-probs are recorded under model.eval()
+            # (dropout off) while update() runs under model.train()
+            # (dropout on), so with dropout > 0 the importance ratio
+            # is never 1 even on the FIRST minibatch, where lp and
+            # oldlp come from identical parameters and it must be.
+            #
+            # That asymmetry made approx_kl average 2.07 against
+            # TARGET_KL=0.015, so the early stop fired after the first
+            # minibatch in 499 of 500 updates -- silently discarding
+            # the entire PPO epoch/minibatch budget and reverting to
+            # roughly one gradient step per rollout.
+            #
+            # The effect is amplified by tanh saturation: the squash
+            # correction carries a log(1 - tanh(z)^2) term whose
+            # derivative diverges as |tanh| -> 1, so at the boundary
+            # any perturbation produces enormous log-prob swings.
+            #
+            # With a 1440-sample batch from two correlated episodes,
+            # dropout was not buying meaningful regularization anyway.
+            dropout=0.0,
     ):
         super().__init__()
 

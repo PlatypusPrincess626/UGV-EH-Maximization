@@ -95,7 +95,14 @@ TARGET_KL = 0.015
 # even satisfied the STD_CLEARED_THRESHOLD convergence gate.
 #
 # This is the same term SAC uses for the same reason.
-MEAN_SATURATION_COEF = 1e-3
+# Raised 1e-3 -> 1e-2. At 1e-3 the penalty was too weak to hold the
+# mean off the boundary: mean_abs_action reached exactly 1.0 and
+# stayed there for the back half of the run, i.e. the deterministic
+# policy was a constant, fully saturated action. Saturation also
+# destabilizes the importance ratio (see the dropout note in the
+# model file), so this term protects the KL early-stop as well as
+# exploration.
+MEAN_SATURATION_COEF = 1e-2
 
 # Deterministic entropy-temperature schedule, replacing the learned
 # (SAC-style) alpha. Decays exponentially from ALPHA_START to
@@ -445,6 +452,7 @@ def update(model,opt,rollouts,device, ep, metrics_writer=None, return_var_tracke
         n_minibatches = 0
         last_loss = 0.0
         stop_early = False
+        first_mb_kl = None
 
         for epoch in range(PPO_EPOCHS):
             np.random.shuffle(indices)
@@ -564,6 +572,27 @@ def update(model,opt,rollouts,device, ep, metrics_writer=None, return_var_tracke
                 n_minibatches += 1
                 last_loss = float(loss.item())
 
+                # Self-check on the very first minibatch of the first
+                # epoch: no optimizer step has touched the parameters
+                # since the rollout, so lp and oldlp are computed from
+                # IDENTICAL weights and approx_kl must be ~0. Anything
+                # else means the forward pass is not reproducible
+                # between rollout and update -- which previously came
+                # from dropout being off in eval() and on in train(),
+                # and made the KL early stop fire immediately, costing
+                # the entire epoch/minibatch budget without any
+                # visible error.
+                if first_mb_kl is None:
+                    first_mb_kl = abs(float(approx_kl.item()))
+                    if first_mb_kl > 1e-4:
+                        print(
+                            f"  [warn] ep {ep}: first-minibatch approx_kl = "
+                            f"{first_mb_kl:.6f}, expected ~0. The policy is not "
+                            f"reproducible between rollout and update (dropout, "
+                            f"BatchNorm, or another nondeterministic layer), or "
+                            f"the action distribution is saturated."
+                        )
+
                 # Standard PPO early stop. Matters more than usual here
                 # because the rollout is only UPDATE_EVERY_EPISODES
                 # episodes: without it, later epochs can push the policy
@@ -591,10 +620,12 @@ def update(model,opt,rollouts,device, ep, metrics_writer=None, return_var_tracke
             f"RawLogStd {avg['mean_raw_log_std']:.4f} | "
             f"|a| {avg['mean_abs_action']:.4f} | "
             f"Alpha {avg['alpha']:.4f} | "
-            f"MB {n_minibatches}"
+            f"MB {n_minibatches}/{PPO_EPOCHS * math.ceil(n / MINIBATCH_SIZE)}"
         )
         if metrics_writer is not None:
-            row = {"episode": ep, "minibatches": n_minibatches}
+            row = {"episode": ep, "minibatches": n_minibatches,
+                   "minibatches_possible": PPO_EPOCHS * math.ceil(n / MINIBATCH_SIZE),
+                   "first_mb_kl": first_mb_kl if first_mb_kl is not None else 0.0}
             row.update(avg)
             metrics_writer.writerow(row)
 
@@ -780,7 +811,8 @@ def run():
     # don't have to be read back out of console/log output by hand.
     metrics_file = open(OUT/"training_metrics.csv","w",newline="")
     metrics_writer = csv.DictWriter(metrics_file, fieldnames=[
-        "episode","minibatches","policy_loss","value_loss","lyap_penalty","dynamics_loss",
+        "episode","minibatches","minibatches_possible","first_mb_kl",
+        "policy_loss","value_loss","lyap_penalty","dynamics_loss",
         "barrier_loss","approx_kl","clip_fraction","mean_std","mean_raw_log_std",
         "mean_abs_action","alpha",
     ])
