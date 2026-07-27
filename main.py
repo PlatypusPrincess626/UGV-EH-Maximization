@@ -78,7 +78,15 @@ MINIBATCH_SIZE = 256
 # Early-stop the epoch loop once the updated policy has moved too
 # far from the behaviour policy. Standard PPO practice; matters more
 # here than usual because the rollout is only two episodes.
-TARGET_KL = 0.015
+# Checked against the MEAN KL over a completed epoch, not per
+# minibatch. Raised 0.015 -> 0.03: with only ~6 minibatches per epoch
+# drawn from two correlated episodes, per-epoch KL is noisy, and the
+# tighter value stopped updates that were not actually diverging.
+TARGET_KL = 0.03
+
+# Mid-epoch emergency break, as a multiple of TARGET_KL. Only a single
+# minibatch this far out indicates real divergence rather than noise.
+KL_EMERGENCY_MULT = 4.0
 
 # Penalty on the pre-squash mean, applied to keep tanh out of
 # saturation. Nothing else in this system constrains |raw_mean|.
@@ -453,6 +461,7 @@ def update(model,opt,rollouts,device, ep, metrics_writer=None, return_var_tracke
         last_loss = 0.0
         stop_early = False
         first_mb_kl = None
+        epoch_kl = []
 
         for epoch in range(PPO_EPOCHS):
             np.random.shuffle(indices)
@@ -480,8 +489,17 @@ def update(model,opt,rollouts,device, ep, metrics_writer=None, return_var_tracke
                 V_now = lyapunov
                 delta_V = V_next - V_now
 
-                ratio = torch.exp(lp - oldlp[mb])
-                approx_kl = (oldlp[mb] - lp).mean()
+                log_ratio = lp - oldlp[mb]
+                ratio = torch.exp(log_ratio)
+                # Schulman's k3 estimator: E[r - 1 - log r]. The naive
+                # -mean(log_ratio) estimator used before is unbiased
+                # but high-variance and can go NEGATIVE on a minibatch,
+                # so it had to be wrapped in abs() -- which turns
+                # ordinary sampling noise into apparent divergence and
+                # trips the early stop. k3 is non-negative by
+                # construction and much lower variance.
+                with torch.no_grad():
+                    approx_kl = ((ratio - 1.0) - log_ratio).mean()
                 clip_fraction = ((torch.abs(ratio - 1.0) > CLIP_EPS).float().mean())
                 surr1 = ratio * mb_adv
                 surr2 = torch.clamp(
@@ -593,15 +611,28 @@ def update(model,opt,rollouts,device, ep, metrics_writer=None, return_var_tracke
                             f"the action distribution is saturated."
                         )
 
-                # Standard PPO early stop. Matters more than usual here
-                # because the rollout is only UPDATE_EVERY_EPISODES
-                # episodes: without it, later epochs can push the policy
-                # a long way from the behaviour policy that generated
-                # the data, and the importance ratios stop being
-                # trustworthy.
-                if abs(float(approx_kl.item())) > TARGET_KL:
+                epoch_kl.append(float(approx_kl.item()))
+
+                # Emergency break only. A single minibatch exceeding
+                # the target is normal sampling noise -- breaking on it
+                # (as this did before) meant the loop stopped after
+                # minibatch 1 or 2 and never completed even one epoch,
+                # silently discarding the whole PPO budget. Reserve the
+                # mid-epoch break for genuine divergence.
+                if float(approx_kl.item()) > KL_EMERGENCY_MULT * TARGET_KL:
                     stop_early = True
                     break
+
+            # Normal early stop is evaluated at EPOCH boundaries, on
+            # the mean KL over that epoch. This guarantees at least one
+            # full pass over the batch and averages out per-minibatch
+            # noise, which is what makes the comparison against
+            # TARGET_KL meaningful.
+            if epoch_kl:
+                mean_epoch_kl = sum(epoch_kl) / len(epoch_kl)
+                epoch_kl = []
+                if mean_epoch_kl > TARGET_KL:
+                    stop_early = True
 
             if stop_early:
                 break
@@ -639,6 +670,7 @@ def update(model,opt,rollouts,device, ep, metrics_writer=None, return_var_tracke
         indices = np.arange(n)
         last_loss = 0.0
         stop_early = False
+        epoch_kl = []
 
         for epoch in range(PPO_EPOCHS):
             np.random.shuffle(indices)
@@ -650,8 +682,10 @@ def update(model,opt,rollouts,device, ep, metrics_writer=None, return_var_tracke
                 )
 
                 lp, entropy, values = model.evaluate_actions(states[mb], actions[mb])
-                ratio = torch.exp(lp - oldlp[mb])
-                approx_kl = (oldlp[mb] - lp).mean()
+                log_ratio = lp - oldlp[mb]
+                ratio = torch.exp(log_ratio)
+                with torch.no_grad():
+                    approx_kl = ((ratio - 1.0) - log_ratio).mean()
                 surr1 = ratio * adv[mb]
                 surr2 = torch.clamp(ratio,
                                     1.0 - CLIP_EPS,
@@ -667,9 +701,15 @@ def update(model,opt,rollouts,device, ep, metrics_writer=None, return_var_tracke
                 opt.step()
                 last_loss = float(loss.item())
 
-                if abs(float(approx_kl.item())) > TARGET_KL:
+                epoch_kl.append(float(approx_kl.item()))
+                if float(approx_kl.item()) > KL_EMERGENCY_MULT * TARGET_KL:
                     stop_early = True
                     break
+
+            if epoch_kl:
+                if sum(epoch_kl) / len(epoch_kl) > TARGET_KL:
+                    stop_early = True
+                epoch_kl = []
 
             if stop_early:
                 break
@@ -803,7 +843,8 @@ def run():
                                           "total_directional_reward","total_battery_reward",
                                           "total_movement_penalty","loss",
                                           "episode_time","rollout_time","inference_time",
-                                          "env_time","update_time"])
+                                          "env_time","update_time",
+                                          "peak_solar_w","mean_solar_w","min_battery"])
     epw.writeheader()
     rollouts=[]
 
@@ -848,6 +889,14 @@ def run():
         total_directional=0.0; total_battery_reward=0.0; total_movement_penalty=0.0
         r={"states":[],"next_states":[],"actions":[],"logps":[],"values":[],"rewards":[],"lyapunov":[], "barrier":[]};
         previous_action = None; smoothness = 0.0
+        # Panel-model calibration diagnostics. reference_response_ratio
+        # in ugv_simulator could not be verified against pvlib, so
+        # peak_solar_w is the number to check: at solar noon in full
+        # sun it should read close to
+        # solar_area * ~1000 W/m^2 * cell_efficiency (~48 W). Well
+        # above that means the panel is over-producing again.
+        solar_samples = []
+        min_battery = 100.0
         rollout_start = time.perf_counter()
         for step in range(MAX_STEPS_PER_EPISODE):
             s=seq_tensor(h,device)
@@ -920,6 +969,8 @@ def run():
             after = env.get_obfuscation(x_new, y_new, min(step, len(env.times) - 1), sol.azimuth.iloc[0],
                                          sol.apparent_zenith.iloc[0]).flatten()
             aft_batt = env.ch.get_battery()
+            solar_samples.append(float(env.ch.solar_potential))
+            min_battery = min(min_battery, aft_batt)
 
             rew_total, rew_directional, rew_battery, rew_movement = reward_fn(after, tel, aft_batt-b_batt)
             rew = rew_total - ACTION_SMOOTHNESS*smoothness
@@ -1078,7 +1129,10 @@ def run():
                           total_movement_penalty=total_movement_penalty,loss=loss,
                           episode_time=ep_elapsed, rollout_time=rollout_elapsed,
                           inference_time=ep_inference_time, env_time=ep_env_time,
-                          update_time=ep_update_time)); epfile.flush()
+                          update_time=ep_update_time,
+                          peak_solar_w=max(solar_samples) if solar_samples else 0.0,
+                          mean_solar_w=(sum(solar_samples)/len(solar_samples)) if solar_samples else 0.0,
+                          min_battery=min_battery)); epfile.flush()
 
         if converged and AUTO_STOP_ON_CONVERGENCE:
             print(f"[Convergence] Stopping training early at episode {ep}/{TOTAL_EPISODES}.")

@@ -195,6 +195,32 @@ class UGVSimulator:
         # ~13005 mAh, roughly parity with capacity, so sun exposure
         # becomes the binding constraint instead of a formality.
         self.solar_area = (1.020 * 0.520) * 0.45
+
+        # Fill factor: maximum-power-point output as a fraction of the
+        # Isc x Voc product. 0.75 is typical for silicon.
+        self.panel_fill_factor = 0.75
+
+        # Nominal cell conversion efficiency at reference conditions.
+        self.cell_efficiency = 0.20
+
+        # Hard ceiling used as a backstop in find_power.
+        self.max_cell_efficiency = 0.22
+
+        # Response-weighted fraction of incident power under REFERENCE
+        # conditions, i.e. trapezoid(poa * response) / trapezoid(poa)
+        # evaluated against a clear-sky AM1.5-like spectrum. find_power
+        # divides the live ratio by this, so the resulting spectral
+        # factor sits near 1.0 at reference and moves with air mass.
+        #
+        # CALIBRATION REQUIRED. This value was estimated from the mean
+        # of the spectral_response array (~0.202) and NOT verified
+        # against pvlib's spectrl2 output. If it is too low the panel
+        # over-produces and the physical cap will bind constantly; too
+        # high and harvest is suppressed. Check the reported
+        # solar_potential at solar noon in full sun against the
+        # expected ~48 W (0.2387 m^2 x ~1000 W/m^2 x 0.20) and scale
+        # this constant by the ratio.
+        self.reference_response_ratio = 0.202
         self.solar_voltage = 18
         self.solar_current = 6
 
@@ -407,17 +433,55 @@ class UGVSimulator:
                 raw_response
             )
 
-        integrand = poa_global * response_1d
-        cell_current = trapezoid(integrand, wavelengths)
+        # Spectral response is used to compute a MISMATCH FACTOR
+        # rather than an absolute current.
+        #
+        # The original chain multiplied an Isc-like current density
+        # (~162 A/m^2 in full sun) by mpp_voltage, producing ~495 W
+        # from a 0.2387 m^2 panel against a ~52 W physical ceiling --
+        # 9.4x too much. That filled the pack in ~16 of 720 steps and
+        # pinned final_battery near 97% from episode 1 regardless of
+        # policy.
+        #
+        # Simply clamping to the physical ceiling would fix the
+        # magnitude but make the clamp bind in every condition, so
+        # output would track irradiance alone and the spectral model
+        # would contribute nothing. Instead: take the response-weighted
+        # fraction of incident power, normalize it by the same quantity
+        # under reference conditions, and use the result to modulate a
+        # physically-grounded power. The factor sits near 1.0 and moves
+        # with air mass and zenith, so spectral effects still shape the
+        # output while the magnitude stays physical.
+        poa_total = trapezoid(poa_global, wavelengths)          # W/m^2
+        weighted = trapezoid(poa_global * response_1d, wavelengths)
 
-        if np.isnan(cell_current):
-            cell_current = 0.0
+        if np.isnan(poa_total) or poa_total <= 0.0:
+            return 0.0
+        if np.isnan(weighted):
+            weighted = 0.0
 
-        photo_current = cell_current * sol_area * (1.0 - interference)
-        mpp_voltage = 0.82 * self.full_voltage
-        panel_power = photo_current * mpp_voltage
+        response_ratio = weighted / poa_total
+        spectral_factor = response_ratio / self.reference_response_ratio
 
-        return max(0.0, panel_power)
+        # Bounded so a pathological spectrum cannot inflate output.
+        spectral_factor = float(np.clip(spectral_factor, 0.0, 1.25))
+
+        panel_power = (
+            poa_total
+            * sol_area
+            * self.cell_efficiency
+            * self.panel_fill_factor
+            * spectral_factor
+            * (1.0 - interference)
+        )
+
+        # Backstop: incident power x area x max cell efficiency is a
+        # hard physical limit. Should not normally bind, but keeps a
+        # miscalibrated reference_response_ratio from silently making
+        # the task trivial again.
+        physical_cap = poa_total * sol_area * self.max_cell_efficiency * (1.0 - interference)
+
+        return max(0.0, min(panel_power, physical_cap))
 
     def harvest_energy(self, env, step):
         curr_x = int(max(0, min(self.x, env.dim - 1)))
@@ -438,6 +502,14 @@ class UGVSimulator:
         self.solar_potential = panel_power
         terminal_voltage = self.compute_terminal_voltage()
         charge_current = panel_power / max(terminal_voltage, 0.1)
+
+        # max_charge_current was declared in __init__ and then never
+        # referenced anywhere, so charge current was unbounded and
+        # reached ~31 A against a stated 8 A limit. Applying it is
+        # correct regardless of the panel calibration above -- the
+        # charge controller is a real constraint independent of how
+        # much the panel can produce.
+        charge_current = min(charge_current, self.max_charge_current)
 
         if self.soc >= 0.999:
             charge_current = 0.0
