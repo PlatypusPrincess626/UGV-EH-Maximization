@@ -121,7 +121,13 @@ MEAN_SATURATION_COEF = 1e-2
 # before -- just guaranteed by a formula instead of hoped for from a
 # gradient that might not converge in time.
 ALPHA_START = 1.0
-ALPHA_END = 0.05
+# Lowered 0.05 -> 0.01. Parking requires the policy to COMMIT to a
+# near-zero action, which means a small sigma -- but mean_std was
+# still RISING at the end of the last run (0.52 -> 0.92) with alpha
+# pinned at its 0.05 floor. At sigma 0.92 sampling noise alone moves
+# the robot 16.2 cells per step, so no amount of reward shaping can
+# produce parking behaviour; the policy is not able to hold still.
+ALPHA_END = 0.01
 ALPHA_DECAY_EPISODES = 300
 # Reactive safety net (see the entropy check in update()): if a
 # batch's mean entropy drops below this floor, alpha jumps to at
@@ -154,14 +160,28 @@ LYAPUNOV_STABLE_THRESHOLD = 2 * LYAPUNOV_MARGIN
 # Lower bound the Lyapunov function must clear on average for the
 # solution to count as non-trivial. Guards the degenerate V == 0
 # optimum described at the lyapunov_collapse_penalty in update().
-LYAPUNOV_V_FLOOR = 0.5
+# V is regressed onto battery deficit (1 - soc), so the equilibrium
+# V = 0 corresponds to a full battery. LYAPUNOV_V_SPREAD_FLOOR is a
+# weak secondary guard requiring V to VARY across the batch -- the
+# previous magnitude-only floor was satisfied by a constant, which is
+# exactly what the model produced.
+LYAPUNOV_V_SPREAD_FLOOR = 0.05
+LYAPUNOV_SPREAD_COEF = 1.0
 LYAPUNOV_COLLAPSE_COEF = 1.0
 
-# A Lyapunov penalty this close to LYAPUNOV_MARGIN means V has
-# collapsed: relu(dV + alpha*V + margin) == margin exactly when
-# V == 0. Any avg_lyap inside this band is treated as FAILURE, not
-# convergence -- previously it was the opposite, since it also sits
-# comfortably under LYAPUNOV_STABLE_THRESHOLD.
+# Collapse is detected on the SPREAD of V across the batch, not its
+# magnitude.
+#
+# The magnitude test alone provably missed the real failure: after the
+# round-6 anchor, V settled to a constant ~0.52 and lyap_penalty moved
+# to 0.0204, outside the band around LYAPUNOV_MARGIN, so
+# lyap_collapsed read False on all 49 checks while V had no state
+# dependence whatsoever. A constant V is the degenerate solution
+# regardless of what constant it picks.
+LYAPUNOV_COLLAPSE_STD = 0.02
+
+# Retained: V == 0 everywhere still pins lyap_penalty at exactly
+# LYAPUNOV_MARGIN, and that case is worth naming separately.
 LYAPUNOV_COLLAPSE_BAND = 0.05 * LYAPUNOV_MARGIN
 
 # Barrier loss below this is likewise trivially satisfied (constant
@@ -233,7 +253,16 @@ ACTION_SATURATION_THRESHOLD = 0.97
 ###############################################################
 DIRECTIONAL_COEF = 0.25   # ~33% of the battery span (was 0.05, ~6.5%)
 BATTERY_COEF = 2.0        # the objective; unchanged
-MOVEMENT_COEF = 0.001     # ~2.6% of the battery span (was 0.002, ~5.2%)
+MOVEMENT_COEF = 0.001     # base rate; scaled by exposure in reward_fn
+
+# Parking. PARK_COEF is paid only while stationary and is scaled by
+# exposure, so it rewards holding a GOOD spot rather than standing
+# still anywhere. MOVEMENT_EXPOSURE_SCALE makes leaving a bright cell
+# expensive and leaving a dark one cheap, which is what turns movement
+# into a last resort without blocking relocation when a spot dies.
+PARK_COEF = 0.30
+PARK_DISTANCE_SCALE = 4.0   # cells; bonus decays as exp(-distance/scale)
+MOVEMENT_EXPOSURE_SCALE = 3.0
 
 # Format as YYYY-MM-DD_HH-MM-SS
 timestamp = datetime.datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
@@ -282,6 +311,15 @@ def log_status(ep, total_episodes, steps, avg_reward, final_batt, loss, is_eval=
 # the `scalar_dim` passed to the model -- keep them derived from this
 # constant rather than duplicating the literal in two files.
 SCALAR_DIM = 8
+
+# Index of battery/100 within the observation vector, counted from the
+# end. obs() appends the scalars in the order
+#   [x, y, sin(yaw), cos(yaw), battery/100, azimuth/360,
+#    elevation_norm, sun_usable]
+# so battery/100 is the 5th of SCALAR_DIM=8 -> -4 from the end.
+# Derived rather than hardcoded so it follows SCALAR_DIM if the scalar
+# block grows again.
+SOC_OBS_INDEX = -(SCALAR_DIM - 4)
 
 def obs(env, x, y, yaw, step):
     sol=solarposition.get_solarposition(env.times[min(step,len(env.times)-1)], env.lat_center+y*env.stp, env.long_center+x*env.stp)
@@ -356,14 +394,68 @@ def reward_fn(after, telemetry, delta_batt):
     potential_after = 1.0 - after
     score_after = float(np.dot(GAUSSIAN_KERNEL, potential_after))
 
-    directional_reward = DIRECTIONAL_COEF * score_after
-
     px, py, _ = telemetry["previous_position"]
     nx, ny, _ = telemetry["new_position"]
 
     distance = math.hypot(nx - px, ny - py)
 
-    movement_penalty = MOVEMENT_COEF * distance
+    # PARKING
+    # -------
+    # Target behaviour: hold position while harvesting, and relocate
+    # only when the current spot is losing power.
+    #
+    # The previous structure could not express that. Exposure was
+    # rewarded identically whether the robot sat in a clearing or drove
+    # through one, and the movement cost was a flat 0.001*distance
+    # regardless of what was being left behind. The result was a
+    # chasing policy: mean distance per step ROSE from 10.37 to 12.24
+    # over 397 episodes (p=6e-52) while parked-in-sun (+21.17 mAh/min)
+    # is 4.5x better than moving-in-sun (+4.75).
+    #
+    # Two changes encode the intent directly:
+    #
+    #  1. A parking bonus paid only when stationary, and scaled by
+    #     exposure -- so parking is rewarded where it pays, not
+    #     anywhere. Parking in shade earns almost nothing.
+    #  2. Movement cost scaled by CURRENT exposure, so leaving a good
+    #     spot is expensive and leaving a shaded one is nearly free.
+    #     This is what makes movement a last resort rather than a
+    #     habit, and it keeps preemptive relocation cheap: once a spot
+    #     starts to shade over, score_after falls, and the cost of
+    #     leaving falls with it. The agent does not need to be
+    #     bribed to leave a dying spot -- it simply stops being
+    #     charged much to.
+    #
+    # Resulting per-step values (verified against the energy model):
+    #
+    #     parked in sun     +0.8203      moving in sun     +0.2491
+    #     parked in shade   -0.0818      moving in shade   -0.4013
+    #
+    # Parking in sun beats moving in sun by 0.571 per step, and
+    # crossing the whole 500 m arena repays in ~9 steps of sun -- so
+    # relocation stays worthwhile without being the default.
+    # Graded, not a threshold. A hard "parked" test is unreachable
+    # while the policy is still exploring: at the observed mean_std of
+    # 0.92 sampling noise ALONE produces a mean step of 16.2 cells, and
+    # P(distance < 1) is 0.15%. A bonus that never pays out cannot be
+    # learned from. exp(-d/scale) instead gives a gradient at every
+    # distance, so "move less" is always the locally-rewarded
+    # direction:
+    #
+    #     d = 0 -> 1.000    d = 8  -> 0.135
+    #     d = 2 -> 0.607    d = 12 -> 0.050
+    #     d = 4 -> 0.368    d = 20 -> 0.007
+    park_factor = math.exp(-distance / PARK_DISTANCE_SCALE)
+
+    directional_reward = (
+        DIRECTIONAL_COEF * score_after
+        + PARK_COEF * park_factor * score_after
+    )
+
+    movement_penalty = (
+        MOVEMENT_COEF * distance
+        * (1.0 + MOVEMENT_EXPOSURE_SCALE * score_after)
+    )
 
     # Per-step, this is a local signal: charge minus drain for THIS
     # step. (Its episode SUM telescopes to 2*(final - start), which is
@@ -570,6 +662,14 @@ def update(model,opt,rollouts,device, ep, metrics_writer=None, return_var_tracke
                 mb_adv = adv[mb]
                 mb_returns = returns[mb]
 
+                # State of charge for the CURRENT (last) timestep of
+                # each sequence. obs() appends SCALAR_DIM scalars after
+                # the flattened patch, ordered
+                #   [x, y, sin(yaw), cos(yaw), battery/100,
+                #    azimuth/360, elevation_norm, sun_usable]
+                # so battery/100 is index 4 of 8, i.e. -4 from the end.
+                mb_soc = mb_states[:, -1, SOC_OBS_INDEX]
+
                 (lp, entropy, values, lyapunov, barrier, latent,
                  predicted_latent, mean_std, mean_raw_log_std,
                  raw_log_std_reg, raw_mean) = model.evaluate_actions(mb_states, actions[mb])
@@ -630,8 +730,38 @@ def update(model,opt,rollouts,device, ep, metrics_writer=None, return_var_tracke
                 # free, while leaving V otherwise unconstrained in
                 # shape. It is a hinge rather than a target so it stops
                 # pushing once V is comfortably non-trivial.
-                lyapunov_collapse_penalty = F.relu(
-                    LYAPUNOV_V_FLOOR - V_now.mean()
+                # Anchor V to battery deficit.
+                #
+                # The previous anchor -- relu(V_FLOOR - mean(V)) -- only
+                # required V to be LARGE, and a constant satisfies that
+                # as easily as a real function does. It duly collapsed
+                # to a constant ~0.52, pinned just above the 0.5 floor:
+                # measured mean_V was 0.5205 +- 0.011 for the whole
+                # run, and lyap_penalty tracked 0.02*V + 0.01 (the
+                # value implied by delta_V == 0) to within 9.4e-05.
+                # V had no dependence on state at all.
+                #
+                # A Lyapunov function needs a defined equilibrium. Here
+                # the natural one is a full battery: V should be zero
+                # at full charge and grow as the deficit grows, so that
+                # "V decreasing" means "battery recovering" -- which is
+                # exactly the stability property the constraint is
+                # supposed to enforce.
+                #
+                # Regressing V onto that target makes a constant
+                # solution actively costly, since the target itself
+                # varies across the batch.
+                battery_deficit = (1.0 - mb_soc).clamp(min=0.0)
+                lyapunov_anchor_loss = F.mse_loss(V_now, battery_deficit)
+
+                # Retained as a weak floor so V cannot be driven to
+                # zero everywhere in the (rare) case that the batch
+                # happens to be all-full-battery.
+                lyapunov_collapse_penalty = (
+                    lyapunov_anchor_loss
+                    + LYAPUNOV_SPREAD_COEF * F.relu(
+                        LYAPUNOV_V_SPREAD_FLOOR - V_now.std()
+                    )
                 )
 
                 value_loss_raw = F.mse_loss(values, mb_returns.detach())
@@ -696,6 +826,7 @@ def update(model,opt,rollouts,device, ep, metrics_writer=None, return_var_tracke
 
                 batch_metrics = {
                     "mean_V": float(V_now.mean().item()),
+                    "std_V": float(V_now.std().item()),
                     "policy_loss": float(policy_loss.item()),
                     "value_loss": float(value_loss_raw.item()),
                     "lyap_penalty": float(lyapunov_penalty.item()),
@@ -788,6 +919,7 @@ def update(model,opt,rollouts,device, ep, metrics_writer=None, return_var_tracke
         diag_std = avg["mean_std"]
         diag_abs_action = avg["mean_abs_action"]
         diag_mean_V = avg["mean_V"]
+        diag_std_V = avg["std_V"]
         loss_value = last_loss
     else:
         n = states.shape[0]
@@ -843,10 +975,11 @@ def update(model,opt,rollouts,device, ep, metrics_writer=None, return_var_tracke
         diag_std = None
         diag_abs_action = None
         diag_mean_V = None
+        diag_std_V = None
         loss_value = last_loss
 
     return (loss_value, diag_lyap, diag_barrier, diag_std,
-            diag_abs_action, diag_mean_V)
+            diag_abs_action, diag_mean_V, diag_std_V)
 
 def run():
     device=torch.device("cuda" if torch.cuda.is_available() else "cpu")
@@ -980,7 +1113,7 @@ def run():
     metrics_file = open(OUT/"training_metrics.csv","w",newline="")
     metrics_writer = csv.DictWriter(metrics_file, fieldnames=[
         "episode","minibatches","minibatches_possible","first_mb_kl",
-        "policy_loss","value_loss","mean_V","lyap_penalty","dynamics_loss",
+        "policy_loss","value_loss","mean_V","std_V","lyap_penalty","dynamics_loss",
         "barrier_loss","approx_kl","clip_fraction","mean_std","mean_raw_log_std",
         "mean_abs_action","alpha",
     ])
@@ -990,7 +1123,7 @@ def run():
     convergence_file = open(OUT/"convergence_checks.csv", "w", newline="")
     convergence_writer = csv.DictWriter(convergence_file, fieldnames=[
         "episode","avg_reward","best_avg_reward","reward_above_threshold",
-        "avg_lyap","avg_barrier","avg_std","avg_abs_action","avg_mean_V",
+        "avg_lyap","avg_barrier","avg_std","avg_abs_action","avg_mean_V","avg_std_V",
         "lyap_collapsed","barrier_collapsed","exploration_cleared",
         "reward_trend_per_window","reward_trend_t","plateau_streak","plateaued",
         "stable","checks_since_best",
@@ -1005,6 +1138,7 @@ def run():
     std_history = deque(maxlen=STABILITY_WINDOW)
     abs_action_history = deque(maxlen=STABILITY_WINDOW)
     mean_V_history = deque(maxlen=STABILITY_WINDOW)
+    std_V_history = deque(maxlen=STABILITY_WINDOW)
     # Separate, longer history purely for the trend test -- the
     # REWARD_WINDOW moving average is too short to have statistical
     # power (see PLATEAU_WINDOW).
@@ -1154,7 +1288,7 @@ def run():
             if ep % UPDATE_EVERY_EPISODES == 0:
                 update_start = time.perf_counter()
                 (loss, diag_lyap, diag_barrier, diag_std,
-                 diag_abs_action, diag_mean_V) = update(
+                 diag_abs_action, diag_mean_V, diag_std_V) = update(
                     model, opt, rollouts, device, ep, metrics_writer, return_var_tracker)
                 ep_update_time = time.perf_counter() - update_start
                 total_update_time += ep_update_time
@@ -1168,6 +1302,7 @@ def run():
                     std_history.append(diag_std)
                     abs_action_history.append(diag_abs_action)
                     mean_V_history.append(diag_mean_V)
+                    std_V_history.append(diag_std_V)
 
                     ready = (
                         ep >= 300
@@ -1188,6 +1323,7 @@ def run():
                         # ACTION space once tanh is flat. Require the
                         # mean action to be off the boundary too.
                         avg_mean_V = sum(mean_V_history) / len(mean_V_history)
+                        avg_std_V = sum(std_V_history) / len(std_V_history)
                         exploration_cleared = (
                             avg_std <= STD_CLEARED_THRESHOLD
                             and avg_abs_action <= ACTION_SATURATION_THRESHOLD
@@ -1208,9 +1344,14 @@ def run():
                         # Sitting inside a narrow band around the
                         # margin, or a barrier loss at machine-epsilon
                         # scale, now DISQUALIFIES the solution.
+                        # Spread first: a constant V is degenerate no
+                        # matter what constant it settles on, and the
+                        # magnitude test alone missed exactly that
+                        # (V == 0.52 constant, lyap_collapsed False on
+                        # all 49 checks of the previous run).
                         lyap_collapsed = (
-                            abs(avg_lyap - LYAPUNOV_MARGIN) < LYAPUNOV_COLLAPSE_BAND
-                            or avg_mean_V < LYAPUNOV_V_FLOOR
+                            avg_std_V < LYAPUNOV_COLLAPSE_STD
+                            or abs(avg_lyap - LYAPUNOV_MARGIN) < LYAPUNOV_COLLAPSE_BAND
                         )
                         barrier_collapsed = avg_barrier < BARRIER_COLLAPSE_FLOOR
                         collapsed = lyap_collapsed or barrier_collapsed
@@ -1279,7 +1420,7 @@ def run():
                             f"(best {best_avg_reward:.2f}, "
                             f"above_threshold={reward_above_threshold}) | "
                             f"avg_lyap(last {STABILITY_WINDOW}) {avg_lyap:.4f} "
-                            f"(V={avg_mean_V:.3f}, collapsed={collapsed}) | "
+                            f"(V={avg_mean_V:.3f}+-{avg_std_V:.3f}, collapsed={collapsed}) | "
                             f"avg_barrier(last {STABILITY_WINDOW}) {avg_barrier:.4f} | "
                             f"avg_std(last {STABILITY_WINDOW}) {avg_std:.4f} | "
                             f"avg|a|(last {STABILITY_WINDOW}) {avg_abs_action:.4f} "
@@ -1300,6 +1441,7 @@ def run():
                             "avg_std": avg_std,
                             "avg_abs_action": avg_abs_action,
                             "avg_mean_V": avg_mean_V,
+                            "avg_std_V": avg_std_V,
                             "lyap_collapsed": lyap_collapsed,
                             "barrier_collapsed": barrier_collapsed,
                             "exploration_cleared": exploration_cleared,
