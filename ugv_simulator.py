@@ -262,6 +262,10 @@ class UGVSimulator:
         self.target_velocity = 0.0
         self.energy_used_mAh = 0.0
         self.energy_gained_mAh = 0.0
+        self.step_idle_mAh = 0.0
+        self.step_motion_mAh = 0.0
+        self.step_path_m = 0.0
+        self.step_turn_integral = 0.0
 
     def init_solar_potential(self, env):
         curr_x = int(max(0, min(self.x, env.dim - 1)))
@@ -528,16 +532,20 @@ class UGVSimulator:
         self.update_battery_state()
 
     def consume_idle_energy(self):
-
+        # Split accounting. energy_used_mAh mixes idle and motion and
+        # is zeroed every step, so neither could be read afterwards --
+        # which is why a 43 mAh/min drain had to be INFERRED by
+        # regression from the battery trace instead of simply read off.
+        # These accumulators are reset alongside it in step().
         current_mA = (
             self.current_cpu +
             self.current_payload +
             self._comms["current_active_lora"]
         ) / 1000.0
 
-        self.energy_used_mAh += (
-            current_mA * (1.0 / 3600.0)
-        )
+        used = current_mA * (1.0 / 3600.0)
+        self.energy_used_mAh += used
+        self.step_idle_mAh += used
 
     def consume_motion_energy(self):
         battery_power = self.compute_motor_power()
@@ -550,11 +558,26 @@ class UGVSimulator:
         battery_power = terminal_voltage * current_A
         energy_Wh = battery_power * self.dt / 3600.0
 
-        self.energy_used_mAh += energy_Wh * 1000.0 / terminal_voltage
+        used = energy_Wh * 1000.0 / terminal_voltage
+        self.energy_used_mAh += used
+        self.step_motion_mAh += used
+
+        # Path length actually travelled this tick. Net displacement
+        # over a 60-tick step hides intra-step turning entirely: the
+        # evaluated policy netted 4.71 m per step while commanding
+        # 13.16 m, and the difference is not damping, it is the
+        # vehicle turning through a much longer path at speed. Drain
+        # follows the PATH, not the displacement.
+        self.step_path_m += abs(self.velocity) * self.dt
+        self.step_turn_integral += abs(self.angular_velocity) * self.dt
 
     def step(self, env, sim_step, target_x, target_y):
         self.energy_used_mAh = 0.0
         self.energy_gained_mAh = 0.0
+        self.step_idle_mAh = 0.0
+        self.step_motion_mAh = 0.0
+        self.step_path_m = 0.0
+        self.step_turn_integral = 0.0
 
         dx = target_x - env.boundary_center[0]
         dy = target_y - env.boundary_center[1]

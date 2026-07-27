@@ -8,7 +8,24 @@ from torch.distributions import Normal
 # Same numeric range as the earlier hard clamp (std in ~[0.135, 1.65]),
 # but enforced with a smooth tanh squash instead of a hard clamp so
 # there's no dead-gradient zone at the edges.
-LOG_STD_MIN = -2.0
+# LOG_STD_MIN lowered -2.0 -> -4.0.
+#
+# At -2.0, sigma could never fall below exp(-2) = 0.135, which puts a
+# FLOOR of mean |a| = 0.168 on the squashed action -- 3.35 cells
+# commanded every step, forever. Holding position needs |a| < 0.05.
+# The policy was structurally incapable of parking regardless of what
+# the reward said, which is consistent with the evaluation: |a| < 0.05
+# occurred 0 times in 720 steps and the minimum observed was 0.0715.
+#
+#   LOG_STD_MIN   sigma_min   min mean |a|   cells commanded
+#      -2.0         0.135        0.168            3.35
+#      -3.0         0.050        0.062            1.25
+#      -4.0         0.018        0.023            0.46
+#
+# -4.0 gives room to park with margin. It does not FORCE a small
+# sigma -- the entropy bonus and RAW_LOG_STD_TARGET still set the
+# equilibrium; this only stops the clamp from ruling parking out.
+LOG_STD_MIN = -4.0
 LOG_STD_MAX = 0.5
 
 # Threshold for the raw_log_std regularizer (see evaluate_actions()'s
