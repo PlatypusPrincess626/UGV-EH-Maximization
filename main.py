@@ -1701,6 +1701,12 @@ def run():
                     if TRANSFORMER_VARIANT == "lyapunov":
                         (a, raw_a, lp, v, lyapunov, barrier, latent, predicted_next) = model.act(s)
                         current_action = a[0].detach().cpu().numpy()
+                        # PRE-SQUASH z. The lyapunov model's
+                        # evaluate_actions() re-applies _squash() to
+                        # whatever it is given in order to recompute
+                        # the tanh log-prob correction, so it must be
+                        # handed z, not tanh(z).
+                        stored_action = raw_a
                         if previous_action is None:
                             smoothness = 0.0
                         else:
@@ -1717,6 +1723,18 @@ def run():
                         lyapunov = None
                         barrier = None
                         current_action = a[0].detach().cpu().numpy()
+                        # The baseline has no pre-squash action: its
+                        # act() bounds the MEAN with tanh and returns a
+                        # clamped sample, scoring log_prob on that same
+                        # clamped value. evaluate_actions() likewise
+                        # calls dist.log_prob(actions) directly, so the
+                        # stored action must be the executed one.
+                        #
+                        # `raw_a` was referenced unconditionally when
+                        # appending to r["actions"], so this branch
+                        # raised UnboundLocalError on the first step of
+                        # episode 1.
+                        stored_action = a
                         # Mirrors the lyapunov branch. Without this,
                         # `smoothness` stayed at 0.0 for the whole
                         # episode and the baseline silently skipped the
@@ -1770,7 +1788,7 @@ def run():
             rew = rew_total - ACTION_SMOOTHNESS*smoothness
             total+=rew; previous_action=current_action
             total_directional+=rew_directional; total_battery_reward+=rew_battery; total_movement_penalty+=rew_movement
-            r["states"].append(np.asarray(h)); r["actions"].append(raw_a[0].cpu().numpy())
+            r["states"].append(np.asarray(h)); r["actions"].append(stored_action[0].cpu().numpy())
             r["logps"].append(lp.item()); r["values"].append(v.item()); r["rewards"].append(rew)
             x,y,yaw=env.ch.get_position(); h.append(obs(env,x,y,yaw,min(step+1,MAX_STEPS_PER_EPISODE-1)))
             r["next_states"].append(np.asarray(h))
