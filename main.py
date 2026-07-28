@@ -1005,79 +1005,7 @@ def update(model,opt,rollouts,device, ep, metrics_writer=None, return_var_tracke
                         F.mse_loss(V_now, V_true) + 1e-12
                     )
 
-                # Positive-definiteness anchor.
-                #
-                # relu(dV + alpha*V + margin) is globally minimized by
-                # V == 0: the penalty then sits at exactly
-                # LYAPUNOV_MARGIN and cannot go lower. That is the
-                # trivial solution, and the previous run found it --
-                # avg_lyap logged 0.010009 against LYAPUNOV_MARGIN =
-                # 0.01 on EVERY convergence check, i.e. Softplus had
-                # collapsed to zero everywhere and the "Lyapunov
-                # converged" signal was certifying a constant function.
-                #
-                # Detaching the latent for the auxiliary heads (needed
-                # to stop them reshaping the shared encoder) made this
-                # easier to reach, not harder: the head now optimizes
-                # only its own parameters against an objective whose
-                # global optimum is the constant zero.
-                #
-                # A real Lyapunov function must be positive away from
-                # equilibrium. This hinge asks V to exceed
-                # LYAPUNOV_V_FLOOR on average, so collapse is no longer
-                # free, while leaving V otherwise unconstrained in
-                # shape. It is a hinge rather than a target so it stops
-                # pushing once V is comfortably non-trivial.
-                # Anchor V to battery deficit.
-                #
-                # The previous anchor -- relu(V_FLOOR - mean(V)) -- only
-                # required V to be LARGE, and a constant satisfies that
-                # as easily as a real function does. It duly collapsed
-                # to a constant ~0.52, pinned just above the 0.5 floor:
-                # measured mean_V was 0.5205 +- 0.011 for the whole
-                # run, and lyap_penalty tracked 0.02*V + 0.01 (the
-                # value implied by delta_V == 0) to within 9.4e-05.
-                # V had no dependence on state at all.
-                #
-                # A Lyapunov function needs a defined equilibrium. Here
-                # the natural one is a full battery: V should be zero
-                # at full charge and grow as the deficit grows, so that
-                # "V decreasing" means "battery recovering" -- which is
-                # exactly the stability property the constraint is
-                # supposed to enforce.
-                #
-                # Regressing V onto that target makes a constant
-                # solution actively costly, since the target itself
-                # varies across the batch.
-                # V measures deficit relative to SOC_TARGET, not to
-                # full charge.
-                #
-                # Anchoring to (1 - soc) made V = 0 correspond to 100%
-                # charge, which is neither reachable nor desirable: the
-                # best episode of the last run hit 93.6%, and holding a
-                # pack at 100% is bad for cell life. Nothing in any
-                # batch ever had target 0, so the network was never
-                # trained to make V vanish anywhere -- V was positive
-                # definite only in the weak sense of "Softplus is
-                # non-negative".
-                #
-                # relu(SOC_TARGET - soc) makes V = 0 exactly on the
-                # target set {soc >= 0.90}, which IS reached (12 of the
-                # last 200 episodes finished above 90%). V is then
-                # genuinely positive definite with respect to that set,
-                # and zero is an attainable value rather than an
-                # asymptote.
-                #
-                # Normalised by SOC_TARGET so V stays in [0, 1].
-                # Same analytic quantity computed above; the anchor
-                # and the certification now agree by construction
-                # rather than by two parallel expressions that could
-                # drift apart.
                 lyapunov_anchor_loss = F.mse_loss(V_now, V_true)
-
-                # Retained as a weak floor so V cannot be driven to
-                # zero everywhere in the (rare) case that the batch
-                # happens to be all-full-battery.
                 lyapunov_collapse_penalty = (
                     lyapunov_anchor_loss
                     + LYAPUNOV_SPREAD_COEF * F.relu(
@@ -1093,34 +1021,6 @@ def update(model,opt,rollouts,device, ep, metrics_writer=None, return_var_tracke
                     actual_latent.detach(),
                 )
 
-                # Barrier: hinge losses, plus an ANCHOR to the actual
-                # constraint quantities.
-                #
-                # relu(margin - h) is satisfied by any h above the
-                # margin, so a large CONSTANT clears all five channels
-                # at once and drives the loss to exactly zero. That is
-                # what happened: barrier_loss was exactly 0.0 on 69% of
-                # updates, barrier_collapsed fired on 333/351
-                # convergence checks, and because it is the only
-                # criterion that ever failed it blocked `stable`
-                # forever -- 0/351 -- while every other criterion
-                # passed. The run therefore could not stop at its
-                # episode-746 peak and gave back 27% of its reward.
-                #
-                # This is the same failure V had before round 8, and
-                # it gets the same treatment: regress each channel onto
-                # the real quantity it is supposed to track, so the
-                # head has to represent state rather than emit a
-                # constant that satisfies every margin at once.
-                #
-                # Targets are signed "distance to violation", positive
-                # when safe:
-                #   battery  - state of charge above empty
-                #   boundary - normalized distance inside the fence
-                #   velocity - headroom below max speed
-                # Vegetation and communication have no direct scalar in
-                # the observation, so they keep hinge-only treatment
-                # and are excluded from the collapse test below.
                 battery_loss = torch.relu(BATTERY_MARGIN - barrier[:, 0]).mean()
                 boundary_loss = torch.relu(BOUNDARY_MARGIN - barrier[:, 1]).mean()
                 vegetation_loss = torch.relu(VEGETATION_MARGIN - barrier[:, 2]).mean()
@@ -1129,8 +1029,6 @@ def update(model,opt,rollouts,device, ep, metrics_writer=None, return_var_tracke
 
                 mb_x = mb_states[:, -1, X_OBS_INDEX]
                 mb_y = mb_states[:, -1, Y_OBS_INDEX]
-                # obs() stores x, y normalized by (dim - 1); recover
-                # the fraction of the safe radius remaining.
                 dx_c = mb_x * (GRID_DIM - 1) - BOUNDARY_CENTER
                 dy_c = mb_y * (GRID_DIM - 1) - BOUNDARY_CENTER
                 radial = torch.sqrt(dx_c * dx_c + dy_c * dy_c + 1e-8)
@@ -1145,49 +1043,7 @@ def update(model,opt,rollouts,device, ep, metrics_writer=None, return_var_tracke
                                 + 0.25 * velocity_loss + 0.75 * communication_loss
                                 + BARRIER_ANCHOR_COEF * barrier_anchor)
 
-                # Keeps tanh out of saturation -- see
-                # MEAN_SATURATION_COEF. Without this the mean drifts
-                # outward indefinitely, because past |tanh| ~ 0.99 the
-                # environment cannot tell one raw_mean from another
-                # and only the log-prob term still has an opinion.
                 saturation_loss = raw_mean.pow(2).mean()
-
-                # Safety net the pure schedule gives up: a learned alpha
-                # would have noticed entropy collapsing too far and
-                # raised itself back up on its own. A schedule has no
-                # such awareness -- it decays regardless of what entropy
-                # is actually doing. This reactive check restores that
-                # protection without reintroducing a convergence-
-                # dependent mechanism: it's a direct threshold, not a
-                # gradient, so there's no "will it correct in time"
-                # question.
-                # Safety keyed on SIGMA, not entropy.
-                #
-                # The entropy form made parking unreachable by
-                # construction. For the 2-D tanh-squashed Gaussian,
-                # entropy falls below the old 0.3 floor at sigma ~0.28:
-                #
-                #     sigma 0.63 -> H  1.230, mean |a| 0.639
-                #     sigma 0.45 -> H  0.869, mean |a| 0.498
-                #     sigma 0.35 -> H  0.506, mean |a| 0.405
-                #     sigma 0.25 -> H -0.056, mean |a| 0.300  <- fires
-                #     sigma 0.05 -> H -3.159, mean |a| 0.062
-                #
-                # Parking needs |a| < 0.05, i.e. sigma ~0.03 and
-                # entropy near -6. Every attempt to get there tripped
-                # the floor and pinned alpha at 0.5 -- fifty times
-                # ALPHA_END -- which pushed sigma straight back up.
-                # That is consistent with what the runs showed: sigma
-                # never fell, and |a| < 0.05 occurred 0 times in 720
-                # evaluation steps.
-                #
-                # The guard is still wanted: a genuinely collapsed
-                # policy explores nothing and cannot recover. But
-                # "collapsed" means sigma near zero, not sigma small
-                # enough to hold a position. Keying on sigma directly
-                # makes the threshold mean the same thing at every
-                # action dimension, unlike entropy which shifts with
-                # dimensionality and with the squash correction.
                 current_std = mean_std.item()
                 if current_std < SAFETY_STD_FLOOR:
                     alpha = max(scheduled_alpha, SAFETY_ALPHA_BOOST)
@@ -1208,11 +1064,6 @@ def update(model,opt,rollouts,device, ep, metrics_writer=None, return_var_tracke
                 loss.backward()
                 torch.nn.utils.clip_grad_norm_(model.parameters(), 1.0)
                 opt.step()
-
-                # tanh(raw_mean) is the diagnostic that actually tracks
-                # exploration. The pre-squash Std does not: at
-                # raw_mean=-2.7 a Std of 0.47 still yields actions
-                # spanning only ~1% of the action range.
                 with torch.no_grad():
                     mean_abs_action = torch.tanh(raw_mean).abs().mean()
 
@@ -1242,16 +1093,6 @@ def update(model,opt,rollouts,device, ep, metrics_writer=None, return_var_tracke
                 n_minibatches += 1
                 last_loss = float(loss.item())
 
-                # Self-check on the very first minibatch of the first
-                # epoch: no optimizer step has touched the parameters
-                # since the rollout, so lp and oldlp are computed from
-                # IDENTICAL weights and approx_kl must be ~0. Anything
-                # else means the forward pass is not reproducible
-                # between rollout and update -- which previously came
-                # from dropout being off in eval() and on in train(),
-                # and made the KL early stop fire immediately, costing
-                # the entire epoch/minibatch budget without any
-                # visible error.
                 if first_mb_kl is None:
                     first_mb_kl = abs(float(approx_kl.item()))
                     if first_mb_kl > 1e-4:
@@ -1264,22 +1105,10 @@ def update(model,opt,rollouts,device, ep, metrics_writer=None, return_var_tracke
                         )
 
                 epoch_kl.append(float(approx_kl.item()))
-
-                # Emergency break only. A single minibatch exceeding
-                # the target is normal sampling noise -- breaking on it
-                # (as this did before) meant the loop stopped after
-                # minibatch 1 or 2 and never completed even one epoch,
-                # silently discarding the whole PPO budget. Reserve the
-                # mid-epoch break for genuine divergence.
                 if float(approx_kl.item()) > KL_EMERGENCY_MULT * TARGET_KL:
                     stop_early = True
                     break
 
-            # Normal early stop is evaluated at EPOCH boundaries, on
-            # the mean KL over that epoch. This guarantees at least one
-            # full pass over the batch and averages out per-minibatch
-            # noise, which is what makes the comparison against
-            # TARGET_KL meaningful.
             if epoch_kl:
                 mean_epoch_kl = sum(epoch_kl) / len(epoch_kl)
                 epoch_kl = []
@@ -1324,12 +1153,6 @@ def update(model,opt,rollouts,device, ep, metrics_writer=None, return_var_tracke
         diag_lyap_in_ball = avg["lyap_in_ball_rate"]
         loss_value = last_loss
     else:
-        # Baseline path. Shares the reward, observation, optimization
-        # budget (PPO_EPOCHS / MINIBATCH_SIZE / TARGET_KL), value-loss
-        # normalization and entropy schedule with the lyapunov branch,
-        # so the only differences that remain are architectural: no
-        # Lyapunov / barrier / latent-dynamics heads, a clamped Normal
-        # instead of a tanh squash, and an unbounded learnable log_std.
         decay_frac = min(ep, ALPHA_DECAY_EPISODES) / ALPHA_DECAY_EPISODES
         alpha = ALPHA_START * (ALPHA_END / ALPHA_START) ** decay_frac
 
