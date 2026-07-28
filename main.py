@@ -40,10 +40,48 @@ LR=3e-4; MAX_MOVE_PER_STEP=20.0; ENTROPY_COEF=.01; VALUE_COEF=.5
 # Lyapunov Hyperparameters
 ###############################################################
 LYAPUNOV_COEF = 0.25; DYNAMICS_COEF = 0.015
-BARRIER_COEF = 0.20; ACTION_SMOOTHNESS = 0.01; LYAPUNOV_MARGIN = 0.01
+BARRIER_COEF = 0.20; ACTION_SMOOTHNESS = 0.01
+# LYAPUNOV_MARGIN 0.01 -> 0.0001 and LYAPUNOV_ALPHA 0.02 -> 0.002.
+#
+# The old values were never satisfiable by ANY policy. With V now the
+# normalised shortfall below SOC_TARGET, the fastest the battery can
+# possibly move is the best charge rate, 21.17 mAh/min:
+#     dsoc = 21.17/12000 = 0.00176 per step
+#     |dV|max = 0.00176/0.90 = 0.00196 per step
+#
+# The condition dV <= -ALPHA*V - MARGIN demanded, at ALPHA=0.02 and
+# MARGIN=0.01:
+#     V=0.667 -> dV <= -0.0233   (achievable -0.00196)  IMPOSSIBLE
+#     V=0.336 -> dV <= -0.0167   (achievable -0.00196)  IMPOSSIBLE
+#     V=0.111 -> dV <= -0.0122   (achievable -0.00196)  IMPOSSIBLE
+#
+# MARGIN alone was 5x the largest per-step change the battery can
+# make. This explains the run's lyap_penalty of 0.0208 without any
+# model failure: at V=0.336 even flawless charging leaves slack of
+# -0.001 + 0.0067 + 0.01 = 0.0157, and batch spread accounts for the
+# rest. The hinge was pinned by an infeasible requirement, not by the
+# policy.
+#
+# Recalibrated to the 720-step episode. ALPHA=0.002 decays V from
+# 0.667 to the ball over ~1300 steps of ideal charging -- deliberately
+# slower than one episode, since the agent must also survive a
+# transient and cannot charge optimally from step one. Headroom at
+# every V:
+#     V=0.667 -> requires -0.00143, achievable -0.00196
+#     V=0.336 -> requires -0.00077, achievable -0.00196
+#     V=0.111 -> requires -0.00032, achievable -0.00196
+LYAPUNOV_MARGIN = 0.0001
 # (LATENT_COEF was defined here and never referenced anywhere -- removed.)
 BATTERY_MARGIN = 0.10; BOUNDARY_MARGIN = 0.10; VEGETATION_MARGIN = 0.05
-VELOCITY_MARGIN = 0.05; COMM_MARGIN = 0.10; CLIP_EPS =0.20; LYAPUNOV_ALPHA = 0.02
+VELOCITY_MARGIN = 0.05; COMM_MARGIN = 0.10; CLIP_EPS =0.20
+# 0.001, not 0.002. Exponential decay is hardest to satisfy at LARGE
+# V, where ALPHA*V is biggest but the battery is still charging at a
+# roughly constant mAh/min. At 0.002 even flawless steady charging
+# (soc 30->88 over an episode) violated on 44% of transitions, purely
+# because the requirement outruns a linear charge process at high V.
+# 0.001 passes ideal charging at 0% violation while still rejecting a
+# policy that charges too slowly (100%) or drifts the wrong way (100%).
+LYAPUNOV_ALPHA = 0.001  # see LYAPUNOV_MARGIN above
 # Constant-force hinge pull on raw_log_std toward RAW_LOG_STD_TARGET --
 # see evaluate_actions()'s raw_log_std_reg docstring. Replaces the
 # earlier L2 penalty (whose gradient was proportional to raw_log_std,
@@ -159,7 +197,55 @@ SAFETY_ALPHA_BOOST = 0.5
 REWARD_WINDOW = 50              # episodes averaged for the reward moving average
 STABILITY_WINDOW = 20           # update() calls averaged for Lyapunov/barrier stability
 CONVERGENCE_PATIENCE = 10       # retained for logging only; see PLATEAU_SLOPE_FRAC
+# Retained as a diagnostic only -- `stable` now keys on
+# LYAPUNOV_MAX_VIOLATION_RATE. Note this value (2*MARGIN) was always
+# LOOSER than the principled bar: exponential stability caps the relu
+# argument at MARGIN, so a genuinely stable penalty is <= MARGIN.
 LYAPUNOV_STABLE_THRESHOLD = 2 * LYAPUNOV_MARGIN
+
+###############################################################
+# Ultimate boundedness
+#
+# V measures the shortfall below SOC_TARGET, normalised to [0, 1]:
+#     V = relu(SOC_TARGET - soc) / SOC_TARGET
+#
+# so V = 0 exactly on the target set {soc >= SOC_TARGET}. 90% is
+# chosen over 100% because full charge is neither reachable here (best
+# episode 93.6%) nor good for cell life; 90% leaves headroom and is a
+# state the policy demonstrably attains.
+#
+# Stability is enforced as ultimate boundedness: strict decrease
+# (dV <= -ALPHA*V - MARGIN) is required only OUTSIDE the ball
+# {V <= LYAPUNOV_BALL}. Global strict decrease is unsatisfiable by any
+# policy in this task -- the robot starts at 30-40% SOC and drain
+# exceeds harvest until it reaches sun, so the battery dipped below
+# its start in 999 of 1000 episodes.
+###############################################################
+SOC_TARGET = 0.90
+# Ball radius in V units. 0.05 corresponds to ~4.5 pp of SOC below the
+# target, i.e. the set {soc >= 85.5%}.
+LYAPUNOV_BALL = 0.05
+
+# Fraction of OUTSIDE-BALL transitions allowed to violate
+# dV <= -ALPHA*V - MARGIN.
+#
+# Set at 0.30, not 0.05. The initial transient is unavoidable and
+# occupies a large share of the episode: the mean dip is 5.96 pp
+# (715 mAh), which at a net drain of 3-8 mAh/min lasts 89-238 minutes,
+# i.e. 12-33% of a 720-step episode. A 5% budget would fail on physics
+# rather than on control quality, and would make the gate as
+# uninformative as the hinge threshold it replaced.
+#
+# 30% admits that transient while still rejecting a policy that lets V
+# rise most of the time. Read it together with lyap_mean_dV, which
+# should be clearly negative outside the ball.
+LYAPUNOV_MAX_VIOLATION_RATE = 0.30
+
+# If SOC sits at or above the target this fraction of the time, the
+# policy has already achieved the objective and the descent conditions
+# are vacuous -- mean dV inside the ball is ~0, not negative, so a
+# converged policy would otherwise read unstable.
+LYAPUNOV_IN_BALL_SUFFICIENT = 0.95
 
 # Lower bound the Lyapunov function must clear on average for the
 # solution to count as non-trivial. Guards the degenerate V == 0
@@ -207,6 +293,13 @@ BARRIER_ANCHOR_COEF = 0.5
 # policy could never terminate.
 BARRIER_COLLAPSE_STD = 0.02
 CHECKPOINT_EVERY = 100          # periodic safety-net checkpoint, regardless of performance
+# Number of independent deterministic episodes in the validation
+# phase. One episode cannot separate policy quality from the luck of
+# terrain, foliage, start position and start SOC (uniform 30-40%);
+# training reward std was ~11 per episode, comparable to the total
+# improvement being measured.
+VALIDATION_EPISODES = 10
+
 AUTO_STOP_ON_CONVERGENCE = False # set True to re-enable early stopping once the criteria are recalibrated for how fast training now converges
 # Reward readings are not trustworthy evidence of a real plateau while
 # Std is still pinned near the exploration ceiling (LOG_STD_MAX=0.5 ->
@@ -516,7 +609,18 @@ def reward_fn(after, telemetry, delta_batt, action=None):
     # energy and what defines the physical notion of parked.
     action_magnitude = 0.0
     if action is not None:
-        action_magnitude = float(math.hypot(action[0], action[1]))
+        # Accept either a flat 2-element action (training loop passes
+        # `current_action`, a 1-D array) or a batched (1, 2) tensor
+        # (the evaluation loop passes `a` straight from the model).
+        # Indexing action[0], action[1] directly worked in training and
+        # raised IndexError at the very end of the run, in the final
+        # evaluation, after 1000 episodes had completed.
+        flat = np.asarray(
+            action.detach().cpu() if hasattr(action, "detach") else action,
+            dtype=np.float64,
+        ).reshape(-1)
+        if flat.size >= 2:
+            action_magnitude = float(math.hypot(flat[0], flat[1]))
 
     park_factor = math.exp(
         -(distance / PARK_DISTANCE_SCALE)
@@ -779,9 +883,79 @@ def update(model,opt,rollouts,device, ep, metrics_writer=None, return_var_tracke
                 ) * mb_adv
                 policy_loss = -torch.min(surr1, surr2).mean()
 
-                lyapunov_penalty = F.relu(delta_V
-                                          + LYAPUNOV_ALPHA * V_now
-                                          + LYAPUNOV_MARGIN).mean()
+                # Ultimate boundedness, not global strict decrease.
+                #
+                # Requiring dV < 0 everywhere is unsatisfiable in this
+                # task by ANY policy. The robot starts at 30-40% SOC
+                # and idle+motion drain (16.68 mAh/min) exceeds harvest
+                # until it reaches good sun, so the battery dips before
+                # it climbs: min_battery fell below start_battery in
+                # 999 of 1000 episodes, by 5.96 pp on average and up to
+                # 15.3 pp. V necessarily RISES during that transient.
+                #
+                # The standard practical formulation instead demands
+                # decrease only outside a ball around the equilibrium,
+                # with the state driven into and held inside the ball.
+                # Here the ball is {V <= LYAPUNOV_BALL}, i.e. SOC
+                # within LYAPUNOV_BALL of SOC_TARGET, and the hinge is
+                # masked to states outside it. Inside the ball no
+                # decrease is required -- the objective there is to
+                # stay, not to keep descending.
+                outside_ball = (V_now > LYAPUNOV_BALL).float()
+                n_outside = outside_ball.sum().clamp(min=1.0)
+
+                lyapunov_penalty = (
+                    F.relu(delta_V + LYAPUNOV_ALPHA * V_now + LYAPUNOV_MARGIN)
+                    * outside_ball
+                ).sum() / n_outside
+
+                # Direct stability statistics.
+                #
+                # lyapunov_penalty is a TRAINING LOSS, not a
+                # certificate. It is a mean of relu, so it collapses
+                # violation rate, violation severity, and the magnitude
+                # of V into one number that cannot be inverted. Three
+                # very different behaviours land in the same place (at
+                # V = 0.336, ALPHA = 0.02, MARGIN = 0.01):
+                #
+                #   every transition stable   penalty 0.0067,  0% violating
+                #   80% stable / 20% bad      penalty 0.0183, 20% violating
+                #   V actually RISING         penalty 0.0253, 64% violating
+                #
+                # The last run logged 0.0208, consistent with either of
+                # the bottom two. "Stable" could not be established
+                # either way from what was recorded.
+                #
+                # Note also that LYAPUNOV_STABLE_THRESHOLD = 2*MARGIN
+                # is LOOSER than the principled bar: exponential
+                # stability means dV <= -ALPHA*V on every transition,
+                # which caps the relu argument at MARGIN and so caps a
+                # genuinely stable penalty at MARGIN itself.
+                #
+                # These three quantities are what the claim actually
+                # rests on, and they cost nothing -- delta_V and V_now
+                # are already computed above.
+                with torch.no_grad():
+                    # Slack now includes LYAPUNOV_MARGIN, matching what
+                    # the hinge actually trains toward: zero hinge loss
+                    # requires dV <= -ALPHA*V - MARGIN, which is
+                    # strictly stronger than dV <= -ALPHA*V. The
+                    # previous form tested only non-strict decrease and
+                    # so certified something weaker than the objective.
+                    stability_slack = (
+                        delta_V + LYAPUNOV_ALPHA * V_now + LYAPUNOV_MARGIN
+                    )
+                    # Restricted to states OUTSIDE the ball -- inside
+                    # it, an increase is not a violation.
+                    viol = ((stability_slack > 0).float() * outside_ball).sum()
+                    lyap_violation_rate = viol / n_outside
+                    lyap_mean_dV = (delta_V * outside_ball).sum() / n_outside
+                    lyap_worst_slack = torch.where(
+                        outside_ball > 0, stability_slack,
+                        torch.full_like(stability_slack, -1e9)
+                    ).max()
+                    lyap_frac_outside = outside_ball.mean()
+                    lyap_in_ball_rate = 1.0 - lyap_frac_outside
 
                 # Positive-definiteness anchor.
                 #
@@ -827,7 +1001,29 @@ def update(model,opt,rollouts,device, ep, metrics_writer=None, return_var_tracke
                 # Regressing V onto that target makes a constant
                 # solution actively costly, since the target itself
                 # varies across the batch.
-                battery_deficit = (1.0 - mb_soc).clamp(min=0.0)
+                # V measures deficit relative to SOC_TARGET, not to
+                # full charge.
+                #
+                # Anchoring to (1 - soc) made V = 0 correspond to 100%
+                # charge, which is neither reachable nor desirable: the
+                # best episode of the last run hit 93.6%, and holding a
+                # pack at 100% is bad for cell life. Nothing in any
+                # batch ever had target 0, so the network was never
+                # trained to make V vanish anywhere -- V was positive
+                # definite only in the weak sense of "Softplus is
+                # non-negative".
+                #
+                # relu(SOC_TARGET - soc) makes V = 0 exactly on the
+                # target set {soc >= 0.90}, which IS reached (12 of the
+                # last 200 episodes finished above 90%). V is then
+                # genuinely positive definite with respect to that set,
+                # and zero is an attainable value rather than an
+                # asymptote.
+                #
+                # Normalised by SOC_TARGET so V stays in [0, 1].
+                battery_deficit = (
+                    F.relu(SOC_TARGET - mb_soc) / SOC_TARGET
+                )
                 lyapunov_anchor_loss = F.mse_loss(V_now, battery_deficit)
 
                 # Retained as a weak floor so V cannot be driven to
@@ -975,6 +1171,10 @@ def update(model,opt,rollouts,device, ep, metrics_writer=None, return_var_tracke
                     "mean_V": float(V_now.mean().item()),
                     "std_V": float(V_now.std().item()),
                     "std_barrier": float(barrier[:, :2].std(dim=0).mean().item()),
+                    "lyap_violation_rate": float(lyap_violation_rate.item()),
+                    "lyap_in_ball_rate": float(lyap_in_ball_rate.item()),
+                    "lyap_mean_dV": float(lyap_mean_dV.item()),
+                    "lyap_worst_slack": float(lyap_worst_slack.item()),
                     "policy_loss": float(policy_loss.item()),
                     "value_loss": float(value_loss_raw.item()),
                     "lyap_penalty": float(lyapunov_penalty.item()),
@@ -1069,6 +1269,9 @@ def update(model,opt,rollouts,device, ep, metrics_writer=None, return_var_tracke
         diag_mean_V = avg["mean_V"]
         diag_std_V = avg["std_V"]
         diag_std_barrier = avg["std_barrier"]
+        diag_lyap_violation = avg["lyap_violation_rate"]
+        diag_lyap_mean_dV = avg["lyap_mean_dV"]
+        diag_lyap_in_ball = avg["lyap_in_ball_rate"]
         loss_value = last_loss
     else:
         n = states.shape[0]
@@ -1126,10 +1329,14 @@ def update(model,opt,rollouts,device, ep, metrics_writer=None, return_var_tracke
         diag_mean_V = None
         diag_std_V = None
         diag_std_barrier = None
+        diag_lyap_violation = None
+        diag_lyap_mean_dV = None
+        diag_lyap_in_ball = None
         loss_value = last_loss
 
     return (loss_value, diag_lyap, diag_barrier, diag_std,
-            diag_abs_action, diag_mean_V, diag_std_V, diag_std_barrier)
+            diag_abs_action, diag_mean_V, diag_std_V, diag_std_barrier,
+            diag_lyap_violation, diag_lyap_mean_dV, diag_lyap_in_ball)
 
 def run():
     device=torch.device("cuda" if torch.cuda.is_available() else "cpu")
@@ -1266,6 +1473,7 @@ def run():
     metrics_writer = csv.DictWriter(metrics_file, fieldnames=[
         "episode","minibatches","minibatches_possible","first_mb_kl",
         "policy_loss","value_loss","mean_V","std_V","std_barrier",
+        "lyap_violation_rate","lyap_in_ball_rate","lyap_mean_dV","lyap_worst_slack",
         "lyap_penalty","dynamics_loss",
         "barrier_loss","approx_kl","clip_fraction","mean_std","mean_raw_log_std",
         "mean_abs_action","alpha",
@@ -1276,7 +1484,7 @@ def run():
     convergence_file = open(OUT/"convergence_checks.csv", "w", newline="")
     convergence_writer = csv.DictWriter(convergence_file, fieldnames=[
         "episode","avg_reward","best_avg_reward","reward_above_threshold",
-        "avg_lyap","avg_barrier","avg_std","avg_abs_action","avg_mean_V","avg_std_V","avg_std_barrier",
+        "avg_lyap","avg_barrier","avg_std","avg_abs_action","avg_mean_V","avg_std_V","avg_std_barrier","avg_lyap_violation","avg_lyap_mean_dV","avg_lyap_in_ball","lyap_stable",
         "lyap_collapsed","barrier_collapsed","exploration_cleared",
         "reward_trend_per_window","reward_trend_t","plateau_streak","plateaued",
         "stable","checks_since_best",
@@ -1293,6 +1501,9 @@ def run():
     mean_V_history = deque(maxlen=STABILITY_WINDOW)
     std_V_history = deque(maxlen=STABILITY_WINDOW)
     std_barrier_history = deque(maxlen=STABILITY_WINDOW)
+    lyap_violation_history = deque(maxlen=STABILITY_WINDOW)
+    lyap_mean_dV_history = deque(maxlen=STABILITY_WINDOW)
+    lyap_in_ball_history = deque(maxlen=STABILITY_WINDOW)
     # Separate, longer history purely for the trend test -- the
     # REWARD_WINDOW moving average is too short to have statistical
     # power (see PLATEAU_WINDOW).
@@ -1454,7 +1665,8 @@ def run():
                 update_start = time.perf_counter()
                 (loss, diag_lyap, diag_barrier, diag_std,
                  diag_abs_action, diag_mean_V, diag_std_V,
-                 diag_std_barrier) = update(
+                 diag_std_barrier, diag_lyap_violation,
+                 diag_lyap_mean_dV, diag_lyap_in_ball) = update(
                     model, opt, rollouts, device, ep, metrics_writer, return_var_tracker)
                 ep_update_time = time.perf_counter() - update_start
                 total_update_time += ep_update_time
@@ -1470,6 +1682,9 @@ def run():
                     mean_V_history.append(diag_mean_V)
                     std_V_history.append(diag_std_V)
                     std_barrier_history.append(diag_std_barrier)
+                    lyap_violation_history.append(diag_lyap_violation)
+                    lyap_mean_dV_history.append(diag_lyap_mean_dV)
+                    lyap_in_ball_history.append(diag_lyap_in_ball)
 
                     ready = (
                         ep >= 300
@@ -1492,6 +1707,9 @@ def run():
                         avg_mean_V = sum(mean_V_history) / len(mean_V_history)
                         avg_std_V = sum(std_V_history) / len(std_V_history)
                         avg_std_barrier = sum(std_barrier_history) / len(std_barrier_history)
+                        avg_lyap_violation = sum(lyap_violation_history) / len(lyap_violation_history)
+                        avg_lyap_mean_dV = sum(lyap_mean_dV_history) / len(lyap_mean_dV_history)
+                        avg_lyap_in_ball = sum(lyap_in_ball_history) / len(lyap_in_ball_history)
                         exploration_cleared = (
                             avg_std <= STD_CLEARED_THRESHOLD
                             and avg_abs_action <= ACTION_SATURATION_THRESHOLD
@@ -1534,8 +1752,37 @@ def run():
                         barrier_collapsed = avg_std_barrier < BARRIER_COLLAPSE_STD
                         collapsed = lyap_collapsed or barrier_collapsed
 
+                        # Stability keyed on the VIOLATION RATE, the
+                        # quantity the claim actually rests on, rather
+                        # than on the hinge loss. avg_lyap is retained
+                        # as a secondary check but is no longer the
+                        # thing being certified -- it cannot be
+                        # inverted into a statement about whether
+                        # dV <= -ALPHA*V holds.
+                        # Two conditions, not one. The violation-rate
+                        # budget alone is generous enough (0.30, sized
+                        # to the unavoidable transient) that a policy
+                        # drifting slowly upward could sneak past it;
+                        # requiring the mean slack to be negative
+                        # outside the ball rules that out.
+                        # Being INSIDE the ball is the goal state, not
+                        # a case to be judged: if the policy holds SOC
+                        # at or above the target essentially all the
+                        # time, there is nothing left to descend and
+                        # the decrease conditions are vacuous. Without
+                        # this branch a perfectly converged policy
+                        # would read unstable, because mean dV inside
+                        # the ball is ~0 rather than negative.
+                        lyap_stable = (
+                            avg_lyap_in_ball >= LYAPUNOV_IN_BALL_SUFFICIENT
+                            or (
+                                avg_lyap_violation <= LYAPUNOV_MAX_VIOLATION_RATE
+                                and avg_lyap_mean_dV < 0.0
+                            )
+                        )
+
                         stable = (
-                            avg_lyap <= LYAPUNOV_STABLE_THRESHOLD
+                            lyap_stable
                             and avg_barrier <= BARRIER_STABLE_THRESHOLD
                             and not collapsed
                             and exploration_cleared
@@ -1598,7 +1845,11 @@ def run():
                             f"(best {best_avg_reward:.2f}, "
                             f"above_threshold={reward_above_threshold}) | "
                             f"avg_lyap(last {STABILITY_WINDOW}) {avg_lyap:.4f} "
-                            f"(V={avg_mean_V:.3f}+-{avg_std_V:.3f}, collapsed={collapsed}) | "
+                            f"(V={avg_mean_V:.3f}+-{avg_std_V:.3f}, "
+                            f"viol={100*avg_lyap_violation:.1f}%, "
+                            f"dV={avg_lyap_mean_dV:+.6f}, "
+                            f"inball={100*avg_lyap_in_ball:.0f}%, "
+                            f"collapsed={collapsed}) | "
                             f"avg_barrier(last {STABILITY_WINDOW}) {avg_barrier:.4f} | "
                             f"avg_std(last {STABILITY_WINDOW}) {avg_std:.4f} | "
                             f"avg|a|(last {STABILITY_WINDOW}) {avg_abs_action:.4f} "
@@ -1621,6 +1872,10 @@ def run():
                             "avg_mean_V": avg_mean_V,
                             "avg_std_V": avg_std_V,
                             "avg_std_barrier": avg_std_barrier,
+                            "avg_lyap_violation": avg_lyap_violation,
+                            "avg_lyap_mean_dV": avg_lyap_mean_dV,
+                            "avg_lyap_in_ball": avg_lyap_in_ball,
+                            "lyap_stable": lyap_stable,
                             "lyap_collapsed": lyap_collapsed,
                             "barrier_collapsed": barrier_collapsed,
                             "exploration_cleared": exploration_cleared,
@@ -1727,10 +1982,24 @@ def run():
             print(f"[Convergence] Stopping training early at episode {ep}/{TOTAL_EPISODES}.")
             break
 
-    # final deterministic evaluation, step-level telemetry CSV
-    env.place_devices(); env.reset(); x,y,yaw=env.ch.get_position(); h=deque([obs(env,x,y,yaw,0)]*SEQUENCE_LENGTH,maxlen=SEQUENCE_LENGTH)
+    ###############################################################
+    # Validation phase
+    #
+    # VALIDATION_EPISODES independent deterministic episodes rather
+    # than one.
+    #
+    # A single episode cannot separate policy quality from luck of the
+    # draw. Each episode randomizes terrain, foliage, device placement,
+    # start position AND start SOC (uniform 30-40%), and the last
+    # training run showed per-episode reward std of ~11 against a mean
+    # improvement of the same order. One sample is inside the noise.
+    #
+    # Every episode is written to the same step-level CSV with an
+    # `episode` column so per-step telemetry stays inspectable, and a
+    # per-episode summary is written alongside it.
+    ###############################################################
     with open(OUT/"final_evaluation_steps.csv","w",newline="") as f:
-        fields=["step","x_before","y_before","target_x","target_y","x_after","y_after","battery_before",
+        fields=["episode","step","x_before","y_before","target_x","target_y","x_after","y_after","battery_before",
                 "battery_after","battery_delta","reward","directional_reward","battery_reward",
                 "movement_penalty","action_dx_norm","action_dy_norm",
                 "solar_w","exposure_score",
@@ -1740,7 +2009,18 @@ def run():
         final_inference_time = 0.0
         final_inference_steps = 0
         final_eval_start = time.perf_counter()
-        for step in range(MAX_STEPS_PER_EPISODE):
+        validation_rows = []
+
+        for val_ep in range(1, VALIDATION_EPISODES + 1):
+          env.place_devices(); env.reset()
+          x,y,yaw=env.ch.get_position()
+          h=deque([obs(env,x,y,yaw,0)]*SEQUENCE_LENGTH,maxlen=SEQUENCE_LENGTH)
+          val_start_batt = env.ch.get_battery()
+          val_start_x, val_start_y = x, y
+          val_total = 0.0; val_directional = 0.0; val_battery = 0.0; val_movement = 0.0
+          val_idle = 0.0; val_motion = 0.0; val_path = 0.0; val_turn = 0.0
+          val_min_batt = 100.0; val_solar = []; val_amag = []; val_steps = 0
+          for step in range(MAX_STEPS_PER_EPISODE):
             start = time.perf_counter()
             if POLICY_TYPE == "transformer":
                 # Deterministic evaluation must have dropout off, or
@@ -1812,23 +2092,100 @@ def run():
                             idle_mAh=float(env.ch.step_idle_mAh),
                             motion_mAh=float(env.ch.step_motion_mAh),
                             path_m=float(env.ch.step_path_m),
-                            turn_integral=float(env.ch.step_turn_integral)))
+                            turn_integral=float(env.ch.step_turn_integral),
+                            episode=val_ep))
+
+            val_total += rew; val_directional += rew_directional
+            val_battery += rew_battery; val_movement += rew_movement
+            val_idle += float(env.ch.step_idle_mAh)
+            val_motion += float(env.ch.step_motion_mAh)
+            val_path += float(env.ch.step_path_m)
+            val_turn += float(env.ch.step_turn_integral)
+            val_solar.append(float(env.ch.solar_potential))
+            val_amag.append(float(math.hypot(a[0,0].item(), a[0,1].item())))
+            val_min_batt = min(val_min_batt, aft_batt)
+            val_steps = step + 1
+
             x,y,yaw=nx,ny,nyaw; h.append(obs(env,x,y,yaw,min(step+1,MAX_STEPS_PER_EPISODE-1)))
             if aft_batt<=0: break
+
+          net_disp = float(math.hypot(x - val_start_x, y - val_start_y))
+          validation_rows.append({
+              "episode": val_ep,
+              "steps": val_steps,
+              "survived": val_steps >= MAX_STEPS_PER_EPISODE and aft_batt > 0,
+              "start_battery": val_start_batt,
+              "final_battery": aft_batt,
+              "min_battery": val_min_batt,
+              "total_reward": val_total,
+              "directional_reward": val_directional,
+              "battery_reward": val_battery,
+              "movement_penalty": val_movement,
+              "idle_mAh": val_idle,
+              "motion_mAh": val_motion,
+              "path_m": val_path,
+              "turn_integral": val_turn,
+              "net_displacement_m": net_disp,
+              "tortuosity": val_path / max(net_disp, 1e-6),
+              "mean_solar_w": float(np.mean(val_solar)) if val_solar else 0.0,
+              "mean_abs_action": float(np.mean(val_amag)) if val_amag else 0.0,
+          })
+          print(f"  [validation {val_ep}/{VALIDATION_EPISODES}] steps {val_steps:3d} | "
+                f"battery {val_start_batt:5.1f}% -> {aft_batt:5.1f}% (min {val_min_batt:5.1f}%) | "
+                f"reward {val_total:8.2f} | |a| {validation_rows[-1]['mean_abs_action']:.3f} | "
+                f"path {val_path:7.0f} m")
+
         final_eval_time = time.perf_counter() - final_eval_start
     epfile.close()
     metrics_file.close()
     convergence_file.close()
     # ADD THIS SECTION:
     import pandas as pd
+
+    # Per-episode validation summary.
+    val_df = pd.DataFrame(validation_rows)
+    val_df.to_csv(OUT / "validation_summary.csv", index=False)
+
+    def _stat(col):
+        s = val_df[col]
+        return s.mean(), s.std(ddof=1) if len(s) > 1 else 0.0, s.min(), s.max()
+
+    print("\n" + "=" * 78)
+    print(f"VALIDATION COMPLETE -- {len(val_df)} independent deterministic episodes")
+    print("=" * 78)
+    print(f"{'metric':<22} {'mean':>10} {'std':>10} {'min':>10} {'max':>10}")
+    for col, label in [
+        ("total_reward",      "reward"),
+        ("final_battery",     "final battery %"),
+        ("min_battery",       "min battery %"),
+        ("steps",             "steps"),
+        ("mean_solar_w",      "solar W"),
+        ("mean_abs_action",   "|action|"),
+        ("path_m",            "path m"),
+        ("tortuosity",        "tortuosity"),
+        ("motion_mAh",        "motion mAh"),
+        ("idle_mAh",          "idle mAh"),
+    ]:
+        m, sd, lo, hi = _stat(col)
+        print(f"{label:<22} {m:10.2f} {sd:10.2f} {lo:10.2f} {hi:10.2f}")
+
+    survived = int(val_df["survived"].sum())
+    print()
+    print(f"survived full {MAX_STEPS_PER_EPISODE} steps : {survived}/{len(val_df)}")
+    print(f"ended below 20% battery         : {int((val_df.final_battery < 20).sum())}/{len(val_df)}")
+    print(f"ended above 70% battery         : {int((val_df.final_battery > 70).sum())}/{len(val_df)}")
+
+    # A single episode cannot distinguish policy quality from the luck
+    # of terrain, start position and start SOC. Report the interval so
+    # the mean is read with its uncertainty attached.
+    if len(val_df) > 1:
+        m, sd, _, _ = _stat("total_reward")
+        se = sd / math.sqrt(len(val_df))
+        print(f"\nreward 95% CI: {m:.2f} +- {1.96 * se:.2f}  ({m - 1.96 * se:.2f} to {m + 1.96 * se:.2f})")
+
     df_eval = pd.read_csv(OUT / "final_evaluation_steps.csv")
     total_steps = len(df_eval)
-
-    print("\n" + "=" * 46)
-    print("FINAL EVALUATION COMPLETE")
-    print("=" * 46)
-    print(f"Total Steps Performed: {total_steps}")
-    print(f"Final Battery Level: {df_eval['battery_after'].iloc[-1]:.2f}%")
+    print(f"\ntotal step rows written: {total_steps}")
 
     run_time = time.perf_counter() - run_start
     training_env_time = total_rollout_time - (total_inference_time - final_inference_time)

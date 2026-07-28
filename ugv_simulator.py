@@ -182,12 +182,31 @@ class UGVSimulator:
         # canopy costs less harvest than expected; higher values (1080
         # mA) kill even good spots.
         #
-        # CALIBRATION NOTE: the harvest reduction from the 32 m canopy
-        # is estimated, not measured -- it could not be simulated here.
-        # Check `mean_solar_w` and `final_battery` on the first run: if
-        # most episodes still end above ~60%, raise toward 960 mA; if
-        # most die before step 720, drop toward 720 mA.
-        self.current_payload = 840_000  # uA (840 mA)
+        # RAISED 840 -> 960 mA after the 1000-episode run at 840.
+        #
+        # That run's own criterion said to: mean final_battery was
+        # 77.9%, only 1 episode of 1000 ended below 20%, and none
+        # truncated early. Total drain (12858 mAh) sat close enough to
+        # the 12000 mAh pack that survival was never in doubt, so the
+        # constraint was not binding and the agent optimized reward
+        # without ever being threatened.
+        #
+        # The taller canopy did deliver the intended contrast --
+        # mean_solar_w spread widened from CV 0.05 to 0.137, spanning
+        # 11.6-32.2 W across episodes -- so the spatial signal is real
+        # and it is only the drain that needs to bite harder.
+        #
+        # 960 mA raises idle from 10.09 to 16.0 mAh/min, putting total
+        # drain around 18.7 mAh/min against a measured mean harvest
+        # near 21.7. An average spot stays marginally viable; a poor
+        # one does not.
+        #
+        # STILL A CALIBRATION, NOT A MEASUREMENT. Check the next run:
+        # a good target is most episodes finishing in the 30-70% band
+        # with a minority dying. If nearly everything still ends above
+        # 70%, go to 1080 mA; if a majority truncate early, fall back
+        # to 900 mA.
+        self.current_payload = 960_000  # uA (960 mA)
 
         # -----------------------------
         # Solar
