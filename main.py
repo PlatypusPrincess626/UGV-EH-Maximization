@@ -1,4 +1,4 @@
-import csv, math, random
+import csv, math, os, random
 from collections import deque
 from pathlib import Path
 import numpy as np
@@ -24,7 +24,12 @@ PSOPolicy = None
 POLICY_TYPE = "transformer"
 if POLICY_TYPE == "transformer":
     # Set TRANSFORMER_VARIANT = "normal" or "chaotic" or "lyapunov"
-    TRANSFORMER_VARIANT = "lyapunov"
+    #
+    # Overridable from the environment so a comparison can be run
+    # without editing the file:
+    #     LTAC_VARIANT=lyapunov python main.py
+    #     LTAC_VARIANT=normal   python main.py
+    TRANSFORMER_VARIANT = os.environ.get("LTAC_VARIANT", "lyapunov")
     # Set TRANSFORMER_INIT = "normal" or "chaotic"
     if TRANSFORMER_VARIANT == "lyapunov":
         TRANSFORMER_INIT = "normal"
@@ -300,6 +305,11 @@ CHECKPOINT_EVERY = 100          # periodic safety-net checkpoint, regardless of 
 # improvement being measured.
 VALIDATION_EPISODES = 10
 
+# For a CONTROLLED COMPARISON set this False. Early stopping is
+# driven by the Lyapunov/barrier criteria, which the baseline does not
+# have -- so with it enabled the two arms would run different numbers
+# of episodes and the comparison would confound architecture with
+# training length.
 AUTO_STOP_ON_CONVERGENCE = False # set True to re-enable early stopping once the criteria are recalibrated for how fast training now converges
 # Reward readings are not trustworthy evidence of a real plateau while
 # Std is still pinned near the exploration ceiling (LOG_STD_MAX=0.5 ->
@@ -400,7 +410,9 @@ MOVEMENT_EXPOSURE_SCALE = 3.0
 
 # Format as YYYY-MM-DD_HH-MM-SS
 timestamp = datetime.datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
-OUT=Path("rl_csv_"+timestamp); OUT.mkdir(exist_ok=True)
+# Variant in the directory name so paired runs are not confusable.
+_variant_tag = TRANSFORMER_VARIANT if POLICY_TYPE == "transformer" else POLICY_TYPE
+OUT=Path(f"rl_csv_{_variant_tag}_{timestamp}"); OUT.mkdir(exist_ok=True)
 
 size = 2 * VIEW_DISTANCE + 1
 y, x = np.mgrid[-VIEW_DISTANCE:VIEW_DISTANCE+1,
@@ -849,6 +861,29 @@ def update(model,opt,rollouts,device, ep, metrics_writer=None, return_var_tracke
                 #    azimuth/360, elevation_norm, sun_usable]
                 # so battery/100 is index 4 of 8, i.e. -4 from the end.
                 mb_soc = mb_states[:, -1, SOC_OBS_INDEX]
+                mb_soc_next = next_states[mb][:, -1, SOC_OBS_INDEX]
+
+                # ANALYTIC Lyapunov candidate, from measured state of
+                # charge. This is the quantity the stability claim is
+                # about, and it is exact -- no network, no
+                # approximation error.
+                #
+                # The learned V is still what the hinge trains (it has
+                # to be, since that is what shapes the representation),
+                # but it must NOT be what the certification measures.
+                # delta_V from two independent forward passes of a
+                # network whose output has std ~0.20 across states
+                # carries noise around 100x the true per-step signal of
+                # ~0.002, so the per-transition sign test is close to a
+                # coin flip. The 1000-episode run duly reported a 47.9%
+                # violation rate -- chance -- and a worst slack of
+                # 0.207, i.e. V apparently moving 100x further in one
+                # step than the battery physically can. Recomputed
+                # analytically on the same trajectories: 23.0% and
+                # 0.0028.
+                V_true = F.relu(SOC_TARGET - mb_soc) / SOC_TARGET
+                V_true_next = F.relu(SOC_TARGET - mb_soc_next) / SOC_TARGET
+                delta_V_true = V_true_next - V_true
 
                 (lp, entropy, values, lyapunov, barrier, latent,
                  predicted_latent, mean_std, mean_raw_log_std,
@@ -901,7 +936,12 @@ def update(model,opt,rollouts,device, ep, metrics_writer=None, return_var_tracke
                 # masked to states outside it. Inside the ball no
                 # decrease is required -- the objective there is to
                 # stay, not to keep descending.
-                outside_ball = (V_now > LYAPUNOV_BALL).float()
+                # Ball membership from the analytic V. Whether a state
+                # is inside the target set is a physical fact about its
+                # charge, not something the network should get a vote
+                # on -- masking by the learned V let approximation
+                # error decide which transitions were even judged.
+                outside_ball = (V_true > LYAPUNOV_BALL).float()
                 n_outside = outside_ball.sum().clamp(min=1.0)
 
                 lyapunov_penalty = (
@@ -936,26 +976,34 @@ def update(model,opt,rollouts,device, ep, metrics_writer=None, return_var_tracke
                 # rests on, and they cost nothing -- delta_V and V_now
                 # are already computed above.
                 with torch.no_grad():
-                    # Slack now includes LYAPUNOV_MARGIN, matching what
-                    # the hinge actually trains toward: zero hinge loss
-                    # requires dV <= -ALPHA*V - MARGIN, which is
-                    # strictly stronger than dV <= -ALPHA*V. The
-                    # previous form tested only non-strict decrease and
-                    # so certified something weaker than the objective.
+                    # Certification runs on the ANALYTIC V. Slack
+                    # includes LYAPUNOV_MARGIN, matching what the hinge
+                    # trains toward: zero hinge loss requires
+                    # dV <= -ALPHA*V - MARGIN, strictly stronger than
+                    # dV <= -ALPHA*V.
                     stability_slack = (
-                        delta_V + LYAPUNOV_ALPHA * V_now + LYAPUNOV_MARGIN
+                        delta_V_true + LYAPUNOV_ALPHA * V_true + LYAPUNOV_MARGIN
                     )
                     # Restricted to states OUTSIDE the ball -- inside
                     # it, an increase is not a violation.
                     viol = ((stability_slack > 0).float() * outside_ball).sum()
                     lyap_violation_rate = viol / n_outside
-                    lyap_mean_dV = (delta_V * outside_ball).sum() / n_outside
+                    lyap_mean_dV = (delta_V_true * outside_ball).sum() / n_outside
                     lyap_worst_slack = torch.where(
                         outside_ball > 0, stability_slack,
                         torch.full_like(stability_slack, -1e9)
                     ).max()
                     lyap_frac_outside = outside_ball.mean()
                     lyap_in_ball_rate = 1.0 - lyap_frac_outside
+
+                    # How well the learned V matches the analytic one.
+                    # With certification moved off the network, this is
+                    # the remaining evidence that the Lyapunov head has
+                    # learned a valid certificate rather than an
+                    # arbitrary positive function.
+                    lyap_v_rmse = torch.sqrt(
+                        F.mse_loss(V_now, V_true) + 1e-12
+                    )
 
                 # Positive-definiteness anchor.
                 #
@@ -1021,10 +1069,11 @@ def update(model,opt,rollouts,device, ep, metrics_writer=None, return_var_tracke
                 # asymptote.
                 #
                 # Normalised by SOC_TARGET so V stays in [0, 1].
-                battery_deficit = (
-                    F.relu(SOC_TARGET - mb_soc) / SOC_TARGET
-                )
-                lyapunov_anchor_loss = F.mse_loss(V_now, battery_deficit)
+                # Same analytic quantity computed above; the anchor
+                # and the certification now agree by construction
+                # rather than by two parallel expressions that could
+                # drift apart.
+                lyapunov_anchor_loss = F.mse_loss(V_now, V_true)
 
                 # Retained as a weak floor so V cannot be driven to
                 # zero everywhere in the (rare) case that the batch
@@ -1173,6 +1222,7 @@ def update(model,opt,rollouts,device, ep, metrics_writer=None, return_var_tracke
                     "std_barrier": float(barrier[:, :2].std(dim=0).mean().item()),
                     "lyap_violation_rate": float(lyap_violation_rate.item()),
                     "lyap_in_ball_rate": float(lyap_in_ball_rate.item()),
+                    "lyap_v_rmse": float(lyap_v_rmse.item()),
                     "lyap_mean_dV": float(lyap_mean_dV.item()),
                     "lyap_worst_slack": float(lyap_worst_slack.item()),
                     "policy_loss": float(policy_loss.item()),
@@ -1274,8 +1324,25 @@ def update(model,opt,rollouts,device, ep, metrics_writer=None, return_var_tracke
         diag_lyap_in_ball = avg["lyap_in_ball_rate"]
         loss_value = last_loss
     else:
+        # Baseline path. Shares the reward, observation, optimization
+        # budget (PPO_EPOCHS / MINIBATCH_SIZE / TARGET_KL), value-loss
+        # normalization and entropy schedule with the lyapunov branch,
+        # so the only differences that remain are architectural: no
+        # Lyapunov / barrier / latent-dynamics heads, a clamped Normal
+        # instead of a tanh squash, and an unbounded learnable log_std.
+        decay_frac = min(ep, ALPHA_DECAY_EPISODES) / ALPHA_DECAY_EPISODES
+        alpha = ALPHA_START * (ALPHA_END / ALPHA_START) ** decay_frac
+
+        if return_var_tracker is not None:
+            return_var_tracker.update(returns.detach())
+            return_scale = return_var_tracker.var + 1e-8
+        else:
+            return_scale = 1.0
+
         n = states.shape[0]
         indices = np.arange(n)
+        accum = {}
+        n_minibatches = 0
         last_loss = 0.0
         stop_early = False
         epoch_kl = []
@@ -1294,20 +1361,55 @@ def update(model,opt,rollouts,device, ep, metrics_writer=None, return_var_tracke
                 ratio = torch.exp(log_ratio)
                 with torch.no_grad():
                     approx_kl = ((ratio - 1.0) - log_ratio).mean()
+                    clip_fraction = ((torch.abs(ratio - 1.0) > CLIP_EPS).float().mean())
                 surr1 = ratio * adv[mb]
                 surr2 = torch.clamp(ratio,
                                     1.0 - CLIP_EPS,
                                     1.0 + CLIP_EPS) * adv[mb]
                 policy_loss = -torch.min(surr1, surr2).mean()
+
+                # Same value-loss normalization as the lyapunov branch.
+                # Previously this branch used a raw MSE while the
+                # lyapunov branch divided by the running return
+                # variance, so the two ran at very different effective
+                # value-loss weights. That is an optimizer detail, not
+                # part of what the Lyapunov architecture contributes,
+                # and leaving it different would confound the
+                # comparison.
+                value_loss_raw = F.mse_loss(values, returns[mb].detach())
+                value_loss = value_loss_raw / return_scale
+
+                # Same entropy schedule too. The baseline previously
+                # used a fixed ENTROPY_COEF = 0.01 while the lyapunov
+                # branch annealed alpha from 1.0 to 0.01 over 300
+                # episodes. Exploration schedule is recipe, not
+                # architecture.
                 loss = (policy_loss
-                        + VALUE_COEF * F.mse_loss(values, returns[mb])
-                        - ENTROPY_COEF * entropy.mean())
+                        + VALUE_COEF * value_loss
+                        - alpha * entropy.mean())
 
                 opt.zero_grad()
                 loss.backward()
                 torch.nn.utils.clip_grad_norm_(model.parameters(), 1.0)
                 opt.step()
                 last_loss = float(loss.item())
+
+                with torch.no_grad():
+                    mb_std = model.log_std.exp().mean()
+                    mb_absa = actions[mb].abs().mean()
+
+                batch_metrics = {
+                    "policy_loss": float(policy_loss.item()),
+                    "value_loss": float(value_loss_raw.item()),
+                    "approx_kl": float(approx_kl.item()),
+                    "clip_fraction": float(clip_fraction.item()),
+                    "mean_std": float(mb_std.item()),
+                    "mean_abs_action": float(mb_absa.item()),
+                    "alpha": float(alpha),
+                }
+                for k, v in batch_metrics.items():
+                    accum[k] = accum.get(k, 0.0) + v
+                n_minibatches += 1
 
                 epoch_kl.append(float(approx_kl.item()))
                 if float(approx_kl.item()) > KL_EMERGENCY_MULT * TARGET_KL:
@@ -1322,10 +1424,28 @@ def update(model,opt,rollouts,device, ep, metrics_writer=None, return_var_tracke
             if stop_early:
                 break
 
+        avg = {k: v / max(n_minibatches, 1) for k, v in accum.items()}
+        print(
+            f"Policy {avg.get('policy_loss', 0):.4f} | "
+            f"Value {avg.get('value_loss', 0):.4f} | "
+            f"KL {avg.get('approx_kl', 0):.5f} | "
+            f"CF {avg.get('clip_fraction', 0):.4f} | "
+            f"Std {avg.get('mean_std', 0):.4f} | "
+            f"|a| {avg.get('mean_abs_action', 0):.4f} | "
+            f"Alpha {avg.get('alpha', 0):.4f} | "
+            f"MB {n_minibatches}/{PPO_EPOCHS * math.ceil(n / MINIBATCH_SIZE)}"
+        )
+        if metrics_writer is not None:
+            row = {"episode": ep, "minibatches": n_minibatches,
+                   "minibatches_possible": PPO_EPOCHS * math.ceil(n / MINIBATCH_SIZE),
+                   "first_mb_kl": 0.0}
+            row.update(avg)
+            metrics_writer.writerow(row)
+
         diag_lyap = None
         diag_barrier = None
-        diag_std = None
-        diag_abs_action = None
+        diag_std = avg.get("mean_std")
+        diag_abs_action = avg.get("mean_abs_action")
         diag_mean_V = None
         diag_std_V = None
         diag_std_barrier = None
@@ -1419,7 +1539,14 @@ def run():
             opt = optim.Adam(model.parameters(), lr=LR)
         else:
             from transformer import TransformerActorCritic
-            model = TransformerActorCritic(VIEW_DISTANCE).to(device)
+            # scalar_dim passed explicitly. obs() appends SCALAR_DIM=8
+            # scalars (solar elevation replaced the out-of-range
+            # zenith/90 term and a sun-usable flag was added), but the
+            # baseline's default is still 7. Leaving it implicit builds
+            # input_projection with the wrong in_features and the first
+            # forward pass fails on a shape mismatch.
+            model = TransformerActorCritic(
+                VIEW_DISTANCE, scalar_dim=SCALAR_DIM).to(device)
             opt = optim.Adam(model.parameters(), lr=LR)
     else:
         from pso_policy import PSOPolicy
@@ -1474,6 +1601,7 @@ def run():
         "episode","minibatches","minibatches_possible","first_mb_kl",
         "policy_loss","value_loss","mean_V","std_V","std_barrier",
         "lyap_violation_rate","lyap_in_ball_rate","lyap_mean_dV","lyap_worst_slack",
+        "lyap_v_rmse",
         "lyap_penalty","dynamics_loss",
         "barrier_loss","approx_kl","clip_fraction","mean_std","mean_raw_log_std",
         "mean_abs_action","alpha",
@@ -1510,7 +1638,10 @@ def run():
     plateau_history = deque(maxlen=PLATEAU_WINDOW)
     plateau_streak = 0
     degrade_streak = 0
-    return_var_tracker = RunningVariance() if TRANSFORMER_VARIANT == "lyapunov" else None
+    # Enabled for both variants -- see the note in update()'s baseline
+    # branch. Value-loss scaling is a training detail, not part of the
+    # architectural comparison.
+    return_var_tracker = RunningVariance() if POLICY_TYPE == "transformer" else None
     best_avg_reward = -float("inf")
     checks_since_best = 0
     converged = False
@@ -1586,6 +1717,17 @@ def run():
                         lyapunov = None
                         barrier = None
                         current_action = a[0].detach().cpu().numpy()
+                        # Mirrors the lyapunov branch. Without this,
+                        # `smoothness` stayed at 0.0 for the whole
+                        # episode and the baseline silently skipped the
+                        # ACTION_SMOOTHNESS term -- a different reward
+                        # function, which would invalidate the
+                        # comparison.
+                        if previous_action is None:
+                            smoothness = 0.0
+                        else:
+                            smoothness = float(
+                                np.sum((current_action - previous_action) ** 2))
             else:
                 # Set the current particle for the forward pass
                 model.current_particle = (ep - 1) % model.swarm_size
@@ -1645,14 +1787,25 @@ def run():
         # would tell the value function "no more reward is possible
         # here" when that isn't true. Use the critic's own estimate of
         # the real next state in that case instead.
-        if POLICY_TYPE == "transformer" and TRANSFORMER_VARIANT == "lyapunov":
+        if POLICY_TYPE == "transformer":
             if aft_batt <= 0:
                 bootstrap_value = 0.0
             else:
                 model.eval()
                 with torch.no_grad():
-                    (_, bootstrap_value_t, _, _, _, _, _) = model.distribution(seq_tensor(h, device))
+                    # distribution() returns 7 values for the lyapunov
+                    # model and 2 for the baseline; the critic is the
+                    # second element in both.
+                    dist_out = model.distribution(seq_tensor(h, device))
+                    bootstrap_value_t = dist_out[1]
                 bootstrap_value = bootstrap_value_t.item()
+            # Previously computed only on the lyapunov branch, so the
+            # baseline was left with r.get("bootstrap_value", 0.0) = 0
+            # -- asserting no future reward after step 720 on every
+            # trajectory, when episodes truncate rather than terminate.
+            # That is the round-1 return-truncation bug, and leaving it
+            # in place would have handicapped the baseline for reasons
+            # unrelated to its architecture.
             r["bootstrap_value"] = bootstrap_value
 
         rollouts.append(r); loss=""
