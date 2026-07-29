@@ -13,44 +13,13 @@ import math
 # Custom Packages
 import ugv_simulator
 
-
 MIN_USABLE_ELEVATION = 12
 
 ###############################################################
 # Episode date
 #
-# The episode window is anchored to solar noon on this date (see
-# sim_env.__init__), not to a hardcoded clock time.
-#
-# The date matters far more than it looks. At the Yellowstone
-# scene's latitude (44.424 N) the sun's peak elevation swings from
-# ~22.5 deg on Jan 1 to ~69 deg on Jun 21, and get_obfuscation()
-# short-circuits to "fully obstructed" below MIN_USABLE_ELEVATION.
-# Hours per day above that threshold, at this latitude:
-#
-#   Jan 1   peak 22.5 deg   5.7 h usable   09:34 - 15:17
-#   Mar 20  peak 45.1 deg   9.7 h usable   07:40 - 17:21
-#   May 1   peak 60.4 deg  11.7 h usable   06:29 - 18:10
-#   Jun 21  peak 69.0 deg  12.8 h usable   05:59 - 18:48
-#   Aug 1   peak 63.8 deg  12.1 h usable   06:25 - 18:33
-#   Sep 22  peak 46.2 deg   9.8 h usable   07:20 - 17:10
-#
-# The previous setting ('2021-01-01 8:00', freq='min', 720 steps)
-# was a full 12-hour episode as intended, but only 5h43m of it had
-# any sun: measured directly in a training run, directional_reward
-# was exactly zero for 374 of 720 steps (51.9%), nonzero only for
-# steps 94-439 -- i.e. 09:34 to 15:19, matching the table above to
-# the minute. Half of every episode carried no positional signal
-# at all, and no harvest was possible during it.
-#
-# Only late May through mid-August gives a usable window that
-# actually covers a 720-minute episode at this latitude. Change
-# EPISODE_DATE to a winter date only if a long dark phase is
 # deliberately part of the scenario.
 ###############################################################
-# Canopy geometry. PAD and the lateral foliage half-width in
-# get_obfuscation are both derived from these, so raising tree heights
-# no longer requires hunting down hardcoded constants.
 MAX_TERRAIN_HEIGHT = 50.0
 MAX_FOLIAGE_HEIGHT = 32.0
 MAX_HALF_WIDTH = math.ceil(MAX_FOLIAGE_HEIGHT / 4.0)
@@ -85,12 +54,10 @@ MAX_FOLIAGE_ATTENUATION = (
     / REFERENCE_CANOPY_HEIGHT
 )
 
-
 def dist(pt1: NDArray[np.int32], pt2: NDArray[np.int32]):
     assert pt1.shape == (2,)
     assert pt2.shape == (2,)
     return math.sqrt((pt1[0] - pt2[0]) ** 2 + (pt1[1] - pt2[1]) ** 2)
-
 
 class sim_env:
     def __init__(self, scene, num_sensors, max_num_steps):
@@ -118,16 +85,6 @@ class sim_env:
             self.numObst = 500  # Number of obstacles decided
             self.stepSize = 'min'  # Frequency of time steps
 
-            # Centre the episode on solar transit rather than starting
-            # at a fixed clock hour. Starting at a hardcoded 08:00
-            # wasted time at both ends: 96 minutes before the sun
-            # cleared MIN_USABLE_ELEVATION and 4h41m after it dropped
-            # back below.
-            #
-            # Deriving the start from transit keeps the window centred
-            # automatically if max_num_steps, EPISODE_DATE, or the
-            # scene coordinates change later, instead of silently
-            # drifting off-centre again.
             transit = solarposition.sun_rise_set_transit_spa(
                 pd.DatetimeIndex([
                     pd.Timestamp(f"{EPISODE_DATE} 12:00", tz=EPISODE_TZ)
@@ -144,16 +101,6 @@ class sim_env:
                                        periods=self.max_num_steps, tz=EPISODE_TZ)
             random.seed(EPISODE_DATE)
 
-        # Worst-case obstruction height is terrain (max 50) PLUS the
-        # tallest foliage on top of it.
-        #
-        # Derived from MAX_FOLIAGE_HEIGHT rather than hardcoded: this
-        # was the literal 62.0 (50 + 12) and would have silently
-        # truncated shadows once heights rose to 32 m, since PAD sets
-        # how far outside the map obstructions are still tracked. Too
-        # small a PAD means distant tall trees stop casting shade into
-        # the arena at low sun elevations -- exactly the condition the
-        # taller canopy is meant to create.
         self.PAD = math.ceil(
             (MAX_TERRAIN_HEIGHT + MAX_FOLIAGE_HEIGHT)
             / math.tan(math.radians(MIN_USABLE_ELEVATION))
@@ -308,104 +255,17 @@ class sim_env:
         # (ceil(12/4)=3 vs ceil(20/4)=5, cutting that inner loop from
         # 11 iterations to 7), and rays reach the foliage-band
         # termination sooner on average.
-        # Density raised; HEIGHTS DELIBERATELY UNCHANGED.
-        #
-        #                mean height   canopy cover   PAD   inner loop
-        #   previous        1.68 m         35%        292       7
-        #   this            5.25 m         80%        292       7
-        #   (with heights   14.0 m         80%        386      17)
-        #
-        # PAD and max_half_width are set by the MAXIMUM foliage
-        # height, not by density, so raising density alone triples
-        # effective canopy at no structural cost: the padded arrays
-        # keep their size and get_obfuscation's lateral foliage check
-        # keeps its 7-iteration inner loop. Raising heights to
-        # [0,8,16,24,32] would grow PAD to 386 and that loop to 17,
-        # roughly doubling runtime -- and with the environment
-        # measured at 94.2% of wall clock, that is the expensive
-        # direction. Revisit only if 80% cover proves insufficient.
-        # Heights raised [0,3,6,9,12] -> [0,8,16,24,32].
-        #
-        # This was deferred in round 2 on compute grounds, and the last
-        # run showed why it can no longer be deferred: `mean_solar_w`
-        # across 11 episodes with different random start positions
-        # spanned only 22.7-26.7 W, a +-8% spread. Over a 12-hour day
-        # the sun sweeps and shadows move, so with 12 m trees almost
-        # any fixed position averaged the same harvest and there was no
-        # spatial decision to make. An untrained policy barely moving
-        # (mean_abs_action 0.007) ended every episode at ~90% battery.
-        #
-        # Shadow length is height/tan(elevation):
-        #
-        #   elevation   12 m tree    32 m tree
-        #     69 deg      4.6 m       12.3 m     (solar noon)
-        #     45 deg     12.0 m       32.0 m
-        #     30 deg     20.8 m       55.4 m
-        #
-        # At noon a 12 m tree casts a 4.6 m shadow -- shorter than the
-        # clearing scale, so essentially every clearing was lit and all
-        # positions looked alike. A 32 m tree casts 12.3 m, comparable
-        # to the clearing scale, so only some clearings receive sun and
-        # WHICH one the robot sits in starts to matter.
-        #
-        # Compute cost, since the environment is ~94% of wall clock:
-        # PAD grows 292 -> 386 (padded array 1.92M -> 2.47M cells) and
-        # get_obfuscation's lateral foliage loop goes 7 -> 17
-        # iterations. Expect roughly a doubling of episode time.
         choices = np.array([0, 8, 16, 24, 32])
         probs = [0.20, 0.25, 0.25, 0.20, 0.10]
 
         dim_padded = self.dim + 2 * self.PAD
 
-        # Smooth-then-quantile-map, replacing smooth-then-digitize.
-        #
-        # The previous approach drew heights from `probs` directly and
-        # then ran gaussian_filter over them before binning with fixed
-        # edges. Smoothing collapses variance -- with sigma=1.5 the
-        # field's std fell to ~0.7 -- so the fixed bin edges no longer
-        # matched the intended distribution. Measured on the raised
-        # densities that produced 85% of cells at exactly 6 m and 100%
-        # canopy cover: a uniform ceiling with no clearings at all,
-        # which is a WORSE training environment than the sparse one,
-        # not a harder one. (The same effect was already distorting
-        # the old settings, turning an intended 35% cover into 61%
-        # with only two heights ever appearing.)
-        #
-        # Mapping smoothed uniform noise through its own rank instead
-        # decouples the two concerns: `probs` sets the marginal
-        # distribution exactly, at any sigma, while sigma alone
-        # controls patch size. Clearings come out ~5-12 m across,
-        # comfortably larger than the ~4.6 m shadow a 12 m tree casts
-        # at June-noon elevation, so open ground genuinely receives
-        # sun, and smaller than the 20 m view distance, so the agent
-        # can perceive one when adjacent to it.
-        # Raised 2.5 -> 5.0, together with the taller canopy above.
-        #
-        # These two have to move together. Taller trees alone would
-        # overshoot: a 12.3 m noon shadow against 6.3 m mean clearings
-        # would leave NOTHING lit, which is as uninformative as
-        # everything being lit. Clearings must straddle the shadow
-        # length so that some are sunlit and some are not.
-        #
-        #   sigma   mean clearing   p90    % wider than 12.3 m shadow
-        #    2.5        6.3 m      12.0 m          8.2%
-        #    4.0       10.0 m      18.0 m         25.3%
-        #    5.0       12.7 m      25.0 m         37.7%
-        #    6.5       15.4 m      29.0 m         53.7%
-        #
-        # 5.0 puts the mean clearing (12.7 m) right at the noon shadow
-        # length, with 38% of clearings wide enough to hold sun. That
-        # is the spread the policy can actually learn to exploit --
-        # roughly a third of open ground is worth occupying, rather
-        # than all of it or none of it.
         FOLIAGE_PATCH_SIGMA = 5.0
 
         field = gaussian_filter(
             np.random.rand(dim_padded, dim_padded), sigma=FOLIAGE_PATCH_SIGMA
         )
 
-        # Rank each cell within the field, then cut at the cumulative
-        # target probabilities.
         ranks = field.ravel().argsort().argsort().reshape(field.shape)
         quantiles = ranks / (field.size - 1)
         self.foliage_mask = choices[np.digitize(quantiles, np.cumsum(probs)[:-1])]
@@ -568,10 +428,6 @@ class sim_env:
         # Worst case: terrain (max 50) + foliage on top of it (max 20)
         # = 70 possible obstruction height above an observer at 0.
         d_max = int(math.floor(62.0 / tan_elevation)) + 2
-        # ceil(MAX_FOLIAGE_HEIGHT / 4) -- the largest canopy_radius any
-        # tree can produce. Derived rather than hardcoded: at 3 (the
-        # value for 12 m trees) a 32 m tree's canopy would be clipped
-        # to a quarter of its true width.
         max_half_width = MAX_HALF_WIDTH
 
         for d in range(1, d_max):

@@ -28,9 +28,9 @@ matches, so old and new checkpoints both load.
 USAGE
 -----
     python compare_checkpoints.py \
-        --a  rl_csv_lyapunov/checkpoints/best.pt --a-name lyapunov \
-        --b  rl_csv_normal/checkpoints/best.pt   --b-name baseline \
-        --episodes 300
+        --a  rl_csv_lyapunov_.../checkpoints/best.pt --a-name lyapunov \
+        --b  rl_csv_normal_.../checkpoints/best.pt   --b-name baseline \
+        --episodes 50
 
 Writes paired_comparison.csv (one row per episode per arm) and
 paired_comparison_summary.csv.
