@@ -184,7 +184,7 @@ MOVEMENT_EXPOSURE_SCALE = 3.0
 # Format as YYYY-MM-DD_HH-MM-SS
 timestamp = datetime.datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
 _variant_tag = TRANSFORMER_VARIANT if POLICY_TYPE == "transformer" else POLICY_TYPE
-OUT=Path(f"rl_csv_{_variant_tag}_{timestamp}"); OUT.mkdir(exist_ok=True)
+OUT=Path(f"rl_csv_{_variant_tag}"); OUT.mkdir(exist_ok=True)
 
 size = 2 * VIEW_DISTANCE + 1
 y, x = np.mgrid[-VIEW_DISTANCE:VIEW_DISTANCE+1,
