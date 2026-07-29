@@ -48,7 +48,6 @@ LOG_STD_MIN = -4.0
 LOG_STD_MAX = 0.5
 RAW_LOG_STD_TARGET = 0.3
 
-
 class TransformerActorCritic(nn.Module):
     """Temporal actor-critic. Input: [batch, sequence, flattened_patch + scalar_features]."""
 
@@ -58,11 +57,6 @@ class TransformerActorCritic(nn.Module):
                  nhead=4, num_layers=2, dim_feedforward=256,
                  sequence_length=32,
                  # 0.0, not 0.1. main.py records rollout log-probs under
-                 # model.eval() and updates under model.train(); with
-                 # dropout the importance ratio is not 1 even on the
-                 # first minibatch, where it must be. On the Lyapunov
-                 # model that drove approx_kl to 2.07 and discarded the
-                 # entire PPO epoch budget.
                  dropout=0.0):
         super().__init__()
 
@@ -115,16 +109,10 @@ class TransformerActorCritic(nn.Module):
             nn.Linear(L3, 1),
         )
 
-        # State-independent, like the Lyapunov model. A log_std head
-        # reading the latent couples sigma to a constantly-moving
-        # target and oscillates.
         self.log_std_param = nn.Parameter(torch.zeros(action_dim))
 
         self.apply(self._initialize_weights)
 
-        # Small-gain policy output. Plain Xavier on Linear(128, 2) gives
-        # weight std ~0.124, so raw_mean starts with std ~1.4 -- the
-        # policy is saturated at initialization (mean |tanh| 0.654).
         POLICY_OUTPUT_GAIN = 0.01
         policy_out = [m for m in self.actor if isinstance(m, nn.Linear)][-1]
         with torch.no_grad():
@@ -171,8 +159,6 @@ class TransformerActorCritic(nn.Module):
         """
         raw_mean, raw_log_std, critic, latent = self(sequence)
 
-        # Smooth bound rather than a hard clamp: tanh always leaves a
-        # nonzero gradient pointing back toward the interior.
         log_std = LOG_STD_MIN + 0.5 * (LOG_STD_MAX - LOG_STD_MIN) * (
             torch.tanh(raw_log_std) + 1.0
         )
@@ -184,8 +170,6 @@ class TransformerActorCritic(nn.Module):
         z = dist.mean if deterministic else dist.rsample()
         action, correction = self._squash(z)
         log_prob = (dist.log_prob(z) - correction).sum(dim=-1)
-        # `z` is returned so the rollout can store the PRE-SQUASH action,
-        # which is what evaluate_actions() expects.
         return action, z, log_prob, critic
 
     def evaluate_actions(self, sequence, actions):

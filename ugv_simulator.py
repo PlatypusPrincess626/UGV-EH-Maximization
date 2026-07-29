@@ -144,68 +144,7 @@ class UGVSimulator:
         self.current_cpu = 1000  # uA
 
         # -----------------------------
-        # Payload (sensing + onboard compute)
         # -----------------------------
-        # A always-on load representing the sensor suite and compute
-        # the vehicle carries -- the reason it is out here at all.
-        #
-        # Without this, standing still is FREE: cpu + active LoRA is
-        # 5.2 mA, which is 1.04 mAh over a 720-minute episode, or
-        # 0.009% of a 12000 mAh pack. Parking therefore dominated
-        # every other strategy by construction and the battery pinned
-        # at ~100% from episode 1 regardless of what the policy did.
-        #
-        # RAISED 600 -> 840 mA after the controller fix.
-        #
-        # 600 mA was calibrated when motion drain was ~16 mAh/min, so
-        # idle and motion together roughly matched harvest. Fixing the
-        # deceleration ramp cut motion drain from 19083 to 1973 mAh per
-        # episode (2.74 mAh/min), leaving idle as the only real cost --
-        # and 10.09 mAh/min sits far below the ~21.7 mAh/min a
-        # stationary robot harvests almost anywhere. The result was
-        # that an untrained policy barely moving (mean_abs_action
-        # 0.007) ended every episode near 90% battery, having never
-        # dipped below its start.
-        #
-        # 840 mA is the MINIMUM that makes the scenario challenging
-        # across the plausible range of harvest reduction from the
-        # taller canopy. With drain at 14.0 + 2.74 = 16.74 mAh/min:
-        #
-        #   harvest reduction   poor spot   mean spot   good spot
-        #         20%             DIES      marginal       ok
-        #         25%             DIES      marginal       ok
-        #         30%             DIES        DIES         ok
-        #
-        # An average position is roughly break-even and a poor one is
-        # fatal, so the agent must actively find and hold good sun.
-        # Lower values (720 mA) leave an average spot survivable if the
-        # canopy costs less harvest than expected; higher values (1080
-        # mA) kill even good spots.
-        #
-        # RAISED 840 -> 960 mA after the 1000-episode run at 840.
-        #
-        # That run's own criterion said to: mean final_battery was
-        # 77.9%, only 1 episode of 1000 ended below 20%, and none
-        # truncated early. Total drain (12858 mAh) sat close enough to
-        # the 12000 mAh pack that survival was never in doubt, so the
-        # constraint was not binding and the agent optimized reward
-        # without ever being threatened.
-        #
-        # The taller canopy did deliver the intended contrast --
-        # mean_solar_w spread widened from CV 0.05 to 0.137, spanning
-        # 11.6-32.2 W across episodes -- so the spatial signal is real
-        # and it is only the drain that needs to bite harder.
-        #
-        # 960 mA raises idle from 10.09 to 16.0 mAh/min, putting total
-        # drain around 18.7 mAh/min against a measured mean harvest
-        # near 21.7. An average spot stays marginally viable; a poor
-        # one does not.
-        #
-        # STILL A CALIBRATION, NOT A MEASUREMENT. Check the next run:
-        # a good target is most episodes finishing in the 30-70% band
-        # with a minority dying. If nearly everything still ends above
-        # 70%, go to 1080 mA; if a majority truncate early, fall back
-        # to 900 mA.
         self.current_payload = 960_000  # uA (960 mA)
 
         # -----------------------------
@@ -225,39 +164,14 @@ class UGVSimulator:
         # more to the battery outcome, not just to a mostly-decorative
         # reward term riding on top of an outcome the panel size
         # already guaranteed.
-        # Reduced again, 0.65 -> 0.45 of nominal. At 0.65 (June
-        # solstice, sparse canopy) a full-sun episode harvested
-        # ~28900 mAh against a 12000 mAh pack -- 2.4x capacity, so
-        # even the worst policy banked a ~17000 mAh surplus and the
-        # battery saturated immediately. At 0.45 full-sun harvest is
-        # ~13005 mAh, roughly parity with capacity, so sun exposure
-        # becomes the binding constraint instead of a formality.
         self.solar_area = (1.020 * 0.520) * 0.45
 
-        # Fill factor: maximum-power-point output as a fraction of the
-        # Isc x Voc product. 0.75 is typical for silicon.
         self.panel_fill_factor = 0.75
 
-        # Nominal cell conversion efficiency at reference conditions.
         self.cell_efficiency = 0.20
 
-        # Hard ceiling used as a backstop in find_power.
         self.max_cell_efficiency = 0.22
 
-        # Response-weighted fraction of incident power under REFERENCE
-        # conditions, i.e. trapezoid(poa * response) / trapezoid(poa)
-        # evaluated against a clear-sky AM1.5-like spectrum. find_power
-        # divides the live ratio by this, so the resulting spectral
-        # factor sits near 1.0 at reference and moves with air mass.
-        #
-        # CALIBRATION REQUIRED. This value was estimated from the mean
-        # of the spectral_response array (~0.202) and NOT verified
-        # against pvlib's spectrl2 output. If it is too low the panel
-        # over-produces and the physical cap will bind constantly; too
-        # high and harvest is suppressed. Check the reported
-        # solar_potential at solar noon in full sun against the
-        # expected ~48 W (0.2387 m^2 x ~1000 W/m^2 x 0.20) and scale
-        # this constant by the ratio.
         self.reference_response_ratio = 0.202
         self.solar_voltage = 18
         self.solar_current = 6
@@ -279,13 +193,6 @@ class UGVSimulator:
 
         self.solar_potential = 0.0
 
-
-    # Starting state of charge is drawn per episode rather than fixed
-    # at full. Starting at 100% meant the agent began with the entire
-    # margin already granted and never had to earn any of it; the
-    # randomization also stops the critic from learning a single
-    # episode-position-indexed value curve, since the same step index
-    # now corresponds to different battery states across episodes.
     START_SOC_MIN = 0.30
     START_SOC_MAX = 0.40
 
@@ -374,51 +281,6 @@ class UGVSimulator:
 
         distance = math.hypot(dx, dy)
 
-        # Deceleration ramp, replacing a bang-bang speed rule.
-        #
-        # The previous form was:
-        #     target_velocity = 0.0 if distance < 0.05 else max_velocity
-        #
-        # The arrival tolerance was 0.05 m but one tick at max_velocity
-        # covers max_velocity * dt = 0.5 m -- ten times the deadband --
-        # and nothing slowed the vehicle on approach. It could
-        # therefore never land inside the tolerance: it overshot,
-        # turned around, overshot back, and orbited the target
-        # indefinitely at full throttle.
-        #
-        # Simulated with a 0.2 m target (what |action| ~ 0.01 produces)
-        # over one 60-tick step: path 20.5 m, net displacement 0.17 m,
-        # 30.8 rad of turning -- 120x tortuosity. That matches the
-        # logged behaviour almost exactly: 92.8x tortuosity, 0.498 m/s
-        # sustained against a 0.5 m/s limit, 0.334 rad/s of continuous
-        # turning, and motion drain of 19083 mAh per episode against a
-        # 12000 mAh pack.
-        #
-        # The bug was latent until the policy learned to command small
-        # actions. While |action| sat at its old floor of 0.168 (3.35
-        # cells) the targets were far enough away that overshoot was a
-        # minor effect; once the round-10 changes let |action| fall to
-        # ~0.012, every command landed inside the dead zone and the
-        # vehicle thrashed continuously.
-        #
-        # Two changes:
-        #   1. Scale target_velocity by distance relative to the
-        #      distance needed to stop, so the vehicle decelerates into
-        #      the target rather than switching between full speed and
-        #      zero. stopping_distance includes one tick of travel
-        #      because the arrival test is evaluated BEFORE moving.
-        #   2. Gate speed on heading error via cos, so the vehicle does
-        #      not drive hard while pointed the wrong way. Without this
-        #      a target behind the vehicle still produces a wide,
-        #      expensive loop instead of a turn in place.
-        #
-        # ARRIVAL_TOLERANCE is raised to max_velocity * dt so that a
-        # commanded hold is actually achievable within one tick.
-        #
-        # Verified across target distances and bearings, including
-        # targets directly behind the vehicle: tortuosity falls from
-        # 1.4-15.2x to 1.0x in every case, and a repeated 0.2 m command
-        # costs 0 mAh per episode instead of driving continuously.
         arrival_tolerance = self.max_velocity * self.dt
 
         desired_heading = math.atan2(dy, dx)
@@ -433,8 +295,6 @@ class UGVSimulator:
                 + self.max_velocity * self.dt
             )
             approach = min(1.0, distance / max(stopping_distance, 1e-6))
-            # cos(heading_error) is negative when the target is behind;
-            # clamping at zero means "turn in place, do not drive".
             alignment = max(0.0, math.cos(heading_error))
             self.target_velocity = self.max_velocity * approach * alignment
 
@@ -532,25 +392,6 @@ class UGVSimulator:
                 raw_response
             )
 
-        # Spectral response is used to compute a MISMATCH FACTOR
-        # rather than an absolute current.
-        #
-        # The original chain multiplied an Isc-like current density
-        # (~162 A/m^2 in full sun) by mpp_voltage, producing ~495 W
-        # from a 0.2387 m^2 panel against a ~52 W physical ceiling --
-        # 9.4x too much. That filled the pack in ~16 of 720 steps and
-        # pinned final_battery near 97% from episode 1 regardless of
-        # policy.
-        #
-        # Simply clamping to the physical ceiling would fix the
-        # magnitude but make the clamp bind in every condition, so
-        # output would track irradiance alone and the spectral model
-        # would contribute nothing. Instead: take the response-weighted
-        # fraction of incident power, normalize it by the same quantity
-        # under reference conditions, and use the result to modulate a
-        # physically-grounded power. The factor sits near 1.0 and moves
-        # with air mass and zenith, so spectral effects still shape the
-        # output while the magnitude stays physical.
         poa_total = trapezoid(poa_global, wavelengths)          # W/m^2
         weighted = trapezoid(poa_global * response_1d, wavelengths)
 
@@ -562,7 +403,6 @@ class UGVSimulator:
         response_ratio = weighted / poa_total
         spectral_factor = response_ratio / self.reference_response_ratio
 
-        # Bounded so a pathological spectrum cannot inflate output.
         spectral_factor = float(np.clip(spectral_factor, 0.0, 1.25))
 
         panel_power = (
@@ -574,10 +414,6 @@ class UGVSimulator:
             * (1.0 - interference)
         )
 
-        # Backstop: incident power x area x max cell efficiency is a
-        # hard physical limit. Should not normally bind, but keeps a
-        # miscalibrated reference_response_ratio from silently making
-        # the task trivial again.
         physical_cap = poa_total * sol_area * self.max_cell_efficiency * (1.0 - interference)
 
         return max(0.0, min(panel_power, physical_cap))
@@ -602,12 +438,6 @@ class UGVSimulator:
         terminal_voltage = self.compute_terminal_voltage()
         charge_current = panel_power / max(terminal_voltage, 0.1)
 
-        # max_charge_current was declared in __init__ and then never
-        # referenced anywhere, so charge current was unbounded and
-        # reached ~31 A against a stated 8 A limit. Applying it is
-        # correct regardless of the panel calibration above -- the
-        # charge controller is a real constraint independent of how
-        # much the panel can produce.
         charge_current = min(charge_current, self.max_charge_current)
 
         if self.soc >= 0.999:
@@ -627,11 +457,6 @@ class UGVSimulator:
         self.update_battery_state()
 
     def consume_idle_energy(self):
-        # Split accounting. energy_used_mAh mixes idle and motion and
-        # is zeroed every step, so neither could be read afterwards --
-        # which is why a 43 mAh/min drain had to be INFERRED by
-        # regression from the battery trace instead of simply read off.
-        # These accumulators are reset alongside it in step().
         current_mA = (
             self.current_cpu +
             self.current_payload +
@@ -657,12 +482,6 @@ class UGVSimulator:
         self.energy_used_mAh += used
         self.step_motion_mAh += used
 
-        # Path length actually travelled this tick. Net displacement
-        # over a 60-tick step hides intra-step turning entirely: the
-        # evaluated policy netted 4.71 m per step while commanding
-        # 13.16 m, and the difference is not damping, it is the
-        # vehicle turning through a much longer path at speed. Drain
-        # follows the PATH, not the displacement.
         self.step_path_m += abs(self.velocity) * self.dt
         self.step_turn_integral += abs(self.angular_velocity) * self.dt
 
