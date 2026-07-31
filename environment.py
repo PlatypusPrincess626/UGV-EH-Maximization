@@ -3,6 +3,7 @@ from pvlib import spectrum, solarposition, irradiance, atmosphere
 import pandas as pd
 from numpy.typing import NDArray
 import numpy as np
+import os
 import random
 from scipy import signal
 from scipy.signal import windows
@@ -20,6 +21,11 @@ MIN_USABLE_ELEVATION = 12
 #
 # deliberately part of the scenario.
 ###############################################################
+# Run seed, shared with main.py via the same environment variable.
+#     LTAC_SEED=3 LTAC_VARIANT=lyapunov python main.py
+# Defaults to 0, which reproduces a single fixed environment stream.
+RUN_SEED = int(os.environ.get("LTAC_SEED", "0"))
+
 MAX_TERRAIN_HEIGHT = 50.0
 MAX_FOLIAGE_HEIGHT = 32.0
 MAX_HALF_WIDTH = math.ceil(MAX_FOLIAGE_HEIGHT / 4.0)
@@ -99,7 +105,19 @@ class sim_env:
 
             self.times = pd.date_range(start, freq=self.stepSize,
                                        periods=self.max_num_steps, tz=EPISODE_TZ)
-            random.seed(EPISODE_DATE)
+            # Seeded from the episode date AND the run seed, so device
+            # placement stays deterministic within a run but differs
+            # between runs.
+            #
+            # This call previously used EPISODE_DATE alone, which made
+            # `random` identical across every run ever launched. That
+            # is why the validation `start_battery` column matched
+            # exactly between the lyapunov and baseline runs while
+            # terrain and foliage did not: start SOC and device
+            # placement draw from `random` (seeded here), whereas
+            # terrain, foliage and start position draw from np.random
+            # (which nothing seeded at all).
+            random.seed(f"{EPISODE_DATE}:{RUN_SEED}")
 
         self.PAD = math.ceil(
             (MAX_TERRAIN_HEIGHT + MAX_FOLIAGE_HEIGHT)

@@ -32,8 +32,68 @@ else:
     TRANSFORMER_VARIANT = "normal"
 # ============================================================
 
-TOTAL_EPISODES=1000; MAX_STEPS_PER_EPISODE=720; VIEW_DISTANCE=20
-SEQUENCE_LENGTH=32; UPDATE_EVERY_EPISODES=2; GAMMA=.99; GAE_LAMBDA=.95
+###############################################################
+# Run configuration from the environment
+#
+#     LTAC_VARIANT=lyapunov LTAC_SEED=3 LTAC_EPISODES=400 python main.py
+#
+# LTAC_SEED seeds EVERY random source the run touches. Before this,
+# nothing seeded numpy at all: terrain, foliage and start position
+# came from OS entropy per process, so two runs were never comparable
+# on the environments they saw. Meanwhile `random` WAS seeded, from
+# EPISODE_DATE alone in sim_env.__init__, which made start SOC and
+# device placement identical in every run ever launched. That split
+# is why validation `start_battery` matched exactly across arms while
+# terrain did not.
+#
+# With a shared LTAC_SEED both arms train and validate on identical
+# environments, which is what makes a paired comparison valid. The
+# same variable is read by environment.py.
+#
+# LTAC_EPISODES allows short paired sweeps: training-stability
+# questions are answered by the learning phase, so 300-400 episodes
+# is usually enough and makes multi-seed designs affordable.
+###############################################################
+RUN_SEED = int(os.environ.get("LTAC_SEED", "0"))
+
+TOTAL_EPISODES = int(os.environ.get("LTAC_EPISODES", "1000"))
+MAX_STEPS_PER_EPISODE=720; VIEW_DISTANCE=20
+
+# Auxiliary-head curriculum, as fractions of the run so that short
+# sweeps keep the same shape. At TOTAL_EPISODES=1000 these are 100 and
+# 300, matching the previous hardcoded values.
+CURRICULUM_WARMUP_EPISODES = max(1, int(0.10 * TOTAL_EPISODES))
+CURRICULUM_FULL_EPISODES = max(2, int(0.30 * TOTAL_EPISODES))
+# Seed every source, before anything draws from them. sim_env.__init__
+# reseeds `random` from (EPISODE_DATE, RUN_SEED) later; that is
+# deliberate and still deterministic.
+random.seed(RUN_SEED)
+np.random.seed(RUN_SEED)
+torch.manual_seed(RUN_SEED)
+if torch.cuda.is_available():
+    torch.cuda.manual_seed_all(RUN_SEED)
+# Determinism in cuDNN costs essentially nothing here -- the
+# environment is ~98% of wall clock and the network is small.
+torch.backends.cudnn.deterministic = True
+torch.backends.cudnn.benchmark = False
+
+SEQUENCE_LENGTH=32; GAMMA=.99; GAE_LAMBDA=.95
+# 2 -> 4 episodes per update (1440 -> 2880 samples).
+#
+# The KL early stop was discarding 26% of the gradient budget and
+# worsening: 8890 of 12000 possible minibatches taken, with the
+# over-target rate climbing 7% -> 18% -> 30% across the run.
+#
+# A larger batch cuts gradient noise by sqrt(2), so KL per step roughly
+# halves and the stop stops binding. The total budget is unchanged
+# (250 updates x 48 minibatches = 12000) but far more of it gets used.
+# It also gives 12 minibatches per epoch instead of 6, so minibatches
+# are less correlated, and better statistics for the advantage
+# normalization and the return-variance tracker.
+#
+# The cost is negligible: update() measured 0.2% of wall clock against
+# the environment's 98.1%.
+UPDATE_EVERY_EPISODES=4
 LR=3e-4; MAX_MOVE_PER_STEP=20.0; ENTROPY_COEF=.01; VALUE_COEF=.5
 
 ###############################################################
@@ -80,7 +140,10 @@ MEAN_SATURATION_COEF = 1e-2
 # gradient that might not converge in time.
 ALPHA_START = 1.0
 ALPHA_END = 0.01
-ALPHA_DECAY_EPISODES = 300
+# Expressed as a FRACTION of TOTAL_EPISODES so short sweeps keep the
+# same schedule shape. At the default 1000 episodes this reproduces
+# the previous fixed value of 300 exactly.
+ALPHA_DECAY_EPISODES = max(1, int(0.30 * TOTAL_EPISODES))
 # Reactive safety net (see the entropy check in update()): if a
 # batch's mean entropy drops below this floor, alpha jumps to at
 # least SAFETY_ALPHA_BOOST regardless of the schedule. Floor sits
@@ -105,7 +168,11 @@ SAFETY_ALPHA_BOOST = 0.5
 # just be measuring the pre-curriculum warmup, not real convergence.
 ###############################################################
 REWARD_WINDOW = 50              # episodes averaged for the reward moving average
-STABILITY_WINDOW = 20           # update() calls averaged for Lyapunov/barrier stability
+# update() calls averaged for Lyapunov/barrier stability. Halved from
+# 20 because UPDATE_EVERY_EPISODES doubled -- 10 calls now span the
+# same 40 episodes that 20 calls spanned before, so the window covers
+# an unchanged stretch of training.
+STABILITY_WINDOW = 10
 CONVERGENCE_PATIENCE = 10       # retained for logging only; see PLATEAU_SLOPE_FRAC
 LYAPUNOV_STABLE_THRESHOLD = 2 * LYAPUNOV_MARGIN
 
@@ -156,6 +223,27 @@ REWARD_CONVERGENCE_THRESHOLD = -150.0
 ###############################################################
 # Plateau test
 ###############################################################
+###############################################################
+# Learning-rate decay
+#
+# Cosine decay of the CONTROL parameter groups (trunk, actor, critic,
+# log_std) from their initial values to LR_DECAY_FINAL x those values
+# over TOTAL_EPISODES.
+#
+# The KL early stop tightens on its own as training progresses. KL
+# scales roughly as (delta_mu / sigma)^2, and mean_std fell 0.175 ->
+# 0.133 over the last run, so a FIXED parameter step produces 1.73x
+# the KL by the end. Measured KL growth was 3.54x, so sigma shrinkage
+# explains about half and genuinely larger steps the rest. A constant
+# learning rate against a constant TARGET_KL therefore trips the stop
+# more and more often -- 7% of updates early, 30% late.
+#
+# The AUXILIARY group is deliberately excluded. It has its own
+# gradient clip, is under no KL constraint, and its certificate was
+# still improving at the end of the run (lyap_v_rmse 0.247 -> 0.102),
+# so decaying it would slow the one thing that had not converged.
+LR_DECAY_FINAL = 0.30
+
 PLATEAU_WINDOW = 200
 PLATEAU_T_CRIT = 1.65      # one-sided 95%
 PLATEAU_CONSECUTIVE = 10
@@ -184,7 +272,9 @@ MOVEMENT_EXPOSURE_SCALE = 3.0
 # Format as YYYY-MM-DD_HH-MM-SS
 timestamp = datetime.datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
 _variant_tag = TRANSFORMER_VARIANT if POLICY_TYPE == "transformer" else POLICY_TYPE
-OUT=Path(f"rl_csv_{_variant_tag}_{timestamp}"); OUT.mkdir(exist_ok=True)
+# Seed in the directory name: a paired sweep launches many runs that
+# differ only by seed, and timestamps alone make them hard to match up.
+OUT=Path(f"rl_csv_{_variant_tag}_s{RUN_SEED}_{timestamp}"); OUT.mkdir(exist_ok=True)
 
 size = 2 * VIEW_DISTANCE + 1
 y, x = np.mgrid[-VIEW_DISTANCE:VIEW_DISTANCE+1,
@@ -391,14 +481,31 @@ def update(model,opt,rollouts,device, ep, metrics_writer=None, return_var_tracke
         control_params = list(model.parameters())
         auxiliary_param_list = []
 
+    # Cosine LR decay on the control groups. Groups are tagged with
+    # "initial_lr" at construction; any group without the tag (the
+    # auxiliary heads) is left at a constant rate.
+    decay_frac = min(ep, TOTAL_EPISODES) / max(TOTAL_EPISODES, 1)
+    lr_scale = LR_DECAY_FINAL + (1.0 - LR_DECAY_FINAL) * 0.5 * (
+        1.0 + math.cos(math.pi * decay_frac)
+    )
+    for group in opt.param_groups:
+        if "initial_lr" in group:
+            group["lr"] = group["initial_lr"] * lr_scale
+
     states, next_states, actions, oldlp, adv, returns = compute_batch(rollouts, device)
 
     if TRANSFORMER_VARIANT == "lyapunov":
-        if ep < 100:
+        # Curriculum boundaries scale with TOTAL_EPISODES. Hardcoded at
+        # 100 and 300 they were 10% and 30% of a 1000-episode run; on a
+        # 400-episode paired sweep they would have been 25% and 75%,
+        # leaving the auxiliary heads at full weight for only the last
+        # quarter. The fractions below reproduce 100 and 300 exactly at
+        # the default length.
+        if ep < CURRICULUM_WARMUP_EPISODES:
             lyap_weight = 0.0
             barrier_weight = 0.0
             dynamics_weight = 0.0
-        elif ep < 300:
+        elif ep < CURRICULUM_FULL_EPISODES:
             lyap_weight = 0.10
             barrier_weight = 0.05
             # Reduced from 0.05: weighted dynamics_loss was measured
@@ -583,6 +690,7 @@ def update(model,opt,rollouts,device, ep, metrics_writer=None, return_var_tracke
                     "lyap_v_rmse": float(lyap_v_rmse.item()),
                     "grad_norm_control": float(control_norm.item()),
                     "grad_norm_aux": float(aux_norm.item()),
+                    "lr_scale": float(lr_scale),
                     "lyap_mean_dV": float(lyap_mean_dV.item()),
                     "lyap_worst_slack": float(lyap_worst_slack.item()),
                     "policy_loss": float(policy_loss.item()),
@@ -734,6 +842,7 @@ def update(model,opt,rollouts,device, ep, metrics_writer=None, return_var_tracke
                     "mean_abs_action": float(mb_absa.item()),
                     "grad_norm_control": float(control_norm.item()),
                     "grad_norm_aux": 0.0,
+                    "lr_scale": float(lr_scale),
                     "alpha": float(alpha),
                 }
                 for k, v in batch_metrics.items():
@@ -830,9 +939,12 @@ def run():
             control_params = transformer_params + actor_params + critic_params + log_std_params
             auxiliary_param_list = auxiliary_params
 
-            opt = optim.AdamW([{"params": transformer_params, "lr": 1e-3, "weight_decay":1e-5},
-                               {"params": actor_params,       "lr": 3e-4, "weight_decay":1e-5},
-                               {"params": critic_params,      "lr": 3e-4, "weight_decay":1e-5},
+            # "initial_lr" tags the groups the cosine decay applies to.
+            # The auxiliary group is left untagged and so runs at a
+            # constant rate -- see LR_DECAY_FINAL.
+            opt = optim.AdamW([{"params": transformer_params, "lr": 1e-3, "weight_decay":1e-5, "initial_lr": 1e-3},
+                               {"params": actor_params,       "lr": 3e-4, "weight_decay":1e-5, "initial_lr": 3e-4},
+                               {"params": critic_params,      "lr": 3e-4, "weight_decay":1e-5, "initial_lr": 3e-4},
                                {"params": auxiliary_params,   "lr": 2e-4, "weight_decay":1e-5},
                                # log_std_param is now a fixed, non-
                                # state-dependent parameter (see the
@@ -858,7 +970,7 @@ def run():
                                # either way on whether it needs
                                # adjustment now that the moving-target
                                # problem is gone.
-                               {"params": log_std_params,     "lr": 3e-4, "weight_decay":1e-5},],
+                               {"params": log_std_params,     "lr": 3e-4, "weight_decay":1e-5, "initial_lr": 3e-4},],
                               eps=1e-5,)
         elif TRANSFORMER_VARIANT == "chaotic":
             from chebyshev_transformer import ChebyshevTransformer
@@ -876,13 +988,13 @@ def run():
                             + list(model.encoder.parameters())
                             + list(model.attention_pool.parameters())
                             + [model.position_embedding]),
-                 "lr": 1e-3, "weight_decay": 1e-5},
+                 "lr": 1e-3, "weight_decay": 1e-5, "initial_lr": 1e-3},
                 {"params": list(model.actor.parameters()),
-                 "lr": 3e-4, "weight_decay": 1e-5},
+                 "lr": 3e-4, "weight_decay": 1e-5, "initial_lr": 3e-4},
                 {"params": list(model.critic.parameters()),
-                 "lr": 3e-4, "weight_decay": 1e-5},
+                 "lr": 3e-4, "weight_decay": 1e-5, "initial_lr": 3e-4},
                 {"params": [model.log_std_param],
-                 "lr": 3e-4, "weight_decay": 1e-5},
+                 "lr": 3e-4, "weight_decay": 1e-5, "initial_lr": 3e-4},
             ])
             control_params = list(model.parameters())
             auxiliary_param_list = []
@@ -925,7 +1037,7 @@ def run():
         "episode","minibatches","minibatches_possible","first_mb_kl",
         "policy_loss","value_loss","mean_V","std_V","std_barrier",
         "lyap_violation_rate","lyap_in_ball_rate","lyap_mean_dV","lyap_worst_slack",
-        "lyap_v_rmse","grad_norm_control","grad_norm_aux",
+        "lyap_v_rmse","grad_norm_control","grad_norm_aux","lr_scale",
         "lyap_penalty","dynamics_loss",
         "barrier_loss","approx_kl","clip_fraction","mean_std","mean_raw_log_std",
         "mean_abs_action","alpha",
