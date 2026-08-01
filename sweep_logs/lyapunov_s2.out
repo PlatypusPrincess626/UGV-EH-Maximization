@@ -1,0 +1,992 @@
+Placing Sensors
+Placing Sensors
+[Episode 1/400] Steps: 720 | Reward:  155.98 | Battery:  57.30% | Loss: 
+Placing Sensors
+[Episode 2/400] Steps: 720 | Reward:  169.09 | Battery:  56.45% | Loss: 
+Placing Sensors
+[Episode 3/400] Steps: 720 | Reward:   66.76 | Battery:  20.32% | Loss: 
+Placing Sensors
+Policy 0.0053 | Value 10.4392 | Lyap 0.0018 | Dynamics 1.3944 | Barrier 1.5580 | KL 0.00802 | CF 0.1007 | Std 0.1764 | RawLogStd 0.0067 | |a| 0.0124 | Alpha 0.8577 | MB 48/48
+[Episode 4/400] Steps: 720 | Reward:   86.30 | Battery:  27.51% | Loss: 0.9155
+Placing Sensors
+[Episode 5/400] Steps: 720 | Reward:  120.60 | Battery:  40.63% | Loss: 
+Placing Sensors
+[Episode 6/400] Steps: 720 | Reward:   62.28 | Battery:  20.49% | Loss: 
+Placing Sensors
+[Episode 7/400] Steps: 720 | Reward:  110.14 | Battery:  42.83% | Loss: 
+Placing Sensors
+Policy -0.0007 | Value 7.2213 | Lyap 0.0021 | Dynamics 1.5036 | Barrier 1.0802 | KL 0.00611 | CF 0.0746 | Std 0.1818 | RawLogStd 0.0200 | |a| 0.0176 | Alpha 0.7356 | MB 48/48
+[Episode 8/400] Steps: 720 | Reward:  142.01 | Battery:  49.53% | Loss: 0.5611
+Placing Sensors
+[Episode 9/400] Steps: 720 | Reward:  118.75 | Battery:  40.24% | Loss: 
+Placing Sensors
+[Episode 10/400] Steps: 720 | Reward:  177.99 | Battery:  63.62% | Loss: 
+Placing Sensors
+[Episode 11/400] Steps: 720 | Reward:   67.58 | Battery:  23.24% | Loss: 
+Placing Sensors
+Policy -0.0060 | Value 6.2840 | Lyap 0.0028 | Dynamics 1.4508 | Barrier 1.1620 | KL 0.00940 | CF 0.1222 | Std 0.1874 | RawLogStd 0.0335 | |a| 0.0291 | Alpha 0.6310 | MB 48/48
+[Episode 12/400] Steps: 720 | Reward:  126.71 | Battery:  41.22% | Loss: 0.2648
+Placing Sensors
+[Episode 13/400] Steps: 720 | Reward:   69.44 | Battery:  29.38% | Loss: 
+Placing Sensors
+[Episode 14/400] Steps: 720 | Reward:   98.99 | Battery:  38.76% | Loss: 
+Placing Sensors
+[Episode 15/400] Steps: 720 | Reward:  144.63 | Battery:  49.49% | Loss: 
+Placing Sensors
+Policy -0.0050 | Value 6.2244 | Lyap 0.0031 | Dynamics 1.4461 | Barrier 1.5526 | KL 0.00761 | CF 0.0926 | Std 0.1933 | RawLogStd 0.0473 | |a| 0.0320 | Alpha 0.5412 | MB 48/48
+[Episode 16/400] Steps: 720 | Reward:   92.95 | Battery:  34.45% | Loss: 0.1651
+Placing Sensors
+[Episode 17/400] Steps: 720 | Reward:   90.56 | Battery:  28.91% | Loss: 
+Placing Sensors
+[Episode 18/400] Steps: 720 | Reward:   54.55 | Battery:  24.40% | Loss: 
+Placing Sensors
+[Episode 19/400] Steps: 720 | Reward:  128.10 | Battery:  43.70% | Loss: 
+Placing Sensors
+Policy 0.0009 | Value 6.8725 | Lyap 0.0036 | Dynamics 1.4274 | Barrier 1.3620 | KL 0.00938 | CF 0.1153 | Std 0.1989 | RawLogStd 0.0602 | |a| 0.0382 | Alpha 0.4642 | MB 48/48
+[Episode 20/400] Steps: 720 | Reward:   88.54 | Battery:  30.98% | Loss: 0.1808
+Placing Sensors
+[Episode 21/400] Steps: 720 | Reward:  168.03 | Battery:  58.24% | Loss: 
+Placing Sensors
+[Episode 22/400] Steps: 720 | Reward:  135.02 | Battery:  45.54% | Loss: 
+Placing Sensors
+[Episode 23/400] Steps: 720 | Reward:  168.40 | Battery:  57.73% | Loss: 
+Placing Sensors
+Policy -0.0039 | Value 6.1740 | Lyap 0.0036 | Dynamics 1.4286 | Barrier 1.3077 | KL 0.01143 | CF 0.1398 | Std 0.2045 | RawLogStd 0.0724 | |a| 0.0424 | Alpha 0.3981 | MB 48/48
+[Episode 24/400] Steps: 720 | Reward:   60.95 | Battery:  22.76% | Loss: 0.2804
+Placing Sensors
+[Episode 25/400] Steps: 720 | Reward:  119.78 | Battery:  47.62% | Loss: 
+Placing Sensors
+[Episode 26/400] Steps: 720 | Reward:  170.98 | Battery:  56.87% | Loss: 
+Placing Sensors
+[Episode 27/400] Steps: 720 | Reward:  156.61 | Battery:  55.33% | Loss: 
+Placing Sensors
+Policy -0.0022 | Value 9.8918 | Lyap 0.0035 | Dynamics 1.4512 | Barrier 1.2345 | KL 0.01121 | CF 0.1382 | Std 0.2096 | RawLogStd 0.0835 | |a| 0.0323 | Alpha 0.3415 | MB 48/48
+[Episode 28/400] Steps: 720 | Reward:  172.84 | Battery:  56.03% | Loss: 0.0509
+Placing Sensors
+[Episode 29/400] Steps: 720 | Reward:  121.56 | Battery:  43.57% | Loss: 
+Placing Sensors
+[Episode 30/400] Steps: 720 | Reward:  158.70 | Battery:  56.28% | Loss: 
+Placing Sensors
+[Episode 31/400] Steps: 720 | Reward:  188.98 | Battery:  65.21% | Loss: 
+Placing Sensors
+Policy -0.0078 | Value 10.1376 | Lyap 0.0035 | Dynamics 1.4709 | Barrier 1.0721 | KL 0.01191 | CF 0.1579 | Std 0.2146 | RawLogStd 0.0940 | |a| 0.0543 | Alpha 0.2929 | MB 48/48
+[Episode 32/400] Steps: 720 | Reward:  212.53 | Battery:  75.22% | Loss: 0.1204
+Placing Sensors
+[Episode 33/400] Steps: 720 | Reward:  100.66 | Battery:  41.46% | Loss: 
+Placing Sensors
+[Episode 34/400] Steps: 720 | Reward:  119.63 | Battery:  43.83% | Loss: 
+Placing Sensors
+[Episode 35/400] Steps: 720 | Reward:  140.02 | Battery:  48.78% | Loss: 
+Placing Sensors
+Policy -0.0035 | Value 8.4374 | Lyap 0.0040 | Dynamics 1.4702 | Barrier 1.1553 | KL 0.01118 | CF 0.1482 | Std 0.2195 | RawLogStd 0.1042 | |a| 0.0390 | Alpha 0.2512 | MB 48/48
+[Episode 36/400] Steps: 720 | Reward:  138.42 | Battery:  49.39% | Loss: 0.2874
+Placing Sensors
+[Episode 37/400] Steps: 720 | Reward:  167.48 | Battery:  58.74% | Loss: 
+Placing Sensors
+[Episode 38/400] Steps: 720 | Reward:  132.29 | Battery:  45.74% | Loss: 
+Placing Sensors
+[Episode 39/400] Steps: 720 | Reward:  156.48 | Battery:  59.77% | Loss: 
+Placing Sensors
+Policy -0.0089 | Value 8.0877 | Lyap 0.0039 | Dynamics 0.7610 | Barrier 0.1581 | KL 0.01122 | CF 0.1479 | Std 0.2244 | RawLogStd 0.1141 | |a| 0.0326 | Alpha 0.2154 | MB 48/48
+[Episode 40/400] Steps: 720 | Reward:  209.18 | Battery:  70.64% | Loss: 0.1401
+Placing Sensors
+[Episode 41/400] Steps: 720 | Reward:  140.79 | Battery:  49.90% | Loss: 
+Placing Sensors
+[Episode 42/400] Steps: 720 | Reward:  161.43 | Battery:  59.63% | Loss: 
+Placing Sensors
+[Episode 43/400] Steps: 720 | Reward:  131.07 | Battery:  50.23% | Loss: 
+Placing Sensors
+Policy -0.0040 | Value 10.2963 | Lyap 0.0040 | Dynamics 0.2927 | Barrier 0.0437 | KL 0.01005 | CF 0.1363 | Std 0.2292 | RawLogStd 0.1236 | |a| 0.0357 | Alpha 0.1848 | MB 48/48
+[Episode 44/400] Steps: 720 | Reward:  205.46 | Battery:  72.38% | Loss: -0.0099
+Placing Sensors
+[Episode 45/400] Steps: 720 | Reward:   95.07 | Battery:  36.57% | Loss: 
+Placing Sensors
+[Episode 46/400] Steps: 720 | Reward:  193.90 | Battery:  65.84% | Loss: 
+Placing Sensors
+[Episode 47/400] Steps: 720 | Reward:  112.51 | Battery:  40.73% | Loss: 
+Placing Sensors
+Policy 0.0002 | Value 11.9155 | Lyap 0.0046 | Dynamics 0.2033 | Barrier 0.0390 | KL 0.01384 | CF 0.1705 | Std 0.2329 | RawLogStd 0.1308 | |a| 0.0387 | Alpha 0.1585 | MB 48/48
+[Episode 48/400] Steps: 720 | Reward:  144.88 | Battery:  49.19% | Loss: 0.0945
+Placing Sensors
+[Episode 49/400] Steps: 720 | Reward:  136.18 | Battery:  54.35% | Loss: 
+Placing Sensors
+[Episode 50/400] Steps: 720 | Reward:  131.43 | Battery:  51.56% | Loss: 
+Placing Sensors
+[Episode 51/400] Steps: 720 | Reward:   93.54 | Battery:  34.19% | Loss: 
+Placing Sensors
+Policy -0.0063 | Value 8.6358 | Lyap 0.0039 | Dynamics 0.1707 | Barrier 0.0327 | KL 0.00977 | CF 0.1294 | Std 0.2368 | RawLogStd 0.1383 | |a| 0.0303 | Alpha 0.1359 | MB 48/48
+[Episode 52/400] Steps: 720 | Reward:  129.25 | Battery:  50.05% | Loss: 0.0015
+Placing Sensors
+[Episode 53/400] Steps: 720 | Reward:  175.24 | Battery:  60.52% | Loss: 
+Placing Sensors
+[Episode 54/400] Steps: 720 | Reward:  113.23 | Battery:  41.84% | Loss: 
+Placing Sensors
+[Episode 55/400] Steps: 720 | Reward:  129.28 | Battery:  50.38% | Loss: 
+Placing Sensors
+Policy -0.0147 | Value 9.1881 | Lyap 0.0036 | Dynamics 0.1790 | Barrier 0.0401 | KL 0.01524 | CF 0.1869 | Std 0.2406 | RawLogStd 0.1457 | |a| 0.0410 | Alpha 0.1166 | MB 48/48
+[Episode 56/400] Steps: 720 | Reward:  148.36 | Battery:  56.23% | Loss: -0.0567
+Placing Sensors
+[Episode 57/400] Steps: 720 | Reward:  156.97 | Battery:  51.64% | Loss: 
+Placing Sensors
+[Episode 58/400] Steps: 720 | Reward:  140.92 | Battery:  48.75% | Loss: 
+Placing Sensors
+[Episode 59/400] Steps: 720 | Reward:   89.17 | Battery:  33.59% | Loss: 
+Placing Sensors
+Policy 0.0003 | Value 7.3507 | Lyap 0.0056 | Dynamics 0.1630 | Barrier 0.0359 | KL 0.01186 | CF 0.1501 | Std 0.2436 | RawLogStd 0.1513 | |a| 0.0569 | Alpha 0.1000 | MB 48/48
+[Episode 60/400] Steps: 720 | Reward:  154.25 | Battery:  57.81% | Loss: 0.0324
+Placing Sensors
+[Episode 61/400] Steps: 720 | Reward:  166.31 | Battery:  59.59% | Loss: 
+Placing Sensors
+[Episode 62/400] Steps: 720 | Reward:  120.78 | Battery:  41.72% | Loss: 
+Placing Sensors
+[Episode 63/400] Steps: 720 | Reward:  167.39 | Battery:  58.58% | Loss: 
+Placing Sensors
+Policy -0.0050 | Value 11.4135 | Lyap 0.0054 | Dynamics 0.1257 | Barrier 0.0389 | KL 0.01386 | CF 0.1597 | Std 0.2459 | RawLogStd 0.1555 | |a| 0.0429 | Alpha 0.0858 | MB 48/48
+[Episode 64/400] Steps: 720 | Reward:  131.80 | Battery:  48.46% | Loss: 0.0939
+Placing Sensors
+[Episode 65/400] Steps: 720 | Reward:  129.52 | Battery:  53.45% | Loss: 
+Placing Sensors
+[Episode 66/400] Steps: 720 | Reward:  126.79 | Battery:  43.50% | Loss: 
+Placing Sensors
+[Episode 67/400] Steps: 720 | Reward:  141.61 | Battery:  48.93% | Loss: 
+Placing Sensors
+Policy 0.0048 | Value 9.8865 | Lyap 0.0048 | Dynamics 0.1217 | Barrier 0.0538 | KL 0.01531 | CF 0.1892 | Std 0.2478 | RawLogStd 0.1590 | |a| 0.0462 | Alpha 0.0736 | MB 48/48
+[Episode 68/400] Steps: 720 | Reward:  178.63 | Battery:  61.83% | Loss: 0.1937
+Placing Sensors
+[Episode 69/400] Steps: 720 | Reward:  140.55 | Battery:  50.63% | Loss: 
+Placing Sensors
+[Episode 70/400] Steps: 720 | Reward:  118.18 | Battery:  44.11% | Loss: 
+Placing Sensors
+[Episode 71/400] Steps: 720 | Reward:  220.46 | Battery:  78.30% | Loss: 
+Placing Sensors
+Policy -0.0104 | Value 11.9940 | Lyap 0.0054 | Dynamics 0.1544 | Barrier 0.0377 | KL 0.01569 | CF 0.1714 | Std 0.2493 | RawLogStd 0.1617 | |a| 0.0506 | Alpha 0.0631 | MB 48/48
+[Episode 72/400] Steps: 720 | Reward:  180.10 | Battery:  64.50% | Loss: -0.0999
+Placing Sensors
+[Episode 73/400] Steps: 720 | Reward:  202.65 | Battery:  72.58% | Loss: 
+Placing Sensors
+[Episode 74/400] Steps: 720 | Reward:  169.73 | Battery:  58.58% | Loss: 
+Placing Sensors
+[Episode 75/400] Steps: 720 | Reward:  148.13 | Battery:  51.65% | Loss: 
+Placing Sensors
+Policy -0.0107 | Value 10.6964 | Lyap 0.0056 | Dynamics 0.1353 | Barrier 0.0490 | KL 0.01941 | CF 0.1978 | Std 0.2504 | RawLogStd 0.1639 | |a| 0.0538 | Alpha 0.0541 | MB 48/48
+[Episode 76/400] Steps: 720 | Reward:  215.15 | Battery:  79.17% | Loss: -0.0786
+Placing Sensors
+[Episode 77/400] Steps: 720 | Reward:   99.35 | Battery:  41.94% | Loss: 
+Placing Sensors
+[Episode 78/400] Steps: 720 | Reward:  193.19 | Battery:  72.68% | Loss: 
+Placing Sensors
+[Episode 79/400] Steps: 720 | Reward:  140.83 | Battery:  51.16% | Loss: 
+Placing Sensors
+Policy -0.0104 | Value 17.0032 | Lyap 0.0064 | Dynamics 0.1290 | Barrier 0.0521 | KL 0.01996 | CF 0.2231 | Std 0.2517 | RawLogStd 0.1662 | |a| 0.0519 | Alpha 0.0464 | MB 48/48
+[Episode 80/400] Steps: 720 | Reward:  182.44 | Battery:  67.73% | Loss: -0.1612
+Placing Sensors
+[Episode 81/400] Steps: 720 | Reward:  174.28 | Battery:  62.32% | Loss: 
+Placing Sensors
+[Episode 82/400] Steps: 720 | Reward:  137.09 | Battery:  52.20% | Loss: 
+Placing Sensors
+[Episode 83/400] Steps: 720 | Reward:  130.88 | Battery:  53.37% | Loss: 
+Placing Sensors
+Policy -0.0065 | Value 10.9580 | Lyap 0.0049 | Dynamics 0.1110 | Barrier 0.0287 | KL 0.02012 | CF 0.2280 | Std 0.2524 | RawLogStd 0.1674 | |a| 0.0572 | Alpha 0.0398 | MB 48/48
+[Episode 84/400] Steps: 720 | Reward:  189.51 | Battery:  69.97% | Loss: 0.0229
+Placing Sensors
+[Episode 85/400] Steps: 720 | Reward:  168.63 | Battery:  65.80% | Loss: 
+Placing Sensors
+[Episode 86/400] Steps: 720 | Reward:  122.89 | Battery:  51.06% | Loss: 
+Placing Sensors
+[Episode 87/400] Steps: 720 | Reward:  204.41 | Battery:  70.53% | Loss: 
+Placing Sensors
+Policy -0.0101 | Value 12.1771 | Lyap 0.0055 | Dynamics 0.1336 | Barrier 0.0368 | KL 0.01722 | CF 0.1945 | Std 0.2527 | RawLogStd 0.1680 | |a| 0.0668 | Alpha 0.0341 | MB 48/48
+[Episode 88/400] Steps: 720 | Reward:  212.84 | Battery:  75.13% | Loss: -0.1714
+Placing Sensors
+[Episode 89/400] Steps: 720 | Reward:  119.25 | Battery:  46.74% | Loss: 
+Placing Sensors
+[Episode 90/400] Steps: 720 | Reward:  199.23 | Battery:  68.53% | Loss: 
+Placing Sensors
+[Episode 91/400] Steps: 720 | Reward:  151.41 | Battery:  53.34% | Loss: 
+Placing Sensors
+Policy -0.0021 | Value 12.8134 | Lyap 0.0054 | Dynamics 0.1288 | Barrier 0.0395 | KL 0.01841 | CF 0.2101 | Std 0.2526 | RawLogStd 0.1677 | |a| 0.0577 | Alpha 0.0293 | MB 48/48
+[Episode 92/400] Steps: 720 | Reward:  159.10 | Battery:  55.38% | Loss: 0.1173
+Placing Sensors
+[Episode 93/400] Steps: 720 | Reward:  158.72 | Battery:  56.09% | Loss: 
+Placing Sensors
+[Episode 94/400] Steps: 720 | Reward:  202.18 | Battery:  68.40% | Loss: 
+Placing Sensors
+[Episode 95/400] Steps: 720 | Reward:  164.57 | Battery:  60.65% | Loss: 
+Placing Sensors
+Policy -0.0041 | Value 11.9887 | Lyap 0.0050 | Dynamics 0.1269 | Barrier 0.0463 | KL 0.02364 | CF 0.2550 | Std 0.2524 | RawLogStd 0.1675 | |a| 0.0580 | Alpha 0.0251 | MB 48/48
+[Episode 96/400] Steps: 720 | Reward:  162.28 | Battery:  65.00% | Loss: -0.0375
+Placing Sensors
+[Episode 97/400] Steps: 720 | Reward:  157.96 | Battery:  55.36% | Loss: 
+Placing Sensors
+[Episode 98/400] Steps: 720 | Reward:  202.95 | Battery:  70.24% | Loss: 
+Placing Sensors
+[Episode 99/400] Steps: 720 | Reward:  199.92 | Battery:  71.33% | Loss: 
+Placing Sensors
+Policy -0.0150 | Value 16.0296 | Lyap 0.0050 | Dynamics 0.1462 | Barrier 0.0389 | KL 0.02050 | CF 0.2205 | Std 0.2526 | RawLogStd 0.1678 | |a| 0.0722 | Alpha 0.0215 | MB 48/48
+[Episode 100/400] Steps: 720 | Reward:  159.94 | Battery:  63.64% | Loss: -0.1048
+Placing Sensors
+[Episode 101/400] Steps: 720 | Reward:  137.75 | Battery:  48.66% | Loss: 
+Placing Sensors
+[Episode 102/400] Steps: 720 | Reward:  252.84 | Battery:  84.51% | Loss: 
+Placing Sensors
+[Episode 103/400] Steps: 720 | Reward:  193.12 | Battery:  72.91% | Loss: 
+Placing Sensors
+Policy -0.0122 | Value 18.8371 | Lyap 0.0059 | Dynamics 0.1379 | Barrier 0.0603 | KL 0.01730 | CF 0.1903 | Std 0.2527 | RawLogStd 0.1679 | |a| 0.0733 | Alpha 0.0185 | MB 48/48
+[Episode 104/400] Steps: 720 | Reward:  155.72 | Battery:  60.02% | Loss: 0.0664
+Placing Sensors
+[Episode 105/400] Steps: 720 | Reward:  183.96 | Battery:  65.68% | Loss: 
+Placing Sensors
+[Episode 106/400] Steps: 720 | Reward:  197.04 | Battery:  65.97% | Loss: 
+Placing Sensors
+[Episode 107/400] Steps: 720 | Reward:  232.10 | Battery:  82.65% | Loss: 
+Placing Sensors
+Policy -0.0073 | Value 11.0972 | Lyap 0.0055 | Dynamics 0.1086 | Barrier 0.0368 | KL 0.01852 | CF 0.2044 | Std 0.2523 | RawLogStd 0.1673 | |a| 0.0791 | Alpha 0.0158 | MB 48/48
+[Episode 108/400] Steps: 720 | Reward:  184.96 | Battery:  67.22% | Loss: 0.0949
+Placing Sensors
+[Episode 109/400] Steps: 720 | Reward:  207.44 | Battery:  76.86% | Loss: 
+Placing Sensors
+[Episode 110/400] Steps: 720 | Reward:  187.04 | Battery:  64.34% | Loss: 
+Placing Sensors
+[Episode 111/400] Steps: 720 | Reward:  200.31 | Battery:  71.42% | Loss: 
+Placing Sensors
+Policy -0.0143 | Value 12.3274 | Lyap 0.0056 | Dynamics 0.1231 | Barrier 0.0492 | KL 0.02332 | CF 0.2312 | Std 0.2521 | RawLogStd 0.1668 | |a| 0.0873 | Alpha 0.0136 | MB 48/48
+[Episode 112/400] Steps: 720 | Reward:  140.26 | Battery:  53.92% | Loss: -0.0370
+Placing Sensors
+[Episode 113/400] Steps: 720 | Reward:  216.73 | Battery:  77.74% | Loss: 
+Placing Sensors
+[Episode 114/400] Steps: 720 | Reward:  196.04 | Battery:  67.33% | Loss: 
+Placing Sensors
+[Episode 115/400] Steps: 720 | Reward:  151.61 | Battery:  53.38% | Loss: 
+Placing Sensors
+Policy -0.0009 | Value 11.7985 | Lyap 0.0060 | Dynamics 0.1243 | Barrier 0.0399 | KL 0.02555 | CF 0.2568 | Std 0.2520 | RawLogStd 0.1666 | |a| 0.0841 | Alpha 0.0117 | MB 48/48
+[Episode 116/400] Steps: 720 | Reward:  163.70 | Battery:  60.71% | Loss: 0.0929
+Placing Sensors
+[Episode 117/400] Steps: 720 | Reward:  164.91 | Battery:  64.71% | Loss: 
+Placing Sensors
+[Episode 118/400] Steps: 720 | Reward:  175.87 | Battery:  63.96% | Loss: 
+Placing Sensors
+[Episode 119/400] Steps: 720 | Reward:  170.54 | Battery:  63.34% | Loss: 
+Placing Sensors
+Policy 0.0040 | Value 18.9981 | Lyap 0.0075 | Dynamics 0.1361 | Barrier 0.0312 | KL 0.03147 | CF 0.2616 | Std 0.2518 | RawLogStd 0.1664 | |a| 0.1084 | Alpha 0.0100 | MB 24/48
+[Episode 120/400] Steps: 720 | Reward:  161.69 | Battery:  58.72% | Loss: 0.0290
+Placing Sensors
+[Episode 121/400] Steps: 720 | Reward:  201.71 | Battery:  71.70% | Loss: 
+Placing Sensors
+[Episode 122/400] Steps: 720 | Reward:  189.91 | Battery:  70.45% | Loss: 
+Placing Sensors
+[Episode 123/400] Steps: 720 | Reward:  124.88 | Battery:  44.55% | Loss: 
+Placing Sensors
+Policy -0.0100 | Value 11.3007 | Lyap 0.0068 | Dynamics 0.1097 | Barrier 0.0436 | KL 0.01588 | CF 0.1949 | Std 0.2517 | RawLogStd 0.1661 | |a| 0.1162 | Alpha 0.0100 | MB 48/48
+[Episode 124/400] Steps: 720 | Reward:  222.31 | Battery:  77.12% | Loss: 0.0333
+Placing Sensors
+[Episode 125/400] Steps: 720 | Reward:  159.05 | Battery:  54.66% | Loss: 
+Placing Sensors
+[Episode 126/400] Steps: 720 | Reward:  173.99 | Battery:  65.11% | Loss: 
+Placing Sensors
+[Episode 127/400] Steps: 720 | Reward:  206.31 | Battery:  74.76% | Loss: 
+Placing Sensors
+Policy -0.0041 | Value 12.1963 | Lyap 0.0074 | Dynamics 0.1017 | Barrier 0.0275 | KL 0.01806 | CF 0.2093 | Std 0.2514 | RawLogStd 0.1655 | |a| 0.1042 | Alpha 0.0100 | MB 48/48
+[Episode 128/400] Steps: 720 | Reward:  144.00 | Battery:  53.30% | Loss: -0.0881
+Placing Sensors
+[Episode 129/400] Steps: 720 | Reward:  211.92 | Battery:  76.49% | Loss: 
+Placing Sensors
+[Episode 130/400] Steps: 720 | Reward:  238.38 | Battery:  83.59% | Loss: 
+Placing Sensors
+[Episode 131/400] Steps: 720 | Reward:  210.20 | Battery:  75.59% | Loss: 
+Placing Sensors
+Policy 0.0015 | Value 18.0171 | Lyap 0.0064 | Dynamics 0.1230 | Barrier 0.0258 | KL 0.02449 | CF 0.2537 | Std 0.2510 | RawLogStd 0.1649 | |a| 0.0850 | Alpha 0.0100 | MB 24/48
+[Episode 132/400] Steps: 720 | Reward:  233.99 | Battery:  80.22% | Loss: 0.0659
+Placing Sensors
+[Episode 133/400] Steps: 720 | Reward:  229.02 | Battery:  79.35% | Loss: 
+Placing Sensors
+[Episode 134/400] Steps: 720 | Reward:  235.05 | Battery:  84.43% | Loss: 
+Placing Sensors
+[Episode 135/400] Steps: 720 | Reward:  195.83 | Battery:  70.88% | Loss: 
+Placing Sensors
+Policy -0.0130 | Value 17.4836 | Lyap 0.0063 | Dynamics 0.1266 | Barrier 0.0423 | KL 0.01809 | CF 0.1870 | Std 0.2505 | RawLogStd 0.1640 | |a| 0.0790 | Alpha 0.0100 | MB 48/48
+[Episode 136/400] Steps: 720 | Reward:  181.23 | Battery:  70.29% | Loss: -0.0483
+Placing Sensors
+[Episode 137/400] Steps: 720 | Reward:  236.31 | Battery:  82.60% | Loss: 
+Placing Sensors
+[Episode 138/400] Steps: 720 | Reward:  198.36 | Battery:  72.27% | Loss: 
+Placing Sensors
+[Episode 139/400] Steps: 720 | Reward:  219.82 | Battery:  79.88% | Loss: 
+Placing Sensors
+Policy -0.0066 | Value 11.4373 | Lyap 0.0068 | Dynamics 0.1269 | Barrier 0.0524 | KL 0.01834 | CF 0.1977 | Std 0.2498 | RawLogStd 0.1627 | |a| 0.0887 | Alpha 0.0100 | MB 48/48
+[Episode 140/400] Steps: 720 | Reward:  191.53 | Battery:  73.80% | Loss: 0.1749
+Placing Sensors
+[Episode 141/400] Steps: 720 | Reward:  210.18 | Battery:  75.89% | Loss: 
+Placing Sensors
+[Episode 142/400] Steps: 720 | Reward:  234.65 | Battery:  81.62% | Loss: 
+Placing Sensors
+[Episode 143/400] Steps: 720 | Reward:  211.53 | Battery:  75.23% | Loss: 
+Placing Sensors
+Policy -0.0102 | Value 11.7270 | Lyap 0.0108 | Dynamics 0.1555 | Barrier 0.0458 | KL 0.01736 | CF 0.1828 | Std 0.2493 | RawLogStd 0.1617 | |a| 0.1110 | Alpha 0.0100 | MB 48/48
+[Episode 144/400] Steps: 720 | Reward:  190.08 | Battery:  71.84% | Loss: -0.1442
+Placing Sensors
+[Episode 145/400] Steps: 720 | Reward:  260.61 | Battery:  83.20% | Loss: 
+Placing Sensors
+[Episode 146/400] Steps: 720 | Reward:  219.48 | Battery:  77.98% | Loss: 
+Placing Sensors
+[Episode 147/400] Steps: 720 | Reward:  232.99 | Battery:  78.49% | Loss: 
+Placing Sensors
+Policy -0.0089 | Value 28.5759 | Lyap 0.0094 | Dynamics 0.1362 | Barrier 0.0278 | KL 0.02140 | CF 0.2306 | Std 0.2488 | RawLogStd 0.1608 | |a| 0.0927 | Alpha 0.0100 | MB 48/48
+[Episode 148/400] Steps: 720 | Reward:  220.39 | Battery:  74.38% | Loss: 0.0947
+Placing Sensors
+[Episode 149/400] Steps: 720 | Reward:  217.44 | Battery:  76.25% | Loss: 
+Placing Sensors
+[Episode 150/400] Steps: 720 | Reward:  244.49 | Battery:  82.94% | Loss: 
+Placing Sensors
+[Episode 151/400] Steps: 720 | Reward:  192.38 | Battery:  68.57% | Loss: 
+Placing Sensors
+Policy -0.0089 | Value 11.0300 | Lyap 0.0126 | Dynamics 0.1302 | Barrier 0.0349 | KL 0.02243 | CF 0.2044 | Std 0.2481 | RawLogStd 0.1596 | |a| 0.0962 | Alpha 0.0100 | MB 36/48
+[Episode 152/400] Steps: 720 | Reward:  234.81 | Battery:  80.08% | Loss: 0.1483
+Placing Sensors
+[Episode 153/400] Steps: 720 | Reward:  212.02 | Battery:  76.90% | Loss: 
+Placing Sensors
+[Episode 154/400] Steps: 720 | Reward:  228.35 | Battery:  82.39% | Loss: 
+Placing Sensors
+[Episode 155/400] Steps: 720 | Reward:  200.66 | Battery:  76.66% | Loss: 
+Placing Sensors
+Policy 0.0036 | Value 10.3169 | Lyap 0.0119 | Dynamics 0.1656 | Barrier 0.0489 | KL 0.02543 | CF 0.2419 | Std 0.2476 | RawLogStd 0.1586 | |a| 0.0880 | Alpha 0.0100 | MB 36/48
+[Episode 156/400] Steps: 720 | Reward:  236.26 | Battery:  78.79% | Loss: -0.0119
+Placing Sensors
+[Episode 157/400] Steps: 720 | Reward:  255.29 | Battery:  79.94% | Loss: 
+Placing Sensors
+[Episode 158/400] Steps: 720 | Reward:  167.15 | Battery:  64.15% | Loss: 
+Placing Sensors
+[Episode 159/400] Steps: 720 | Reward:  254.99 | Battery:  85.96% | Loss: 
+Placing Sensors
+Policy -0.0047 | Value 15.0323 | Lyap 0.0118 | Dynamics 0.1686 | Barrier 0.0595 | KL 0.01802 | CF 0.1745 | Std 0.2469 | RawLogStd 0.1575 | |a| 0.0979 | Alpha 0.0100 | MB 48/48
+[Episode 160/400] Steps: 720 | Reward:  201.72 | Battery:  74.68% | Loss: 0.0464
+Placing Sensors
+[Episode 161/400] Steps: 720 | Reward:  244.64 | Battery:  86.11% | Loss: 
+Placing Sensors
+[Episode 162/400] Steps: 720 | Reward:  246.33 | Battery:  83.75% | Loss: 
+Placing Sensors
+[Episode 163/400] Steps: 720 | Reward:  228.34 | Battery:  79.59% | Loss: 
+Placing Sensors
+Policy -0.0105 | Value 15.8713 | Lyap 0.0101 | Dynamics 0.1643 | Barrier 0.0232 | KL 0.01963 | CF 0.2074 | Std 0.2465 | RawLogStd 0.1567 | |a| 0.0888 | Alpha 0.0100 | MB 48/48
+[Episode 164/400] Steps: 720 | Reward:  224.38 | Battery:  80.60% | Loss: 0.2086
+Placing Sensors
+[Episode 165/400] Steps: 720 | Reward:  243.84 | Battery:  82.97% | Loss: 
+Placing Sensors
+[Episode 166/400] Steps: 720 | Reward:  231.47 | Battery:  78.13% | Loss: 
+Placing Sensors
+[Episode 167/400] Steps: 720 | Reward:  244.54 | Battery:  83.45% | Loss: 
+Placing Sensors
+Policy -0.0183 | Value 12.1748 | Lyap 0.0089 | Dynamics 0.1514 | Barrier 0.0299 | KL 0.02178 | CF 0.2209 | Std 0.2462 | RawLogStd 0.1562 | |a| 0.0897 | Alpha 0.0100 | MB 48/48
+[Episode 168/400] Steps: 720 | Reward:  261.68 | Battery:  86.38% | Loss: 0.1442
+Placing Sensors
+[Episode 169/400] Steps: 720 | Reward:  250.93 | Battery:  83.44% | Loss: 
+Placing Sensors
+[Episode 170/400] Steps: 720 | Reward:  191.48 | Battery:  66.63% | Loss: 
+Placing Sensors
+[Episode 171/400] Steps: 720 | Reward:  247.30 | Battery:  84.08% | Loss: 
+Placing Sensors
+Policy -0.0175 | Value 16.2047 | Lyap 0.0129 | Dynamics 0.1804 | Barrier 0.0330 | KL 0.01927 | CF 0.2043 | Std 0.2452 | RawLogStd 0.1541 | |a| 0.0954 | Alpha 0.0100 | MB 48/48
+[Episode 172/400] Steps: 720 | Reward:  243.68 | Battery:  85.89% | Loss: 0.0120
+Placing Sensors
+[Episode 173/400] Steps: 720 | Reward:  207.94 | Battery:  72.79% | Loss: 
+Placing Sensors
+[Episode 174/400] Steps: 720 | Reward:  245.07 | Battery:  80.27% | Loss: 
+Placing Sensors
+[Episode 175/400] Steps: 720 | Reward:  220.91 | Battery:  78.48% | Loss: 
+Placing Sensors
+Policy -0.0128 | Value 11.1151 | Lyap 0.0143 | Dynamics 0.2141 | Barrier 0.0223 | KL 0.02444 | CF 0.2326 | Std 0.2448 | RawLogStd 0.1534 | |a| 0.1031 | Alpha 0.0100 | MB 48/48
+[Episode 176/400] Steps: 720 | Reward:  227.40 | Battery:  82.11% | Loss: 0.1205
+Placing Sensors
+[Episode 177/400] Steps: 720 | Reward:  226.49 | Battery:  76.60% | Loss: 
+Placing Sensors
+[Episode 178/400] Steps: 720 | Reward:  193.94 | Battery:  71.68% | Loss: 
+Placing Sensors
+[Episode 179/400] Steps: 720 | Reward:  225.79 | Battery:  75.86% | Loss: 
+Placing Sensors
+Policy -0.0009 | Value 18.2334 | Lyap 0.0175 | Dynamics 0.2062 | Barrier 0.0301 | KL 0.02426 | CF 0.2314 | Std 0.2444 | RawLogStd 0.1528 | |a| 0.1182 | Alpha 0.0100 | MB 48/48
+[Episode 180/400] Steps: 720 | Reward:  197.21 | Battery:  70.15% | Loss: -0.0420
+Placing Sensors
+[Episode 181/400] Steps: 720 | Reward:  209.56 | Battery:  77.67% | Loss: 
+Placing Sensors
+[Episode 182/400] Steps: 720 | Reward:  212.83 | Battery:  76.61% | Loss: 
+Placing Sensors
+[Episode 183/400] Steps: 720 | Reward:  238.60 | Battery:  83.06% | Loss: 
+Placing Sensors
+Policy 0.0196 | Value 12.6907 | Lyap 0.0101 | Dynamics 0.2035 | Barrier 0.0670 | KL 0.03041 | CF 0.2562 | Std 0.2438 | RawLogStd 0.1517 | |a| 0.1207 | Alpha 0.0100 | MB 12/48
+[Episode 184/400] Steps: 720 | Reward:  234.56 | Battery:  79.09% | Loss: 0.1553
+Placing Sensors
+[Episode 185/400] Steps: 720 | Reward:  201.95 | Battery:  68.88% | Loss: 
+Placing Sensors
+[Episode 186/400] Steps: 720 | Reward:  196.77 | Battery:  70.53% | Loss: 
+Placing Sensors
+[Episode 187/400] Steps: 720 | Reward:  224.14 | Battery:  75.52% | Loss: 
+Placing Sensors
+Policy 0.0032 | Value 13.3913 | Lyap 0.0123 | Dynamics 0.2015 | Barrier 0.0542 | KL 0.02512 | CF 0.2002 | Std 0.2435 | RawLogStd 0.1510 | |a| 0.1073 | Alpha 0.0100 | MB 24/48
+[Episode 188/400] Steps: 720 | Reward:  208.83 | Battery:  75.06% | Loss: 0.0585
+Placing Sensors
+[Episode 189/400] Steps: 720 | Reward:  217.88 | Battery:  78.97% | Loss: 
+Placing Sensors
+[Episode 190/400] Steps: 720 | Reward:  257.61 | Battery:  84.99% | Loss: 
+Placing Sensors
+[Episode 191/400] Steps: 720 | Reward:  173.22 | Battery:  62.56% | Loss: 
+Placing Sensors
+Policy -0.0098 | Value 17.5563 | Lyap 0.0146 | Dynamics 0.1815 | Barrier 0.0339 | KL 0.02245 | CF 0.2026 | Std 0.2428 | RawLogStd 0.1498 | |a| 0.1099 | Alpha 0.0100 | MB 48/48
+[Episode 192/400] Steps: 720 | Reward:  236.88 | Battery:  84.47% | Loss: 0.1068
+Placing Sensors
+[Episode 193/400] Steps: 720 | Reward:  270.54 | Battery:  88.69% | Loss: 
+Placing Sensors
+[Episode 194/400] Steps: 720 | Reward:  219.10 | Battery:  76.44% | Loss: 
+Placing Sensors
+[Episode 195/400] Steps: 720 | Reward:  234.46 | Battery:  79.10% | Loss: 
+Placing Sensors
+Policy -0.0052 | Value 19.3384 | Lyap 0.0119 | Dynamics 0.1606 | Barrier 0.0273 | KL 0.01693 | CF 0.2044 | Std 0.2419 | RawLogStd 0.1480 | |a| 0.1019 | Alpha 0.0100 | MB 48/48
+[Episode 196/400] Steps: 720 | Reward:  213.15 | Battery:  78.99% | Loss: 0.0015
+Placing Sensors
+[Episode 197/400] Steps: 720 | Reward:  250.87 | Battery:  86.12% | Loss: 
+Placing Sensors
+[Episode 198/400] Steps: 720 | Reward:  216.23 | Battery:  75.74% | Loss: 
+Placing Sensors
+[Episode 199/400] Steps: 720 | Reward:  210.93 | Battery:  72.50% | Loss: 
+Placing Sensors
+Policy -0.0118 | Value 10.8511 | Lyap 0.0129 | Dynamics 0.1594 | Barrier 0.0154 | KL 0.02599 | CF 0.2291 | Std 0.2414 | RawLogStd 0.1472 | |a| 0.1139 | Alpha 0.0100 | MB 48/48
+[Episode 200/400] Steps: 720 | Reward:  250.49 | Battery:  83.53% | Loss: -0.2526
+Placing Sensors
+[Episode 201/400] Steps: 720 | Reward:  253.47 | Battery:  83.32% | Loss: 
+Placing Sensors
+[Episode 202/400] Steps: 720 | Reward:  235.17 | Battery:  80.12% | Loss: 
+Placing Sensors
+[Episode 203/400] Steps: 720 | Reward:  231.87 | Battery:  78.70% | Loss: 
+Placing Sensors
+Policy -0.0094 | Value 9.4798 | Lyap 0.0109 | Dynamics 0.1566 | Barrier 0.0227 | KL 0.02046 | CF 0.2189 | Std 0.2410 | RawLogStd 0.1464 | |a| 0.1230 | Alpha 0.0100 | MB 48/48
+[Episode 204/400] Steps: 720 | Reward:  251.95 | Battery:  85.68% | Loss: -0.0740
+Placing Sensors
+[Episode 205/400] Steps: 720 | Reward:  223.45 | Battery:  77.08% | Loss: 
+Placing Sensors
+[Episode 206/400] Steps: 720 | Reward:  208.04 | Battery:  72.97% | Loss: 
+Placing Sensors
+[Episode 207/400] Steps: 720 | Reward:  258.30 | Battery:  83.95% | Loss: 
+Placing Sensors
+Policy -0.0081 | Value 14.6319 | Lyap 0.0149 | Dynamics 0.1606 | Barrier 0.0280 | KL 0.02296 | CF 0.2248 | Std 0.2406 | RawLogStd 0.1457 | |a| 0.1177 | Alpha 0.0100 | MB 48/48
+[Episode 208/400] Steps: 720 | Reward:  229.12 | Battery:  79.79% | Loss: 0.1224
+Placing Sensors
+[Episode 209/400] Steps: 720 | Reward:  198.86 | Battery:  74.95% | Loss: 
+Placing Sensors
+[Episode 210/400] Steps: 720 | Reward:  176.85 | Battery:  64.90% | Loss: 
+Placing Sensors
+[Episode 211/400] Steps: 720 | Reward:  213.09 | Battery:  76.45% | Loss: 
+Placing Sensors
+Policy -0.0076 | Value 12.7671 | Lyap 0.0120 | Dynamics 0.1538 | Barrier 0.0317 | KL 0.01956 | CF 0.2027 | Std 0.2403 | RawLogStd 0.1450 | |a| 0.1345 | Alpha 0.0100 | MB 48/48
+[Episode 212/400] Steps: 720 | Reward:  232.47 | Battery:  81.09% | Loss: 0.1515
+Placing Sensors
+[Episode 213/400] Steps: 720 | Reward:  220.03 | Battery:  77.17% | Loss: 
+Placing Sensors
+[Episode 214/400] Steps: 720 | Reward:  236.82 | Battery:  82.81% | Loss: 
+Placing Sensors
+[Episode 215/400] Steps: 720 | Reward:  271.38 | Battery:  85.57% | Loss: 
+Placing Sensors
+Policy -0.0102 | Value 10.9565 | Lyap 0.0122 | Dynamics 0.1874 | Barrier 0.0440 | KL 0.02093 | CF 0.2174 | Std 0.2396 | RawLogStd 0.1438 | |a| 0.1211 | Alpha 0.0100 | MB 48/48
+[Episode 216/400] Steps: 720 | Reward:  250.16 | Battery:  86.07% | Loss: 0.0845
+Placing Sensors
+[Episode 217/400] Steps: 720 | Reward:  216.99 | Battery:  76.29% | Loss: 
+Placing Sensors
+[Episode 218/400] Steps: 720 | Reward:  219.85 | Battery:  79.42% | Loss: 
+Placing Sensors
+[Episode 219/400] Steps: 720 | Reward:  201.50 | Battery:  74.29% | Loss: 
+Placing Sensors
+Policy -0.0036 | Value 13.1726 | Lyap 0.0123 | Dynamics 0.1463 | Barrier 0.0232 | KL 0.02069 | CF 0.1965 | Std 0.2395 | RawLogStd 0.1436 | |a| 0.1247 | Alpha 0.0100 | MB 48/48
+[Episode 220/400] Steps: 720 | Reward:  259.32 | Battery:  84.11% | Loss: -0.0100
+Placing Sensors
+[Episode 221/400] Steps: 720 | Reward:  242.46 | Battery:  85.11% | Loss: 
+Placing Sensors
+[Episode 222/400] Steps: 720 | Reward:  226.30 | Battery:  78.76% | Loss: 
+Placing Sensors
+[Episode 223/400] Steps: 720 | Reward:  238.64 | Battery:  80.79% | Loss: 
+Placing Sensors
+Policy -0.0121 | Value 20.7137 | Lyap 0.0138 | Dynamics 0.1542 | Barrier 0.0574 | KL 0.02247 | CF 0.2287 | Std 0.2396 | RawLogStd 0.1437 | |a| 0.1420 | Alpha 0.0100 | MB 48/48
+[Episode 224/400] Steps: 720 | Reward:  232.74 | Battery:  83.75% | Loss: 0.2008
+Placing Sensors
+[Episode 225/400] Steps: 720 | Reward:  218.28 | Battery:  80.83% | Loss: 
+Placing Sensors
+[Episode 226/400] Steps: 720 | Reward:  231.10 | Battery:  79.74% | Loss: 
+Placing Sensors
+[Episode 227/400] Steps: 720 | Reward:  250.47 | Battery:  82.16% | Loss: 
+Placing Sensors
+Policy -0.0034 | Value 11.2674 | Lyap 0.0109 | Dynamics 0.1466 | Barrier 0.0328 | KL 0.02422 | CF 0.2215 | Std 0.2392 | RawLogStd 0.1430 | |a| 0.1374 | Alpha 0.0100 | MB 48/48
+[Episode 228/400] Steps: 720 | Reward:  214.54 | Battery:  77.71% | Loss: -0.1532
+Placing Sensors
+[Episode 229/400] Steps: 720 | Reward:  289.72 | Battery:  89.26% | Loss: 
+Placing Sensors
+[Episode 230/400] Steps: 720 | Reward:  255.05 | Battery:  85.80% | Loss: 
+Placing Sensors
+[Episode 231/400] Steps: 720 | Reward:  245.77 | Battery:  80.65% | Loss: 
+Placing Sensors
+Policy -0.0100 | Value 9.9867 | Lyap 0.0133 | Dynamics 0.1765 | Barrier 0.0497 | KL 0.02227 | CF 0.2398 | Std 0.2389 | RawLogStd 0.1424 | |a| 0.1094 | Alpha 0.0100 | MB 48/48
+[Episode 232/400] Steps: 720 | Reward:  272.96 | Battery:  88.09% | Loss: 0.0102
+Placing Sensors
+[Episode 233/400] Steps: 720 | Reward:  218.05 | Battery:  74.23% | Loss: 
+Placing Sensors
+[Episode 234/400] Steps: 720 | Reward:  224.74 | Battery:  79.58% | Loss: 
+Placing Sensors
+[Episode 235/400] Steps: 720 | Reward:  251.67 | Battery:  82.94% | Loss: 
+Placing Sensors
+Policy -0.0068 | Value 12.2649 | Lyap 0.0142 | Dynamics 0.1653 | Barrier 0.0231 | KL 0.02413 | CF 0.2288 | Std 0.2385 | RawLogStd 0.1417 | |a| 0.1117 | Alpha 0.0100 | MB 48/48
+[Episode 236/400] Steps: 720 | Reward:  267.28 | Battery:  86.27% | Loss: 0.0633
+Placing Sensors
+[Episode 237/400] Steps: 720 | Reward:  216.76 | Battery:  79.80% | Loss: 
+Placing Sensors
+[Episode 238/400] Steps: 720 | Reward:  222.33 | Battery:  80.05% | Loss: 
+Placing Sensors
+[Episode 239/400] Steps: 720 | Reward:  170.12 | Battery:  65.61% | Loss: 
+Placing Sensors
+Policy -0.0020 | Value 15.6620 | Lyap 0.0155 | Dynamics 0.1631 | Barrier 0.0322 | KL 0.02248 | CF 0.2117 | Std 0.2381 | RawLogStd 0.1409 | |a| 0.1126 | Alpha 0.0100 | MB 36/48
+[Episode 240/400] Steps: 720 | Reward:  231.42 | Battery:  83.35% | Loss: 0.0219
+Placing Sensors
+[Episode 241/400] Steps: 720 | Reward:  232.74 | Battery:  80.88% | Loss: 
+Placing Sensors
+[Episode 242/400] Steps: 720 | Reward:  243.03 | Battery:  85.09% | Loss: 
+Placing Sensors
+[Episode 243/400] Steps: 720 | Reward:  192.12 | Battery:  69.82% | Loss: 
+Placing Sensors
+Policy -0.0047 | Value 9.9432 | Lyap 0.0146 | Dynamics 0.1549 | Barrier 0.0208 | KL 0.01717 | CF 0.1861 | Std 0.2374 | RawLogStd 0.1395 | |a| 0.1618 | Alpha 0.0100 | MB 48/48
+[Episode 244/400] Steps: 720 | Reward:  251.09 | Battery:  86.36% | Loss: 0.3637
+Placing Sensors
+[Episode 245/400] Steps: 720 | Reward:  268.47 | Battery:  84.62% | Loss: 
+Placing Sensors
+[Episode 246/400] Steps: 720 | Reward:  282.36 | Battery:  89.07% | Loss: 
+Placing Sensors
+[Episode 247/400] Steps: 720 | Reward:  257.04 | Battery:  81.60% | Loss: 
+Placing Sensors
+Policy -0.0001 | Value 13.1419 | Lyap 0.0110 | Dynamics 0.1798 | Barrier 0.0254 | KL 0.01939 | CF 0.1997 | Std 0.2367 | RawLogStd 0.1382 | |a| 0.1152 | Alpha 0.0100 | MB 48/48
+[Episode 248/400] Steps: 720 | Reward:  253.23 | Battery:  84.93% | Loss: 0.1113
+Placing Sensors
+[Episode 249/400] Steps: 720 | Reward:  192.04 | Battery:  72.04% | Loss: 
+Placing Sensors
+[Episode 250/400] Steps: 720 | Reward:  217.08 | Battery:  76.36% | Loss: 
+Placing Sensors
+[Episode 251/400] Steps: 720 | Reward:  233.16 | Battery:  82.63% | Loss: 
+Placing Sensors
+Policy -0.0100 | Value 10.1437 | Lyap 0.0138 | Dynamics 0.1761 | Barrier 0.0262 | KL 0.02158 | CF 0.1903 | Std 0.2359 | RawLogStd 0.1367 | |a| 0.1291 | Alpha 0.0100 | MB 48/48
+[Episode 252/400] Steps: 720 | Reward:  214.79 | Battery:  77.03% | Loss: -0.1777
+Placing Sensors
+[Episode 253/400] Steps: 720 | Reward:  239.95 | Battery:  80.50% | Loss: 
+Placing Sensors
+[Episode 254/400] Steps: 720 | Reward:  247.74 | Battery:  81.64% | Loss: 
+Placing Sensors
+[Episode 255/400] Steps: 720 | Reward:  200.19 | Battery:  72.62% | Loss: 
+Placing Sensors
+Policy -0.0096 | Value 10.1193 | Lyap 0.0118 | Dynamics 0.1729 | Barrier 0.0455 | KL 0.02259 | CF 0.2094 | Std 0.2353 | RawLogStd 0.1355 | |a| 0.1142 | Alpha 0.0100 | MB 48/48
+[Episode 256/400] Steps: 720 | Reward:  236.47 | Battery:  84.46% | Loss: 0.0073
+Placing Sensors
+[Episode 257/400] Steps: 720 | Reward:  239.90 | Battery:  84.19% | Loss: 
+Placing Sensors
+[Episode 258/400] Steps: 720 | Reward:  232.63 | Battery:  79.68% | Loss: 
+Placing Sensors
+[Episode 259/400] Steps: 720 | Reward:  220.13 | Battery:  78.02% | Loss: 
+Placing Sensors
+Policy -0.0025 | Value 10.1353 | Lyap 0.0127 | Dynamics 0.1685 | Barrier 0.0192 | KL 0.02025 | CF 0.1880 | Std 0.2348 | RawLogStd 0.1346 | |a| 0.1353 | Alpha 0.0100 | MB 48/48
+[Episode 260/400] Steps: 720 | Reward:  248.26 | Battery:  82.24% | Loss: 0.1902
+Placing Sensors
+[Episode 261/400] Steps: 720 | Reward:  262.70 | Battery:  86.72% | Loss: 
+Placing Sensors
+[Episode 262/400] Steps: 720 | Reward:  253.57 | Battery:  80.84% | Loss: 
+Placing Sensors
+[Episode 263/400] Steps: 720 | Reward:  219.89 | Battery:  76.49% | Loss: 
+Placing Sensors
+Policy -0.0060 | Value 7.4168 | Lyap 0.0106 | Dynamics 0.1834 | Barrier 0.0679 | KL 0.02118 | CF 0.2056 | Std 0.2344 | RawLogStd 0.1339 | |a| 0.1308 | Alpha 0.0100 | MB 48/48
+[Episode 264/400] Steps: 720 | Reward:  241.60 | Battery:  81.83% | Loss: -0.2018
+Placing Sensors
+[Episode 265/400] Steps: 720 | Reward:  265.69 | Battery:  86.33% | Loss: 
+Placing Sensors
+[Episode 266/400] Steps: 720 | Reward:  247.65 | Battery:  83.80% | Loss: 
+Placing Sensors
+[Episode 267/400] Steps: 720 | Reward:  241.70 | Battery:  82.23% | Loss: 
+Placing Sensors
+Policy 0.0052 | Value 20.6779 | Lyap 0.0138 | Dynamics 0.2123 | Barrier 0.0514 | KL 0.02494 | CF 0.2389 | Std 0.2343 | RawLogStd 0.1335 | |a| 0.1232 | Alpha 0.0100 | MB 24/48
+[Episode 268/400] Steps: 720 | Reward:  246.72 | Battery:  82.50% | Loss: 0.1143
+Placing Sensors
+[Episode 269/400] Steps: 720 | Reward:  241.67 | Battery:  79.45% | Loss: 
+Placing Sensors
+[Episode 270/400] Steps: 720 | Reward:  219.98 | Battery:  78.51% | Loss: 
+Placing Sensors
+[Episode 271/400] Steps: 720 | Reward:  270.82 | Battery:  86.23% | Loss: 
+Placing Sensors
+Policy -0.0158 | Value 5.9229 | Lyap 0.0111 | Dynamics 0.1848 | Barrier 0.0236 | KL 0.01605 | CF 0.1881 | Std 0.2337 | RawLogStd 0.1324 | |a| 0.1370 | Alpha 0.0100 | MB 48/48
+[Episode 272/400] Steps: 720 | Reward:  260.28 | Battery:  85.17% | Loss: -0.2658
+Placing Sensors
+[Episode 273/400] Steps: 720 | Reward:  248.81 | Battery:  82.46% | Loss: 
+Placing Sensors
+[Episode 274/400] Steps: 720 | Reward:  251.36 | Battery:  81.66% | Loss: 
+Placing Sensors
+[Episode 275/400] Steps: 720 | Reward:  229.11 | Battery:  78.76% | Loss: 
+Placing Sensors
+Policy -0.0036 | Value 8.4971 | Lyap 0.0121 | Dynamics 0.2046 | Barrier 0.0549 | KL 0.01694 | CF 0.1839 | Std 0.2328 | RawLogStd 0.1307 | |a| 0.1352 | Alpha 0.0100 | MB 48/48
+[Episode 276/400] Steps: 720 | Reward:  220.16 | Battery:  78.22% | Loss: 0.0516
+Placing Sensors
+[Episode 277/400] Steps: 720 | Reward:  246.95 | Battery:  81.48% | Loss: 
+Placing Sensors
+[Episode 278/400] Steps: 720 | Reward:  258.46 | Battery:  84.60% | Loss: 
+Placing Sensors
+[Episode 279/400] Steps: 720 | Reward:  265.63 | Battery:  84.71% | Loss: 
+Placing Sensors
+Policy 0.0043 | Value 8.4169 | Lyap 0.0100 | Dynamics 0.1785 | Barrier 0.0545 | KL 0.02149 | CF 0.1877 | Std 0.2319 | RawLogStd 0.1290 | |a| 0.1431 | Alpha 0.0100 | MB 24/48
+[Episode 280/400] Steps: 720 | Reward:  272.06 | Battery:  89.89% | Loss: 0.1116
+Placing Sensors
+[Episode 281/400] Steps: 720 | Reward:  226.98 | Battery:  80.02% | Loss: 
+Placing Sensors
+[Episode 282/400] Steps: 720 | Reward:  291.48 | Battery:  88.67% | Loss: 
+Placing Sensors
+[Episode 283/400] Steps: 720 | Reward:  211.51 | Battery:  74.22% | Loss: 
+Placing Sensors
+Policy -0.0094 | Value 10.5946 | Lyap 0.0117 | Dynamics 0.1566 | Barrier 0.0254 | KL 0.01709 | CF 0.1630 | Std 0.2312 | RawLogStd 0.1277 | |a| 0.1365 | Alpha 0.0100 | MB 48/48
+[Episode 284/400] Steps: 720 | Reward:  234.91 | Battery:  81.47% | Loss: 0.0825
+Placing Sensors
+[Episode 285/400] Steps: 720 | Reward:  269.82 | Battery:  87.97% | Loss: 
+Placing Sensors
+[Episode 286/400] Steps: 720 | Reward:  224.70 | Battery:  75.62% | Loss: 
+Placing Sensors
+[Episode 287/400] Steps: 720 | Reward:  237.81 | Battery:  82.73% | Loss: 
+Placing Sensors
+Policy -0.0027 | Value 9.9246 | Lyap 0.0108 | Dynamics 0.2059 | Barrier 0.0196 | KL 0.01987 | CF 0.2031 | Std 0.2309 | RawLogStd 0.1269 | |a| 0.1252 | Alpha 0.0100 | MB 48/48
+[Episode 288/400] Steps: 720 | Reward:  283.24 | Battery:  87.86% | Loss: -0.0083
+Placing Sensors
+[Episode 289/400] Steps: 720 | Reward:  222.11 | Battery:  79.48% | Loss: 
+Placing Sensors
+[Episode 290/400] Steps: 720 | Reward:  233.41 | Battery:  78.40% | Loss: 
+Placing Sensors
+[Episode 291/400] Steps: 720 | Reward:  281.37 | Battery:  86.40% | Loss: 
+Placing Sensors
+Policy -0.0174 | Value 8.5153 | Lyap 0.0107 | Dynamics 0.1534 | Barrier 0.0182 | KL 0.01568 | CF 0.1667 | Std 0.2301 | RawLogStd 0.1253 | |a| 0.1217 | Alpha 0.0100 | MB 48/48
+[Episode 292/400] Steps: 720 | Reward:  181.07 | Battery:  62.98% | Loss: -0.0648
+Placing Sensors
+[Episode 293/400] Steps: 720 | Reward:  240.43 | Battery:  83.19% | Loss: 
+Placing Sensors
+[Episode 294/400] Steps: 720 | Reward:  234.76 | Battery:  81.66% | Loss: 
+Placing Sensors
+[Episode 295/400] Steps: 720 | Reward:  237.14 | Battery:  79.05% | Loss: 
+Placing Sensors
+Policy -0.0056 | Value 14.2802 | Lyap 0.0115 | Dynamics 0.1709 | Barrier 0.0197 | KL 0.02393 | CF 0.2144 | Std 0.2295 | RawLogStd 0.1242 | |a| 0.1285 | Alpha 0.0100 | MB 48/48
+[Episode 296/400] Steps: 720 | Reward:  277.82 | Battery:  88.72% | Loss: -0.0571
+Placing Sensors
+[Episode 297/400] Steps: 720 | Reward:  221.94 | Battery:  75.57% | Loss: 
+Placing Sensors
+[Episode 298/400] Steps: 720 | Reward:  223.07 | Battery:  80.58% | Loss: 
+Placing Sensors
+[Episode 299/400] Steps: 720 | Reward:  257.15 | Battery:  84.87% | Loss: 
+Placing Sensors
+Policy -0.0014 | Value 8.5436 | Lyap 0.0124 | Dynamics 0.1746 | Barrier 0.0557 | KL 0.02317 | CF 0.1965 | Std 0.2294 | RawLogStd 0.1241 | |a| 0.1132 | Alpha 0.0100 | MB 24/48
+[Convergence check] ep 300 | avg_reward(last 50) 242.23 (best 242.23, above_threshold=True) | avg_lyap(last 10) 0.0115 (V=0.285+-0.222, viol=32.5%, dV=-0.001043, inball=30%, collapsed=False) | avg_barrier(last 10) 0.0391 | avg_std(last 10) 0.2318 | avg|a|(last 10) 0.1294 (cleared=True) | stable=False | trend +56.40/window t=+8.94 (plateau_streak=0/10) | checks_since_best=0
+[Episode 300/400] Steps: 720 | Reward:  242.73 | Battery:  81.30% | Loss: 0.1062
+Placing Sensors
+[Episode 301/400] Steps: 720 | Reward:  235.92 | Battery:  80.20% | Loss: 
+Placing Sensors
+[Episode 302/400] Steps: 720 | Reward:  260.94 | Battery:  86.46% | Loss: 
+Placing Sensors
+[Episode 303/400] Steps: 720 | Reward:  209.55 | Battery:  76.52% | Loss: 
+Placing Sensors
+Policy -0.0101 | Value 14.3599 | Lyap 0.0105 | Dynamics 0.1690 | Barrier 0.0280 | KL 0.01878 | CF 0.1578 | Std 0.2290 | RawLogStd 0.1233 | |a| 0.1260 | Alpha 0.0100 | MB 48/48
+[Convergence check] ep 304 | avg_reward(last 50) 241.56 (best 242.23, above_threshold=True) | avg_lyap(last 10) 0.0115 (V=0.285+-0.222, viol=33.3%, dV=-0.001017, inball=29%, collapsed=False) | avg_barrier(last 10) 0.0351 | avg_std(last 10) 0.2313 | avg|a|(last 10) 0.1290 (cleared=True) | stable=False | trend +51.55/window t=+8.26 (plateau_streak=0/10) | checks_since_best=1
+[Episode 304/400] Steps: 720 | Reward:  195.73 | Battery:  69.00% | Loss: 0.1853
+Placing Sensors
+[Episode 305/400] Steps: 720 | Reward:  249.07 | Battery:  81.68% | Loss: 
+Placing Sensors
+[Episode 306/400] Steps: 720 | Reward:  213.11 | Battery:  76.63% | Loss: 
+Placing Sensors
+[Episode 307/400] Steps: 720 | Reward:  230.64 | Battery:  80.95% | Loss: 
+Placing Sensors
+Policy -0.0133 | Value 8.3124 | Lyap 0.0091 | Dynamics 0.1423 | Barrier 0.0578 | KL 0.01550 | CF 0.1779 | Std 0.2281 | RawLogStd 0.1215 | |a| 0.1224 | Alpha 0.0100 | MB 48/48
+[Convergence check] ep 308 | avg_reward(last 50) 242.71 (best 242.71, above_threshold=True) | avg_lyap(last 10) 0.0110 (V=0.287+-0.222, viol=34.0%, dV=-0.001000, inball=28%, collapsed=False) | avg_barrier(last 10) 0.0357 | avg_std(last 10) 0.2307 | avg|a|(last 10) 0.1289 (cleared=True) | stable=False | trend +50.22/window t=+8.02 (plateau_streak=0/10) | checks_since_best=0
+[Episode 308/400] Steps: 720 | Reward:  274.01 | Battery:  85.98% | Loss: 0.1472
+Placing Sensors
+[Episode 309/400] Steps: 720 | Reward:  224.12 | Battery:  81.12% | Loss: 
+Placing Sensors
+[Episode 310/400] Steps: 720 | Reward:  258.14 | Battery:  83.79% | Loss: 
+Placing Sensors
+[Episode 311/400] Steps: 720 | Reward:  243.95 | Battery:  81.39% | Loss: 
+Placing Sensors
+Policy -0.0104 | Value 7.3752 | Lyap 0.0099 | Dynamics 0.1592 | Barrier 0.0196 | KL 0.01742 | CF 0.1673 | Std 0.2272 | RawLogStd 0.1197 | |a| 0.1256 | Alpha 0.0100 | MB 48/48
+[Convergence check] ep 312 | avg_reward(last 50) 241.39 (best 242.71, above_threshold=True) | avg_lyap(last 10) 0.0109 (V=0.287+-0.222, viol=34.2%, dV=-0.000979, inball=28%, collapsed=False) | avg_barrier(last 10) 0.0353 | avg_std(last 10) 0.2300 | avg|a|(last 10) 0.1277 (cleared=True) | stable=False | trend +45.36/window t=+7.24 (plateau_streak=0/10) | checks_since_best=1
+[Episode 312/400] Steps: 720 | Reward:  192.13 | Battery:  72.95% | Loss: -0.0311
+Placing Sensors
+[Episode 313/400] Steps: 720 | Reward:  232.48 | Battery:  79.32% | Loss: 
+Placing Sensors
+[Episode 314/400] Steps: 720 | Reward:  237.76 | Battery:  79.80% | Loss: 
+Placing Sensors
+[Episode 315/400] Steps: 720 | Reward:  225.16 | Battery:  80.85% | Loss: 
+Placing Sensors
+Policy -0.0062 | Value 9.8369 | Lyap 0.0089 | Dynamics 0.1852 | Barrier 0.0375 | KL 0.01498 | CF 0.1670 | Std 0.2265 | RawLogStd 0.1184 | |a| 0.1234 | Alpha 0.0100 | MB 48/48
+[Convergence check] ep 316 | avg_reward(last 50) 240.79 (best 242.71, above_threshold=True) | avg_lyap(last 10) 0.0105 (V=0.286+-0.221, viol=34.3%, dV=-0.000971, inball=27%, collapsed=False) | avg_barrier(last 10) 0.0336 | avg_std(last 10) 0.2294 | avg|a|(last 10) 0.1265 (cleared=True) | stable=False | trend +40.87/window t=+6.63 (plateau_streak=0/10) | checks_since_best=2
+[Episode 316/400] Steps: 720 | Reward:  249.72 | Battery:  81.72% | Loss: 0.0918
+Placing Sensors
+[Episode 317/400] Steps: 720 | Reward:  223.04 | Battery:  81.31% | Loss: 
+Placing Sensors
+[Episode 318/400] Steps: 720 | Reward:  256.00 | Battery:  84.37% | Loss: 
+Placing Sensors
+[Episode 319/400] Steps: 720 | Reward:  264.29 | Battery:  84.64% | Loss: 
+Placing Sensors
+Policy -0.0155 | Value 28.1404 | Lyap 0.0099 | Dynamics 0.2140 | Barrier 0.0272 | KL 0.01903 | CF 0.1829 | Std 0.2257 | RawLogStd 0.1166 | |a| 0.1246 | Alpha 0.0100 | MB 48/48
+[Convergence check] ep 320 | avg_reward(last 50) 241.81 (best 242.71, above_threshold=True) | avg_lyap(last 10) 0.0105 (V=0.286+-0.222, viol=34.4%, dV=-0.000974, inball=28%, collapsed=False) | avg_barrier(last 10) 0.0309 | avg_std(last 10) 0.2288 | avg|a|(last 10) 0.1247 (cleared=True) | stable=False | trend +36.07/window t=+6.00 (plateau_streak=0/10) | checks_since_best=3
+[Episode 320/400] Steps: 720 | Reward:  257.77 | Battery:  85.50% | Loss: 0.1043
+Placing Sensors
+[Episode 321/400] Steps: 720 | Reward:  249.81 | Battery:  85.96% | Loss: 
+Placing Sensors
+[Episode 322/400] Steps: 720 | Reward:  208.82 | Battery:  78.04% | Loss: 
+Placing Sensors
+[Episode 323/400] Steps: 720 | Reward:  258.26 | Battery:  81.44% | Loss: 
+Placing Sensors
+Policy -0.0048 | Value 11.0784 | Lyap 0.0133 | Dynamics 0.2451 | Barrier 0.0521 | KL 0.02416 | CF 0.1718 | Std 0.2250 | RawLogStd 0.1153 | |a| 0.1376 | Alpha 0.0100 | MB 36/48
+[Convergence check] ep 324 | avg_reward(last 50) 240.57 (best 242.71, above_threshold=True) | avg_lyap(last 10) 0.0107 (V=0.285+-0.223, viol=34.1%, dV=-0.000985, inball=28%, collapsed=False) | avg_barrier(last 10) 0.0335 | avg_std(last 10) 0.2281 | avg|a|(last 10) 0.1248 (cleared=True) | stable=False | trend +31.94/window t=+5.47 (plateau_streak=0/10) | checks_since_best=4
+[Episode 324/400] Steps: 720 | Reward:  252.39 | Battery:  83.66% | Loss: 0.1969
+Placing Sensors
+[Episode 325/400] Steps: 720 | Reward:  266.17 | Battery:  85.49% | Loss: 
+Placing Sensors
+[Episode 326/400] Steps: 720 | Reward:  212.98 | Battery:  72.51% | Loss: 
+Placing Sensors
+[Episode 327/400] Steps: 720 | Reward:  234.94 | Battery:  83.37% | Loss: 
+Placing Sensors
+Policy -0.0119 | Value 9.3624 | Lyap 0.0097 | Dynamics 0.1990 | Barrier 0.0215 | KL 0.01670 | CF 0.1450 | Std 0.2245 | RawLogStd 0.1144 | |a| 0.1313 | Alpha 0.0100 | MB 48/48
+[Convergence check] ep 328 | avg_reward(last 50) 240.71 (best 242.71, above_threshold=True) | avg_lyap(last 10) 0.0106 (V=0.286+-0.223, viol=34.3%, dV=-0.000981, inball=28%, collapsed=False) | avg_barrier(last 10) 0.0337 | avg_std(last 10) 0.2275 | avg|a|(last 10) 0.1254 (cleared=True) | stable=False | trend +25.61/window t=+4.58 (plateau_streak=0/10) | checks_since_best=5
+[Episode 328/400] Steps: 720 | Reward:  247.52 | Battery:  84.11% | Loss: 0.1094
+Placing Sensors
+[Episode 329/400] Steps: 720 | Reward:  241.74 | Battery:  84.96% | Loss: 
+Placing Sensors
+[Episode 330/400] Steps: 720 | Reward:  246.07 | Battery:  82.77% | Loss: 
+Placing Sensors
+[Episode 331/400] Steps: 720 | Reward:  259.80 | Battery:  84.49% | Loss: 
+Placing Sensors
+Policy 0.0157 | Value 10.7491 | Lyap 0.0102 | Dynamics 0.2152 | Barrier 0.0560 | KL 0.02160 | CF 0.0859 | Std 0.2240 | RawLogStd 0.1132 | |a| 0.1179 | Alpha 0.0100 | MB 12/48
+[Convergence check] ep 332 | avg_reward(last 50) 239.18 (best 242.71, above_threshold=True) | avg_lyap(last 10) 0.0105 (V=0.285+-0.222, viol=33.7%, dV=-0.001001, inball=29%, collapsed=False) | avg_barrier(last 10) 0.0375 | avg_std(last 10) 0.2269 | avg|a|(last 10) 0.1250 (cleared=True) | stable=False | trend +25.89/window t=+4.63 (plateau_streak=0/10) | checks_since_best=6
+[Episode 332/400] Steps: 720 | Reward:  231.75 | Battery:  79.42% | Loss: 0.2032
+Placing Sensors
+[Episode 333/400] Steps: 720 | Reward:  207.68 | Battery:  73.97% | Loss: 
+Placing Sensors
+[Episode 334/400] Steps: 720 | Reward:  209.52 | Battery:  73.12% | Loss: 
+Placing Sensors
+[Episode 335/400] Steps: 720 | Reward:  253.77 | Battery:  84.24% | Loss: 
+Placing Sensors
+Policy -0.0156 | Value 10.2710 | Lyap 0.0084 | Dynamics 0.1995 | Barrier 0.0389 | KL 0.02377 | CF 0.1541 | Std 0.2237 | RawLogStd 0.1128 | |a| 0.1407 | Alpha 0.0100 | MB 35/48
+[Convergence check] ep 336 | avg_reward(last 50) 238.58 (best 242.71, above_threshold=True) | avg_lyap(last 10) 0.0102 (V=0.287+-0.226, viol=34.3%, dV=-0.000972, inball=27%, collapsed=False) | avg_barrier(last 10) 0.0394 | avg_std(last 10) 0.2263 | avg|a|(last 10) 0.1263 (cleared=True) | stable=False | trend +22.50/window t=+4.02 (plateau_streak=0/10) | checks_since_best=7
+[Episode 336/400] Steps: 720 | Reward:  240.05 | Battery:  82.71% | Loss: -0.0752
+Placing Sensors
+[Episode 337/400] Steps: 720 | Reward:  235.31 | Battery:  81.00% | Loss: 
+Placing Sensors
+[Episode 338/400] Steps: 720 | Reward:  257.71 | Battery:  83.21% | Loss: 
+Placing Sensors
+[Episode 339/400] Steps: 720 | Reward:  239.97 | Battery:  82.91% | Loss: 
+Placing Sensors
+Policy -0.0128 | Value 7.2156 | Lyap 0.0087 | Dynamics 0.2060 | Barrier 0.0254 | KL 0.02523 | CF 0.1574 | Std 0.2233 | RawLogStd 0.1120 | |a| 0.1230 | Alpha 0.0100 | MB 36/48
+[Convergence check] ep 340 | avg_reward(last 50) 238.06 (best 242.71, above_threshold=True) | avg_lyap(last 10) 0.0099 (V=0.283+-0.224, viol=33.8%, dV=-0.000987, inball=29%, collapsed=False) | avg_barrier(last 10) 0.0364 | avg_std(last 10) 0.2257 | avg|a|(last 10) 0.1273 (cleared=True) | stable=False | trend +20.29/window t=+3.64 (plateau_streak=0/10) | checks_since_best=8
+[Episode 340/400] Steps: 720 | Reward:  217.79 | Battery:  78.87% | Loss: -0.0645
+Placing Sensors
+[Episode 341/400] Steps: 720 | Reward:  240.63 | Battery:  83.25% | Loss: 
+Placing Sensors
+[Episode 342/400] Steps: 720 | Reward:  278.19 | Battery:  86.64% | Loss: 
+Placing Sensors
+[Episode 343/400] Steps: 720 | Reward:  176.33 | Battery:  66.25% | Loss: 
+Placing Sensors
+Policy -0.0146 | Value 7.4804 | Lyap 0.0075 | Dynamics 0.2118 | Barrier 0.0228 | KL 0.02286 | CF 0.1811 | Std 0.2228 | RawLogStd 0.1110 | |a| 0.1234 | Alpha 0.0100 | MB 48/48
+[Convergence check] ep 344 | avg_reward(last 50) 238.22 (best 242.71, above_threshold=True) | avg_lyap(last 10) 0.0096 (V=0.282+-0.226, viol=33.5%, dV=-0.001008, inball=30%, collapsed=False) | avg_barrier(last 10) 0.0359 | avg_std(last 10) 0.2251 | avg|a|(last 10) 0.1270 (cleared=True) | stable=False | trend +17.82/window t=+3.14 (plateau_streak=0/10) | checks_since_best=9
+[Episode 344/400] Steps: 720 | Reward:  250.32 | Battery:  84.29% | Loss: 0.2156
+Placing Sensors
+[Episode 345/400] Steps: 720 | Reward:  240.15 | Battery:  82.69% | Loss: 
+Placing Sensors
+[Episode 346/400] Steps: 720 | Reward:  255.67 | Battery:  83.72% | Loss: 
+Placing Sensors
+[Episode 347/400] Steps: 720 | Reward:  243.35 | Battery:  84.05% | Loss: 
+Placing Sensors
+Policy -0.0102 | Value 10.7412 | Lyap 0.0080 | Dynamics 0.1799 | Barrier 0.0127 | KL 0.01236 | CF 0.1322 | Std 0.2222 | RawLogStd 0.1097 | |a| 0.1586 | Alpha 0.0100 | MB 48/48
+[Convergence check] ep 348 | avg_reward(last 50) 238.42 (best 242.71, above_threshold=True) | avg_lyap(last 10) 0.0095 (V=0.276+-0.226, viol=32.7%, dV=-0.001024, inball=31%, collapsed=False) | avg_barrier(last 10) 0.0314 | avg_std(last 10) 0.2245 | avg|a|(last 10) 0.1306 (cleared=True) | stable=False | trend +18.60/window t=+3.29 (plateau_streak=0/10) | checks_since_best=10
+[Episode 348/400] Steps: 720 | Reward:  230.65 | Battery:  76.84% | Loss: -0.3438
+Placing Sensors
+[Episode 349/400] Steps: 720 | Reward:  263.22 | Battery:  83.94% | Loss: 
+Placing Sensors
+[Episode 350/400] Steps: 720 | Reward:  225.79 | Battery:  78.62% | Loss: 
+Placing Sensors
+[Episode 351/400] Steps: 720 | Reward:  254.35 | Battery:  81.40% | Loss: 
+Placing Sensors
+Policy -0.0176 | Value 7.7275 | Lyap 0.0095 | Dynamics 0.1908 | Barrier 0.0117 | KL 0.01765 | CF 0.1467 | Std 0.2217 | RawLogStd 0.1087 | |a| 0.1274 | Alpha 0.0100 | MB 48/48
+[Convergence check] ep 352 | avg_reward(last 50) 238.47 (best 242.71, above_threshold=True) | avg_lyap(last 10) 0.0094 (V=0.274+-0.226, viol=32.3%, dV=-0.001053, inball=32%, collapsed=False) | avg_barrier(last 10) 0.0306 | avg_std(last 10) 0.2239 | avg|a|(last 10) 0.1308 (cleared=True) | stable=False | trend +18.84/window t=+3.34 (plateau_streak=0/10) | checks_since_best=11
+[Episode 352/400] Steps: 720 | Reward:  256.16 | Battery:  85.75% | Loss: 0.0419
+Placing Sensors
+[Episode 353/400] Steps: 720 | Reward:  254.31 | Battery:  85.32% | Loss: 
+Placing Sensors
+[Episode 354/400] Steps: 720 | Reward:  254.79 | Battery:  83.95% | Loss: 
+Placing Sensors
+[Episode 355/400] Steps: 720 | Reward:  264.66 | Battery:  86.96% | Loss: 
+Placing Sensors
+Policy -0.0092 | Value 10.5778 | Lyap 0.0092 | Dynamics 0.1668 | Barrier 0.0206 | KL 0.01982 | CF 0.1279 | Std 0.2210 | RawLogStd 0.1073 | |a| 0.1270 | Alpha 0.0100 | MB 36/48
+[Convergence check] ep 356 | avg_reward(last 50) 242.14 (best 242.71, above_threshold=True) | avg_lyap(last 10) 0.0094 (V=0.273+-0.226, viol=31.9%, dV=-0.001080, inball=33%, collapsed=False) | avg_barrier(last 10) 0.0289 | avg_std(last 10) 0.2234 | avg|a|(last 10) 0.1312 (cleared=True) | stable=False | trend +20.10/window t=+3.56 (plateau_streak=0/10) | checks_since_best=12
+[Episode 356/400] Steps: 720 | Reward:  277.18 | Battery:  89.53% | Loss: 0.0737
+Placing Sensors
+[Episode 357/400] Steps: 720 | Reward:  241.94 | Battery:  81.95% | Loss: 
+Placing Sensors
+[Episode 358/400] Steps: 720 | Reward:  224.61 | Battery:  78.19% | Loss: 
+Placing Sensors
+[Episode 359/400] Steps: 720 | Reward:  236.74 | Battery:  78.45% | Loss: 
+Placing Sensors
+Policy -0.0205 | Value 10.4120 | Lyap 0.0075 | Dynamics 0.1944 | Barrier 0.0224 | KL 0.01521 | CF 0.1729 | Std 0.2203 | RawLogStd 0.1057 | |a| 0.1232 | Alpha 0.0100 | MB 48/48
+[Convergence check] ep 360 | avg_reward(last 50) 241.18 (best 242.71, above_threshold=True) | avg_lyap(last 10) 0.0092 (V=0.274+-0.228, viol=32.4%, dV=-0.001053, inball=32%, collapsed=False) | avg_barrier(last 10) 0.0284 | avg_std(last 10) 0.2229 | avg|a|(last 10) 0.1310 (cleared=True) | stable=False | trend +17.93/window t=+3.25 (plateau_streak=0/10) | checks_since_best=13
+[Episode 360/400] Steps: 720 | Reward:  235.46 | Battery:  80.28% | Loss: 0.0907
+Placing Sensors
+[Episode 361/400] Steps: 720 | Reward:  176.48 | Battery:  63.70% | Loss: 
+Placing Sensors
+[Episode 362/400] Steps: 720 | Reward:  237.24 | Battery:  82.25% | Loss: 
+Placing Sensors
+[Episode 363/400] Steps: 720 | Reward:  241.62 | Battery:  78.48% | Loss: 
+Placing Sensors
+Policy -0.0057 | Value 5.7335 | Lyap 0.0080 | Dynamics 0.1727 | Barrier 0.0386 | KL 0.01901 | CF 0.1788 | Std 0.2192 | RawLogStd 0.1035 | |a| 0.1353 | Alpha 0.0100 | MB 48/48
+[Convergence check] ep 364 | avg_reward(last 50) 241.44 (best 242.71, above_threshold=True) | avg_lyap(last 10) 0.0087 (V=0.277+-0.230, viol=32.9%, dV=-0.001031, inball=31%, collapsed=False) | avg_barrier(last 10) 0.0271 | avg_std(last 10) 0.2223 | avg|a|(last 10) 0.1308 (cleared=True) | stable=False | trend +17.14/window t=+3.04 (plateau_streak=0/10) | checks_since_best=14
+[Episode 364/400] Steps: 720 | Reward:  264.38 | Battery:  86.10% | Loss: 0.0733
+Placing Sensors
+[Episode 365/400] Steps: 720 | Reward:  231.15 | Battery:  80.72% | Loss: 
+Placing Sensors
+[Episode 366/400] Steps: 720 | Reward:  277.03 | Battery:  87.40% | Loss: 
+Placing Sensors
+[Episode 367/400] Steps: 720 | Reward:  257.21 | Battery:  83.62% | Loss: 
+Placing Sensors
+Policy -0.0099 | Value 6.2602 | Lyap 0.0088 | Dynamics 0.2004 | Barrier 0.0355 | KL 0.01595 | CF 0.1695 | Std 0.2183 | RawLogStd 0.1017 | |a| 0.1445 | Alpha 0.0100 | MB 48/48
+[Convergence check] ep 368 | avg_reward(last 50) 242.79 (best 242.79, above_threshold=True) | avg_lyap(last 10) 0.0086 (V=0.275+-0.228, viol=32.2%, dV=-0.001052, inball=32%, collapsed=False) | avg_barrier(last 10) 0.0285 | avg_std(last 10) 0.2217 | avg|a|(last 10) 0.1321 (cleared=True) | stable=False | trend +20.45/window t=+3.64 (plateau_streak=0/10) | checks_since_best=0
+[Episode 368/400] Steps: 720 | Reward:  256.01 | Battery:  84.31% | Loss: -0.0545
+Placing Sensors
+[Episode 369/400] Steps: 720 | Reward:  250.58 | Battery:  84.16% | Loss: 
+Placing Sensors
+[Episode 370/400] Steps: 720 | Reward:  241.72 | Battery:  83.74% | Loss: 
+Placing Sensors
+[Episode 371/400] Steps: 720 | Reward:  230.00 | Battery:  78.90% | Loss: 
+Placing Sensors
+Policy -0.0054 | Value 9.2308 | Lyap 0.0072 | Dynamics 0.1794 | Barrier 0.0218 | KL 0.02093 | CF 0.1738 | Std 0.2180 | RawLogStd 0.1011 | |a| 0.1368 | Alpha 0.0100 | MB 36/48
+[Convergence check] ep 372 | avg_reward(last 50) 243.05 (best 243.05, above_threshold=True) | avg_lyap(last 10) 0.0083 (V=0.274+-0.230, viol=32.1%, dV=-0.001047, inball=31%, collapsed=False) | avg_barrier(last 10) 0.0250 | avg_std(last 10) 0.2211 | avg|a|(last 10) 0.1340 (cleared=True) | stable=False | trend +21.44/window t=+3.84 (plateau_streak=0/10) | checks_since_best=0
+[Episode 372/400] Steps: 720 | Reward:  271.13 | Battery:  88.70% | Loss: 0.1060
+Placing Sensors
+[Episode 373/400] Steps: 720 | Reward:  278.98 | Battery:  85.77% | Loss: 
+Placing Sensors
+[Episode 374/400] Steps: 720 | Reward:  263.31 | Battery:  84.35% | Loss: 
+Placing Sensors
+[Episode 375/400] Steps: 720 | Reward:  256.51 | Battery:  84.68% | Loss: 
+Placing Sensors
+Policy -0.0241 | Value 6.8322 | Lyap 0.0084 | Dynamics 0.2159 | Barrier 0.0090 | KL 0.02004 | CF 0.1874 | Std 0.2176 | RawLogStd 0.1003 | |a| 0.1275 | Alpha 0.0100 | MB 48/48
+[Convergence check] ep 376 | avg_reward(last 50) 244.11 (best 244.11, above_threshold=True) | avg_lyap(last 10) 0.0083 (V=0.275+-0.231, viol=31.3%, dV=-0.001088, inball=33%, collapsed=False) | avg_barrier(last 10) 0.0221 | avg_std(last 10) 0.2205 | avg|a|(last 10) 0.1327 (cleared=True) | stable=False | trend +22.79/window t=+4.07 (plateau_streak=0/10) | checks_since_best=0
+[Episode 376/400] Steps: 720 | Reward:  243.85 | Battery:  81.05% | Loss: 0.0825
+Placing Sensors
+[Episode 377/400] Steps: 720 | Reward:  231.55 | Battery:  79.59% | Loss: 
+Placing Sensors
+[Episode 378/400] Steps: 720 | Reward:  252.14 | Battery:  82.92% | Loss: 
+Placing Sensors
+[Episode 379/400] Steps: 720 | Reward:  268.65 | Battery:  86.83% | Loss: 
+Placing Sensors
+Policy -0.0214 | Value 8.9316 | Lyap 0.0080 | Dynamics 0.2157 | Barrier 0.0234 | KL 0.01362 | CF 0.1408 | Std 0.2169 | RawLogStd 0.0988 | |a| 0.1251 | Alpha 0.0100 | MB 48/48
+[Convergence check] ep 380 | avg_reward(last 50) 244.50 (best 244.50, above_threshold=True) | avg_lyap(last 10) 0.0082 (V=0.278+-0.233, viol=31.3%, dV=-0.001090, inball=32%, collapsed=False) | avg_barrier(last 10) 0.0218 | avg_std(last 10) 0.2198 | avg|a|(last 10) 0.1329 (cleared=True) | stable=False | trend +20.71/window t=+3.72 (plateau_streak=0/10) | checks_since_best=0
+[Episode 380/400] Steps: 720 | Reward:  237.82 | Battery:  75.77% | Loss: -0.0606
+Placing Sensors
+[Episode 381/400] Steps: 720 | Reward:  258.25 | Battery:  86.90% | Loss: 
+Placing Sensors
+[Episode 382/400] Steps: 720 | Reward:  244.55 | Battery:  82.47% | Loss: 
+Placing Sensors
+[Episode 383/400] Steps: 720 | Reward:  223.16 | Battery:  77.94% | Loss: 
+Placing Sensors
+Policy -0.0089 | Value 14.7247 | Lyap 0.0081 | Dynamics 0.2021 | Barrier 0.0158 | KL 0.02282 | CF 0.1322 | Std 0.2161 | RawLogStd 0.0972 | |a| 0.1221 | Alpha 0.0100 | MB 36/48
+[Convergence check] ep 384 | avg_reward(last 50) 245.81 (best 245.81, above_threshold=True) | avg_lyap(last 10) 0.0083 (V=0.280+-0.235, viol=30.8%, dV=-0.001092, inball=32%, collapsed=False) | avg_barrier(last 10) 0.0211 | avg_std(last 10) 0.2191 | avg|a|(last 10) 0.1328 (cleared=True) | stable=False | trend +19.54/window t=+3.51 (plateau_streak=0/10) | checks_since_best=0
+[Episode 384/400] Steps: 720 | Reward:  248.28 | Battery:  83.88% | Loss: 0.0394
+Placing Sensors
+[Episode 385/400] Steps: 720 | Reward:  240.68 | Battery:  82.15% | Loss: 
+Placing Sensors
+[Episode 386/400] Steps: 720 | Reward:  276.85 | Battery:  85.98% | Loss: 
+Placing Sensors
+[Episode 387/400] Steps: 720 | Reward:  261.09 | Battery:  83.41% | Loss: 
+Placing Sensors
+Policy 0.0024 | Value 9.1553 | Lyap 0.0084 | Dynamics 0.1732 | Barrier 0.0430 | KL 0.02353 | CF 0.0771 | Std 0.2158 | RawLogStd 0.0966 | |a| 0.1296 | Alpha 0.0100 | MB 15/48
+[Convergence check] ep 388 | avg_reward(last 50) 246.65 (best 246.65, above_threshold=True) | avg_lyap(last 10) 0.0083 (V=0.284+-0.236, viol=30.7%, dV=-0.001103, inball=32%, collapsed=False) | avg_barrier(last 10) 0.0242 | avg_std(last 10) 0.2185 | avg|a|(last 10) 0.1298 (cleared=True) | stable=False | trend +17.94/window t=+3.25 (plateau_streak=0/10) | checks_since_best=0
+[Episode 388/400] Steps: 720 | Reward:  250.13 | Battery:  84.13% | Loss: 0.0335
+Placing Sensors
+[Episode 389/400] Steps: 720 | Reward:  240.26 | Battery:  83.18% | Loss: 
+Placing Sensors
+[Episode 390/400] Steps: 720 | Reward:  262.58 | Battery:  85.26% | Loss: 
+Placing Sensors
+[Episode 391/400] Steps: 720 | Reward:  265.58 | Battery:  84.63% | Loss: 
+Placing Sensors
+Policy -0.0075 | Value 6.2386 | Lyap 0.0079 | Dynamics 0.1720 | Barrier 0.0474 | KL 0.02163 | CF 0.1623 | Std 0.2154 | RawLogStd 0.0957 | |a| 0.1212 | Alpha 0.0100 | MB 48/48
+[Convergence check] ep 392 | avg_reward(last 50) 247.71 (best 247.71, above_threshold=True) | avg_lyap(last 10) 0.0081 (V=0.287+-0.239, viol=30.9%, dV=-0.001106, inball=32%, collapsed=False) | avg_barrier(last 10) 0.0277 | avg_std(last 10) 0.2179 | avg|a|(last 10) 0.1292 (cleared=True) | stable=False | trend +17.80/window t=+3.28 (plateau_streak=0/10) | checks_since_best=0
+[Episode 392/400] Steps: 720 | Reward:  261.20 | Battery:  84.14% | Loss: 0.1833
+Placing Sensors
+[Episode 393/400] Steps: 720 | Reward:  167.71 | Battery:  62.34% | Loss: 
+Placing Sensors
+[Episode 394/400] Steps: 720 | Reward:  206.20 | Battery:  72.98% | Loss: 
+Placing Sensors
+[Episode 395/400] Steps: 720 | Reward:  234.70 | Battery:  82.28% | Loss: 
+Placing Sensors
+Policy 0.0028 | Value 9.1853 | Lyap 0.0101 | Dynamics 0.1747 | Barrier 0.0556 | KL 0.02339 | CF 0.1195 | Std 0.2150 | RawLogStd 0.0948 | |a| 0.1579 | Alpha 0.0100 | MB 24/48
+[Convergence check] ep 396 | avg_reward(last 50) 245.61 (best 247.71, above_threshold=True) | avg_lyap(last 10) 0.0082 (V=0.288+-0.240, viol=32.2%, dV=-0.001050, inball=29%, collapsed=False) | avg_barrier(last 10) 0.0312 | avg_std(last 10) 0.2173 | avg|a|(last 10) 0.1323 (cleared=True) | stable=False | trend +12.88/window t=+2.28 (plateau_streak=0/10) | checks_since_best=1
+[Episode 396/400] Steps: 720 | Reward:  208.73 | Battery:  74.66% | Loss: 0.1773
+Placing Sensors
+[Episode 397/400] Steps: 720 | Reward:  259.54 | Battery:  83.94% | Loss: 
+Placing Sensors
+[Episode 398/400] Steps: 720 | Reward:  238.06 | Battery:  81.76% | Loss: 
+Placing Sensors
+[Episode 399/400] Steps: 720 | Reward:  269.53 | Battery:  81.78% | Loss: 
+Placing Sensors
+Policy -0.0096 | Value 6.5282 | Lyap 0.0088 | Dynamics 0.1828 | Barrier 0.0401 | KL 0.01767 | CF 0.1816 | Std 0.2146 | RawLogStd 0.0941 | |a| 0.1190 | Alpha 0.0100 | MB 48/48
+[Convergence check] ep 400 | avg_reward(last 50) 246.98 (best 247.71, above_threshold=True) | avg_lyap(last 10) 0.0084 (V=0.284+-0.237, viol=31.0%, dV=-0.001085, inball=31%, collapsed=False) | avg_barrier(last 10) 0.0330 | avg_std(last 10) 0.2167 | avg|a|(last 10) 0.1319 (cleared=True) | stable=False | trend +14.06/window t=+2.50 (plateau_streak=0/10) | checks_since_best=2
+[Episode 400/400] Steps: 720 | Reward:  264.30 | Battery:  84.80% | Loss: -0.0794
+Placing Sensors
+  [validation 1/10] steps 720 | battery  37.5% ->  91.1% (min  35.8%) | reward   446.30 | |a| 0.039 | path     385 m
+Placing Sensors
+  [validation 2/10] steps 720 | battery  36.9% ->  87.0% (min  36.0%) | reward   404.71 | |a| 0.047 | path     515 m
+Placing Sensors
+  [validation 3/10] steps 720 | battery  30.2% ->  92.9% (min  28.1%) | reward   437.54 | |a| 0.051 | path     565 m
+Placing Sensors
+  [validation 4/10] steps 720 | battery  31.0% ->  90.4% (min  30.6%) | reward   442.74 | |a| 0.045 | path     465 m
+Placing Sensors
+  [validation 5/10] steps 720 | battery  35.8% ->  88.8% (min  30.9%) | reward   320.62 | |a| 0.346 | path     271 m
+Placing Sensors
+  [validation 6/10] steps 720 | battery  32.6% ->  89.7% (min  30.5%) | reward   440.29 | |a| 0.051 | path     555 m
+Placing Sensors
+  [validation 7/10] steps 720 | battery  37.6% ->  92.4% (min  36.1%) | reward   458.59 | |a| 0.038 | path     362 m
+Placing Sensors
+  [validation 8/10] steps 720 | battery  38.4% ->  88.4% (min  37.6%) | reward   414.19 | |a| 0.053 | path     404 m
+Placing Sensors
+  [validation 9/10] steps 720 | battery  34.4% ->  92.3% (min  30.9%) | reward   443.61 | |a| 0.033 | path     283 m
+Placing Sensors
+  [validation 10/10] steps 720 | battery  30.7% ->  89.0% (min  27.8%) | reward   386.85 | |a| 0.060 | path     702 m
+
+==============================================================================
+VALIDATION COMPLETE -- 10 independent deterministic episodes
+==============================================================================
+metric                       mean        std        min        max
+reward                     419.55      41.12     320.62     458.59
+final battery %             90.20       1.95      87.03      92.85
+min battery %               32.42       3.59      27.80      37.55
+steps                      720.00       0.00     720.00     720.00
+solar W                     31.98       1.61      29.01      33.95
+|action|                     0.08       0.10       0.03       0.35
+path m                     450.63     135.88     270.81     701.72
+tortuosity                   6.88       4.02       2.65      16.64
+motion mAh                 318.58      93.88     200.42     494.35
+idle mAh                 11582.40       0.00   11582.40   11582.40
+
+survived full 720 steps : 10/10
+ended below 20% battery         : 0/10
+ended above 70% battery         : 10/10
+
+reward 95% CI: 419.55 +- 25.48  (394.06 to 445.03)
+
+total step rows written: 7200
+
+==============================================
+WALL CLOCK BREAKDOWN
+==============================================
+Total run time        :   22572.12 s
+  Rollout (training)  :   21906.40 s  ( 97.1%)
+    - policy inference:     261.32 s  (  1.2%)
+    - env + reward    :   21645.08 s  ( 95.9%)
+  PPO update()        :      56.33 s  (  0.2%)
+  Checkpoint saves    :       0.17 s  (  0.0%)
+  Final evaluation    :     491.54 s  (  2.2%)
+  Other / logging     :     117.68 s  (  0.5%)
+
+==============================================
+PER-CALL AVERAGES
+==============================================
+Policy inference      :   295200 calls |    0.899 ms/step
+  final eval only     :     7200 calls |    0.568 ms/step
+PPO update()          :      100 calls |  563.318 ms/update
+Episode               :      400 eps   |   55.201 s/episode
+
+update() share of wall clock: 0.2%

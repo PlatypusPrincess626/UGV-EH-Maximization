@@ -1,0 +1,591 @@
+Placing Sensors
+Placing Sensors
+[Episode 1/400] Steps: 720 | Reward:   81.55 | Battery:  28.28% | Loss: 
+Placing Sensors
+[Episode 2/400] Steps: 720 | Reward:  106.12 | Battery:  36.85% | Loss: 
+Placing Sensors
+[Episode 3/400] Steps: 720 | Reward:  112.83 | Battery:  41.97% | Loss: 
+Placing Sensors
+Policy 0.0002 | Value 10.6300 | KL 0.00541 | CF 0.0615 | Std 0.1765 | |a| 0.0118 | Alpha 0.8577 | MB 48/48
+[Episode 4/400] Steps: 720 | Reward:  184.62 | Battery:  62.82% | Loss: 0.5444
+Placing Sensors
+[Episode 5/400] Steps: 720 | Reward:  105.57 | Battery:  35.33% | Loss: 
+Placing Sensors
+[Episode 6/400] Steps: 720 | Reward:  142.05 | Battery:  51.74% | Loss: 
+Placing Sensors
+[Episode 7/400] Steps: 720 | Reward:   85.51 | Battery:  29.06% | Loss: 
+Placing Sensors
+Policy -0.0013 | Value 7.2452 | KL 0.00726 | CF 0.0875 | Std 0.1821 | |a| 0.0149 | Alpha 0.7356 | MB 48/48
+[Episode 8/400] Steps: 720 | Reward:  123.04 | Battery:  45.38% | Loss: 0.5645
+Placing Sensors
+[Episode 9/400] Steps: 720 | Reward:  173.26 | Battery:  64.94% | Loss: 
+Placing Sensors
+[Episode 10/400] Steps: 720 | Reward:  150.59 | Battery:  53.56% | Loss: 
+Placing Sensors
+[Episode 11/400] Steps: 720 | Reward:  130.05 | Battery:  45.34% | Loss: 
+Placing Sensors
+Policy 0.0018 | Value 7.9477 | KL 0.00742 | CF 0.0917 | Std 0.1877 | |a| 0.0167 | Alpha 0.6310 | MB 48/48
+[Episode 12/400] Steps: 720 | Reward:  156.50 | Battery:  52.30% | Loss: 0.4415
+Placing Sensors
+[Episode 13/400] Steps: 720 | Reward:  154.35 | Battery:  55.83% | Loss: 
+Placing Sensors
+[Episode 14/400] Steps: 720 | Reward:  118.97 | Battery:  42.37% | Loss: 
+Placing Sensors
+[Episode 15/400] Steps: 720 | Reward:  121.36 | Battery:  41.46% | Loss: 
+Placing Sensors
+Policy -0.0056 | Value 6.6978 | KL 0.00949 | CF 0.1174 | Std 0.1940 | |a| 0.0197 | Alpha 0.5412 | MB 48/48
+[Episode 16/400] Steps: 720 | Reward:   95.44 | Battery:  40.14% | Loss: 0.2960
+Placing Sensors
+[Episode 17/400] Steps: 720 | Reward:  217.05 | Battery:  74.74% | Loss: 
+Placing Sensors
+[Episode 18/400] Steps: 720 | Reward:  253.89 | Battery:  85.39% | Loss: 
+Placing Sensors
+[Episode 19/400] Steps: 720 | Reward:  181.46 | Battery:  67.43% | Loss: 
+Placing Sensors
+Policy 0.0040 | Value 11.6085 | KL 0.01649 | CF 0.1903 | Std 0.1997 | |a| 0.0404 | Alpha 0.4642 | MB 48/48
+[Episode 20/400] Steps: 720 | Reward:  108.93 | Battery:  42.85% | Loss: 0.0906
+Placing Sensors
+[Episode 21/400] Steps: 720 | Reward:   59.48 | Battery:  21.19% | Loss: 
+Placing Sensors
+[Episode 22/400] Steps: 720 | Reward:  139.92 | Battery:  48.41% | Loss: 
+Placing Sensors
+[Episode 23/400] Steps: 720 | Reward:  185.03 | Battery:  60.25% | Loss: 
+Placing Sensors
+Policy -0.0101 | Value 8.8619 | KL 0.01104 | CF 0.1423 | Std 0.2051 | |a| 0.0299 | Alpha 0.3981 | MB 48/48
+[Episode 24/400] Steps: 720 | Reward:  118.15 | Battery:  44.78% | Loss: 0.0482
+Placing Sensors
+[Episode 25/400] Steps: 720 | Reward:  149.91 | Battery:  54.48% | Loss: 
+Placing Sensors
+[Episode 26/400] Steps: 720 | Reward:  120.34 | Battery:  45.42% | Loss: 
+Placing Sensors
+[Episode 27/400] Steps: 720 | Reward:  123.38 | Battery:  48.00% | Loss: 
+Placing Sensors
+Policy -0.0011 | Value 10.0320 | KL 0.01362 | CF 0.1608 | Std 0.2105 | |a| 0.0354 | Alpha 0.3415 | MB 48/48
+[Episode 28/400] Steps: 720 | Reward:  191.36 | Battery:  70.46% | Loss: 0.1215
+Placing Sensors
+[Episode 29/400] Steps: 720 | Reward:  175.92 | Battery:  62.31% | Loss: 
+Placing Sensors
+[Episode 30/400] Steps: 720 | Reward:  123.17 | Battery:  44.75% | Loss: 
+Placing Sensors
+[Episode 31/400] Steps: 720 | Reward:  166.93 | Battery:  58.97% | Loss: 
+Placing Sensors
+Policy -0.0049 | Value 9.1401 | KL 0.01314 | CF 0.1568 | Std 0.2154 | |a| 0.0358 | Alpha 0.2929 | MB 48/48
+[Episode 32/400] Steps: 720 | Reward:  178.54 | Battery:  63.11% | Loss: -0.0279
+Placing Sensors
+[Episode 33/400] Steps: 720 | Reward:  201.94 | Battery:  70.75% | Loss: 
+Placing Sensors
+[Episode 34/400] Steps: 720 | Reward:  221.72 | Battery:  75.18% | Loss: 
+Placing Sensors
+[Episode 35/400] Steps: 720 | Reward:  186.03 | Battery:  63.53% | Loss: 
+Placing Sensors
+Policy 0.0005 | Value 8.2035 | KL 0.01409 | CF 0.1707 | Std 0.2203 | |a| 0.0406 | Alpha 0.2512 | MB 48/48
+[Episode 36/400] Steps: 720 | Reward:  148.07 | Battery:  54.67% | Loss: 0.2174
+Placing Sensors
+[Episode 37/400] Steps: 720 | Reward:  168.85 | Battery:  58.48% | Loss: 
+Placing Sensors
+[Episode 38/400] Steps: 720 | Reward:  192.64 | Battery:  70.52% | Loss: 
+Placing Sensors
+[Episode 39/400] Steps: 720 | Reward:   98.91 | Battery:  37.37% | Loss: 
+Placing Sensors
+Policy -0.0138 | Value 8.7578 | KL 0.01877 | CF 0.2076 | Std 0.2244 | |a| 0.0419 | Alpha 0.2154 | MB 48/48
+[Episode 40/400] Steps: 720 | Reward:  150.10 | Battery:  59.29% | Loss: -0.0845
+Placing Sensors
+[Episode 41/400] Steps: 720 | Reward:  185.74 | Battery:  68.94% | Loss: 
+Placing Sensors
+[Episode 42/400] Steps: 720 | Reward:  145.45 | Battery:  54.12% | Loss: 
+Placing Sensors
+[Episode 43/400] Steps: 720 | Reward:  149.33 | Battery:  53.02% | Loss: 
+Placing Sensors
+Policy -0.0063 | Value 11.1659 | KL 0.01163 | CF 0.1449 | Std 0.2285 | |a| 0.0551 | Alpha 0.1848 | MB 48/48
+[Episode 44/400] Steps: 720 | Reward:  190.78 | Battery:  64.86% | Loss: 0.1648
+Placing Sensors
+[Episode 45/400] Steps: 720 | Reward:  140.71 | Battery:  52.10% | Loss: 
+Placing Sensors
+[Episode 46/400] Steps: 720 | Reward:  147.82 | Battery:  57.22% | Loss: 
+Placing Sensors
+[Episode 47/400] Steps: 720 | Reward:  153.01 | Battery:  57.82% | Loss: 
+Placing Sensors
+Policy -0.0038 | Value 10.9672 | KL 0.01386 | CF 0.1733 | Std 0.2320 | |a| 0.0522 | Alpha 0.1585 | MB 48/48
+[Episode 48/400] Steps: 720 | Reward:  143.06 | Battery:  54.46% | Loss: 0.0150
+Placing Sensors
+[Episode 49/400] Steps: 720 | Reward:  132.01 | Battery:  50.64% | Loss: 
+Placing Sensors
+[Episode 50/400] Steps: 720 | Reward:  149.62 | Battery:  55.30% | Loss: 
+Placing Sensors
+[Episode 51/400] Steps: 720 | Reward:  160.40 | Battery:  58.95% | Loss: 
+Placing Sensors
+Policy -0.0068 | Value 11.7975 | KL 0.01561 | CF 0.1923 | Std 0.2350 | |a| 0.0523 | Alpha 0.1359 | MB 48/48
+[Episode 52/400] Steps: 720 | Reward:  226.17 | Battery:  77.70% | Loss: 0.0424
+Placing Sensors
+[Episode 53/400] Steps: 720 | Reward:  185.11 | Battery:  65.39% | Loss: 
+Placing Sensors
+[Episode 54/400] Steps: 720 | Reward:  177.79 | Battery:  64.66% | Loss: 
+Placing Sensors
+[Episode 55/400] Steps: 720 | Reward:  156.03 | Battery:  61.49% | Loss: 
+Placing Sensors
+Policy -0.0011 | Value 9.3719 | KL 0.01499 | CF 0.1715 | Std 0.2380 | |a| 0.0590 | Alpha 0.1166 | MB 48/48
+[Episode 56/400] Steps: 720 | Reward:  174.57 | Battery:  65.11% | Loss: 0.0647
+Placing Sensors
+[Episode 57/400] Steps: 720 | Reward:  166.69 | Battery:  56.06% | Loss: 
+Placing Sensors
+[Episode 58/400] Steps: 720 | Reward:  157.60 | Battery:  60.56% | Loss: 
+Placing Sensors
+[Episode 59/400] Steps: 720 | Reward:  119.26 | Battery:  40.71% | Loss: 
+Placing Sensors
+Policy -0.0099 | Value 10.8298 | KL 0.01785 | CF 0.2022 | Std 0.2405 | |a| 0.0510 | Alpha 0.1000 | MB 48/48
+[Episode 60/400] Steps: 720 | Reward:  122.52 | Battery:  47.97% | Loss: 0.0705
+Placing Sensors
+[Episode 61/400] Steps: 720 | Reward:  150.05 | Battery:  58.31% | Loss: 
+Placing Sensors
+[Episode 62/400] Steps: 720 | Reward:  173.84 | Battery:  67.21% | Loss: 
+Placing Sensors
+[Episode 63/400] Steps: 720 | Reward:  145.05 | Battery:  55.83% | Loss: 
+Placing Sensors
+Policy 0.0003 | Value 13.9839 | KL 0.02473 | CF 0.2463 | Std 0.2429 | |a| 0.0538 | Alpha 0.0858 | MB 48/48
+[Episode 64/400] Steps: 720 | Reward:  173.08 | Battery:  60.33% | Loss: 0.1151
+Placing Sensors
+[Episode 65/400] Steps: 720 | Reward:  182.06 | Battery:  68.13% | Loss: 
+Placing Sensors
+[Episode 66/400] Steps: 720 | Reward:  141.49 | Battery:  49.86% | Loss: 
+Placing Sensors
+[Episode 67/400] Steps: 720 | Reward:  219.39 | Battery:  78.33% | Loss: 
+Placing Sensors
+Policy -0.0040 | Value 11.0433 | KL 0.02078 | CF 0.2271 | Std 0.2452 | |a| 0.0595 | Alpha 0.0736 | MB 48/48
+[Episode 68/400] Steps: 720 | Reward:  180.23 | Battery:  61.51% | Loss: 0.1505
+Placing Sensors
+[Episode 69/400] Steps: 720 | Reward:  196.00 | Battery:  70.90% | Loss: 
+Placing Sensors
+[Episode 70/400] Steps: 720 | Reward:  196.44 | Battery:  68.47% | Loss: 
+Placing Sensors
+[Episode 71/400] Steps: 720 | Reward:  230.52 | Battery:  81.61% | Loss: 
+Placing Sensors
+Policy -0.0122 | Value 21.5402 | KL 0.01696 | CF 0.1909 | Std 0.2467 | |a| 0.0584 | Alpha 0.0631 | MB 48/48
+[Episode 72/400] Steps: 720 | Reward:  195.72 | Battery:  67.48% | Loss: -0.0296
+Placing Sensors
+[Episode 73/400] Steps: 720 | Reward:  198.56 | Battery:  72.75% | Loss: 
+Placing Sensors
+[Episode 74/400] Steps: 720 | Reward:  162.44 | Battery:  64.30% | Loss: 
+Placing Sensors
+[Episode 75/400] Steps: 720 | Reward:  187.81 | Battery:  65.22% | Loss: 
+Placing Sensors
+Policy -0.0105 | Value 18.1300 | KL 0.02184 | CF 0.2099 | Std 0.2478 | |a| 0.0714 | Alpha 0.0541 | MB 36/48
+[Episode 76/400] Steps: 720 | Reward:  222.20 | Battery:  79.79% | Loss: -0.0023
+Placing Sensors
+[Episode 77/400] Steps: 720 | Reward:  221.02 | Battery:  78.53% | Loss: 
+Placing Sensors
+[Episode 78/400] Steps: 720 | Reward:  247.06 | Battery:  80.88% | Loss: 
+Placing Sensors
+[Episode 79/400] Steps: 720 | Reward:  179.00 | Battery:  67.71% | Loss: 
+Placing Sensors
+Policy -0.0001 | Value 22.9109 | KL 0.02699 | CF 0.2660 | Std 0.2485 | |a| 0.0686 | Alpha 0.0464 | MB 36/48
+[Episode 80/400] Steps: 720 | Reward:  223.64 | Battery:  82.49% | Loss: -0.0015
+Placing Sensors
+[Episode 81/400] Steps: 720 | Reward:  114.25 | Battery:  45.19% | Loss: 
+Placing Sensors
+[Episode 82/400] Steps: 720 | Reward:  226.58 | Battery:  80.06% | Loss: 
+Placing Sensors
+[Episode 83/400] Steps: 720 | Reward:  196.53 | Battery:  70.55% | Loss: 
+Placing Sensors
+Policy -0.0032 | Value 13.3761 | KL 0.01779 | CF 0.1987 | Std 0.2493 | |a| 0.0691 | Alpha 0.0398 | MB 48/48
+[Episode 84/400] Steps: 720 | Reward:  184.64 | Battery:  66.45% | Loss: 0.1951
+Placing Sensors
+[Episode 85/400] Steps: 720 | Reward:  196.67 | Battery:  69.10% | Loss: 
+Placing Sensors
+[Episode 86/400] Steps: 720 | Reward:  234.50 | Battery:  82.06% | Loss: 
+Placing Sensors
+[Episode 87/400] Steps: 720 | Reward:  233.87 | Battery:  83.12% | Loss: 
+Placing Sensors
+Policy -0.0065 | Value 11.0900 | KL 0.02320 | CF 0.2428 | Std 0.2498 | |a| 0.0680 | Alpha 0.0341 | MB 48/48
+[Episode 88/400] Steps: 720 | Reward:  212.55 | Battery:  71.94% | Loss: 0.0116
+Placing Sensors
+[Episode 89/400] Steps: 720 | Reward:  222.63 | Battery:  78.35% | Loss: 
+Placing Sensors
+[Episode 90/400] Steps: 720 | Reward:  214.61 | Battery:  72.40% | Loss: 
+Placing Sensors
+[Episode 91/400] Steps: 720 | Reward:  247.61 | Battery:  84.16% | Loss: 
+Placing Sensors
+Policy -0.0117 | Value 13.8108 | KL 0.01792 | CF 0.2043 | Std 0.2496 | |a| 0.0768 | Alpha 0.0293 | MB 48/48
+[Episode 92/400] Steps: 720 | Reward:  254.11 | Battery:  83.82% | Loss: -0.1665
+Placing Sensors
+[Episode 93/400] Steps: 720 | Reward:  204.78 | Battery:  74.33% | Loss: 
+Placing Sensors
+[Episode 94/400] Steps: 720 | Reward:  198.23 | Battery:  70.73% | Loss: 
+Placing Sensors
+[Episode 95/400] Steps: 720 | Reward:  195.91 | Battery:  69.74% | Loss: 
+Placing Sensors
+Policy 0.0088 | Value 22.7447 | KL 0.02323 | CF 0.2043 | Std 0.2496 | |a| 0.0809 | Alpha 0.0251 | MB 24/48
+[Episode 96/400] Steps: 720 | Reward:  204.46 | Battery:  76.31% | Loss: -0.0840
+Placing Sensors
+[Episode 97/400] Steps: 720 | Reward:  263.89 | Battery:  84.57% | Loss: 
+Placing Sensors
+[Episode 98/400] Steps: 720 | Reward:  197.20 | Battery:  70.17% | Loss: 
+Placing Sensors
+[Episode 99/400] Steps: 720 | Reward:  201.60 | Battery:  71.89% | Loss: 
+Placing Sensors
+Policy -0.0064 | Value 14.0848 | KL 0.02150 | CF 0.2389 | Std 0.2493 | |a| 0.0782 | Alpha 0.0215 | MB 48/48
+[Episode 100/400] Steps: 720 | Reward:  262.94 | Battery:  86.47% | Loss: -0.0344
+Placing Sensors
+[Episode 101/400] Steps: 720 | Reward:  169.42 | Battery:  58.82% | Loss: 
+Placing Sensors
+[Episode 102/400] Steps: 720 | Reward:  241.85 | Battery:  84.53% | Loss: 
+Placing Sensors
+[Episode 103/400] Steps: 720 | Reward:  217.25 | Battery:  73.22% | Loss: 
+Placing Sensors
+Policy -0.0117 | Value 15.0127 | KL 0.01595 | CF 0.1772 | Std 0.2488 | |a| 0.0763 | Alpha 0.0185 | MB 48/48
+[Episode 104/400] Steps: 720 | Reward:  233.60 | Battery:  83.42% | Loss: -0.2252
+Placing Sensors
+[Episode 105/400] Steps: 720 | Reward:  217.21 | Battery:  80.86% | Loss: 
+Placing Sensors
+[Episode 106/400] Steps: 720 | Reward:  213.21 | Battery:  74.29% | Loss: 
+Placing Sensors
+[Episode 107/400] Steps: 720 | Reward:  230.24 | Battery:  80.84% | Loss: 
+Placing Sensors
+Policy -0.0145 | Value 12.1854 | KL 0.01951 | CF 0.2073 | Std 0.2481 | |a| 0.0756 | Alpha 0.0158 | MB 48/48
+[Episode 108/400] Steps: 720 | Reward:  200.20 | Battery:  68.97% | Loss: 0.0507
+Placing Sensors
+[Episode 109/400] Steps: 720 | Reward:  237.16 | Battery:  81.27% | Loss: 
+Placing Sensors
+[Episode 110/400] Steps: 720 | Reward:  195.56 | Battery:  71.46% | Loss: 
+Placing Sensors
+[Episode 111/400] Steps: 720 | Reward:  179.81 | Battery:  65.43% | Loss: 
+Placing Sensors
+Policy -0.0093 | Value 9.4650 | KL 0.01596 | CF 0.1918 | Std 0.2479 | |a| 0.0759 | Alpha 0.0136 | MB 48/48
+[Episode 112/400] Steps: 720 | Reward:  183.00 | Battery:  63.94% | Loss: -0.0571
+Placing Sensors
+[Episode 113/400] Steps: 720 | Reward:  227.02 | Battery:  77.69% | Loss: 
+Placing Sensors
+[Episode 114/400] Steps: 720 | Reward:  161.08 | Battery:  62.93% | Loss: 
+Placing Sensors
+[Episode 115/400] Steps: 720 | Reward:  248.01 | Battery:  81.72% | Loss: 
+Placing Sensors
+Policy -0.0037 | Value 13.0649 | KL 0.02033 | CF 0.2113 | Std 0.2473 | |a| 0.0761 | Alpha 0.0117 | MB 48/48
+[Episode 116/400] Steps: 720 | Reward:  187.53 | Battery:  70.47% | Loss: 0.0095
+Placing Sensors
+[Episode 117/400] Steps: 720 | Reward:  229.87 | Battery:  76.23% | Loss: 
+Placing Sensors
+[Episode 118/400] Steps: 720 | Reward:  203.51 | Battery:  74.99% | Loss: 
+Placing Sensors
+[Episode 119/400] Steps: 720 | Reward:  213.45 | Battery:  77.31% | Loss: 
+Placing Sensors
+Policy -0.0070 | Value 12.3892 | KL 0.01820 | CF 0.1872 | Std 0.2465 | |a| 0.0852 | Alpha 0.0100 | MB 48/48
+[Episode 120/400] Steps: 720 | Reward:  223.26 | Battery:  77.20% | Loss: 0.0876
+Placing Sensors
+[Episode 121/400] Steps: 720 | Reward:  253.75 | Battery:  84.05% | Loss: 
+Placing Sensors
+[Episode 122/400] Steps: 720 | Reward:  240.45 | Battery:  81.00% | Loss: 
+Placing Sensors
+[Episode 123/400] Steps: 720 | Reward:  208.59 | Battery:  72.56% | Loss: 
+Placing Sensors
+Policy -0.0079 | Value 15.8987 | KL 0.01881 | CF 0.2026 | Std 0.2455 | |a| 0.0962 | Alpha 0.0100 | MB 48/48
+[Episode 124/400] Steps: 720 | Reward:  206.89 | Battery:  72.08% | Loss: -0.2156
+Placing Sensors
+[Episode 125/400] Steps: 720 | Reward:  217.41 | Battery:  77.81% | Loss: 
+Placing Sensors
+[Episode 126/400] Steps: 720 | Reward:  183.36 | Battery:  64.29% | Loss: 
+Placing Sensors
+[Episode 127/400] Steps: 720 | Reward:  224.07 | Battery:  75.86% | Loss: 
+Placing Sensors
+Policy -0.0113 | Value 11.2081 | KL 0.01715 | CF 0.1906 | Std 0.2450 | |a| 0.0868 | Alpha 0.0100 | MB 48/48
+[Episode 128/400] Steps: 720 | Reward:  226.02 | Battery:  77.40% | Loss: 0.0744
+Placing Sensors
+[Episode 129/400] Steps: 720 | Reward:  250.23 | Battery:  81.49% | Loss: 
+Placing Sensors
+[Episode 130/400] Steps: 720 | Reward:  220.26 | Battery:  76.53% | Loss: 
+Placing Sensors
+[Episode 131/400] Steps: 720 | Reward:  256.18 | Battery:  85.84% | Loss: 
+Placing Sensors
+Policy -0.0005 | Value 14.3960 | KL 0.02361 | CF 0.2294 | Std 0.2446 | |a| 0.0913 | Alpha 0.0100 | MB 36/48
+[Episode 132/400] Steps: 720 | Reward:  244.72 | Battery:  82.74% | Loss: 0.0853
+Placing Sensors
+[Episode 133/400] Steps: 720 | Reward:  207.86 | Battery:  72.10% | Loss: 
+Placing Sensors
+[Episode 134/400] Steps: 720 | Reward:  241.86 | Battery:  80.73% | Loss: 
+Placing Sensors
+[Episode 135/400] Steps: 720 | Reward:  203.64 | Battery:  72.49% | Loss: 
+Placing Sensors
+Policy -0.0167 | Value 9.9654 | KL 0.02315 | CF 0.1943 | Std 0.2445 | |a| 0.0970 | Alpha 0.0100 | MB 48/48
+[Episode 136/400] Steps: 720 | Reward:  257.99 | Battery:  83.88% | Loss: 0.0396
+Placing Sensors
+[Episode 137/400] Steps: 720 | Reward:  223.03 | Battery:  77.91% | Loss: 
+Placing Sensors
+[Episode 138/400] Steps: 720 | Reward:  271.43 | Battery:  89.42% | Loss: 
+Placing Sensors
+[Episode 139/400] Steps: 720 | Reward:  246.54 | Battery:  82.05% | Loss: 
+Placing Sensors
+Policy 0.0207 | Value 14.9913 | KL 0.01868 | CF 0.1432 | Std 0.2440 | |a| 0.0949 | Alpha 0.0100 | MB 12/48
+[Episode 140/400] Steps: 720 | Reward:  236.67 | Battery:  80.69% | Loss: 0.2160
+Placing Sensors
+[Episode 141/400] Steps: 720 | Reward:  210.75 | Battery:  73.44% | Loss: 
+Placing Sensors
+[Episode 142/400] Steps: 720 | Reward:  222.64 | Battery:  78.27% | Loss: 
+Placing Sensors
+[Episode 143/400] Steps: 720 | Reward:  225.07 | Battery:  79.45% | Loss: 
+Placing Sensors
+Policy -0.0056 | Value 11.3623 | KL 0.02315 | CF 0.2461 | Std 0.2435 | |a| 0.1023 | Alpha 0.0100 | MB 48/48
+[Episode 144/400] Steps: 720 | Reward:  247.49 | Battery:  85.27% | Loss: 0.0608
+Placing Sensors
+[Episode 145/400] Steps: 720 | Reward:  254.04 | Battery:  80.87% | Loss: 
+Placing Sensors
+[Episode 146/400] Steps: 720 | Reward:  237.72 | Battery:  83.93% | Loss: 
+Placing Sensors
+[Episode 147/400] Steps: 720 | Reward:  200.61 | Battery:  74.93% | Loss: 
+Placing Sensors
+Policy 0.0244 | Value 15.0324 | KL 0.03367 | CF 0.2806 | Std 0.2431 | |a| 0.0999 | Alpha 0.0100 | MB 12/48
+[Episode 148/400] Steps: 720 | Reward:  237.60 | Battery:  79.89% | Loss: 0.1737
+Placing Sensors
+[Episode 149/400] Steps: 720 | Reward:  190.38 | Battery:  66.22% | Loss: 
+Placing Sensors
+[Episode 150/400] Steps: 720 | Reward:  236.81 | Battery:  78.85% | Loss: 
+Placing Sensors
+[Episode 151/400] Steps: 720 | Reward:  213.87 | Battery:  74.74% | Loss: 
+Placing Sensors
+Policy -0.0090 | Value 16.0816 | KL 0.01743 | CF 0.1912 | Std 0.2430 | |a| 0.1130 | Alpha 0.0100 | MB 48/48
+[Episode 152/400] Steps: 720 | Reward:  253.16 | Battery:  84.92% | Loss: -0.0074
+Placing Sensors
+[Episode 153/400] Steps: 720 | Reward:  208.14 | Battery:  71.05% | Loss: 
+Placing Sensors
+[Episode 154/400] Steps: 720 | Reward:  256.85 | Battery:  86.22% | Loss: 
+Placing Sensors
+[Episode 155/400] Steps: 720 | Reward:  179.16 | Battery:  68.96% | Loss: 
+Placing Sensors
+Policy -0.0004 | Value 9.1966 | KL 0.02556 | CF 0.2284 | Std 0.2428 | |a| 0.0926 | Alpha 0.0100 | MB 24/48
+[Episode 156/400] Steps: 720 | Reward:  208.97 | Battery:  78.47% | Loss: 0.0174
+Placing Sensors
+[Episode 157/400] Steps: 720 | Reward:  198.73 | Battery:  68.79% | Loss: 
+Placing Sensors
+[Episode 158/400] Steps: 720 | Reward:  190.24 | Battery:  69.72% | Loss: 
+Placing Sensors
+[Episode 159/400] Steps: 720 | Reward:  242.63 | Battery:  82.07% | Loss: 
+Placing Sensors
+Policy 0.0115 | Value 12.7578 | KL 0.02443 | CF 0.2036 | Std 0.2424 | |a| 0.0913 | Alpha 0.0100 | MB 24/48
+[Episode 160/400] Steps: 720 | Reward:  267.14 | Battery:  86.47% | Loss: 0.1183
+Placing Sensors
+[Episode 161/400] Steps: 720 | Reward:  243.46 | Battery:  79.77% | Loss: 
+Placing Sensors
+[Episode 162/400] Steps: 720 | Reward:  221.67 | Battery:  77.02% | Loss: 
+Placing Sensors
+[Episode 163/400] Steps: 720 | Reward:  226.84 | Battery:  78.16% | Loss: 
+Placing Sensors
+Policy -0.0158 | Value 11.4189 | KL 0.02250 | CF 0.2514 | Std 0.2418 | |a| 0.0958 | Alpha 0.0100 | MB 36/48
+[Episode 164/400] Steps: 720 | Reward:  221.88 | Battery:  79.04% | Loss: -0.1961
+Placing Sensors
+[Episode 165/400] Steps: 720 | Reward:  220.11 | Battery:  78.65% | Loss: 
+Placing Sensors
+[Episode 166/400] Steps: 720 | Reward:  245.48 | Battery:  82.54% | Loss: 
+Placing Sensors
+[Episode 167/400] Steps: 720 | Reward:  184.43 | Battery:  67.17% | Loss: 
+Placing Sensors
+Policy -0.0118 | Value 8.4867 | KL 0.02081 | CF 0.1889 | Std 0.2410 | |a| 0.1019 | Alpha 0.0100 | MB 48/48
+[Episode 168/400] Steps: 720 | Reward:  221.19 | Battery:  79.22% | Loss: -0.1329
+Placing Sensors
+[Episode 169/400] Steps: 720 | Reward:  256.02 | Battery:  84.30% | Loss: 
+Placing Sensors
+[Episode 170/400] Steps: 720 | Reward:  247.69 | Battery:  85.54% | Loss: 
+Placing Sensors
+[Episode 171/400] Steps: 720 | Reward:  247.95 | Battery:  84.85% | Loss: 
+Placing Sensors
+Policy -0.0039 | Value 9.9769 | KL 0.02009 | CF 0.1984 | Std 0.2403 | |a| 0.1000 | Alpha 0.0100 | MB 48/48
+[Episode 172/400] Steps: 720 | Reward:  186.87 | Battery:  67.13% | Loss: -0.1850
+Placing Sensors
+[Episode 173/400] Steps: 720 | Reward:  232.00 | Battery:  77.91% | Loss: 
+Placing Sensors
+[Episode 174/400] Steps: 720 | Reward:  261.28 | Battery:  85.54% | Loss: 
+Placing Sensors
+[Episode 175/400] Steps: 720 | Reward:  222.41 | Battery:  75.41% | Loss: 
+Placing Sensors
+Policy -0.0131 | Value 15.2371 | KL 0.02233 | CF 0.2141 | Std 0.2393 | |a| 0.1007 | Alpha 0.0100 | MB 48/48
+[Episode 176/400] Steps: 720 | Reward:  206.27 | Battery:  72.97% | Loss: -0.0385
+Placing Sensors
+[Episode 177/400] Steps: 720 | Reward:  244.53 | Battery:  82.14% | Loss: 
+Placing Sensors
+[Episode 178/400] Steps: 720 | Reward:  217.47 | Battery:  76.61% | Loss: 
+Placing Sensors
+[Episode 179/400] Steps: 720 | Reward:  226.01 | Battery:  81.10% | Loss: 
+Placing Sensors
+Policy 0.0116 | Value 22.3157 | KL 0.03033 | CF 0.2767 | Std 0.2384 | |a| 0.0928 | Alpha 0.0100 | MB 24/48
+[Episode 180/400] Steps: 720 | Reward:  251.90 | Battery:  85.23% | Loss: -0.0866
+Placing Sensors
+[Episode 181/400] Steps: 720 | Reward:  226.48 | Battery:  78.17% | Loss: 
+Placing Sensors
+[Episode 182/400] Steps: 720 | Reward:  228.26 | Battery:  80.84% | Loss: 
+Placing Sensors
+[Episode 183/400] Steps: 720 | Reward:  255.10 | Battery:  80.31% | Loss: 
+Placing Sensors
+Policy -0.0086 | Value 13.7085 | KL 0.01788 | CF 0.1858 | Std 0.2380 | |a| 0.1056 | Alpha 0.0100 | MB 48/48
+[Episode 184/400] Steps: 720 | Reward:  238.96 | Battery:  81.20% | Loss: 0.1822
+Placing Sensors
+[Episode 185/400] Steps: 720 | Reward:  226.18 | Battery:  79.13% | Loss: 
+Placing Sensors
+[Episode 186/400] Steps: 720 | Reward:  249.15 | Battery:  85.41% | Loss: 
+Placing Sensors
+[Episode 187/400] Steps: 720 | Reward:  238.95 | Battery:  79.64% | Loss: 
+Placing Sensors
+Policy -0.0176 | Value 16.6559 | KL 0.01808 | CF 0.2013 | Std 0.2376 | |a| 0.0952 | Alpha 0.0100 | MB 48/48
+[Episode 188/400] Steps: 720 | Reward:  251.97 | Battery:  81.93% | Loss: -0.3333
+Placing Sensors
+[Episode 189/400] Steps: 720 | Reward:  216.68 | Battery:  74.94% | Loss: 
+Placing Sensors
+[Episode 190/400] Steps: 720 | Reward:  233.18 | Battery:  77.48% | Loss: 
+Placing Sensors
+[Episode 191/400] Steps: 720 | Reward:  239.57 | Battery:  85.91% | Loss: 
+Placing Sensors
+Policy -0.0129 | Value 10.9814 | KL 0.02143 | CF 0.2363 | Std 0.2369 | |a| 0.1140 | Alpha 0.0100 | MB 48/48
+[Episode 192/400] Steps: 720 | Reward:  230.54 | Battery:  79.12% | Loss: -0.0943
+Placing Sensors
+[Episode 193/400] Steps: 720 | Reward:  246.67 | Battery:  84.94% | Loss: 
+Placing Sensors
+[Episode 194/400] Steps: 720 | Reward:  208.61 | Battery:  76.19% | Loss: 
+Placing Sensors
+[Episode 195/400] Steps: 720 | Reward:  171.99 | Battery:  60.43% | Loss: 
+Placing Sensors
+Policy 0.0125 | Value 16.1904 | KL 0.02937 | CF 0.2821 | Std 0.2364 | |a| 0.1189 | Alpha 0.0100 | MB 24/48
+[Episode 196/400] Steps: 720 | Reward:  236.43 | Battery:  81.20% | Loss: -0.0854
+Placing Sensors
+[Episode 197/400] Steps: 720 | Reward:  253.86 | Battery:  85.98% | Loss: 
+Placing Sensors
+[Episode 198/400] Steps: 720 | Reward:  205.37 | Battery:  76.74% | Loss: 
+Placing Sensors
+[Episode 199/400] Steps: 720 | Reward:  247.78 | Battery:  85.30% | Loss: 
+Placing Sensors
+Policy -0.0058 | Value 14.3336 | KL 0.01497 | CF 0.1794 | Std 0.2361 | |a| 0.0925 | Alpha 0.0100 | MB 48/48
+[Episode 200/400] Steps: 720 | Reward:  258.01 | Battery:  84.24% | Loss: 0.0730
+Placing Sensors
+[Episode 201/400] Steps: 720 | Reward:  174.02 | Battery:  60.47% | Loss: 
+Placing Sensors
+[Episode 202/400] Steps: 720 | Reward:  189.61 | Battery:  69.60% | Loss: 
+Placing Sensors
+[Episode 203/400] Steps: 720 | Reward:  235.60 | Battery:  79.79% | Loss: 
+Placing Sensors
+Policy -0.0067 | Value 12.6568 | KL 0.02278 | CF 0.1930 | Std 0.2352 | |a| 0.1145 | Alpha 0.0100 | MB 36/48
+[Episode 204/400] Steps: 720 | Reward:  218.82 | Battery:  74.09% | Loss: -0.1067
+Placing Sensors
+[Episode 205/400] Steps: 720 | Reward:  242.53 | Battery:  79.98% | Loss: 
+Placing Sensors
+[Episode 206/400] Steps: 720 | Reward:  238.18 | Battery:  76.55% | Loss: 
+Placing Sensors
+[Episode 207/400] Steps: 720 | Reward:  222.20 | Battery:  78.80% | Loss: 
+Placing Sensors
+Policy -0.0022 | Value 12.2855 | KL 0.01986 | CF 0.1860 | Std 0.2342 | |a| 0.1104 | Alpha 0.0100 | MB 48/48
+[Episode 208/400] Steps: 720 | Reward:  265.07 | Battery:  87.47% | Loss: 0.1759
+Placing Sensors
+[Episode 209/400] Steps: 720 | Reward:  254.70 | Battery:  86.36% | Loss: 
+Placing Sensors
+[Episode 210/400] Steps: 720 | Reward:  245.29 | Battery:  77.15% | Loss: 
+Placing Sensors
+[Episode 211/400] Steps: 720 | Reward:  219.24 | Battery:  76.70% | Loss: 
+Placing Sensors
+Policy -0.0054 | Value 26.9058 | KL 0.01709 | CF 0.1795 | Std 0.2331 | |a| 0.1083 | Alpha 0.0100 | MB 48/48
+[Episode 212/400] Steps: 720 | Reward:  267.68 | Battery:  84.24% | Loss: -0.0665
+Placing Sensors
+[Episode 213/400] Steps: 720 | Reward:  258.97 | Battery:  84.75% | Loss: 
+Placing Sensors
+[Episode 214/400] Steps: 720 | Reward:  262.46 | Battery:  85.94% | Loss: 
+Placing Sensors
+[Episode 215/400] Steps: 720 | Reward:  263.62 | Battery:  82.35% | Loss: 
+Placing Sensors
+Policy -0.0097 | Value 28.6048 | KL 0.02251 | CF 0.2262 | Std 0.2320 | |a| 0.1127 | Alpha 0.0100 | MB 48/48
+[Episode 216/400] Steps: 720 | Reward:  217.01 | Battery:  75.46% | Loss: -0.1573
+Placing Sensors
+[Episode 217/400] Steps: 720 | Reward:  251.57 | Battery:  85.57% | Loss: 
+Placing Sensors
+[Episode 218/400] Steps: 720 | Reward:  262.43 | Battery:  85.77% | Loss: 
+Placing Sensors
+[Episode 219/400] Steps: 720 | Reward:  285.82 | Battery:  89.35% | Loss: 
+Placing Sensors
+Policy 0.0079 | Value 22.4764 | KL 0.02885 | CF 0.2534 | Std 0.2317 | |a| 0.1177 | Alpha 0.0100 | MB 24/48
+[Episode 220/400] Steps: 720 | Reward:  227.60 | Battery:  80.34% | Loss: 0.0592
+Placing Sensors
+[Episode 221/400] Steps: 720 | Reward:  229.59 | Battery:  78.28% | Loss: 
+Placing Sensors
+[Episode 222/400] Steps: 720 | Reward:  231.84 | Battery:  81.16% | Loss: 
+Placing Sensors
+[Episode 223/400] Steps: 720 | Reward:  201.91 | Battery:  71.09% | Loss: 
+Placing Sensors
+Policy -0.0019 | Value 8.3459 | KL 0.01625 | CF 0.1807 | Std 0.2310 | |a| 0.1082 | Alpha 0.0100 | MB 48/48
+[Episode 224/400] Steps: 720 | Reward:  272.39 | Battery:  85.27% | Loss: -0.0169
+Placing Sensors
+[Episode 225/400] Steps: 720 | Reward:  233.00 | Battery:  78.94% | Loss: 
+Placing Sensors
+[Episode 226/400] Steps: 720 | Reward:  239.14 | Battery:  82.86% | Loss: 
+Placing Sensors
+[Episode 227/400] Steps: 720 | Reward:  179.00 | Battery:  64.68% | Loss: 
+Placing Sensors
+Policy -0.0115 | Value 10.2801 | KL 0.02212 | CF 0.2163 | Std 0.2298 | |a| 0.1151 | Alpha 0.0100 | MB 48/48
+[Episode 228/400] Steps: 720 | Reward:  251.81 | Battery:  83.47% | Loss: 0.1104
+Placing Sensors
+[Episode 229/400] Steps: 720 | Reward:  216.40 | Battery:  75.77% | Loss: 
+Placing Sensors
+[Episode 230/400] Steps: 720 | Reward:  230.31 | Battery:  81.96% | Loss: 
+Placing Sensors
+[Episode 231/400] Steps: 720 | Reward:  230.93 | Battery:  79.11% | Loss: 
+Placing Sensors
+Policy -0.0105 | Value 20.0067 | KL 0.02023 | CF 0.1681 | Std 0.2288 | |a| 0.1146 | Alpha 0.0100 | MB 48/48
+[Episode 232/400] Steps: 720 | Reward:  271.56 | Battery:  87.09% | Loss: -0.3511
+Placing Sensors
+[Episode 233/400] Steps: 720 | Reward:  238.18 | Battery:  84.28% | Loss: 
+Placing Sensors
+[Episode 234/400] Steps: 720 | Reward:  243.33 | Battery:  79.99% | Loss: 
+Placing Sensors
+[Episode 235/400] Steps: 720 | Reward:  266.43 | Battery:  86.76% | Loss: 
+Placing Sensors
+Policy -0.0108 | Value 9.4661 | KL 0.02640 | CF 0.2291 | Std 0.2282 | |a| 0.1038 | Alpha 0.0100 | MB 48/48
+[Episode 236/400] Steps: 720 | Reward:  207.71 | Battery:  73.92% | Loss: -0.2018
+Placing Sensors
+[Episode 237/400] Steps: 720 | Reward:  230.03 | Battery:  82.46% | Loss: 
+Placing Sensors
+[Episode 238/400] Steps: 720 | Reward:  244.33 | Battery:  82.68% | Loss: 
+Placing Sensors
+[Episode 239/400] Steps: 720 | Reward:  223.34 | Battery:  80.76% | Loss: 
+Placing Sensors
+Policy -0.0059 | Value 8.9069 | KL 0.02347 | CF 0.1987 | Std 0.2283 | |a| 0.1065 | Alpha 0.0100 | MB 24/48
+[Episode 240/400] Steps: 720 | Reward:  257.60 | Battery:  80.95% | Loss: -0.1219
+Placing Sensors
+[Episode 241/400] Steps: 720 | Reward:  253.23 | Battery:  85.92% | Loss: 
+Placing Sensors
+[Episode 242/400] Steps: 720 | Reward:  264.76 | Battery:  84.70% | Loss: 
+Placing Sensors
+[Episode 243/400] Steps: 720 | Reward:  231.49 | Battery:  82.07% | Loss: 
+Placing Sensors
+Policy -0.0034 | Value 12.1323 | KL 0.01961 | CF 0.2146 | Std 0.2280 | |a| 0.1218 | Alpha 0.0100 | MB 48/48
+[Episode 244/400] Steps: 720 | Reward:  230.68 | Battery:  79.70% | Loss: -0.0361
+Placing Sensors
+[Episode 245/400] Steps: 720 | Reward:  229.64 | Battery:  80.86% | Loss: 
+Placing Sensors
+[Episode 246/400] Steps: 720 | Reward:  263.18 | Battery:  81.72% | Loss: 
+Placing Sensors
+[Episode 247/400] Steps: 720 | Reward:  205.32 | Battery:  71.57% | Loss: 
+Placing Sensors
+Policy -0.0093 | Value 8.2976 | KL 0.02199 | CF 0.1996 | Std 0.2275 | |a| 0.1148 | Alpha 0.0100 | MB 48/48
+[Episode 248/400] Steps: 720 | Reward:  193.04 | Battery:  67.98% | Loss: -0.1050
+Placing Sensors
+[Episode 249/400] Steps: 720 | Reward:  242.08 | Battery:  79.30% | Loss: 
+Placing Sensors
+[Episode 250/400] Steps: 720 | Reward:  245.65 | Battery:  82.92% | Loss: 
+Placing Sensors
+[Episode 251/400] Steps: 720 | Reward:  249.70 | Battery:  85.46% | Loss: 
+Placing Sensors
+Policy -0.0085 | Value 8.4650 | KL 0.02619 | CF 0.2024 | Std 0.2271 | |a| 0.1212 | Alpha 0.0100 | MB 36/48
+[Episode 252/400] Steps: 720 | Reward:  186.48 | Battery:  70.60% | Loss: -0.0607
+Placing Sensors
+[Episode 253/400] Steps: 720 | Reward:  232.20 | Battery:  79.54% | Loss: 
+Placing Sensors
+[Episode 254/400] Steps: 720 | Reward:  254.11 | Battery:  81.37% | Loss: 
+Placing Sensors
+[Episode 255/400] Steps: 720 | Reward:  272.01 | Battery:  84.26% | Loss: 
+Placing Sensors
+Policy -0.0034 | Value 7.3666 | KL 0.02390 | CF 0.1888 | Std 0.2263 | |a| 0.1183 | Alpha 0.0100 | MB 48/48
+[Episode 256/400] Steps: 720 | Reward:  204.99 | Battery:  73.70% | Loss: -0.0029
+Placing Sensors
+[Episode 257/400] Steps: 720 | Reward:  243.34 | Battery:  83.94% | Loss: 
+Placing Sensors
+[Episode 258/400] Steps: 720 | Reward:  211.04 | Battery:  77.06% | Loss: 
+Placing Sensors
+[Episode 259/400] Steps: 720 | Reward:  254.66 | Battery:  82.50% | Loss: 
+Placing Sensors
+Policy -0.0031 | Value 12.4080 | KL 0.02769 | CF 0.2094 | Std 0.2254 | |a| 0.1266 | Alpha 0.0100 | MB 36/48
+[Episode 260/400] Steps: 720 | Reward:  232.35 | Battery:  81.16% | Loss: 0.0658
+Placing Sensors
+[Episode 261/400] Steps: 720 | Reward:  242.90 | Battery:  82.43% | Loss: 
+Placing Sensors
+[Episode 262/400] Steps: 720 | Reward:  225.33 | Battery:  75.94% | Loss: 
+Placing Sensors
