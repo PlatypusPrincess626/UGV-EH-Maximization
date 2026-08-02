@@ -15,7 +15,7 @@
 
 SEEDS="${SEEDS:-1 2 3 4 5 6 7 8}"
 EPISODES="${EPISODES:-400}"
-VARIANTS="${VARIANTS:-lyapunov normal}"
+VARIANTS="${VARIANTS:-lyapunov normal cost}"
 LOGDIR="${LOGDIR:-sweep_logs}"
 
 mkdir -p "$LOGDIR"

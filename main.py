@@ -105,6 +105,11 @@ LYAPUNOV_MARGIN = 0.0001
 BATTERY_MARGIN = 0.10; BOUNDARY_MARGIN = 0.10; VEGETATION_MARGIN = 0.05
 VELOCITY_MARGIN = 0.05; COMM_MARGIN = 0.10; CLIP_EPS =0.20
 LYAPUNOV_ALPHA = 0.001  # see LYAPUNOV_MARGIN above
+# For a cost MDP the Bellman equation gives
+#     dV = -c(s) - (1 - gamma) * V(s')
+# so (1 - gamma) IS the decay rate. Using anything else would certify
+# against a bound the discount already contradicts.
+COST_LYAPUNOV_ALPHA = 1.0 - GAMMA
 # Constant-force hinge pull on raw_log_std toward RAW_LOG_STD_TARGET --
 # see evaluate_actions()'s raw_log_std_reg docstring. Replaces the
 # earlier L2 penalty (whose gradient was proportional to raw_log_std,
@@ -180,6 +185,11 @@ LYAPUNOV_STABLE_THRESHOLD = 2 * LYAPUNOV_MARGIN
 # Ultimate boundedness
 ###############################################################
 SOC_TARGET = 0.90
+# The cost variant measures deficit QUADRATICALLY, so a ball of the
+# same radius in V units means a much looser tolerance in SOC:
+# V <= 0.05 is SOC >= 69.9% under the square, against 85.5% under the
+# linear form. 0.0025 = 0.05^2 restores the intended meaning.
+COST_LYAPUNOV_BALL = 0.0025
 LYAPUNOV_BALL = 0.05
 
 LYAPUNOV_MAX_VIOLATION_RATE = 0.30
@@ -218,7 +228,9 @@ STD_CLEARED_THRESHOLD = 1.0
 # still indistinguishable from the pre-fix stuck baseline. Require
 # avg_reward to have actually cleared a real bar, not just plateaued
 # anywhere, before convergence can fire.
-REWARD_CONVERGENCE_THRESHOLD = -150.0
+# Cost returns run about -50 to -110, so the reward arms' -150 would
+# be satisfied from episode 1. Set per variant.
+REWARD_CONVERGENCE_THRESHOLD = -100.0 if TRANSFORMER_VARIANT == "cost" else -150.0
 
 ###############################################################
 # Plateau test
@@ -254,8 +266,55 @@ PLATEAU_CONSECUTIVE = 10
 # instead of running to 1000.
 ###############################################################
 DEGRADATION_FRAC = 0.15
+# Floor on the denominator of the regression ratio, so a
+# best_avg_reward near zero cannot make it explode.
+DEGRADATION_SCALE_FLOOR = 10.0
 DEGRADATION_PATIENCE = 10
 ACTION_SATURATION_THRESHOLD = 0.97
+
+###############################################################
+# Cost-MDP variant
+#
+# Every reward component becomes a non-negative COST that is zero at
+# its ideal, so r = -c <= 0 and the value function is the negative
+# cost-to-go. V_cost = -value is then a Lyapunov candidate by
+# construction: non-negative, zero exactly when all three costs are
+# zero forever (parked, in sun, at target charge), and decreasing by
+# the Bellman equation.
+#
+# Why each component had to change rather than only the battery term:
+# leaving directional_reward and PARK_COEF positive keeps the reward
+# mixed-sign, which makes the value maximal at the goal and defeats
+# the whole construction.
+#
+# Weights are set so the three costs contribute comparably at the
+# scales actually observed:
+#     shade   mean 0.228   (1 - exposure)
+#     deficit mean 0.124   quadratic; squaring SHRINKS values on [0,1]
+#     move    mean 0.033   distance / MAX_MOVE_PER_STEP
+# The deficit weight is raised to compensate for the squaring, which
+# roughly halved it relative to the linear form.
+###############################################################
+COST_SHADE_W = 1.00
+COST_DEFICIT_W = 2.00
+COST_MOVE_W = 0.50
+
+# Elevation below which no realistically attainable position sustains
+# the robot, so the descent condition cannot hold and is not claimed.
+#
+# Derived empirically: the 95th percentile of ACHIEVED panel power
+# crosses the 15.92 W breakeven at ~18.5 deg. Note this is the
+# attainable figure, not the unshaded one -- an earlier estimate of
+# 20 deg assumed unshaded operation, and a linear extrapolation of
+# power against sin(elevation) gave a nonsense 6.5 deg because the
+# fit's intercept is not physical.
+#
+# At 18.5 deg the certified region covers 96% of the episode. The
+# three ball escapes observed in the lyapunov run sit at 20.3-30.0
+# deg, INSIDE this region, so they remain counted as the genuine
+# policy failures they are.
+CERTIFY_MIN_ELEVATION = 18.5
+
 
 ###############################################################
 # Reward coefficients
@@ -292,6 +351,8 @@ def log_status(ep, total_episodes, steps, avg_reward, final_batt, loss, is_eval=
 SCALAR_DIM = 8
 
 SOC_OBS_INDEX = -(SCALAR_DIM - 4)
+# elevation_norm is scalar 6 of 8 (see obs()).
+ELEV_OBS_INDEX = -(SCALAR_DIM - 6)
 X_OBS_INDEX = -SCALAR_DIM
 Y_OBS_INDEX = -(SCALAR_DIM - 1)
 
@@ -316,6 +377,57 @@ def obs(env, x, y, yaw, step):
 
 def seq_tensor(history, device):
     return torch.tensor(np.asarray(history),dtype=torch.float32,device=device).unsqueeze(0)
+
+def reward_fn_cost(after, telemetry, soc_after):
+    """
+    Pure cost. Every term is >= 0 and zero at its ideal, so the
+    returned reward is <= 0 and the value function is the negative
+    cost-to-go.
+
+    Differences from reward_fn that matter:
+
+      * LEVEL, not DELTA. reward_fn's battery term is
+        BATTERY_COEF * delta_batt, whose episode sum telescopes to
+        2*(final - start) -- verified exactly on all ten validation
+        episodes. That is path-independent: two episodes ending at the
+        same charge score identically whether one reached target at
+        step 334 or never. The deficit cost integrates over time
+        instead, so reaching target sooner and staying is rewarded.
+
+      * The movement cost does NOT scale with exposure. reward_fn
+        charges movement at (1 + 3*exposure), which made moving
+        CHEAPEST exactly when energy was scarcest -- 60% of the midday
+        rate in the evening, for the same energy per metre. Measured on
+        the lyapunov run, 88% of all motion energy was spent in windows
+        where no position could sustain the robot.
+
+      * Quadratic, not linear or quartic. Deficit is normalized to
+        [0,1] where higher powers shrink both value and gradient:
+        quartic is weaker than quadratic everywhere below deficit
+        0.707 (SOC 26.4%), which is the entire operating range.
+    """
+    exposure = float(np.dot(GAUSSIAN_KERNEL, 1.0 - after))
+
+    px, py, _ = telemetry["previous_position"]
+    nx, ny, _ = telemetry["new_position"]
+    distance = math.hypot(nx - px, ny - py)
+
+    c_shade = 1.0 - exposure
+    c_deficit = (max(SOC_TARGET - soc_after, 0.0) / SOC_TARGET) ** 2
+    c_move = distance / MAX_MOVE_PER_STEP
+
+    total = -(COST_SHADE_W * c_shade
+              + COST_DEFICIT_W * c_deficit
+              + COST_MOVE_W * c_move)
+
+    # Signs match reward_fn's convention so the episode CSV columns
+    # stay comparable in magnitude: directional and battery are
+    # contributions to the reward, movement is reported positive.
+    return (float(total),
+            float(-COST_SHADE_W * c_shade),
+            float(-COST_DEFICIT_W * c_deficit),
+            float(COST_MOVE_W * c_move))
+
 
 def reward_fn(after, telemetry, delta_batt, action=None):
     # -------
@@ -800,6 +912,68 @@ def update(model,opt,rollouts,device, ep, metrics_writer=None, return_var_tracke
                 (lp, entropy, values, mean_std, mean_raw_log_std,
                  raw_log_std_reg, raw_mean) = model.evaluate_actions(
                     states[mb], actions[mb])
+
+                # Lyapunov certification, cost variant only.
+                #
+                # Certified on the ANALYTIC V from measured state of
+                # charge, not on the critic. A neural V cannot be
+                # certified over a 1689-dimensional observation: the
+                # covering argument needs (1/delta)^d samples, and the
+                # analytic form is a function of ONE variable. The
+                # critic's own descent and its agreement with the
+                # analytic V are logged alongside, which is the
+                # evidence that it learned a valid certificate rather
+                # than only a value estimate.
+                if TRANSFORMER_VARIANT == "cost":
+                    with torch.no_grad():
+                        mb_soc = states[mb][:, -1, SOC_OBS_INDEX]
+                        mb_soc_next = next_states[mb][:, -1, SOC_OBS_INDEX]
+                        mb_elev = states[mb][:, -1, ELEV_OBS_INDEX] * 90.0
+
+                        V_true = (F.relu(SOC_TARGET - mb_soc) / SOC_TARGET) ** 2
+                        V_true_next = (F.relu(SOC_TARGET - mb_soc_next) / SOC_TARGET) ** 2
+                        dV_true = V_true_next - V_true
+
+                        V_cost = -values
+                        V_cost_next = -model.value_only(next_states[mb])
+                        dV_cost = V_cost_next - V_cost
+
+                        # Descent is claimed only OUTSIDE the ball and
+                        # INSIDE the certifiable region. Below
+                        # CERTIFY_MIN_ELEVATION no attainable position
+                        # sustains the robot, so dV < 0 is physically
+                        # impossible there and is not asserted. The
+                        # region is a set of STATES, not a range of
+                        # time indices -- that is what makes it a
+                        # region-of-attraction claim.
+                        certifiable = (mb_elev >= CERTIFY_MIN_ELEVATION).float()
+                        outside = (V_true > COST_LYAPUNOV_BALL).float() * certifiable
+                        n_out = outside.sum().clamp(min=1.0)
+
+                        slack = dV_true + COST_LYAPUNOV_ALPHA * V_true + LYAPUNOV_MARGIN
+                        lyap_violation_rate = ((slack > 0).float() * outside).sum() / n_out
+                        lyap_mean_dV = (dV_true * outside).sum() / n_out
+                        lyap_worst_slack = torch.where(
+                            outside > 0, slack,
+                            torch.full_like(slack, -1e9)).max()
+                        lyap_in_ball_rate = 1.0 - (V_true > COST_LYAPUNOV_BALL).float().mean()
+                        certifiable_frac = certifiable.mean()
+
+                        slack_c = dV_cost + COST_LYAPUNOV_ALPHA * V_cost + LYAPUNOV_MARGIN
+                        v_critic_violation = ((slack_c > 0).float() * outside).sum() / n_out
+                        v_critic_mean = V_cost.mean()
+                        v_critic_min = V_cost.min()
+                        # Correlation rather than RMSE: V_cost is a
+                        # discounted SUM of costs while V_true is a
+                        # single-step deficit, so they differ by a
+                        # factor near 1/(1-gamma) and an RMSE between
+                        # them would measure that scale, not agreement.
+                        if V_cost.numel() > 1 and V_true.std() > 1e-8:
+                            v_agreement = torch.corrcoef(
+                                torch.stack([V_cost, V_true]))[0, 1]
+                        else:
+                            v_agreement = torch.zeros((), device=V_cost.device)
+
                 log_ratio = lp - oldlp[mb]
                 ratio = torch.exp(log_ratio)
                 with torch.no_grad():
@@ -845,6 +1019,18 @@ def update(model,opt,rollouts,device, ep, metrics_writer=None, return_var_tracke
                     "lr_scale": float(lr_scale),
                     "alpha": float(alpha),
                 }
+                if TRANSFORMER_VARIANT == "cost":
+                    batch_metrics.update({
+                        "lyap_violation_rate": float(lyap_violation_rate.item()),
+                        "lyap_mean_dV": float(lyap_mean_dV.item()),
+                        "lyap_worst_slack": float(lyap_worst_slack.item()),
+                        "lyap_in_ball_rate": float(lyap_in_ball_rate.item()),
+                        "certifiable_frac": float(certifiable_frac.item()),
+                        "v_critic_violation": float(v_critic_violation.item()),
+                        "v_critic_mean": float(v_critic_mean.item()),
+                        "v_critic_min": float(v_critic_min.item()),
+                        "v_agreement": float(v_agreement.item()),
+                    })
                 for k, v in batch_metrics.items():
                     accum[k] = accum.get(k, 0.0) + v
                 n_minibatches += 1
@@ -880,6 +1066,12 @@ def update(model,opt,rollouts,device, ep, metrics_writer=None, return_var_tracke
             row.update(avg)
             metrics_writer.writerow(row)
 
+        # Left None deliberately. The convergence block gated on
+        # `diag_lyap is not None` also sums diag_barrier and
+        # diag_mean_V, which have no meaning without auxiliary heads --
+        # populating only this one would crash on the first check.
+        # The cost variant's certification is written to
+        # training_metrics.csv and read by certify_stability.py.
         diag_lyap = None
         diag_barrier = None
         diag_std = avg.get("mean_std")
@@ -972,6 +1164,30 @@ def run():
                                # problem is gone.
                                {"params": log_std_params,     "lr": 3e-4, "weight_decay":1e-5, "initial_lr": 3e-4},],
                               eps=1e-5,)
+        elif TRANSFORMER_VARIANT == "cost":
+            from cost_transformer import CostTransformerActorCritic
+            model = CostTransformerActorCritic(
+                VIEW_DISTANCE, scalar_dim=SCALAR_DIM,
+                sequence_length=SEQUENCE_LENGTH).to(device)
+            # Same per-group rates and decay tags as the other two
+            # arms, so the comparison isolates the formulation.
+            opt = optim.AdamW([
+                {"params": (list(model.input_projection.parameters())
+                            + list(model.encoder.parameters())
+                            + list(model.attention_pool.parameters())
+                            + [model.position_embedding]),
+                 "lr": 1e-3, "weight_decay": 1e-5, "initial_lr": 1e-3},
+                {"params": list(model.actor.parameters()),
+                 "lr": 3e-4, "weight_decay": 1e-5, "initial_lr": 3e-4},
+                {"params": list(model.critic_body.parameters()),
+                 "lr": 3e-4, "weight_decay": 1e-5, "initial_lr": 3e-4},
+                {"params": [model.log_std_param],
+                 "lr": 3e-4, "weight_decay": 1e-5, "initial_lr": 3e-4},
+            ])
+            # No auxiliary heads, so the per-group clip is equivalent
+            # to a single global one.
+            control_params = list(model.parameters())
+            auxiliary_param_list = []
         elif TRANSFORMER_VARIANT == "chaotic":
             from chebyshev_transformer import ChebyshevTransformer
             model = ChebyshevTransformer(VIEW_DISTANCE).to(device)
@@ -1038,6 +1254,7 @@ def run():
         "policy_loss","value_loss","mean_V","std_V","std_barrier",
         "lyap_violation_rate","lyap_in_ball_rate","lyap_mean_dV","lyap_worst_slack",
         "lyap_v_rmse","grad_norm_control","grad_norm_aux","lr_scale",
+        "certifiable_frac","v_critic_violation","v_critic_mean","v_critic_min","v_agreement",
         "lyap_penalty","dynamics_loss",
         "barrier_loss","approx_kl","clip_fraction","mean_std","mean_raw_log_std",
         "mean_abs_action","alpha",
@@ -1159,8 +1376,12 @@ def run():
             ep_path_m += float(env.ch.step_path_m)
             ep_turn += float(env.ch.step_turn_integral)
 
-            rew_total, rew_directional, rew_battery, rew_movement = reward_fn(
-                after, tel, aft_batt-b_batt, current_action)
+            if TRANSFORMER_VARIANT == "cost":
+                rew_total, rew_directional, rew_battery, rew_movement = reward_fn_cost(
+                    after, tel, aft_batt / 100.0)
+            else:
+                rew_total, rew_directional, rew_battery, rew_movement = reward_fn(
+                    after, tel, aft_batt-b_batt, current_action)
             rew = rew_total - ACTION_SMOOTHNESS*smoothness
 
             total+=rew; previous_action=current_action
@@ -1350,10 +1571,20 @@ def run():
                         convergence_file.flush()
 
                         # auxiliary heads are doing. best.pt is already
-                        if best_avg_reward > 0:
-                            regression = (best_avg_reward - avg_reward) / abs(best_avg_reward)
-                        else:
-                            regression = 0.0
+                        # Sign-agnostic. The old form guarded on
+                        # `best_avg_reward > 0` and fell through to
+                        # regression = 0.0 otherwise, which silently
+                        # DISABLED the guard for any run with negative
+                        # returns -- i.e. the entire cost variant, and
+                        # any reward arm that happened to be scoring
+                        # below zero. That is the one mechanism
+                        # protecting a run from late collapse.
+                        #
+                        # The scale floor keeps the ratio finite when
+                        # best_avg_reward sits near zero.
+                        reward_scale = max(abs(best_avg_reward),
+                                           DEGRADATION_SCALE_FLOOR)
+                        regression = (best_avg_reward - avg_reward) / reward_scale
                         degrading = regression > DEGRADATION_FRAC
                         degrade_streak = degrade_streak + 1 if degrading else 0
 
@@ -1478,8 +1709,12 @@ def run():
                                         sol.apparent_zenith.iloc[0]).flatten()
             aft_batt = env.ch.get_battery()
 
-            rew, rew_directional, rew_battery, rew_movement = reward_fn(
-                aft, tel, aft_batt-b_batt, a)
+            if TRANSFORMER_VARIANT == "cost":
+                rew, rew_directional, rew_battery, rew_movement = reward_fn_cost(
+                    aft, tel, aft_batt / 100.0)
+            else:
+                rew, rew_directional, rew_battery, rew_movement = reward_fn(
+                    aft, tel, aft_batt-b_batt, a)
 
             w.writerow(dict(step=step,x_before=x,y_before=y,target_x=tx,target_y=ty,x_after=nx,y_after=ny,
                             battery_before=b_batt,battery_after=aft_batt,battery_delta=aft_batt-b_batt,reward=rew,
