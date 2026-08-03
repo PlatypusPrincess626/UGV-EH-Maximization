@@ -140,11 +140,31 @@ class CostTransformerActorCritic(nn.Module):
     @staticmethod
     def _initialize_weights(module):
         if isinstance(module, nn.Linear):
+            # Spectral-normalized layers do not own a plain `weight`
+            # Parameter -- they own a reparameterized tensor, and the
+            # NAME depends on which of the two APIs was imported at
+            # the top of this file:
+            #
+            #   torch.nn.utils.spectral_norm (legacy)
+            #       -> module.weight_orig, a Parameter
+            #   torch.nn.utils.parametrizations.spectral_norm (>=2.0)
+            #       -> module.parametrizations.weight.original
+            #
+            # Under the >= 2.0 API `module.weight` is a PROPERTY that
+            # recomputes original / sigma_max on every access, so
+            # nn.init.xavier_uniform_(module.weight) writes into a
+            # temporary that is discarded the moment it returns --
+            # silently, since the init runs under no_grad and raises
+            # nothing. Checking only for `weight_orig` (the legacy
+            # name) meant that on torch >= 2.0 -- the branch this file
+            # prefers -- the critic was never Xavier-initialized at
+            # all and kept nn.Linear's default Kaiming-uniform init.
             if hasattr(module, "weight_orig"):
-                # Spectral-normalized layers own a reparameterized
-                # weight; initializing `weight` directly would be
-                # overwritten on the next forward pass.
                 nn.init.xavier_uniform_(module.weight_orig)
+            elif (hasattr(module, "parametrizations")
+                  and "weight" in module.parametrizations):
+                nn.init.xavier_uniform_(
+                    module.parametrizations.weight.original)
             else:
                 nn.init.xavier_uniform_(module.weight)
             if module.bias is not None:
@@ -167,6 +187,18 @@ class CostTransformerActorCritic(nn.Module):
         Softplus approaches zero asymptotically rather than reaching
         it, which is why LYAPUNOV_BALL exists -- the certificate is
         stated over a ball around the goal, not at a single point.
+
+        RANGE, AND WHY THE REWARD IS SCALED
+
+        Spectral norm makes critic_body 1-Lipschitz in `latent`, and
+        `latent` is a convex combination of LayerNorm'd tokens, so
+        ||latent|| <= sqrt(d_model) ~ 11.3. The pre-Softplus output
+        therefore spans only ~+-11 around whatever offset the biases
+        supply, and biases are the one unconstrained path -- AdamW
+        moves them at ~lr per step. Targets must land inside that
+        range and within reach of the run's optimizer-step budget,
+        which is what main.py's COST_REWARD_SCALE = 1 - GAMMA is for:
+        it puts TD(lambda) returns at ~-0.23 instead of ~-23.
         """
         return -F.softplus(self.critic_body(latent)).squeeze(-1)
 

@@ -228,9 +228,20 @@ STD_CLEARED_THRESHOLD = 1.0
 # still indistinguishable from the pre-fix stuck baseline. Require
 # avg_reward to have actually cleared a real bar, not just plateaued
 # anywhere, before convergence can fire.
-# Cost returns run about -50 to -110, so the reward arms' -150 would
-# be satisfied from episode 1. Set per variant.
-REWARD_CONVERGENCE_THRESHOLD = -100.0 if TRANSFORMER_VARIANT == "cost" else -150.0
+# Set per variant, because the two arms' rewards are on different
+# scales and neither threshold means anything on the other.
+#
+# The old cost value (-100) was written against an assumed return of
+# -50 to -110. Measured, the UNSCALED cost arm returned -624 (best
+# episode) to -1354 (worst), typically ~-1000, so -100 could never
+# have fired. Under COST_REWARD_SCALE = 1 - GAMMA those become -6.24
+# to -13.5, typically ~-10. -7.0 is therefore a real bar: a 50-episode
+# average has to beat the single luckiest untrained episode.
+#
+# Hardcoded rather than written as COST_REWARD_SCALE * something,
+# because COST_REWARD_SCALE is defined further down with the rest of
+# the cost-MDP block and this constant is read before it.
+REWARD_CONVERGENCE_THRESHOLD = -7.0 if TRANSFORMER_VARIANT == "cost" else -150.0
 
 ###############################################################
 # Plateau test
@@ -268,7 +279,13 @@ PLATEAU_CONSECUTIVE = 10
 DEGRADATION_FRAC = 0.15
 # Floor on the denominator of the regression ratio, so a
 # best_avg_reward near zero cannot make it explode.
-DEGRADATION_SCALE_FLOOR = 10.0
+#
+# Per-variant for the same reason as REWARD_CONVERGENCE_THRESHOLD: a
+# floor of 10.0 against scaled cost returns of ~-10 would dominate
+# the denominator at every check and mute the guard entirely. 0.1
+# keeps it at the same ~1% of a typical return that 10.0 was on the
+# reward arms.
+DEGRADATION_SCALE_FLOOR = 0.1 if TRANSFORMER_VARIANT == "cost" else 10.0
 DEGRADATION_PATIENCE = 10
 ACTION_SATURATION_THRESHOLD = 0.97
 
@@ -298,6 +315,62 @@ ACTION_SATURATION_THRESHOLD = 0.97
 COST_SHADE_W = 1.00
 COST_DEFICIT_W = 2.00
 COST_MOVE_W = 0.50
+
+# Global scale on the cost-MDP reward.
+#
+# WHY THIS EXISTS
+#
+# The critic's layers are spectral-normalized, so critic_body is
+# 1-Lipschitz in the pooled latent. The encoder ends in a LayerNorm,
+# which fixes every token's norm at sqrt(d_model) ~ 11.3, and the
+# attention pool is a convex combination of tokens, so ||latent||
+# <= ~11.3. The critic's entire reachable output range is therefore
+# ~+-11 around whatever offset the (unconstrained) biases supply.
+#
+# The unscaled costs ran -1.39 per step. The critic is trained on a
+# TD(lambda) return, whose scale is r_bar / (1 - gamma*lambda) =
+# -1.39 / (1 - 0.99*0.95) = -23.4. Reaching -23.4 from a -Softplus
+# head that starts near -0.7 requires ~23 units of pure bias travel,
+# and AdamW moves a bias by ~lr = 3e-4 per optimizer step. At 400
+# episodes / UPDATE_EVERY_EPISODES=4 = 100 updates x 48 minibatches
+# there are only 4800 steps in the whole run. Measured: value_loss
+# opened at 416 -- exactly (23.4 - 0.7)^2 -- and had only reached
+# ~200 by episode 144. The critic never left its initialization, so
+# GAE degenerated to delta_t ~ r_t with no state-dependent baseline
+# and the policy gradient was pure variance (Policy ~0.00x,
+# KL ~0.003, |a| stuck near the 0.01 output gain).
+#
+# WHY 1 - GAMMA IS THE RIGHT SCALE
+#
+# 1 - gamma is exactly the factor that turns a discounted SUM into a
+# discounted AVERAGE: the return of a constant per-step cost c is
+# c / (1 - gamma), so scaling the cost by (1 - gamma) makes the
+# return land at c, i.e. on the same scale as one step's cost.
+# Returns move from ~-23 to ~-0.23, comfortably inside the critic's
+# ~+-11 range and ~800 bias-steps away rather than 78,000.
+#
+# WHY IT IS SAFE FOR THE CERTIFICATE
+#
+# A positive scalar multiple of a Lyapunov function is a Lyapunov
+# function: V >= 0, V = 0 at the goal, and dV < 0 are all invariant
+# under k*V for k > 0. The decay rate is unchanged too -- the
+# Bellman identity dV = -c(s) - (1-gamma)*V(s') scales uniformly on
+# both sides, so COST_LYAPUNOV_ALPHA = 1 - GAMMA still holds exactly.
+# Advantages are normalized to zero mean and unit variance in
+# compute_batch, and value_loss is divided by the running return
+# variance, so both the policy gradient and the value-loss weight
+# are already scale-invariant. Nothing else needed rescaling.
+COST_REWARD_SCALE = 1.0 - GAMMA
+
+# The smoothness penalty is applied OUTSIDE reward_fn_cost, so it has
+# to be scaled alongside it or it silently becomes ~100x heavier
+# relative to the costs it sits next to (it was ~0.06% of a step's
+# reward before scaling; left alone it would be ~6%).
+EFFECTIVE_ACTION_SMOOTHNESS = (
+    ACTION_SMOOTHNESS * COST_REWARD_SCALE
+    if TRANSFORMER_VARIANT == "cost"
+    else ACTION_SMOOTHNESS
+)
 
 # Elevation below which no realistically attainable position sustains
 # the robot, so the descent condition cannot hold and is not claimed.
@@ -420,13 +493,18 @@ def reward_fn_cost(after, telemetry, soc_after):
               + COST_DEFICIT_W * c_deficit
               + COST_MOVE_W * c_move)
 
+    # COST_REWARD_SCALE applies to the total AND to every component,
+    # so the CSV breakdown still sums to the logged reward. See the
+    # constant's definition for why the critic needs it.
+    k = COST_REWARD_SCALE
+
     # Signs match reward_fn's convention so the episode CSV columns
     # stay comparable in magnitude: directional and battery are
     # contributions to the reward, movement is reported positive.
-    return (float(total),
-            float(-COST_SHADE_W * c_shade),
-            float(-COST_DEFICIT_W * c_deficit),
-            float(COST_MOVE_W * c_move))
+    return (float(k * total),
+            float(k * -COST_SHADE_W * c_shade),
+            float(k * -COST_DEFICIT_W * c_deficit),
+            float(k * COST_MOVE_W * c_move))
 
 
 def reward_fn(after, telemetry, delta_batt, action=None):
@@ -1179,11 +1257,27 @@ def run():
                  "lr": 1e-3, "weight_decay": 1e-5, "initial_lr": 1e-3},
                 {"params": list(model.actor.parameters()),
                  "lr": 3e-4, "weight_decay": 1e-5, "initial_lr": 3e-4},
+                # weight_decay = 0 on the critic, unlike the other
+                # arms. Its Linear layers are spectral-normalized, so
+                # the learnable tensor is `original` and the EFFECTIVE
+                # weight is original / sigma_max(original). Decay
+                # shrinks numerator and denominator together and so
+                # has no effect on the weight the network actually
+                # uses -- it only drives ||original|| toward zero,
+                # which degrades the power-iteration estimate of
+                # sigma_max over a long run. Regularizing here is all
+                # cost and no benefit; spectral norm already bounds
+                # the critic.
                 {"params": list(model.critic_body.parameters()),
-                 "lr": 3e-4, "weight_decay": 1e-5, "initial_lr": 3e-4},
+                 "lr": 3e-4, "weight_decay": 0.0, "initial_lr": 3e-4},
                 {"params": [model.log_std_param],
                  "lr": 3e-4, "weight_decay": 1e-5, "initial_lr": 3e-4},
-            ])
+            ],
+                # Matches the lyapunov and normal arms. Omitting it
+                # left this arm on AdamW's default 1e-8, which is a
+                # difference in the optimizer rather than in the
+                # formulation the comparison is supposed to isolate.
+                eps=1e-5)
             # No auxiliary heads, so the per-group clip is equivalent
             # to a single global one.
             control_params = list(model.parameters())
@@ -1382,7 +1476,7 @@ def run():
             else:
                 rew_total, rew_directional, rew_battery, rew_movement = reward_fn(
                     after, tel, aft_batt-b_batt, current_action)
-            rew = rew_total - ACTION_SMOOTHNESS*smoothness
+            rew = rew_total - EFFECTIVE_ACTION_SMOOTHNESS*smoothness
 
             total+=rew; previous_action=current_action
             total_directional+=rew_directional; total_battery_reward+=rew_battery; total_movement_penalty+=rew_movement
