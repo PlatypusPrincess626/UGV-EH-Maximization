@@ -110,25 +110,52 @@ class CostTransformerActorCritic(nn.Module):
         L1 = int(2 * d_model)
         L3 = int(d_model / 2)
 
-        def lin(a, b):
-            layer = nn.Linear(a, b)
-            # Spectral normalization bounds each layer's largest
-            # singular value at 1, so the composed network is
-            # Lipschitz with a computable constant. Without it the
-            # decrease condition could only ever be claimed at the
-            # sampled states.
-            return spectral_norm(layer) if spectral_critic else layer
-
+        # Built as PLAIN Linear layers. Spectral normalization is
+        # registered further down, AFTER _initialize_weights has run.
+        # See the note there for why the order matters.
         self.critic_body = nn.Sequential(
-            lin(d_model, L1), nn.GELU(),
-            lin(L1, d_model), nn.GELU(),
-            lin(d_model, L3), nn.GELU(),
-            lin(L3, 1),
+            nn.Linear(d_model, L1), nn.GELU(),
+            nn.Linear(L1, d_model), nn.GELU(),
+            nn.Linear(d_model, L3), nn.GELU(),
+            nn.Linear(L3, 1),
         )
 
         self.log_std_param = nn.Parameter(torch.zeros(action_dim))
 
         self.apply(self._initialize_weights)
+
+        # Spectral normalization bounds each layer's largest singular
+        # value at 1, so the composed network is Lipschitz with a
+        # computable constant. Without it the decrease condition could
+        # only ever be claimed at the sampled states.
+        #
+        # ORDER MATTERS: REGISTER AFTER INITIALIZING
+        #
+        # spectral_norm() estimates sigma_max by power iteration and
+        # caches the singular-vector estimates (_u, _v) as BUFFERS,
+        # warming them up against whatever the weight is at
+        # registration time. It then refreshes them on each forward
+        # pass -- but only in TRAINING mode.
+        #
+        # Registering first and initializing second leaves _u and _v
+        # pointing at the pre-init random weight. sigma_hat = u^T W v
+        # for singular vectors of an unrelated matrix is not
+        # sigma_max; for an independent Xavier draw its expectation is
+        # near zero. The layer then computes W / sigma_hat with a
+        # near-zero divisor, and nothing corrects it until the first
+        # forward pass in training mode -- which does not happen until
+        # the first update(), because the entire first rollout runs
+        # under model.eval(). That produced a first-update value_loss
+        # of ~6.9e6 against a target of ~0.2, self-correcting to
+        # ~0.008 by the second update once power iteration caught up.
+        #
+        # Initializing first and registering second makes the warm-up
+        # valid by construction, with no dummy forward pass and no
+        # reliance on private attributes.
+        if spectral_critic:
+            for layer in self.critic_body:
+                if isinstance(layer, nn.Linear):
+                    spectral_norm(layer)
 
         POLICY_OUTPUT_GAIN = 0.01
         policy_out = [m for m in self.actor if isinstance(m, nn.Linear)][-1]
@@ -144,7 +171,6 @@ class CostTransformerActorCritic(nn.Module):
             # Parameter -- they own a reparameterized tensor, and the
             # NAME depends on which of the two APIs was imported at
             # the top of this file:
-            #
             #   torch.nn.utils.spectral_norm (legacy)
             #       -> module.weight_orig, a Parameter
             #   torch.nn.utils.parametrizations.spectral_norm (>=2.0)
@@ -159,6 +185,13 @@ class CostTransformerActorCritic(nn.Module):
             # name) meant that on torch >= 2.0 -- the branch this file
             # prefers -- the critic was never Xavier-initialized at
             # all and kept nn.Linear's default Kaiming-uniform init.
+            #
+            # Since the constructor now registers spectral norm AFTER
+            # calling this, the first two branches no longer fire on
+            # the initial pass. They are kept so that re-applying this
+            # to an already-normalized model (e.g. after loading a
+            # checkpoint) writes to the real Parameter instead of
+            # silently doing nothing.
             if hasattr(module, "weight_orig"):
                 nn.init.xavier_uniform_(module.weight_orig)
             elif (hasattr(module, "parametrizations")
