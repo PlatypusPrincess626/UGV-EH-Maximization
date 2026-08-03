@@ -362,6 +362,58 @@ COST_MOVE_W = 0.50
 # are already scale-invariant. Nothing else needed rescaling.
 COST_REWARD_SCALE = 1.0 - GAMMA
 
+# Critic head shaping. V_cost = beta * softplus(g / beta), whose gain
+# at value V is exactly 1 - exp(-V/beta) -- a function of the RATIO
+# only. So a fixed beta does not hold the head's conditioning fixed:
+# V_cost shrinks as the policy improves (1.08 -> 0.65 over cost seed
+# 1's 400 episodes), and the gain drifts down with it.
+#
+# COST_BETA_GAIN_TARGET makes beta slide to hold that gain instead,
+# via beta = V_q10 / -ln(1 - target), EMA'd in log space once per
+# update. Set it to None for a fixed beta.
+#
+# 0.90 is deliberately not higher. Pushing toward 1.0 drives beta
+# small, and beta is also the width of the region where the head is
+# meaningfully curved -- shrink it too far and the head is a ReLU
+# with a dead zone in all but name.
+COST_BETA_INIT = 0.30
+COST_BETA_GAIN_TARGET = 0.90
+
+# Decay rate alpha: measured, not asserted.
+#
+# The condition dV + alpha*V + margin <= 0 inverts to
+# alpha <= (-dV - margin)/V, so every sample carries the largest
+# alpha IT supports. The q-th quantile of that is exactly the largest
+# alpha at which the violation rate would have been q.
+#
+# In "adaptive" mode alpha tracks that quantile, EMA'd in log space
+# once per update. The violation rate is then ~COST_ALPHA_QUANTILE BY
+# CONSTRUCTION and carries no information -- the RESULT is alpha_hat
+# itself. Report it that way: "the certified decay rate is alpha_hat,
+# at a 5% violation rate", not "the violation rate is 5%". Choosing
+# alpha to minimise violations and then reporting the low violation
+# rate would be circular; reporting the rate you can certify is not.
+#
+# The measured alpha is calibrated on the ANALYTIC V_true -- a
+# property of the physical system, not of any network -- and the same
+# value is then applied to the merged critic's check. That keeps
+# v_critic_violation free to move, so it still measures whether the
+# critic reproduces the analytic certificate rather than being pinned
+# to the target by construction. On the 3-seed sweep those two rates
+# were 61% and 63%, and their agreement was the best evidence the
+# merge holds; pinning both would have destroyed it.
+#
+# Set COST_ALPHA_MODE = "fixed" to restore the asserted 1 - GAMMA.
+COST_ALPHA_MODE = "adaptive"
+COST_ALPHA_QUANTILE = 0.05
+COST_ALPHA_EMA = 0.05
+COST_ALPHA_MIN = 0.0          # 0 is still a Lyapunov claim: V non-increasing
+COST_ALPHA_MAX = 1.0 - GAMMA  # the original assertion, as a ceiling
+
+# Mutable so update() can slide it; read through ALPHA_STATE["alpha"]
+# everywhere rather than closing over the constant.
+ALPHA_STATE = {"alpha": COST_LYAPUNOV_ALPHA}
+
 # The smoothness penalty is applied OUTSIDE reward_fn_cost, so it has
 # to be scaled alongside it or it silently becomes ~100x heavier
 # relative to the costs it sits next to (it was ~0.06% of a step's
@@ -550,6 +602,186 @@ def reward_fn(after, telemetry, delta_batt, action=None):
 
     return total, float(directional_reward), float(battery_reward), float(movement_penalty)
 
+CERT_QUANTILES = (0.05, 0.25, 0.50)
+
+
+def _masked_quantiles(x, mask, qs=CERT_QUANTILES):
+    """Quantiles of x over the entries where mask > 0; nan if empty."""
+    sel = x[mask > 0]
+    if sel.numel() == 0:
+        return [float("nan")] * len(qs)
+    q = torch.quantile(sel.float(),
+                       torch.tensor(qs, device=sel.device, dtype=torch.float32))
+    return [float(v) for v in q]
+
+
+def analytic_certification(soc, soc_next, elev_deg,
+                           alpha=None,
+                           ball=COST_LYAPUNOV_BALL,
+                           margin=LYAPUNOV_MARGIN):
+    """
+    The analytic Lyapunov certificate, computed IDENTICALLY for every
+    variant so the three arms produce comparable columns.
+
+    Deliberately independent of any network: V_true is a function of
+    measured SOC alone, so this says the same thing whether the arm
+    has a Lyapunov head, a merged critic, or neither. The lyapunov
+    arm's own head-specific metrics are left untouched alongside
+    these; they answer a different question.
+
+    WHY THE ALPHA QUANTILES EXIST
+
+    Reporting a violation rate at one fixed alpha makes the number
+    uninterpretable across arms and across run lengths. On the 3-seed
+    sweep the cost arm used alpha = 1 - gamma = 0.01 and the lyapunov
+    arm used 0.001, and their 61% and 33% violation rates were
+    therefore not comparable at all.
+
+    Instead, invert the condition. For each sample outside the ball,
+
+        dV + alpha*V + margin <= 0   <=>   alpha <= (-dV - margin)/V
+
+    so alpha_feasible_i is the largest decay rate that sample
+    supports. Its q-th quantile is exactly the largest alpha at which
+    the violation rate would have been q. Logging the quantiles gives
+    the whole violation-vs-alpha curve for free, from which any alpha
+    can be read off afterwards without retraining.
+
+    This also makes the certificate a REPORTED RESULT rather than a
+    hyperparameter: state "the largest alpha for which 95% of sampled
+    states satisfy the decrease condition is alpha_q05". Choosing
+    alpha to minimize violations and then reporting the low violation
+    rate would be circular; reporting the quantile is not.
+
+    None of it touches training -- every caller is inside no_grad.
+    """
+    if alpha is None:
+        alpha = ALPHA_STATE["alpha"]
+    V = (F.relu(SOC_TARGET - soc) / SOC_TARGET) ** 2
+    V_next = (F.relu(SOC_TARGET - soc_next) / SOC_TARGET) ** 2
+    dV = V_next - V
+
+    # Descent is asserted only outside the goal ball and inside the
+    # certifiable region: below CERTIFY_MIN_ELEVATION no attainable
+    # position sustains the robot, so dV < 0 is physically impossible
+    # there and claiming it would be dishonest.
+    certifiable = (elev_deg >= CERTIFY_MIN_ELEVATION).float()
+    outside = (V > ball).float() * certifiable
+    n_out = outside.sum().clamp(min=1.0)
+
+    slack = dV + alpha * V + margin
+    alpha_feasible = (-dV - margin) / V.clamp(min=1e-8)
+    q05, q25, q50 = _masked_quantiles(alpha_feasible, outside)
+
+    return {
+        "cert_violation": float((((slack > 0).float() * outside).sum() / n_out).item()),
+        "cert_mean_dV": float(((dV * outside).sum() / n_out).item()),
+        "cert_mean_V": float(((V * outside).sum() / n_out).item()),
+        "cert_worst_slack": float(torch.where(
+            outside > 0, slack, torch.full_like(slack, -1e9)).max().item()),
+        "cert_in_ball_rate": float((1.0 - (V > ball).float().mean()).item()),
+        "cert_certifiable_frac": float(certifiable.mean().item()),
+        "cert_alpha_q05": q05,
+        "cert_alpha_q25": q25,
+        "cert_alpha_q50": q50,
+        "cert_alpha_used": float(alpha),
+        # Fraction of certified samples with dV >= -margin, i.e.
+        # where V is not decreasing at all.
+        #
+        # The Lyapunov condition REQUIRES dV < 0, so this is not a
+        # tolerance to tune around -- it is the rate at which the
+        # candidate fails outright, and no alpha >= 0 can rescue it.
+        # It is broken out from cert_violation so the two failure
+        # modes stay separate: cert_violation counts "did not decrease
+        # FAST ENOUGH for the claimed alpha", this counts "did not
+        # decrease at all". Only the first is about alpha.
+        #
+        # Expect this to be large for V_true, and note that it is a
+        # statement about the CANDIDATE, not about the controller. A
+        # function of SOC alone cannot be a Lyapunov function for this
+        # system: reaching sun costs charge, so any trajectory that
+        # has to traverse shade drives SOC down and V_true up while
+        # moving strictly toward the goal. Compare against
+        # v_critic_alpha_nonpos_frac below -- the merged critic's
+        # V_cost is a discounted cost-to-go over shade AND deficit AND
+        # motion, so it can fall while SOC falls. If it does, that is
+        # the result: the critic is a valid candidate where the
+        # analytic one is not.
+        "cert_alpha_nonpos_frac": float(
+            (((alpha_feasible <= 0).float() * outside).sum() / n_out).item()),
+    }, outside, n_out, alpha_feasible
+
+
+def adapt_alpha(alpha_feasible, outside):
+    """
+    Slide ALPHA_STATE["alpha"] to the decay rate the system actually
+    supports. No-op unless COST_ALPHA_MODE == "adaptive".
+
+    Called ONCE per update(), after the minibatch loop -- never inside
+    it. Changing alpha changes what the check asserts, so minibatches
+    of the same update must all be evaluated at one value.
+
+    EMA in log space, because alpha spans orders of magnitude (the
+    asserted 0.01 against a measured ~0.0012) and a linear EMA crawls
+    at the small end. Free to move down AND up: a ratchet that only
+    tightened would overclaim after a late-run regression.
+    """
+    if COST_ALPHA_MODE != "adaptive":
+        return ALPHA_STATE["alpha"]
+
+    sel = alpha_feasible[outside > 0]
+    if sel.numel() == 0:
+        return ALPHA_STATE["alpha"]
+
+    target = float(torch.quantile(sel.float(), COST_ALPHA_QUANTILE).item())
+    target = min(max(target, COST_ALPHA_MIN), COST_ALPHA_MAX)
+
+    cur = ALPHA_STATE["alpha"]
+    if target <= 0.0 or cur <= 0.0:
+        # Log space is undefined at zero. alpha = 0 is a legitimate
+        # claim (V non-increasing) and the system can genuinely sit
+        # there early in training, so fall back to a linear step.
+        new = (1.0 - COST_ALPHA_EMA) * cur + COST_ALPHA_EMA * target
+    else:
+        new = math.exp((1.0 - COST_ALPHA_EMA) * math.log(cur)
+                       + COST_ALPHA_EMA * math.log(target))
+    ALPHA_STATE["alpha"] = min(max(new, COST_ALPHA_MIN), COST_ALPHA_MAX)
+    return ALPHA_STATE["alpha"]
+
+
+def critic_certification(V_cost, V_cost_next, outside, n_out,
+                         alpha=None,
+                         margin=LYAPUNOV_MARGIN):
+    """
+    The same inversion applied to the MERGED critic, for the cost arm.
+
+    `outside` is passed in from analytic_certification so both are
+    evaluated on exactly the same set of samples -- otherwise the two
+    violation rates would not be comparable, which is the whole point
+    of logging them side by side.
+    """
+    if alpha is None:
+        alpha = ALPHA_STATE["alpha"]
+    dV = V_cost_next - V_cost
+    slack = dV + alpha * V_cost + margin
+    alpha_feasible = (-dV - margin) / V_cost.clamp(min=1e-8)
+    q05, q25, q50 = _masked_quantiles(alpha_feasible, outside)
+    return {
+        "v_critic_violation": float((((slack > 0).float() * outside).sum() / n_out).item()),
+        "v_critic_mean": float(V_cost.mean().item()),
+        "v_critic_min": float(V_cost.min().item()),
+        "v_critic_alpha_q05": q05,
+        "v_critic_alpha_q25": q25,
+        "v_critic_alpha_q50": q50,
+        # The comparison that decides whether the merge earns its
+        # keep. Read against cert_alpha_nonpos_frac on the same
+        # samples: lower here means V_cost decreases along
+        # trajectories where V_true does not.
+        "v_critic_alpha_nonpos_frac": float(
+            (((alpha_feasible <= 0).float() * outside).sum() / n_out).item()),
+    }
+
+
 class RunningVariance:
     """
     Welford-style running mean/variance estimator, updated in
@@ -727,7 +959,13 @@ def update(model,opt,rollouts,device, ep, metrics_writer=None, return_var_tracke
 
         n = states.shape[0]
         indices = np.arange(n)
+        last_alpha_feasible = None
         accum = {}
+        # Per-key counts, because the alpha quantiles are NaN in any
+        # minibatch with no samples outside the ball. A single NaN in
+        # a running sum poisons the average for the rest of the
+        # update, so those entries are skipped rather than added.
+        accum_n = {}
         n_minibatches = 0
         last_loss = 0.0
         stop_early = False
@@ -774,6 +1012,20 @@ def update(model,opt,rollouts,device, ep, metrics_writer=None, return_var_tracke
                     1.0 + CLIP_EPS,
                 ) * mb_adv
                 policy_loss = -torch.min(surr1, surr2).mean()
+
+                # Same helper the other two arms call, on the same
+                # squared V_true and the same elevation gate, so all
+                # three runs emit identical cert_* columns. The
+                # lyapunov head's own metrics below are kept as-is --
+                # they use this arm's linear V_true and its own alpha,
+                # and answer a different question.
+                with torch.no_grad():
+                    mb_elev_cert = mb_states[:, -1, ELEV_OBS_INDEX] * 90.0
+                    (cert_metrics, _cert_outside, _cert_n_out,
+                     _cert_alpha_feasible) = analytic_certification(
+                        mb_soc, mb_soc_next, mb_elev_cert)
+                    last_alpha_feasible = (_cert_alpha_feasible.detach(),
+                                           _cert_outside.detach())
 
                 outside_ball = (V_true > LYAPUNOV_BALL).float()
                 n_outside = outside_ball.sum().clamp(min=1.0)
@@ -883,6 +1135,7 @@ def update(model,opt,rollouts,device, ep, metrics_writer=None, return_var_tracke
                     "lr_scale": float(lr_scale),
                     "lyap_mean_dV": float(lyap_mean_dV.item()),
                     "lyap_worst_slack": float(lyap_worst_slack.item()),
+                    **cert_metrics,
                     "policy_loss": float(policy_loss.item()),
                     "value_loss": float(value_loss_raw.item()),
                     "lyap_penalty": float(lyapunov_penalty.item()),
@@ -896,7 +1149,10 @@ def update(model,opt,rollouts,device, ep, metrics_writer=None, return_var_tracke
                     "alpha": float(alpha),
                 }
                 for k, v in batch_metrics.items():
+                    if v != v:      # NaN
+                        continue
                     accum[k] = accum.get(k, 0.0) + v
+                    accum_n[k] = accum_n.get(k, 0) + 1
                 n_minibatches += 1
                 last_loss = float(loss.item())
 
@@ -926,7 +1182,15 @@ def update(model,opt,rollouts,device, ep, metrics_writer=None, return_var_tracke
             if stop_early:
                 break
 
-        avg = {k: v / max(n_minibatches, 1) for k, v in accum.items()}
+        avg = {k: v / max(accum_n.get(k, n_minibatches), 1)
+               for k, v in accum.items()}
+
+        # Slide alpha once per update, from the last minibatch's
+        # feasible-alpha distribution. Applied AFTER the loop, so this
+        # update's reported violation rates were all computed at one
+        # alpha; the new value takes effect next update.
+        if last_alpha_feasible is not None:
+            avg["cert_alpha_next"] = adapt_alpha(*last_alpha_feasible)
 
         print(
             f"Policy {avg['policy_loss']:.4f} | "
@@ -941,6 +1205,25 @@ def update(model,opt,rollouts,device, ep, metrics_writer=None, return_var_tracke
             f"|a| {avg['mean_abs_action']:.4f} | "
             f"Alpha {avg['alpha']:.4f} | "
             f"MB {n_minibatches}/{PPO_EPOCHS * math.ceil(n / MINIBATCH_SIZE)}"
+        )
+
+        # Certification line, identical across all three arms so the
+        # runs can be diffed directly. a*: the largest decay rate the
+        # 5th/50th-percentile sample supports -- read a violation rate
+        # of 5% off the first and 50% off the second. Compare a*_q05
+        # against whatever alpha is being claimed; if the claim
+        # exceeds it, the violation rate is measuring the claim, not
+        # the controller.
+        print(
+            f"  cert | viol {avg.get('cert_violation', float('nan')):.3f}"
+            f" | dV {avg.get('cert_mean_dV', float('nan')):+.6f}"
+            f" | V {avg.get('cert_mean_V', float('nan')):.4f}"
+            f" | inball {avg.get('cert_in_ball_rate', float('nan')):.3f}"
+            f" | a*_q05 {avg.get('cert_alpha_q05', float('nan')):.5f}"
+            f" | a*_q50 {avg.get('cert_alpha_q50', float('nan')):.5f}"
+            f" | dV>=0 {avg.get('cert_alpha_nonpos_frac', float('nan')):.3f}"
+            f" | a_used {avg.get('cert_alpha_used', float('nan')):.5f}"
+            f" -> {avg.get('cert_alpha_next', float('nan')):.5f}"
         )
         if metrics_writer is not None:
             row = {"episode": ep, "minibatches": n_minibatches,
@@ -972,7 +1255,14 @@ def update(model,opt,rollouts,device, ep, metrics_writer=None, return_var_tracke
 
         n = states.shape[0]
         indices = np.arange(n)
+        last_v_cost = None
+        last_alpha_feasible = None
         accum = {}
+        # Per-key counts, because the alpha quantiles are NaN in any
+        # minibatch with no samples outside the ball. A single NaN in
+        # a running sum poisons the average for the rest of the
+        # update, so those entries are skipped rather than added.
+        accum_n = {}
         n_minibatches = 0
         last_loss = 0.0
         stop_early = False
@@ -1002,55 +1292,52 @@ def update(model,opt,rollouts,device, ep, metrics_writer=None, return_var_tracke
                 # analytic V are logged alongside, which is the
                 # evidence that it learned a valid certificate rather
                 # than only a value estimate.
+                # Runs for BOTH non-lyapunov arms. The analytic half
+                # needs only SOC, so the normal arm gets the same
+                # certification columns as the cost arm and the three
+                # can finally be compared on one scale.
+                with torch.no_grad():
+                    mb_soc = states[mb][:, -1, SOC_OBS_INDEX]
+                    mb_soc_next = next_states[mb][:, -1, SOC_OBS_INDEX]
+                    mb_elev = states[mb][:, -1, ELEV_OBS_INDEX] * 90.0
+                    (cert_metrics, cert_outside, cert_n_out,
+                     cert_alpha_feasible) = analytic_certification(
+                        mb_soc, mb_soc_next, mb_elev)
+                    last_alpha_feasible = (cert_alpha_feasible.detach(),
+                                           cert_outside.detach())
+
                 if TRANSFORMER_VARIANT == "cost":
                     with torch.no_grad():
-                        mb_soc = states[mb][:, -1, SOC_OBS_INDEX]
-                        mb_soc_next = next_states[mb][:, -1, SOC_OBS_INDEX]
-                        mb_elev = states[mb][:, -1, ELEV_OBS_INDEX] * 90.0
-
+                        # V_cost = -value is the merged critic acting
+                        # as the Lyapunov function. Evaluated on the
+                        # SAME `cert_outside` mask as the analytic
+                        # certificate above, so the two violation
+                        # rates are directly comparable -- that
+                        # comparison is the evidence that the merge
+                        # holds.
                         V_true = (F.relu(SOC_TARGET - mb_soc) / SOC_TARGET) ** 2
-                        V_true_next = (F.relu(SOC_TARGET - mb_soc_next) / SOC_TARGET) ** 2
-                        dV_true = V_true_next - V_true
-
                         V_cost = -values
                         V_cost_next = -model.value_only(next_states[mb])
-                        dV_cost = V_cost_next - V_cost
+                        critic_metrics = critic_certification(
+                            V_cost, V_cost_next, cert_outside, cert_n_out)
+                        # Kept for the once-per-update beta slide
+                        # below. Deliberately NOT applied inside the
+                        # loop: changing beta changes the head, so
+                        # values from different minibatches of the
+                        # same update would not be comparable.
+                        last_v_cost = V_cost.detach()
 
-                        # Descent is claimed only OUTSIDE the ball and
-                        # INSIDE the certifiable region. Below
-                        # CERTIFY_MIN_ELEVATION no attainable position
-                        # sustains the robot, so dV < 0 is physically
-                        # impossible there and is not asserted. The
-                        # region is a set of STATES, not a range of
-                        # time indices -- that is what makes it a
-                        # region-of-attraction claim.
-                        certifiable = (mb_elev >= CERTIFY_MIN_ELEVATION).float()
-                        outside = (V_true > COST_LYAPUNOV_BALL).float() * certifiable
-                        n_out = outside.sum().clamp(min=1.0)
-
-                        slack = dV_true + COST_LYAPUNOV_ALPHA * V_true + LYAPUNOV_MARGIN
-                        lyap_violation_rate = ((slack > 0).float() * outside).sum() / n_out
-                        lyap_mean_dV = (dV_true * outside).sum() / n_out
-                        lyap_worst_slack = torch.where(
-                            outside > 0, slack,
-                            torch.full_like(slack, -1e9)).max()
-                        lyap_in_ball_rate = 1.0 - (V_true > COST_LYAPUNOV_BALL).float().mean()
-                        certifiable_frac = certifiable.mean()
-
-                        slack_c = dV_cost + COST_LYAPUNOV_ALPHA * V_cost + LYAPUNOV_MARGIN
-                        v_critic_violation = ((slack_c > 0).float() * outside).sum() / n_out
-                        v_critic_mean = V_cost.mean()
-                        v_critic_min = V_cost.min()
                         # Correlation rather than RMSE: V_cost is a
                         # discounted SUM of costs while V_true is a
                         # single-step deficit, so they differ by a
                         # factor near 1/(1-gamma) and an RMSE between
                         # them would measure that scale, not agreement.
                         if V_cost.numel() > 1 and V_true.std() > 1e-8:
-                            v_agreement = torch.corrcoef(
-                                torch.stack([V_cost, V_true]))[0, 1]
+                            v_agreement = float(torch.corrcoef(
+                                torch.stack([V_cost, V_true]))[0, 1].item())
                         else:
-                            v_agreement = torch.zeros((), device=V_cost.device)
+                            v_agreement = 0.0
+                        critic_metrics["v_agreement"] = v_agreement
 
                 log_ratio = lp - oldlp[mb]
                 ratio = torch.exp(log_ratio)
@@ -1097,20 +1384,16 @@ def update(model,opt,rollouts,device, ep, metrics_writer=None, return_var_tracke
                     "lr_scale": float(lr_scale),
                     "alpha": float(alpha),
                 }
+                # Both arms log the analytic certificate; only cost
+                # has a critic to certify.
+                batch_metrics.update(cert_metrics)
                 if TRANSFORMER_VARIANT == "cost":
-                    batch_metrics.update({
-                        "lyap_violation_rate": float(lyap_violation_rate.item()),
-                        "lyap_mean_dV": float(lyap_mean_dV.item()),
-                        "lyap_worst_slack": float(lyap_worst_slack.item()),
-                        "lyap_in_ball_rate": float(lyap_in_ball_rate.item()),
-                        "certifiable_frac": float(certifiable_frac.item()),
-                        "v_critic_violation": float(v_critic_violation.item()),
-                        "v_critic_mean": float(v_critic_mean.item()),
-                        "v_critic_min": float(v_critic_min.item()),
-                        "v_agreement": float(v_agreement.item()),
-                    })
+                    batch_metrics.update(critic_metrics)
                 for k, v in batch_metrics.items():
+                    if v != v:      # NaN
+                        continue
                     accum[k] = accum.get(k, 0.0) + v
+                    accum_n[k] = accum_n.get(k, 0) + 1
                 n_minibatches += 1
 
                 epoch_kl.append(float(approx_kl.item()))
@@ -1126,7 +1409,23 @@ def update(model,opt,rollouts,device, ep, metrics_writer=None, return_var_tracke
             if stop_early:
                 break
 
-        avg = {k: v / max(n_minibatches, 1) for k, v in accum.items()}
+        avg = {k: v / max(accum_n.get(k, n_minibatches), 1)
+               for k, v in accum.items()}
+
+        # Slide beta once per update, using the last minibatch's
+        # V_cost. No-op unless the model was built with
+        # beta_gain_target. Logged either way so a run's head is
+        # reconstructable from its CSV.
+        if TRANSFORMER_VARIANT == "cost" and last_v_cost is not None:
+            avg["softplus_beta"] = model.adapt_beta(last_v_cost)
+
+        # Slide alpha once per update, from the last minibatch's
+        # feasible-alpha distribution. Applied AFTER the loop, so this
+        # update's reported violation rates were all computed at one
+        # alpha; the new value takes effect next update.
+        if last_alpha_feasible is not None:
+            avg["cert_alpha_next"] = adapt_alpha(*last_alpha_feasible)
+
         print(
             f"Policy {avg.get('policy_loss', 0):.4f} | "
             f"Value {avg.get('value_loss', 0):.4f} | "
@@ -1137,6 +1436,36 @@ def update(model,opt,rollouts,device, ep, metrics_writer=None, return_var_tracke
             f"Alpha {avg.get('alpha', 0):.4f} | "
             f"MB {n_minibatches}/{PPO_EPOCHS * math.ceil(n / MINIBATCH_SIZE)}"
         )
+
+        # Certification line, identical across all three arms so the
+        # runs can be diffed directly. a*: the largest decay rate the
+        # 5th/50th-percentile sample supports -- read a violation rate
+        # of 5% off the first and 50% off the second. Compare a*_q05
+        # against whatever alpha is being claimed; if the claim
+        # exceeds it, the violation rate is measuring the claim, not
+        # the controller.
+        print(
+            f"  cert | viol {avg.get('cert_violation', float('nan')):.3f}"
+            f" | dV {avg.get('cert_mean_dV', float('nan')):+.6f}"
+            f" | V {avg.get('cert_mean_V', float('nan')):.4f}"
+            f" | inball {avg.get('cert_in_ball_rate', float('nan')):.3f}"
+            f" | a*_q05 {avg.get('cert_alpha_q05', float('nan')):.5f}"
+            f" | a*_q50 {avg.get('cert_alpha_q50', float('nan')):.5f}"
+            f" | dV>=0 {avg.get('cert_alpha_nonpos_frac', float('nan')):.3f}"
+            f" | a_used {avg.get('cert_alpha_used', float('nan')):.5f}"
+            f" -> {avg.get('cert_alpha_next', float('nan')):.5f}"
+        )
+        if TRANSFORMER_VARIANT == "cost":
+            print(
+                f"  crit | viol {avg.get('v_critic_violation', float('nan')):.3f}"
+                f" | V {avg.get('v_critic_mean', float('nan')):.4f}"
+                f" | Vmin {avg.get('v_critic_min', float('nan')):.4f}"
+                f" | agree {avg.get('v_agreement', float('nan')):+.3f}"
+                f" | a*_q05 {avg.get('v_critic_alpha_q05', float('nan')):.5f}"
+                f" | a*_q50 {avg.get('v_critic_alpha_q50', float('nan')):.5f}"
+                f" | dV>=0 {avg.get('v_critic_alpha_nonpos_frac', float('nan')):.3f}"
+                f" | beta {avg.get('softplus_beta', float(model.softplus_beta)):.4f}"
+            )
         if metrics_writer is not None:
             row = {"episode": ep, "minibatches": n_minibatches,
                    "minibatches_possible": PPO_EPOCHS * math.ceil(n / MINIBATCH_SIZE),
@@ -1246,7 +1575,12 @@ def run():
             from cost_transformer import CostTransformerActorCritic
             model = CostTransformerActorCritic(
                 VIEW_DISTANCE, scalar_dim=SCALAR_DIM,
-                sequence_length=SEQUENCE_LENGTH).to(device)
+                sequence_length=SEQUENCE_LENGTH,
+                softplus_beta=COST_BETA_INIT,
+                beta_gain_target=COST_BETA_GAIN_TARGET).to(device)
+            print(f"[cost] critic head: beta0 = {COST_BETA_INIT}, "
+                  f"gain target = {COST_BETA_GAIN_TARGET}"
+                  + (" (fixed beta)" if COST_BETA_GAIN_TARGET is None else ""))
             # Same per-group rates and decay tags as the other two
             # arms, so the comparison isolates the formulation.
             opt = optim.AdamW([
@@ -1278,6 +1612,7 @@ def run():
                 # difference in the optimizer rather than in the
                 # formulation the comparison is supposed to isolate.
                 eps=1e-5)
+
             # No auxiliary heads, so the per-group clip is equivalent
             # to a single global one.
             control_params = list(model.parameters())
@@ -1348,7 +1683,15 @@ def run():
         "policy_loss","value_loss","mean_V","std_V","std_barrier",
         "lyap_violation_rate","lyap_in_ball_rate","lyap_mean_dV","lyap_worst_slack",
         "lyap_v_rmse","grad_norm_control","grad_norm_aux","lr_scale",
-        "certifiable_frac","v_critic_violation","v_critic_mean","v_critic_min","v_agreement",
+        "certifiable_frac",
+        "cert_violation","cert_mean_dV","cert_mean_V","cert_worst_slack",
+        "cert_in_ball_rate","cert_certifiable_frac",
+        "cert_alpha_q05","cert_alpha_q25","cert_alpha_q50",
+        "cert_alpha_used","cert_alpha_next","cert_alpha_nonpos_frac",
+        "v_critic_violation","v_critic_mean","v_critic_min","v_agreement",
+        "v_critic_alpha_q05","v_critic_alpha_q25","v_critic_alpha_q50",
+        "v_critic_alpha_nonpos_frac",
+        "softplus_beta",
         "lyap_penalty","dynamics_loss",
         "barrier_loss","approx_kl","clip_fraction","mean_std","mean_raw_log_std",
         "mean_abs_action","alpha",

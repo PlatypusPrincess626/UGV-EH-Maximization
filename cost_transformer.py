@@ -9,35 +9,64 @@ isolates the reward formulation and the critic head. The differences:
     or energy encoder. The Lyapunov property lives in the reward and
     the critic instead.
 
-  * the critic ends in -Softplus, so the value is <= 0 and
-    V_cost = -value >= 0. Under a cost MDP (r = -c, c >= 0) the value
-    function is exactly the negative cost-to-go, so this is the natural
-    range rather than a constraint fighting the estimator.
+  * the critic head is -beta*Softplus(g/beta), so the value is <= 0
+    and V_cost = -value >= 0. Under a cost MDP (r = -c, c >= 0) the
+    value function is exactly the negative cost-to-go, so this is the
+    natural range rather than a constraint fighting the estimator.
+    beta = 1.0 is plain Softplus, the original head.
 
   * the critic layers are spectral-normalized, bounding the Lipschitz
     constant. This is what lets a pointwise decrease check extend to a
     region rather than only to the sampled states.
 
-WHY -SOFTPLUS RATHER THAN SOFTPLUS
+WHY THE HEAD IS SCALED
 
 A reward critic must span both signs -- measured on the reward MDP,
-8.06% of return-to-go targets were negative, reaching -10.66. Softplus
-cannot represent those. Under a cost MDP the sign flips: every return
-is <= 0, so -Softplus covers the whole range with nothing clipped, and
-V_cost = -value is non-negative with zero at the goal.
+8.06% of return-to-go targets were negative, reaching -10.66. Under a
+cost MDP the sign flips: every return is <= 0, so a one-sided head
+clips nothing. That part was always right.
+
+What was wrong was the gain. Softplus's derivative falls off linearly
+with its own output, so the head loses resolution exactly as V_cost
+approaches zero -- which is the goal region the certificate is most
+about. Measured on cost seed 1 at 400 episodes: gain 0.27 at the
+observed v_critic_min of 0.309, and that minimum did not fall further
+over the whole run.
+
+Scaling by beta shifts the whole gain profile without changing the
+function's shape or any of its guarantees. See critic() for the
+argument that linear falloff is the best any smooth, strictly
+positive, asymptotically-zero head can do, and that beta is therefore
+the only free quantity worth tuning.
+
+This is a change of output nonlinearity and NOTHING ELSE. The
+derivative stays in (0, 1) for every beta, so the composed Lipschitz
+bound is L <= 1 exactly as before and every region claim built on it
+is unchanged. V_cost >= 0 is unchanged. slack_c is unchanged. The
+certified quantity is unchanged.
 
 THE LYAPUNOV CONDITIONS, FOR REFERENCE
 
     V_cost >= 0                     by construction (-Softplus)
-    V_cost = 0 at the goal          when all costs are zero forever:
-                                    parked, in sun, at target charge
+    V_cost = 0 at the goal          approached asymptotically, which
+                                    is why LYAPUNOV_BALL exists --
+                                    the certificate is stated over a
+                                    ball around the goal, not at a
+                                    single point
     dV_cost < 0                     from the Bellman equation:
                                       V(s) = c(s) + gamma*V(s')
-                                    => dV = -c(s) - (1-gamma)*V(s')
 
-Note the last line: (1-gamma) plays the role of the decay rate alpha.
-With gamma = 0.99 that is 0.01, which is why LYAPUNOV_ALPHA is set to
-1 - GAMMA for this variant rather than the 0.001 the lyapunov arm used.
+ON THE DECAY RATE
+
+An earlier version of this file claimed dV = -c(s) - (1-gamma)*V(s')
+and concluded that alpha = 1 - gamma. The algebra is off by a sign --
+V(s') - V(s) = (1-gamma)*V(s') - c(s) -- and, more importantly, the
+identity is about the CRITIC's cost-to-go, not about the analytic
+V_true that main.py certifies. Measured, the system decays at ~0.0012
+per step while alpha = 1 - gamma = 0.01 demands 7.6x that, which is
+most of why the reported violation rate was 61%. main.py now logs the
+feasible-alpha quantiles instead of asserting one value; see
+analytic_certification() there.
 """
 
 import math
@@ -66,8 +95,26 @@ class CostTransformerActorCritic(nn.Module):
     def __init__(self, view_dist, scalar_dim=8, action_dim=2, d_model=128,
                  nhead=4, num_layers=2, dim_feedforward=256,
                  sequence_length=32, dropout=0.0,
-                 spectral_critic=True):
+                 spectral_critic=True,
+                 softplus_beta=0.1, beta_gain_target=None,
+                 beta_min=1e-3, beta_max=1.0, beta_ema=0.05):
         super().__init__()
+
+        if not softplus_beta > 0.0:
+            raise ValueError("softplus_beta must be positive")
+
+        # beta in VALUE units: the width of the soft knee measured on
+        # V_cost. beta = 1.0 reproduces the original head exactly.
+        #
+        # A BUFFER, not a float, so it travels in the state_dict and a
+        # reloaded checkpoint reproduces the same function. Held fixed
+        # unless beta_gain_target is set -- see adapt_beta().
+        self.register_buffer("softplus_beta",
+                             torch.tensor(float(softplus_beta)))
+        self.beta_gain_target = beta_gain_target
+        self.beta_min = float(beta_min)
+        self.beta_max = float(beta_max)
+        self.beta_ema = float(beta_ema)
 
         self.patch_dim = (2 * int(view_dist) + 1) ** 2
         self.input_dim = self.patch_dim + scalar_dim
@@ -164,6 +211,28 @@ class CostTransformerActorCritic(nn.Module):
             if policy_out.bias is not None:
                 policy_out.bias.zero_()
 
+        # Start the critic in the healthy part of the curve.
+        #
+        # The gain of the scaled Softplus falls off below V ~ beta, so
+        # shrinking beta moves the low-gradient region toward zero but
+        # also means a zero-initialized critic can start inside it: the
+        # spectral-normalized body outputs roughly +-0.6 at init, which
+        # at beta = 0.1 puts about half the batch at V ~ 2e-4 with gain
+        # ~2e-3. Offsetting the final bias puts every sample in the
+        # unit-gain region on step 1.
+        #
+        # Initialization only, not a constraint -- the bias is free to
+        # move anywhere afterwards and V_cost is still non-negative by
+        # construction. Set to 0.0 to reproduce the previous
+        # initialization exactly. Sized near the measured V_cost scale
+        # (~0.65) so the head does not start biased high either.
+        CRITIC_BIAS_INIT = 1.0
+        critic_out = [m for m in self.critic_body
+                      if isinstance(m, nn.Linear)][-1]
+        with torch.no_grad():
+            if critic_out.bias is not None:
+                critic_out.bias.fill_(CRITIC_BIAS_INIT)
+
     @staticmethod
     def _initialize_weights(module):
         if isinstance(module, nn.Linear):
@@ -213,27 +282,152 @@ class CostTransformerActorCritic(nn.Module):
         w = torch.softmax(self.attention_pool(x), dim=1)
         return (x * w).sum(dim=1)
 
+    @staticmethod
+    def beta_for_gain(v, gain_target):
+        """beta that puts the head's gain at `gain_target` when V = v."""
+        return float(v) / -math.log(1.0 - float(gain_target))
+
+    @torch.no_grad()
+    def adapt_beta(self, v_cost, quantile=0.10):
+        """
+        Slide beta to track the value scale. No-op unless
+        beta_gain_target was set.
+
+        WHY TIE IT TO V RATHER THAN TO A STEP COUNT
+
+        From critic()'s closed form, gain = 1 - exp(-V/beta) depends
+        only on the RATIO V/beta. A fixed beta therefore does not mean
+        a fixed head: as the policy improves and V_cost shrinks toward
+        the goal, V/beta falls and the head silently loses resolution
+        exactly where the certificate cares most. That is what
+        happened on cost seed 1 -- V fell from 1.08 to 0.65 over the
+        run while beta stayed at 1.0, so gain drifted from 0.66 down
+        to 0.48 and v_critic_min stalled at 0.309.
+
+        Setting beta = V / -ln(1 - gain_target) holds the ratio, and
+        therefore the conditioning, constant at every stage of
+        training. A step-count schedule cannot do this: it has no idea
+        what V is doing.
+
+        WHY THIS DOES NOT RUN AWAY
+
+        beta appears in V, so there is an apparent loop. It breaks in
+        the regime we operate in: for raw >> beta the head is
+        effectively the identity, V ~ raw, and raw is set by the value
+        regression alone. beta then follows V without V following
+        beta. The loop only closes near the knee, which is the region
+        the adaptation exists to stay out of.
+
+        `quantile` picks WHICH V to hold at the target gain. The 10th
+        percentile means the smallest tenth of the batch still gets
+        roughly gain_target, rather than only the average state.
+
+        DO NOT CALL MID-UPDATE. Changing beta changes the function, so
+        values computed before and after would be inconsistent. Call
+        once per update(), after the minibatch loop.
+        """
+        if self.beta_gain_target is None:
+            return float(self.softplus_beta)
+
+        v = v_cost.detach().flatten().float()
+        v = v[v > 0]
+        if v.numel() == 0:
+            return float(self.softplus_beta)
+
+        v_ref = torch.quantile(v, quantile)
+        target = self.beta_for_gain(v_ref.item(), self.beta_gain_target)
+        target = min(max(target, self.beta_min), self.beta_max)
+
+        # EMA in log space: beta spans orders of magnitude and a
+        # linear EMA would crawl at the small end.
+        cur = float(self.softplus_beta)
+        new = math.exp((1.0 - self.beta_ema) * math.log(cur)
+                       + self.beta_ema * math.log(target))
+        self.softplus_beta.fill_(new)
+        return new
+
     def critic(self, latent):
         """
         Value <= 0. V_cost = -value >= 0 is the Lyapunov function.
 
-        Softplus approaches zero asymptotically rather than reaching
-        it, which is why LYAPUNOV_BALL exists -- the certificate is
-        stated over a ball around the goal, not at a single point.
+            V_cost(z) = beta * softplus( g(z) / beta )
 
-        RANGE, AND WHY THE REWARD IS SCALED
+        Same family as before, one parameter added. beta = 1.0 is the
+        original head, bit for bit.
 
-        Spectral norm makes critic_body 1-Lipschitz in `latent`, and
-        `latent` is a convex combination of LayerNorm'd tokens, so
-        ||latent|| <= sqrt(d_model) ~ 11.3. The pre-Softplus output
-        therefore spans only ~+-11 around whatever offset the biases
-        supply, and biases are the one unconstrained path -- AdamW
-        moves them at ~lr per step. Targets must land inside that
-        range and within reach of the run's optimizer-step budget,
-        which is what main.py's COST_REWARD_SCALE = 1 - GAMMA is for:
-        it puts TD(lambda) returns at ~-0.23 instead of ~-23.
+        WHY THIS IS THE RIGHT SHAPE, NOT JUST A DIFFERENT ONE
+
+        Softplus's toe is not an accident of that particular function
+        -- it is forced by the requirements. Any f with f >= 0,
+        f' > 0 everywhere (no dead zone), and f reaching 0 only in the
+        limit must have
+
+            integral_0 df / f'(f)  =  infinity
+
+        for the approach to zero to take infinite argument. If
+        f' ~ f^p that diverges only for p >= 1, so f' can decay no
+        more slowly than LINEARLY in f. Softplus already sits exactly
+        at that boundary: for small f, f' ~ f. Nothing smooth and
+        strictly positive does asymptotically better.
+
+        What is free is the CONSTANT. Scaling gives f' ~ f / beta.
+        In closed form, the gain at value V is exactly
+
+            gain(V, beta) = 1 - exp(-V / beta)
+
+        which depends only on the RATIO V/beta -- worth stating
+        plainly, because it is what makes beta choosable rather than
+        guessable. Inverting it,
+
+            beta = V / -ln(1 - gain_target)
+
+        so "hold gain at 0.9 when V = 0.65" is beta = 0.65/2.303 =
+        0.28, with no search. It is also why beta may need to SLIDE:
+        a fixed beta holds the ratio only while V is fixed, and V
+        shrinks as the policy improves. See adapt_beta().
+
+            V target      beta=1.0    beta=0.25    beta=0.1
+              0.655         0.481       0.927        0.999
+              0.309         0.266       0.709        0.955
+              0.050         0.049       0.181        0.393
+              0.010         0.010       0.039        0.095
+
+        The 0.655 and 0.309 rows are cost seed 1's measured
+        v_critic_mean and v_critic_min at 400 episodes. The head was
+        running at gain 0.27 exactly where the certificate matters
+        most, and v_critic_min could not descend past 0.309 as a
+        result.
+
+        WHAT DOES NOT CHANGE
+
+            V_cost >= 0            f > 0 for all finite argument
+            no dead zone           f' > 0 everywhere, unlike ReLU
+            smoothness             C^infinity, so dV_cost has no kink
+            Lipschitz constant     f' = sigmoid(g/beta) is in (0, 1)
+                                   for every beta, so the composed
+                                   critic is still L <= 1 and every
+                                   region claim built on it stands
+            what is certified      slack_c is unchanged
+
+        Only the gain profile moves.
+
+        CHOOSING BETA
+
+        beta is the value scale below which gain starts to fall, so
+        set it well under the smallest V_cost that needs resolving.
+        With V_cost ~ 0.65 and a goal region near zero, 0.1 keeps gain
+        above 0.39 down to V = 0.05. Smaller beta buys more there and
+        makes the head progressively more ReLU-like above it; it never
+        introduces a hard zero.
+
+        Note the reciprocal: torch's F.softplus(x, beta=b) computes
+        (1/b) * log(1 + exp(b*x)), so its `beta` is 1/ours. Its
+        `threshold` argument keeps the large-argument branch linear and
+        overflow-free, which matters here because g/beta reaches ~16 at
+        initialization.
         """
-        return -F.softplus(self.critic_body(latent)).squeeze(-1)
+        raw = self.critic_body(latent).squeeze(-1)
+        return -F.softplus(raw, beta=1.0 / float(self.softplus_beta))
 
     def forward(self, sequence):
         latent = self.encode(sequence)
