@@ -602,6 +602,28 @@ def reward_fn(after, telemetry, delta_batt, action=None):
 
     return total, float(directional_reward), float(battery_reward), float(movement_penalty)
 
+# Window for the ANALYTIC certificate, in steps.
+#
+# V_true is a function of SOC, which jitters step to step but rises
+# monotonically on long timescales, so the single-step condition
+# fails far more often than the trajectory warrants. Measured on the
+# exact (critic-free) values from cost seed 1's validation episodes,
+# the fraction of samples with dV >= 0:
+#
+#     n        1     10     50    100    150    200
+#     V_true  .120   .096   .050   .010   .001   .000
+#
+# 150 keeps 570 of every 720 samples while driving the rate to ~0.1%.
+# Larger n buys little and discards more of each episode's tail.
+#
+# NOTE this does NOT transfer to V_cost, which moves the other way
+# (.150 at n=1 rising to .360 at n=200) because a discounted
+# cost-to-go converges to a nonzero steady state and long-gap
+# differences vanish into fluctuation. The critic's check stays at
+# one step and fixes its noise a different way -- see
+# critic_certification().
+CERT_NSTEP = 150
+
 CERT_QUANTILES = (0.05, 0.25, 0.50)
 
 
@@ -615,8 +637,8 @@ def _masked_quantiles(x, mask, qs=CERT_QUANTILES):
     return [float(v) for v in q]
 
 
-def analytic_certification(soc, soc_next, elev_deg,
-                           alpha=None,
+def analytic_certification(soc, soc_next, elev_deg, valid=None,
+                           nstep=1, alpha=None,
                            ball=COST_LYAPUNOV_BALL,
                            margin=LYAPUNOV_MARGIN):
     """
@@ -661,16 +683,30 @@ def analytic_certification(soc, soc_next, elev_deg,
     V_next = (F.relu(SOC_TARGET - soc_next) / SOC_TARGET) ** 2
     dV = V_next - V
 
+    # Over an n-step window the exponential condition compounds:
+    # V(s_{t+n}) <= (1-alpha)^n V(s_t). alpha stays the PER-STEP rate
+    # everywhere it is stored or reported, so runs at different
+    # CERT_NSTEP remain comparable; only the test uses alpha_n.
+    alpha_n = 1.0 - (1.0 - alpha) ** nstep
+
     # Descent is asserted only outside the goal ball and inside the
     # certifiable region: below CERTIFY_MIN_ELEVATION no attainable
     # position sustains the robot, so dV < 0 is physically impossible
     # there and claiming it would be dishonest.
     certifiable = (elev_deg >= CERTIFY_MIN_ELEVATION).float()
     outside = (V > ball).float() * certifiable
+    if valid is not None:
+        # Samples whose window ran past the end of their episode.
+        outside = outside * valid.float()
     n_out = outside.sum().clamp(min=1.0)
 
-    slack = dV + alpha * V + margin
-    alpha_feasible = (-dV - margin) / V.clamp(min=1e-8)
+    slack = dV + alpha_n * V + margin
+    # Invert to the per-step rate so the quantiles mean the same thing
+    # at any nstep: alpha_n <= (-dV - margin)/V, then
+    # alpha = 1 - (1 - alpha_n)^(1/n).
+    alpha_n_feasible = (-dV - margin) / V.clamp(min=1e-8)
+    alpha_feasible = 1.0 - (1.0 - alpha_n_feasible.clamp(max=1.0 - 1e-9)) ** (
+        1.0 / float(nstep))
     q05, q25, q50 = _masked_quantiles(alpha_feasible, outside)
 
     return {
@@ -685,6 +721,8 @@ def analytic_certification(soc, soc_next, elev_deg,
         "cert_alpha_q25": q25,
         "cert_alpha_q50": q50,
         "cert_alpha_used": float(alpha),
+        "cert_nstep": float(nstep),
+        "cert_n_samples": float(outside.sum().item()),
         # Fraction of certified samples with dV >= -margin, i.e.
         # where V is not decreasing at all.
         #
@@ -749,36 +787,98 @@ def adapt_alpha(alpha_feasible, outside):
     return ALPHA_STATE["alpha"]
 
 
-def critic_certification(V_cost, V_cost_next, outside, n_out,
-                         alpha=None,
-                         margin=LYAPUNOV_MARGIN):
+def critic_certification(V_cost, V_cost_next, cost, outside, n_out,
+                         alpha=None, margin=LYAPUNOV_MARGIN):
     """
-    The same inversion applied to the MERGED critic, for the cost arm.
+    The decrease condition for the MERGED critic, computed two ways.
 
-    `outside` is passed in from analytic_certification so both are
-    evaluated on exactly the same set of samples -- otherwise the two
-    violation rates would not be comparable, which is the whole point
-    of logging them side by side.
+    Evaluated on the same `outside` mask as analytic_certification, so
+    the rates are directly comparable.
+
+    WHY TWO FORMS
+
+    The obvious estimator, dV = V(s') - V(s), differences two noisy
+    critic outputs. Measured on cost seed 1: the critic's RMSE is
+    0.0372 while the true per-step dV is -0.00191 +- 0.00226 -- the
+    error is 16x the signal. Injecting Gaussian noise at that level
+    into a direct difference reproduces the observed 0.463
+    non-decrease rate almost exactly (0.467 at zero error
+    correlation), against a true rate of 0.15. The direct form was
+    measuring its own noise.
+
+    Aggregating does not rescue it. dV has lag-1 autocorrelation 0.969
+    along a trajectory, a 64x variance inflation, so even pooling all
+    288,000 samples of a 400-episode run reaches only t = -2.4.
+
+    The Bellman form uses the cost MDP's own recursion,
+    V(s) = c(s) + gamma*V(s'), rearranged:
+
+        dV = [ (1 - gamma)*V(s) - c(s) ] / gamma
+
+    c(s) is measured exactly, and V(s) enters weighted by (1 - gamma).
+    The critic's error is therefore attenuated 100x -- 0.00037 against
+    a 0.00191 signal. Verified exact on the analytic values (max
+    deviation 1.9e-16), and it recovers 0.279 against a truth of
+    0.283, independent of error correlation.
+
+    WHAT EACH ONE CERTIFIES
+
+    They differ by exactly the Bellman residual:
+
+        delta(s)   = V(s) - c(s) - gamma*V(s')
+        dV_direct  = dV_bellman - delta/gamma
+
+    so the Bellman form leans on V only lightly, and the honest claim
+    is conditional rather than absolute:
+
+        V is a Lyapunov function wherever the Bellman-form condition
+        holds with margin m + |delta|/gamma.
+
+    That is why delta's distribution is logged here and not just its
+    mean -- q95 is what turns the conditional into a stated
+    confidence level. Shrinking |delta| tightens the certificate, and
+    |delta| is the same quantity the value loss already minimizes, so
+    fit quality and certificate quality stop being separate goals.
+
+    The direct form is still reported, labelled, so the noise gap
+    stays visible rather than being quietly dropped.
     """
     if alpha is None:
         alpha = ALPHA_STATE["alpha"]
-    dV = V_cost_next - V_cost
-    slack = dV + alpha * V_cost + margin
-    alpha_feasible = (-dV - margin) / V_cost.clamp(min=1e-8)
+
+    dV_direct = V_cost_next - V_cost
+    dV_bellman = ((1.0 - GAMMA) * V_cost - cost) / GAMMA
+    delta = V_cost - cost - GAMMA * V_cost_next
+
+    slack_b = dV_bellman + alpha * V_cost + margin
+    slack_d = dV_direct + alpha * V_cost + margin
+    alpha_feasible = (-dV_bellman - margin) / V_cost.clamp(min=1e-8)
     q05, q25, q50 = _masked_quantiles(alpha_feasible, outside)
+
+    sel = delta[outside > 0]
+    if sel.numel() == 0:
+        d_mean = d_std = d_q95 = float("nan")
+    else:
+        d_mean = float(sel.mean().item())
+        d_std = float(sel.std().item()) if sel.numel() > 1 else 0.0
+        d_q95 = float(torch.quantile(sel.abs().float(), 0.95).item())
+
+    frac = lambda t: float(((t.float() * outside).sum() / n_out).item())
     return {
-        "v_critic_violation": float((((slack > 0).float() * outside).sum() / n_out).item()),
+        "v_critic_violation": frac(slack_b > 0),
+        "v_critic_violation_direct": frac(slack_d > 0),
         "v_critic_mean": float(V_cost.mean().item()),
         "v_critic_min": float(V_cost.min().item()),
         "v_critic_alpha_q05": q05,
         "v_critic_alpha_q25": q25,
         "v_critic_alpha_q50": q50,
-        # The comparison that decides whether the merge earns its
-        # keep. Read against cert_alpha_nonpos_frac on the same
-        # samples: lower here means V_cost decreases along
-        # trajectories where V_true does not.
-        "v_critic_alpha_nonpos_frac": float(
-            (((alpha_feasible <= 0).float() * outside).sum() / n_out).item()),
+        "v_critic_alpha_nonpos_frac": frac(alpha_feasible <= 0),
+        "v_critic_nonpos_direct": frac(dV_direct >= -margin),
+        # Bellman residual: the exact gap between the two forms, and
+        # the error term in the conditional certificate above.
+        "v_bellman_delta_mean": d_mean,
+        "v_bellman_delta_std": d_std,
+        "v_bellman_delta_q95": d_q95,
     }
 
 
@@ -867,9 +967,19 @@ def compute_batch(rollouts, device):
     from the advantages makes the two consistent by construction.
     """
     states=[]; next_states=[]; actions=[]; oldlp=[]; adv=[]; returns=[]
+    # c(s) for the Bellman-form dV, and the index of the state
+    # CERT_NSTEP ahead WITHIN THE SAME EPISODE (-1 where the window
+    # would run past the end). Both are certification-only; neither
+    # touches the loss.
+    costs=[]; nstep_idx=[]
+    offset = 0
 
     for r in rollouts:
         T = len(r["rewards"])
+        costs += [-x for x in r["rewards"]]
+        nstep_idx += [offset + t + CERT_NSTEP if t + CERT_NSTEP < T else -1
+                      for t in range(T)]
+        offset += T
         ep_adv = []
         gae = 0.0
         for i in reversed(range(T)):
@@ -891,9 +1001,13 @@ def compute_batch(rollouts, device):
     states = torch.tensor(np.asarray(states), dtype=torch.float32, device=device)
     next_states = torch.tensor(np.asarray(next_states), dtype=torch.float32, device=device)
 
+    costs = torch.tensor(costs, device=device, dtype=torch.float32)
+    nstep_idx = torch.tensor(nstep_idx, device=device, dtype=torch.long)
+
     adv = (adv - adv.mean()) / (adv.std(unbiased=False) + 1e-8)
 
-    return states, next_states, actions, oldlp, adv, returns
+    return (states, next_states, actions, oldlp, adv, returns,
+            costs, nstep_idx)
 
 def update(model,opt,rollouts,device, ep, metrics_writer=None, return_var_tracker=None,
            control_params=None, auxiliary_param_list=None):
@@ -914,7 +1028,11 @@ def update(model,opt,rollouts,device, ep, metrics_writer=None, return_var_tracke
         if "initial_lr" in group:
             group["lr"] = group["initial_lr"] * lr_scale
 
-    states, next_states, actions, oldlp, adv, returns = compute_batch(rollouts, device)
+    (states, next_states, actions, oldlp, adv, returns,
+     costs, nstep_idx) = compute_batch(rollouts, device)
+    # SOC for every state in the batch, so the n-step analytic check
+    # can index forward without a second forward pass.
+    soc_all = states[:, -1, SOC_OBS_INDEX]
 
     if TRANSFORMER_VARIANT == "lyapunov":
         # Curriculum boundaries scale with TOTAL_EPISODES. Hardcoded at
@@ -1021,9 +1139,13 @@ def update(model,opt,rollouts,device, ep, metrics_writer=None, return_var_tracke
                 # and answer a different question.
                 with torch.no_grad():
                     mb_elev_cert = mb_states[:, -1, ELEV_OBS_INDEX] * 90.0
+                    mb_fwd = nstep_idx[mb]
+                    mb_valid = mb_fwd >= 0
+                    mb_soc_fwd = soc_all[mb_fwd.clamp(min=0)]
                     (cert_metrics, _cert_outside, _cert_n_out,
                      _cert_alpha_feasible) = analytic_certification(
-                        mb_soc, mb_soc_next, mb_elev_cert)
+                        mb_soc, mb_soc_fwd, mb_elev_cert,
+                        valid=mb_valid, nstep=CERT_NSTEP)
                     last_alpha_feasible = (_cert_alpha_feasible.detach(),
                                            _cert_outside.detach())
 
@@ -1222,6 +1344,7 @@ def update(model,opt,rollouts,device, ep, metrics_writer=None, return_var_tracke
             f" | a*_q05 {avg.get('cert_alpha_q05', float('nan')):.5f}"
             f" | a*_q50 {avg.get('cert_alpha_q50', float('nan')):.5f}"
             f" | dV>=0 {avg.get('cert_alpha_nonpos_frac', float('nan')):.3f}"
+            f" | n={CERT_NSTEP}"
             f" | a_used {avg.get('cert_alpha_used', float('nan')):.5f}"
             f" -> {avg.get('cert_alpha_next', float('nan')):.5f}"
         )
@@ -1298,11 +1421,18 @@ def update(model,opt,rollouts,device, ep, metrics_writer=None, return_var_tracke
                 # can finally be compared on one scale.
                 with torch.no_grad():
                     mb_soc = states[mb][:, -1, SOC_OBS_INDEX]
-                    mb_soc_next = next_states[mb][:, -1, SOC_OBS_INDEX]
                     mb_elev = states[mb][:, -1, ELEV_OBS_INDEX] * 90.0
+                    # n-step ahead SOC, from the precomputed index.
+                    # -1 marks a window that ran off the end of its
+                    # episode; clamped so the gather is safe and then
+                    # masked out via `valid`.
+                    mb_fwd = nstep_idx[mb]
+                    mb_valid = mb_fwd >= 0
+                    mb_soc_next = soc_all[mb_fwd.clamp(min=0)]
                     (cert_metrics, cert_outside, cert_n_out,
                      cert_alpha_feasible) = analytic_certification(
-                        mb_soc, mb_soc_next, mb_elev)
+                        mb_soc, mb_soc_next, mb_elev,
+                        valid=mb_valid, nstep=CERT_NSTEP)
                     last_alpha_feasible = (cert_alpha_feasible.detach(),
                                            cert_outside.detach())
 
@@ -1319,7 +1449,8 @@ def update(model,opt,rollouts,device, ep, metrics_writer=None, return_var_tracke
                         V_cost = -values
                         V_cost_next = -model.value_only(next_states[mb])
                         critic_metrics = critic_certification(
-                            V_cost, V_cost_next, cert_outside, cert_n_out)
+                            V_cost, V_cost_next, costs[mb],
+                            cert_outside, cert_n_out)
                         # Kept for the once-per-update beta slide
                         # below. Deliberately NOT applied inside the
                         # loop: changing beta changes the head, so
@@ -1452,6 +1583,7 @@ def update(model,opt,rollouts,device, ep, metrics_writer=None, return_var_tracke
             f" | a*_q05 {avg.get('cert_alpha_q05', float('nan')):.5f}"
             f" | a*_q50 {avg.get('cert_alpha_q50', float('nan')):.5f}"
             f" | dV>=0 {avg.get('cert_alpha_nonpos_frac', float('nan')):.3f}"
+            f" | n={CERT_NSTEP}"
             f" | a_used {avg.get('cert_alpha_used', float('nan')):.5f}"
             f" -> {avg.get('cert_alpha_next', float('nan')):.5f}"
         )
@@ -1465,6 +1597,18 @@ def update(model,opt,rollouts,device, ep, metrics_writer=None, return_var_tracke
                 f" | a*_q50 {avg.get('v_critic_alpha_q50', float('nan')):.5f}"
                 f" | dV>=0 {avg.get('v_critic_alpha_nonpos_frac', float('nan')):.3f}"
                 f" | beta {avg.get('softplus_beta', float(model.softplus_beta)):.4f}"
+            )
+            # Secondary. The direct difference is noise-dominated at
+            # the measured critic error -- printed so the gap stays
+            # visible, NOT to be read as a failure rate. |d| is the
+            # Bellman residual, the error term in the conditional
+            # certificate; q95 is what the claim should be stated at.
+            print(
+                f"  bell | direct viol {avg.get('v_critic_violation_direct', float('nan')):.3f}"
+                f" | direct dV>=0 {avg.get('v_critic_nonpos_direct', float('nan')):.3f}"
+                f" | d_mean {avg.get('v_bellman_delta_mean', float('nan')):+.5f}"
+                f" | d_std {avg.get('v_bellman_delta_std', float('nan')):.5f}"
+                f" | d_q95 {avg.get('v_bellman_delta_q95', float('nan')):.5f}"
             )
         if metrics_writer is not None:
             row = {"episode": ep, "minibatches": n_minibatches,
@@ -1688,9 +1832,12 @@ def run():
         "cert_in_ball_rate","cert_certifiable_frac",
         "cert_alpha_q05","cert_alpha_q25","cert_alpha_q50",
         "cert_alpha_used","cert_alpha_next","cert_alpha_nonpos_frac",
+        "cert_nstep","cert_n_samples",
         "v_critic_violation","v_critic_mean","v_critic_min","v_agreement",
         "v_critic_alpha_q05","v_critic_alpha_q25","v_critic_alpha_q50",
-        "v_critic_alpha_nonpos_frac",
+        "v_critic_alpha_nonpos_frac","v_critic_violation_direct",
+        "v_critic_nonpos_direct","v_bellman_delta_mean",
+        "v_bellman_delta_std","v_bellman_delta_q95",
         "softplus_beta",
         "lyap_penalty","dynamics_loss",
         "barrier_loss","approx_kl","clip_fraction","mean_std","mean_raw_log_std",
