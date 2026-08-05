@@ -328,6 +328,35 @@ ACTION_SATURATION_THRESHOLD = 0.97
 # The deficit weight is raised to compensate for the squaring, which
 # roughly halved it relative to the linear form.
 ###############################################################
+# Shade cost relative to the best exposure in view, rather than to
+# perfect sun. See reward_fn_cost for the measurement that motivated
+# it. False restores the absolute form used by every cost run up to
+# and including the cost_plain ablation -- those runs are NOT
+# comparable to relative-shade runs, since this changes the reward.
+COST_SHADE_RELATIVE = True
+
+# Shade weight. Left at 1.00 deliberately for this comparison run.
+#
+# Lowering it improves the critic's certificate sharply -- measured
+# non-decrease rate for the true cost-to-go at n=1, on the code's own
+# mask, with ABSOLUTE shade:
+#
+#     COST_SHADE_W    1.00    0.25    0.10    0.00
+#     dV>=0 (n=1)     .122    .048    ~.01    .002
+#
+# But COST_SHADE_RELATIVE attacks the SAME defect -- the part of the
+# shade cost no action can reduce -- and does it in a targeted way
+# rather than by shrinking the whole term, so it keeps the gradient
+# toward sun that solves the deficit -> SOC -> sun credit assignment.
+# Stacking both on one run would confound them, and the numbers above
+# were measured WITHOUT the relative form, so they do not predict the
+# combination.
+#
+# Order of operations: run with relative shade at 1.00, read
+# `crit dV>=0` off it, and drop the weight to 0.25 only if that
+# number is still high. Going to 0.00 buys another factor of ~24 on
+# the certificate but removes the sun-seeking signal entirely, which
+# trades a real learning signal for a metric.
 COST_SHADE_W = 1.00
 COST_DEFICIT_W = 2.00
 COST_MOVE_W = 0.50
@@ -553,7 +582,36 @@ def reward_fn_cost(after, telemetry, soc_after):
     nx, ny, _ = telemetry["new_position"]
     distance = math.hypot(nx - px, ny - py)
 
-    c_shade = 1.0 - exposure
+    if COST_SHADE_RELATIVE:
+        # Shade cost RELATIVE to what is reachable right now, not
+        # absolute.
+        #
+        # 1 - exposure has an exogenous floor: late in the episode the
+        # sun is low and shadows lengthen, so no position recovers full
+        # exposure. Measured on cost seed 1's validation episodes, the
+        # BEST exposure any episode achieved in t in [600,700] was
+        # 0.62-0.88, against 0.94-1.00 in t in [350,400].
+        #
+        # A cost that cannot reach zero makes a cost-to-go that cannot
+        # reach zero, and V_cost = 0 at the goal is a Lyapunov
+        # condition, not a nicety. It showed up directly: the
+        # cost-to-go at t=380 sat at 11.63 with the shade term and 0.80
+        # without it, and the non-decrease rate went 0.263 -> 0.139.
+        # V_cost was not failing to fit; it was fitting a function that
+        # does not converge.
+        #
+        # Subtracting the best exposure in view removes the floor
+        # without removing the gradient: the cost is still zero only at
+        # the sunniest reachable spot, at any sun height, and still
+        # points toward sun everywhere else. relu() guards the case
+        # where the kernel-weighted exposure edges above the patch max.
+        #
+        # potential.max() is an upper bound on the kernel-weighted
+        # exposure attainable nearby -- the patch is already 1 - after,
+        # so this costs one max() and no new hyperparameter.
+        c_shade = max(float((1.0 - after).max()) - exposure, 0.0)
+    else:
+        c_shade = 1.0 - exposure
     c_deficit = (max(SOC_TARGET - soc_after, 0.0) / SOC_TARGET) ** 2
     c_move = distance / MAX_MOVE_PER_STEP
 
@@ -631,6 +689,20 @@ def reward_fn(after, telemetry, delta_batt, action=None):
 #
 # 150 keeps 570 of every 720 samples while driving the rate to ~0.1%.
 # Larger n buys little and discards more of each episode's tail.
+#
+# THE CRITIC IS CERTIFIED AT n = 1, NOT HERE. The two candidates want
+# opposite windows. Measured on the code's own mask (V_true > ball,
+# elevation gate), non-decrease rate by window:
+#
+#     n                  1     10     50    150
+#     V_true          .134   .104   .050   .001    improves with n
+#     V_cost          .122   .135   .186   .303    degrades with n
+#
+# V_true jitters step to step but rises monotonically over hours, so
+# it wants a long window. V_cost is a discounted sum whose long-gap
+# differences vanish into fluctuation, so it wants a short one. At
+# n=1 the two are comparable (.122 vs .134); certifying V_cost at
+# n=150 was measuring the wrong thing.
 #
 # NOTE this does NOT transfer to V_cost, which moves the other way
 # (.150 at n=1 rising to .360 at n=200) because a discounted
@@ -710,11 +782,22 @@ def analytic_certification(soc, soc_next, elev_deg, valid=None,
     # position sustains the robot, so dV < 0 is physically impossible
     # there and claiming it would be dishonest.
     certifiable = (elev_deg >= CERTIFY_MIN_ELEVATION).float()
-    outside = (V > ball).float() * certifiable
-    if valid is not None:
-        # Samples whose window ran past the end of their episode.
-        outside = outside * valid.float()
+
+    # TWO masks, because the two candidates are certified at DIFFERENT
+    # windows and must not inherit each other's sample restrictions.
+    #
+    #   base    ball + elevation. What the CRITIC's n=1 check uses.
+    #   outside base, minus samples whose n-step window ran past the
+    #           end of their episode. What the ANALYTIC check uses.
+    #
+    # Before this split the critic inherited `outside` and silently
+    # threw away every sample in the last CERT_NSTEP steps of each
+    # episode -- 21% of the batch at n=150 -- for a reason that does
+    # not apply to a one-step check.
+    base = (V > ball).float() * certifiable
+    outside = base * valid.float() if valid is not None else base
     n_out = outside.sum().clamp(min=1.0)
+    n_base = base.sum().clamp(min=1.0)
 
     slack = dV + alpha_n * V + margin
     # Invert to the per-step rate so the quantiles mean the same thing
@@ -763,7 +846,7 @@ def analytic_certification(soc, soc_next, elev_deg, valid=None,
         # analytic one is not.
         "cert_alpha_nonpos_frac": float(
             (((alpha_feasible <= 0).float() * outside).sum() / n_out).item()),
-    }, outside, n_out, alpha_feasible
+    }, outside, n_out, alpha_feasible, base, n_base
 
 
 def adapt_alpha(alpha_feasible, outside):
@@ -1159,7 +1242,8 @@ def update(model,opt,rollouts,device, ep, metrics_writer=None, return_var_tracke
                     mb_valid = mb_fwd >= 0
                     mb_soc_fwd = soc_all[mb_fwd.clamp(min=0)]
                     (cert_metrics, _cert_outside, _cert_n_out,
-                     _cert_alpha_feasible) = analytic_certification(
+                     _cert_alpha_feasible, _cert_base,
+                     _cert_n_base) = analytic_certification(
                         mb_soc, mb_soc_fwd, mb_elev_cert,
                         valid=mb_valid, nstep=CERT_NSTEP)
                     last_alpha_feasible = (_cert_alpha_feasible.detach(),
@@ -1446,7 +1530,8 @@ def update(model,opt,rollouts,device, ep, metrics_writer=None, return_var_tracke
                     mb_valid = mb_fwd >= 0
                     mb_soc_next = soc_all[mb_fwd.clamp(min=0)]
                     (cert_metrics, cert_outside, cert_n_out,
-                     cert_alpha_feasible) = analytic_certification(
+                     cert_alpha_feasible, cert_base,
+                     cert_n_base) = analytic_certification(
                         mb_soc, mb_soc_next, mb_elev,
                         valid=mb_valid, nstep=CERT_NSTEP)
                     last_alpha_feasible = (cert_alpha_feasible.detach(),
@@ -1464,9 +1549,13 @@ def update(model,opt,rollouts,device, ep, metrics_writer=None, return_var_tracke
                         V_true = (F.relu(SOC_TARGET - mb_soc) / SOC_TARGET) ** 2
                         V_cost = -values
                         V_cost_next = -model.value_only(next_states[mb])
+                        # cert_base, NOT cert_outside: the critic is
+                        # certified at n=1, so the n-step window's
+                        # episode-boundary restriction does not apply
+                        # to it. Same ball and elevation gate.
                         critic_metrics = critic_certification(
                             V_cost, V_cost_next, costs[mb],
-                            cert_outside, cert_n_out)
+                            cert_base, cert_n_base)
                         # Kept for the once-per-update beta slide
                         # below. Deliberately NOT applied inside the
                         # loop: changing beta changes the head, so
@@ -1605,7 +1694,7 @@ def update(model,opt,rollouts,device, ep, metrics_writer=None, return_var_tracke
         )
         if TRANSFORMER_VARIANT in COST_VARIANTS:
             print(
-                f"  crit | viol {avg.get('v_critic_violation', float('nan')):.3f}"
+                f"  crit | n=1 | viol {avg.get('v_critic_violation', float('nan')):.3f}"
                 f" | V {avg.get('v_critic_mean', float('nan')):.4f}"
                 f" | Vmin {avg.get('v_critic_min', float('nan')):.4f}"
                 f" | agree {avg.get('v_agreement', float('nan')):+.3f}"

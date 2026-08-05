@@ -111,6 +111,12 @@ class CostTransformerActorCritic(nn.Module):
         # unless beta_gain_target is set -- see adapt_beta().
         self.register_buffer("softplus_beta",
                              torch.tensor(float(softplus_beta)))
+        # Cached Python float for the hot path. float() on a CUDA
+        # buffer forces a device sync, and critic() runs once per
+        # inference call -- 295,200 of them in a 400-episode run, in
+        # the loop that is already 97% of wall clock. The buffer is
+        # the source of truth for checkpointing; this shadows it.
+        self._beta = float(self.softplus_beta)
         self.beta_gain_target = beta_gain_target
         self.beta_min = float(beta_min)
         self.beta_max = float(beta_max)
@@ -282,6 +288,11 @@ class CostTransformerActorCritic(nn.Module):
         w = torch.softmax(self.attention_pool(x), dim=1)
         return (x * w).sum(dim=1)
 
+    def _load_from_state_dict(self, *args, **kwargs):
+        super()._load_from_state_dict(*args, **kwargs)
+        # Refresh the hot-path cache; the buffer is authoritative.
+        self._beta = float(self.softplus_beta)
+
     @staticmethod
     def beta_for_gain(v, gain_target):
         """beta that puts the head's gain at `gain_target` when V = v."""
@@ -344,6 +355,7 @@ class CostTransformerActorCritic(nn.Module):
         new = math.exp((1.0 - self.beta_ema) * math.log(cur)
                        + self.beta_ema * math.log(target))
         self.softplus_beta.fill_(new)
+        self._beta = new
         return new
 
     def critic(self, latent):
@@ -427,7 +439,7 @@ class CostTransformerActorCritic(nn.Module):
         initialization.
         """
         raw = self.critic_body(latent).squeeze(-1)
-        return -F.softplus(raw, beta=1.0 / float(self.softplus_beta))
+        return -F.softplus(raw, beta=1.0 / self._beta)
 
     def forward(self, sequence):
         latent = self.encode(sequence)
