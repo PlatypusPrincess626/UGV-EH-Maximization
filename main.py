@@ -32,6 +32,22 @@ else:
     TRANSFORMER_VARIANT = "normal"
 # ============================================================
 
+# The cost family. All three use reward_fn_cost and differ ONLY in
+# the critic construction, so every reward-scale constant, threshold
+# and certification path below keys off membership in this set rather
+# than the literal "cost".
+#
+#   cost         beta*softplus head, spectral-normalized  (reference)
+#   cost_linear  unconstrained head, spectral-normalized  (isolates
+#                                                          the head)
+#   cost_plain   unconstrained head, no spectral norm     (isolates
+#                                                          both)
+#
+# See ablation_transformer.py for what each one gives up.
+COST_VARIANTS = ("cost", "cost_linear", "cost_plain")
+IS_COST = TRANSFORMER_VARIANT in COST_VARIANTS
+
+
 ###############################################################
 # Run configuration from the environment
 #
@@ -241,7 +257,7 @@ STD_CLEARED_THRESHOLD = 1.0
 # Hardcoded rather than written as COST_REWARD_SCALE * something,
 # because COST_REWARD_SCALE is defined further down with the rest of
 # the cost-MDP block and this constant is read before it.
-REWARD_CONVERGENCE_THRESHOLD = -7.0 if TRANSFORMER_VARIANT == "cost" else -150.0
+REWARD_CONVERGENCE_THRESHOLD = -7.0 if TRANSFORMER_VARIANT in COST_VARIANTS else -150.0
 
 ###############################################################
 # Plateau test
@@ -285,7 +301,7 @@ DEGRADATION_FRAC = 0.15
 # the denominator at every check and mute the guard entirely. 0.1
 # keeps it at the same ~1% of a typical return that 10.0 was on the
 # reward arms.
-DEGRADATION_SCALE_FLOOR = 0.1 if TRANSFORMER_VARIANT == "cost" else 10.0
+DEGRADATION_SCALE_FLOOR = 0.1 if TRANSFORMER_VARIANT in COST_VARIANTS else 10.0
 DEGRADATION_PATIENCE = 10
 ACTION_SATURATION_THRESHOLD = 0.97
 
@@ -420,7 +436,7 @@ ALPHA_STATE = {"alpha": COST_LYAPUNOV_ALPHA}
 # reward before scaling; left alone it would be ~6%).
 EFFECTIVE_ACTION_SMOOTHNESS = (
     ACTION_SMOOTHNESS * COST_REWARD_SCALE
-    if TRANSFORMER_VARIANT == "cost"
+    if TRANSFORMER_VARIANT in COST_VARIANTS
     else ACTION_SMOOTHNESS
 )
 
@@ -1436,7 +1452,7 @@ def update(model,opt,rollouts,device, ep, metrics_writer=None, return_var_tracke
                     last_alpha_feasible = (cert_alpha_feasible.detach(),
                                            cert_outside.detach())
 
-                if TRANSFORMER_VARIANT == "cost":
+                if TRANSFORMER_VARIANT in COST_VARIANTS:
                     with torch.no_grad():
                         # V_cost = -value is the merged critic acting
                         # as the Lyapunov function. Evaluated on the
@@ -1518,7 +1534,7 @@ def update(model,opt,rollouts,device, ep, metrics_writer=None, return_var_tracke
                 # Both arms log the analytic certificate; only cost
                 # has a critic to certify.
                 batch_metrics.update(cert_metrics)
-                if TRANSFORMER_VARIANT == "cost":
+                if TRANSFORMER_VARIANT in COST_VARIANTS:
                     batch_metrics.update(critic_metrics)
                 for k, v in batch_metrics.items():
                     if v != v:      # NaN
@@ -1547,7 +1563,7 @@ def update(model,opt,rollouts,device, ep, metrics_writer=None, return_var_tracke
         # V_cost. No-op unless the model was built with
         # beta_gain_target. Logged either way so a run's head is
         # reconstructable from its CSV.
-        if TRANSFORMER_VARIANT == "cost" and last_v_cost is not None:
+        if TRANSFORMER_VARIANT in COST_VARIANTS and last_v_cost is not None:
             avg["softplus_beta"] = model.adapt_beta(last_v_cost)
 
         # Slide alpha once per update, from the last minibatch's
@@ -1587,7 +1603,7 @@ def update(model,opt,rollouts,device, ep, metrics_writer=None, return_var_tracke
             f" | a_used {avg.get('cert_alpha_used', float('nan')):.5f}"
             f" -> {avg.get('cert_alpha_next', float('nan')):.5f}"
         )
-        if TRANSFORMER_VARIANT == "cost":
+        if TRANSFORMER_VARIANT in COST_VARIANTS:
             print(
                 f"  crit | viol {avg.get('v_critic_violation', float('nan')):.3f}"
                 f" | V {avg.get('v_critic_mean', float('nan')):.4f}"
@@ -1715,16 +1731,32 @@ def run():
                                # problem is gone.
                                {"params": log_std_params,     "lr": 3e-4, "weight_decay":1e-5, "initial_lr": 3e-4},],
                               eps=1e-5,)
-        elif TRANSFORMER_VARIANT == "cost":
+        elif TRANSFORMER_VARIANT in COST_VARIANTS:
             from cost_transformer import CostTransformerActorCritic
-            model = CostTransformerActorCritic(
-                VIEW_DISTANCE, scalar_dim=SCALAR_DIM,
-                sequence_length=SEQUENCE_LENGTH,
-                softplus_beta=COST_BETA_INIT,
-                beta_gain_target=COST_BETA_GAIN_TARGET).to(device)
-            print(f"[cost] critic head: beta0 = {COST_BETA_INIT}, "
-                  f"gain target = {COST_BETA_GAIN_TARGET}"
-                  + (" (fixed beta)" if COST_BETA_GAIN_TARGET is None else ""))
+            if TRANSFORMER_VARIANT == "cost":
+                model = CostTransformerActorCritic(
+                    VIEW_DISTANCE, scalar_dim=SCALAR_DIM,
+                    sequence_length=SEQUENCE_LENGTH,
+                    softplus_beta=COST_BETA_INIT,
+                    beta_gain_target=COST_BETA_GAIN_TARGET).to(device)
+                print(f"[cost] critic head: beta*softplus, spectral, "
+                      f"beta0 = {COST_BETA_INIT}, "
+                      f"gain target = {COST_BETA_GAIN_TARGET}"
+                      + (" (fixed beta)" if COST_BETA_GAIN_TARGET is None else ""))
+            else:
+                # Ablation arms. Same reward, same trunk, same RNG
+                # consumption order -- only the critic construction
+                # differs. cost_linear keeps the Lipschitz bound and
+                # drops the sign constraint; cost_plain drops both.
+                from ablation_transformer import AblationTransformerActorCritic
+                use_spectral = (TRANSFORMER_VARIANT == "cost_linear")
+                model = AblationTransformerActorCritic(
+                    VIEW_DISTANCE, scalar_dim=SCALAR_DIM,
+                    sequence_length=SEQUENCE_LENGTH,
+                    spectral_critic=use_spectral).to(device)
+                print(f"[{TRANSFORMER_VARIANT}] critic head: unconstrained linear, "
+                      f"spectral_norm = {use_spectral}. V_cost >= 0 is NOT "
+                      f"structural in this arm -- watch v_critic_min.")
             # Same per-group rates and decay tags as the other two
             # arms, so the comparison isolates the formulation.
             opt = optim.AdamW([
@@ -1746,8 +1778,15 @@ def run():
                 # sigma_max over a long run. Regularizing here is all
                 # cost and no benefit; spectral norm already bounds
                 # the critic.
+                # ...which means the justification only holds where
+                # spectral norm is actually registered. cost_plain has
+                # a bare critic, so it takes the same 1e-5 as every
+                # other unnormalized parameter group in every arm.
                 {"params": list(model.critic_body.parameters()),
-                 "lr": 3e-4, "weight_decay": 0.0, "initial_lr": 3e-4},
+                 "lr": 3e-4,
+                 "weight_decay": (1e-5 if TRANSFORMER_VARIANT == "cost_plain"
+                                  else 0.0),
+                 "initial_lr": 3e-4},
                 {"params": [model.log_std_param],
                  "lr": 3e-4, "weight_decay": 1e-5, "initial_lr": 3e-4},
             ],
@@ -1960,7 +1999,7 @@ def run():
             ep_path_m += float(env.ch.step_path_m)
             ep_turn += float(env.ch.step_turn_integral)
 
-            if TRANSFORMER_VARIANT == "cost":
+            if TRANSFORMER_VARIANT in COST_VARIANTS:
                 rew_total, rew_directional, rew_battery, rew_movement = reward_fn_cost(
                     after, tel, aft_batt / 100.0)
             else:
@@ -2293,7 +2332,7 @@ def run():
                                         sol.apparent_zenith.iloc[0]).flatten()
             aft_batt = env.ch.get_battery()
 
-            if TRANSFORMER_VARIANT == "cost":
+            if TRANSFORMER_VARIANT in COST_VARIANTS:
                 rew, rew_directional, rew_battery, rew_movement = reward_fn_cost(
                     aft, tel, aft_batt / 100.0)
             else:
