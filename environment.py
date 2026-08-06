@@ -385,31 +385,6 @@ class sim_env:
         return result.copy()
 
     def _compute_obfuscation(self, x: int, y: int, step, azimuth: float, zenith: float):
-        # Vectorized over the whole patch at once, rather than a
-        # per-pixel Python loop. The key property that makes this
-        # tractable: d's loop bound depends only on tan_elevation,
-        # fixed for the whole patch, not per-pixel; and k's loop bound
-        # (half_width = ceil(canopy_radius)) only takes 5 possible
-        # values since foliage_height is drawn from {0,5,10,15,20} by
-        # construction (reset_foliage()). So both "variable-length"
-        # loops are actually fixed-size, and each (d,k) iteration is
-        # done as one numpy operation across the whole patch, with a
-        # persistent `terminated` mask replacing the original's
-        # per-pixel `break` statements -- once a pixel is marked
-        # terminated (by terrain block, going out of bounds, or
-        # dropping below the transmittance threshold), it stops being
-        # updated for all later iterations, exactly mirroring where
-        # the original's break would have stopped it.
-        #
-        # Terrain/foliage heights are compared relative to each
-        # patch pixel's OWN terrain elevation (observer_terrain), not
-        # an absolute zero. Without this, terrain averaging ~25 (after
-        # min-max normalization to [0,50]) almost always exceeded the
-        # near-zero sun-clearance height needed at short ray
-        # distances, self-shadowing nearly every pixel regardless of
-        # true line-of-sight -- this was the actual reason
-        # directional_reward computed to exactly zero every step in
-        # real training data, not a scale/weighting issue.
         v_dist = int(self.view_dist)
         patch_size = 2 * v_dist + 1
 

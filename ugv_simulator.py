@@ -28,7 +28,7 @@ class UGVSimulator:
         # Battery Model
         # --------------------------------------------------
 
-        self.capacity_Ah = 12.0
+        self.capacity_Ah = 5.0
         self.max_capacity_mAh = self.capacity_Ah * 1000.0
 
         self.battery_mAh = (
@@ -85,22 +85,6 @@ class UGVSimulator:
         self.gravity = 9.81
 
         # Forest terrain
-        # Both increased from their original values (0.04, 18.0):
-        # final_battery was landing at ~73.5% with a coefficient of
-        # variation of only ~0.4% across very different policies at
-        # very different training stages (episode 1 through 293) --
-        # idle draw alone accounts for <1% of a full episode's
-        # capacity, so motion cost was almost entirely determining
-        # outcome, yet barely varying it. rolling_coeff (a fixed cost
-        # of any forward movement, regardless of pattern) makes
-        # constant movement itself more expensive, encouraging
-        # settling into a good position rather than continuously
-        # moving regardless of benefit. turn_drag_coeff (scales with
-        # angular_velocity * velocity) specifically targets erratic,
-        # turning-heavy movement -- directly relevant, since the
-        # diagnosed boundary-riding behavior (>96% of an episode
-        # spent within 2 units of the boundary radius) requires
-        # continuously turning to follow the boundary's curve.
         self.rolling_coeff = 0.07
         self.turn_drag_coeff = 40.0
 
@@ -131,11 +115,6 @@ class UGVSimulator:
         # Simulation timestep
         self.dt = 1.0  # seconds
 
-        # Number of dt-second physics ticks each call to step() advances
-        # through. Referenced explicitly here AND in step()'s inner loop
-        # AND in harvest_energy()'s duration conversion, so all three
-        # stay in sync by construction rather than by two hardcoded
-        # numbers (a `range(60)` and a `/60.0`) happening to agree.
         self.ticks_per_step = 60
 
         # -----------------------------
@@ -154,16 +133,6 @@ class UGVSimulator:
         self.azimuth = 180
         self.tilt = 45
 
-        # Reduced to ~65% of the original panel area (1.020*0.520):
-        # harvesting was generous enough that final_battery landed
-        # around ~73.5% almost regardless of policy quality (see
-        # rolling_coeff/turn_drag_coeff comment above for the full
-        # diagnosis). A smaller panel means harvest is more directly
-        # limited by actual sun exposure -- good positioning (now
-        # that directional_reward rewards it directly) should matter
-        # more to the battery outcome, not just to a mostly-decorative
-        # reward term riding on top of an outcome the panel size
-        # already guaranteed.
         self.solar_area = (1.020 * 0.520) * 0.45
 
         self.panel_fill_factor = 0.75
