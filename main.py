@@ -449,6 +449,67 @@ COST_BETA_GAIN_TARGET = 0.90
 # merge holds; pinning both would have destroyed it.
 #
 # Set COST_ALPHA_MODE = "fixed" to restore the asserted 1 - GAMMA.
+# Cost-to-go charged when the battery dies.
+#
+# THE FAILURE STATE IS ABSORBING, AND UNDER A COST MDP IT IS THE MOST
+# EXPENSIVE STATE THERE IS -- not the cheapest.
+#
+# GAE bootstraps the last step of a terminated episode. Bootstrapping
+# with 0 is right for the reward arms: dying forfeits future positive
+# reward, so 0 is a penalty. Under r = -c it is exactly inverted. Every
+# return is <= 0, so V = 0 is the BEST value in the state space, and a
+# policy that drives the battery flat at step 100 books ~1/7th the
+# accumulated cost of one that survives all 720. Suicide becomes
+# optimal, in the advantage as well as the logged total.
+#
+# The fix is to charge what the agent would actually accrue. A dead
+# robot sits at SOC 0 for the rest of the episode, so its per-step
+# cost is the deficit term at maximum:
+#
+#     c_fail = COST_DEFICIT_W * ((SOC_TARGET - 0)/SOC_TARGET)^2
+#            = COST_DEFICIT_W
+#
+# discounted over the steps that remain. Shade and move are left out
+# deliberately -- they depend on where the corpse is, and the deficit
+# term alone already dominates.
+#
+# Sizing check: c_fail * COST_REWARD_SCALE / (1 - GAMMA) = 2.0 against
+# a measured healthy V_cost of ~0.65, so death is ~3x worse than the
+# worst normal state. Finite-horizon rather than 1/(1-gamma) so that
+# dying at step 719 is not charged the same as dying at step 10.
+COST_DEATH_COST = COST_DEFICIT_W * COST_REWARD_SCALE
+
+
+def death_cost_to_go(step, horizon=None):
+    """
+    DISCOUNTED cost of sitting dead from `step` to the horizon. This is
+    what the critic represents, so it is the right bootstrap value.
+    """
+    horizon = MAX_STEPS_PER_EPISODE if horizon is None else horizon
+    remaining = max(int(horizon) - int(step), 0)
+    if remaining <= 0:
+        return 0.0
+    return COST_DEATH_COST * (1.0 - GAMMA ** remaining) / (1.0 - GAMMA)
+
+
+def death_cost_logged(step, horizon=None):
+    """
+    UNDISCOUNTED cost of the same thing, for the logged episode total.
+
+    The two differ and both are needed. The logged total is a plain sum
+    of per-step costs, so charging it the discounted figure leaves
+    dying attractive anyway: at gamma=0.99 the discounted charge caps
+    at 2.00, while a surviving episode accumulates ~4.9 undiscounted.
+    Dying at step 50 would book -2.34 against -4.90 -- still the better
+    outcome, just less obviously.
+
+    The critic keeps the discounted form because that is what a value
+    function is; only the reporting side uses this one.
+    """
+    horizon = MAX_STEPS_PER_EPISODE if horizon is None else horizon
+    return COST_DEATH_COST * max(int(horizon) - int(step), 0)
+
+
 COST_ALPHA_MODE = "adaptive"
 COST_ALPHA_QUANTILE = 0.05
 COST_ALPHA_EMA = 0.05
@@ -2102,22 +2163,39 @@ def run():
             r["logps"].append(lp.item()); r["values"].append(v.item()); r["rewards"].append(rew)
             x,y,yaw=env.ch.get_position(); h.append(obs(env,x,y,yaw,min(step+1,MAX_STEPS_PER_EPISODE-1)))
             r["next_states"].append(np.asarray(h))
-            if aft_batt<=0: break
+            if aft_batt<=0:
+                # Also charge it to the LOGGED total. reward_history
+                # feeds REWARD_CONVERGENCE_THRESHOLD, best-model
+                # tracking and the degradation guard; without this a
+                # run that learned to die early would read as its own
+                # best checkpoint.
+                if TRANSFORMER_VARIANT in COST_VARIANTS:
+                    total -= death_cost_logged(step)
+                break
 
         rollout_elapsed = time.perf_counter() - rollout_start
         total_rollout_time += rollout_elapsed
 
         # GAE needs a bootstrap value for whatever comes after the last
-        # recorded step. If the battery genuinely died (aft_batt<=0),
-        # there truly is no future reward -- 0 is correct. If the loop
-        # only ended because MAX_STEPS_PER_EPISODE was reached, the
-        # environment did not actually terminate; bootstrapping with 0
-        # would tell the value function "no more reward is possible
-        # here" when that isn't true. Use the critic's own estimate of
-        # the real next state in that case instead.
+        # recorded step.
+        #
+        # If the battery died, what comes after is the absorbing
+        # failure state. For the REWARD arms its value is 0: no more
+        # positive reward is collectable, which is the penalty. For the
+        # COST arms 0 is the best value in the state space and would
+        # make dying optimal -- they get -death_cost_to_go() instead.
+        # See COST_DEATH_COST.
+        #
+        # If the loop only ended because MAX_STEPS_PER_EPISODE was
+        # reached, the environment did not terminate at all;
+        # bootstrapping with 0 would tell the value function "nothing
+        # more happens here" when that isn't true. Use the critic's own
+        # estimate of the real next state instead.
         if POLICY_TYPE == "transformer":
             if aft_batt <= 0:
-                bootstrap_value = 0.0
+                bootstrap_value = (-death_cost_to_go(step)
+                                   if TRANSFORMER_VARIANT in COST_VARIANTS
+                                   else 0.0)
             else:
                 model.eval()
                 with torch.no_grad():
@@ -2453,7 +2531,10 @@ def run():
             val_steps = step + 1
 
             x,y,yaw=nx,ny,nyaw; h.append(obs(env,x,y,yaw,min(step+1,MAX_STEPS_PER_EPISODE-1)))
-            if aft_batt<=0: break
+            if aft_batt<=0:
+                if TRANSFORMER_VARIANT in COST_VARIANTS:
+                    val_total -= death_cost_logged(step)
+                break
 
           net_disp = float(math.hypot(x - val_start_x, y - val_start_y))
           validation_rows.append({
