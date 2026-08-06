@@ -7,6 +7,7 @@ Placing Sensors
 [Episode 3/400] Steps: 720 | Reward:  125.14 | Battery:  46.48% | Loss: 
 Placing Sensors
 Policy -0.0024 | Value 11.2251 | KL 0.00716 | CF 0.0899 | Std 0.1765 | |a| 0.0127 | Alpha 0.8577 | MB 48/48
+  cert | viol 0.999 | dV -0.094926 | V 0.2985 | inball 0.000 | a*_q05 -0.00428 | a*_q50 0.00324 | dV>=0 0.217 | n=150 | a_used 0.01000 -> 0.00950
 [Episode 4/400] Steps: 720 | Reward:  138.50 | Battery:  46.78% | Loss: 0.5211
 Placing Sensors
 [Episode 5/400] Steps: 720 | Reward:  113.23 | Battery:  38.45% | Loss: 
@@ -16,6 +17,7 @@ Placing Sensors
 [Episode 7/400] Steps: 720 | Reward:   78.25 | Battery:  28.49% | Loss: 
 Placing Sensors
 Policy 0.0027 | Value 8.3507 | KL 0.00604 | CF 0.0707 | Std 0.1824 | |a| 0.0165 | Alpha 0.7356 | MB 48/48
+  cert | viol 1.000 | dV -0.064655 | V 0.3798 | inball 0.000 | a*_q05 -0.00339 | a*_q50 0.00150 | dV>=0 0.346 | n=150 | a_used 0.00950 -> 0.00903
 [Episode 8/400] Steps: 720 | Reward:   57.39 | Battery:  26.04% | Loss: 0.6381
 Placing Sensors
 [Episode 9/400] Steps: 720 | Reward:   90.12 | Battery:  30.50% | Loss: 
@@ -25,6 +27,7 @@ Placing Sensors
 [Episode 11/400] Steps: 720 | Reward:  138.86 | Battery:  47.53% | Loss: 
 Placing Sensors
 Policy 0.0001 | Value 7.2628 | KL 0.01213 | CF 0.1400 | Std 0.1880 | |a| 0.0198 | Alpha 0.6310 | MB 48/48
+  cert | viol 1.000 | dV -0.088555 | V 0.3539 | inball 0.000 | a*_q05 -0.00277 | a*_q50 0.00293 | dV>=0 0.230 | n=150 | a_used 0.00903 -> 0.00857
 [Episode 12/400] Steps: 720 | Reward:  159.37 | Battery:  59.52% | Loss: 0.5219
 Placing Sensors
 [Episode 13/400] Steps: 720 | Reward:  137.62 | Battery:  46.50% | Loss: 
@@ -34,6 +37,7 @@ Placing Sensors
 [Episode 15/400] Steps: 720 | Reward:  121.55 | Battery:  46.09% | Loss: 
 Placing Sensors
 Policy -0.0042 | Value 8.1857 | KL 0.01355 | CF 0.1656 | Std 0.1934 | |a| 0.0318 | Alpha 0.5412 | MB 48/48
+  cert | viol 1.000 | dV -0.095877 | V 0.3940 | inball 0.000 | a*_q05 -0.00183 | a*_q50 0.00240 | dV>=0 0.207 | n=150 | a_used 0.00857 -> 0.00815
 [Episode 16/400] Steps: 720 | Reward:  125.75 | Battery:  43.73% | Loss: 0.3742
 Placing Sensors
 [Episode 17/400] Steps: 720 | Reward:  169.05 | Battery:  59.12% | Loss: 
@@ -43,6 +47,7 @@ Placing Sensors
 [Episode 19/400] Steps: 720 | Reward:  175.16 | Battery:  59.73% | Loss: 
 Placing Sensors
 Policy -0.0050 | Value 10.2265 | KL 0.01376 | CF 0.1724 | Std 0.1989 | |a| 0.0283 | Alpha 0.4642 | MB 48/48
+  cert | viol 0.846 | dV -0.113932 | V 0.3229 | inball 0.000 | a*_q05 -0.00326 | a*_q50 0.00358 | dV>=0 0.224 | n=150 | a_used 0.00815 -> 0.00774
 [Episode 20/400] Steps: 720 | Reward:  182.06 | Battery:  60.38% | Loss: 0.2191
 Placing Sensors
 [Episode 21/400] Steps: 720 | Reward:  182.88 | Battery:  64.31% | Loss: 
@@ -52,6 +57,7 @@ Placing Sensors
 [Episode 23/400] Steps: 720 | Reward:  171.36 | Battery:  58.97% | Loss: 
 Placing Sensors
 Policy 0.0028 | Value 8.2202 | KL 0.01703 | CF 0.1975 | Std 0.2044 | |a| 0.0323 | Alpha 0.3981 | MB 48/48
+  cert | viol 0.884 | dV -0.113429 | V 0.2632 | inball 0.000 | a*_q05 -0.00547 | a*_q50 0.00506 | dV>=0 0.189 | n=150 | a_used 0.00774 -> 0.00735
 [Episode 24/400] Steps: 720 | Reward:  161.52 | Battery:  54.57% | Loss: 0.2539
 Placing Sensors
 [Episode 25/400] Steps: 720 | Reward:  170.31 | Battery:  60.52% | Loss: 
@@ -61,6 +67,7 @@ Placing Sensors
 [Episode 27/400] Steps: 720 | Reward:  128.82 | Battery:  43.93% | Loss: 
 Placing Sensors
 Policy 0.0022 | Value 10.7844 | KL 0.01510 | CF 0.1846 | Std 0.2094 | |a| 0.0438 | Alpha 0.3415 | MB 48/48
+  cert | viol 1.000 | dV -0.103707 | V 0.3512 | inball 0.000 | a*_q05 -0.00234 | a*_q50 0.00313 | dV>=0 0.209 | n=150 | a_used 0.00735 -> 0.00698
 [Episode 28/400] Steps: 720 | Reward:  143.37 | Battery:  51.91% | Loss: 0.2399
 Placing Sensors
 [Episode 29/400] Steps: 720 | Reward:  179.71 | Battery:  64.96% | Loss: 
@@ -70,6 +77,7 @@ Placing Sensors
 [Episode 31/400] Steps: 720 | Reward:  146.09 | Battery:  56.40% | Loss: 
 Placing Sensors
 Policy -0.0045 | Value 8.7164 | KL 0.01528 | CF 0.1733 | Std 0.2141 | |a| 0.0478 | Alpha 0.2929 | MB 48/48
+  cert | viol 0.920 | dV -0.097391 | V 0.3146 | inball 0.000 | a*_q05 -0.00191 | a*_q50 0.00322 | dV>=0 0.211 | n=150 | a_used 0.00698 -> 0.00663
 [Episode 32/400] Steps: 720 | Reward:  125.46 | Battery:  47.74% | Loss: 0.0435
 Placing Sensors
 [Episode 33/400] Steps: 720 | Reward:  118.11 | Battery:  44.96% | Loss: 
@@ -79,6 +87,7 @@ Placing Sensors
 [Episode 35/400] Steps: 720 | Reward:  104.99 | Battery:  42.03% | Loss: 
 Placing Sensors
 Policy 0.0018 | Value 11.8709 | KL 0.02040 | CF 0.2146 | Std 0.2186 | |a| 0.0576 | Alpha 0.2512 | MB 48/48
+  cert | viol 0.854 | dV -0.097771 | V 0.3123 | inball 0.016 | a*_q05 -0.00289 | a*_q50 0.00345 | dV>=0 0.181 | n=150 | a_used 0.00663 -> 0.00630
 [Episode 36/400] Steps: 720 | Reward:  158.86 | Battery:  59.74% | Loss: 0.1089
 Placing Sensors
 [Episode 37/400] Steps: 720 | Reward:  141.78 | Battery:  49.13% | Loss: 
@@ -88,6 +97,7 @@ Placing Sensors
 [Episode 39/400] Steps: 720 | Reward:  150.77 | Battery:  53.43% | Loss: 
 Placing Sensors
 Policy -0.0076 | Value 11.1586 | KL 0.02118 | CF 0.2214 | Std 0.2229 | |a| 0.0517 | Alpha 0.2154 | MB 48/48
+  cert | viol 0.791 | dV -0.112485 | V 0.3102 | inball 0.000 | a*_q05 -0.00182 | a*_q50 0.00445 | dV>=0 0.137 | n=150 | a_used 0.00630 -> 0.00599
 [Episode 40/400] Steps: 720 | Reward:  191.17 | Battery:  69.26% | Loss: -0.0709
 Placing Sensors
 [Episode 41/400] Steps: 720 | Reward:  181.87 | Battery:  68.12% | Loss: 
@@ -97,6 +107,7 @@ Placing Sensors
 [Episode 43/400] Steps: 720 | Reward:  149.22 | Battery:  52.01% | Loss: 
 Placing Sensors
 Policy -0.0010 | Value 11.0180 | KL 0.01955 | CF 0.2188 | Std 0.2269 | |a| 0.0559 | Alpha 0.1848 | MB 48/48
+  cert | viol 0.790 | dV -0.094962 | V 0.2937 | inball 0.000 | a*_q05 -0.00164 | a*_q50 0.00329 | dV>=0 0.227 | n=150 | a_used 0.00599 -> 0.00569
 [Episode 44/400] Steps: 720 | Reward:  112.03 | Battery:  45.38% | Loss: -0.1460
 Placing Sensors
 [Episode 45/400] Steps: 720 | Reward:  174.10 | Battery:  67.97% | Loss: 
@@ -106,6 +117,7 @@ Placing Sensors
 [Episode 47/400] Steps: 720 | Reward:  200.99 | Battery:  67.12% | Loss: 
 Placing Sensors
 Policy -0.0104 | Value 12.2744 | KL 0.01743 | CF 0.1921 | Std 0.2301 | |a| 0.0618 | Alpha 0.1585 | MB 48/48
+  cert | viol 0.576 | dV -0.117525 | V 0.3012 | inball 0.000 | a*_q05 -0.00333 | a*_q50 0.00459 | dV>=0 0.175 | n=150 | a_used 0.00569 -> 0.00540
 [Episode 48/400] Steps: 720 | Reward:  182.30 | Battery:  68.54% | Loss: 0.0722
 Placing Sensors
 [Episode 49/400] Steps: 720 | Reward:  208.42 | Battery:  75.78% | Loss: 
@@ -115,6 +127,7 @@ Placing Sensors
 [Episode 51/400] Steps: 720 | Reward:  160.36 | Battery:  61.26% | Loss: 
 Placing Sensors
 Policy 0.0043 | Value 13.6006 | KL 0.02094 | CF 0.2085 | Std 0.2321 | |a| 0.0518 | Alpha 0.1359 | MB 24/48
+  cert | viol 0.552 | dV -0.106188 | V 0.2456 | inball 0.017 | a*_q05 -0.00628 | a*_q50 0.00477 | dV>=0 0.147 | n=150 | a_used 0.00540 -> 0.00513
 [Episode 52/400] Steps: 720 | Reward:  117.48 | Battery:  45.80% | Loss: 0.0363
 Placing Sensors
 [Episode 53/400] Steps: 720 | Reward:  154.75 | Battery:  53.55% | Loss: 
@@ -124,6 +137,7 @@ Placing Sensors
 [Episode 55/400] Steps: 720 | Reward:  169.67 | Battery:  65.58% | Loss: 
 Placing Sensors
 Policy 0.0039 | Value 9.8323 | KL 0.01837 | CF 0.1972 | Std 0.2339 | |a| 0.0473 | Alpha 0.1166 | MB 48/48
+  cert | viol 0.634 | dV -0.117653 | V 0.3256 | inball 0.000 | a*_q05 -0.00228 | a*_q50 0.00419 | dV>=0 0.147 | n=150 | a_used 0.00513 -> 0.00488
 [Episode 56/400] Steps: 720 | Reward:  151.27 | Battery:  55.61% | Loss: 0.2566
 Placing Sensors
 [Episode 57/400] Steps: 720 | Reward:  205.80 | Battery:  74.74% | Loss: 
@@ -133,6 +147,7 @@ Placing Sensors
 [Episode 59/400] Steps: 720 | Reward:  114.37 | Battery:  39.97% | Loss: 
 Placing Sensors
 Policy -0.0013 | Value 16.2802 | KL 0.01994 | CF 0.2112 | Std 0.2362 | |a| 0.0551 | Alpha 0.1000 | MB 48/48
+  cert | viol 0.536 | dV -0.106538 | V 0.3037 | inball 0.000 | a*_q05 -0.00312 | a*_q50 0.00433 | dV>=0 0.190 | n=150 | a_used 0.00488 -> 0.00463
 [Episode 60/400] Steps: 720 | Reward:  157.06 | Battery:  54.49% | Loss: 0.1203
 Placing Sensors
 [Episode 61/400] Steps: 720 | Reward:  158.88 | Battery:  57.97% | Loss: 
@@ -142,6 +157,7 @@ Placing Sensors
 [Episode 63/400] Steps: 720 | Reward:  187.52 | Battery:  72.29% | Loss: 
 Placing Sensors
 Policy -0.0127 | Value 9.9002 | KL 0.01873 | CF 0.2073 | Std 0.2382 | |a| 0.0572 | Alpha 0.0858 | MB 48/48
+  cert | viol 0.580 | dV -0.104753 | V 0.2960 | inball 0.000 | a*_q05 -0.00287 | a*_q50 0.00387 | dV>=0 0.176 | n=150 | a_used 0.00463 -> 0.00440
 [Episode 64/400] Steps: 720 | Reward:  141.14 | Battery:  55.97% | Loss: 0.2751
 Placing Sensors
 [Episode 65/400] Steps: 720 | Reward:  143.57 | Battery:  49.09% | Loss: 
@@ -151,6 +167,7 @@ Placing Sensors
 [Episode 67/400] Steps: 720 | Reward:  182.59 | Battery:  69.23% | Loss: 
 Placing Sensors
 Policy -0.0099 | Value 8.6276 | KL 0.02269 | CF 0.2540 | Std 0.2398 | |a| 0.0664 | Alpha 0.0736 | MB 48/48
+  cert | viol 0.575 | dV -0.113227 | V 0.3258 | inball 0.000 | a*_q05 -0.00267 | a*_q50 0.00380 | dV>=0 0.183 | n=150 | a_used 0.00440 -> 0.00418
 [Episode 68/400] Steps: 720 | Reward:  164.73 | Battery:  60.72% | Loss: -0.1241
 Placing Sensors
 [Episode 69/400] Steps: 720 | Reward:  128.64 | Battery:  46.92% | Loss: 
@@ -160,6 +177,7 @@ Placing Sensors
 [Episode 71/400] Steps: 720 | Reward:  241.42 | Battery:  86.69% | Loss: 
 Placing Sensors
 Policy -0.0082 | Value 12.0859 | KL 0.01825 | CF 0.2043 | Std 0.2406 | |a| 0.0676 | Alpha 0.0631 | MB 48/48
+  cert | viol 0.411 | dV -0.121400 | V 0.2921 | inball 0.093 | a*_q05 -0.00287 | a*_q50 0.00547 | dV>=0 0.133 | n=150 | a_used 0.00418 -> 0.00397
 [Episode 72/400] Steps: 720 | Reward:  224.29 | Battery:  75.28% | Loss: -0.0514
 Placing Sensors
 [Episode 73/400] Steps: 720 | Reward:  191.67 | Battery:  68.07% | Loss: 
@@ -169,6 +187,7 @@ Placing Sensors
 [Episode 75/400] Steps: 720 | Reward:  206.85 | Battery:  71.65% | Loss: 
 Placing Sensors
 Policy 0.0068 | Value 16.3010 | KL 0.02243 | CF 0.2336 | Std 0.2409 | |a| 0.0723 | Alpha 0.0541 | MB 24/48
+  cert | viol 0.332 | dV -0.123794 | V 0.2582 | inball 0.002 | a*_q05 -0.00211 | a*_q50 0.00672 | dV>=0 0.112 | n=150 | a_used 0.00397 -> 0.00377
 [Episode 76/400] Steps: 720 | Reward:  219.77 | Battery:  78.40% | Loss: 0.0201
 Placing Sensors
 [Episode 77/400] Steps: 720 | Reward:  221.71 | Battery:  78.21% | Loss: 
@@ -178,6 +197,7 @@ Placing Sensors
 [Episode 79/400] Steps: 720 | Reward:  242.71 | Battery:  80.11% | Loss: 
 Placing Sensors
 Policy -0.0025 | Value 10.5824 | KL 0.01695 | CF 0.1784 | Std 0.2414 | |a| 0.0704 | Alpha 0.0464 | MB 48/48
+  cert | viol 0.218 | dV -0.123967 | V 0.2286 | inball 0.112 | a*_q05 -0.00089 | a*_q50 0.00863 | dV>=0 0.061 | n=150 | a_used 0.00377 -> 0.00358
 [Episode 80/400] Steps: 720 | Reward:  213.38 | Battery:  76.82% | Loss: -0.0032
 Placing Sensors
 [Episode 81/400] Steps: 720 | Reward:  231.07 | Battery:  78.14% | Loss: 
@@ -187,6 +207,7 @@ Placing Sensors
 [Episode 83/400] Steps: 720 | Reward:  177.79 | Battery:  63.85% | Loss: 
 Placing Sensors
 Policy 0.0003 | Value 9.9937 | KL 0.01912 | CF 0.2160 | Std 0.2415 | |a| 0.0677 | Alpha 0.0398 | MB 48/48
+  cert | viol 0.256 | dV -0.128157 | V 0.2493 | inball 0.129 | a*_q05 0.00036 | a*_q50 0.00742 | dV>=0 0.041 | n=150 | a_used 0.00358 -> 0.00325
 [Episode 84/400] Steps: 720 | Reward:  231.53 | Battery:  82.52% | Loss: 0.0857
 Placing Sensors
 [Episode 85/400] Steps: 720 | Reward:  206.96 | Battery:  76.73% | Loss: 
@@ -196,6 +217,7 @@ Placing Sensors
 [Episode 87/400] Steps: 720 | Reward:  218.91 | Battery:  80.06% | Loss: 
 Placing Sensors
 Policy -0.0054 | Value 14.5606 | KL 0.01896 | CF 0.2126 | Std 0.2414 | |a| 0.0720 | Alpha 0.0341 | MB 48/48
+  cert | viol 0.171 | dV -0.119298 | V 0.2138 | inball 0.169 | a*_q05 0.00043 | a*_q50 0.01002 | dV>=0 0.037 | n=150 | a_used 0.00325 -> 0.00309
 [Episode 88/400] Steps: 720 | Reward:  229.28 | Battery:  80.87% | Loss: 0.0863
 Placing Sensors
 [Episode 89/400] Steps: 720 | Reward:  218.82 | Battery:  72.94% | Loss: 
@@ -205,6 +227,7 @@ Placing Sensors
 [Episode 91/400] Steps: 720 | Reward:  201.71 | Battery:  75.05% | Loss: 
 Placing Sensors
 Policy -0.0048 | Value 13.6761 | KL 0.02136 | CF 0.2017 | Std 0.2414 | |a| 0.0745 | Alpha 0.0293 | MB 48/48
+  cert | viol 0.252 | dV -0.122767 | V 0.2481 | inball 0.070 | a*_q05 -0.00321 | a*_q50 0.00716 | dV>=0 0.106 | n=150 | a_used 0.00309 -> 0.00293
 [Episode 92/400] Steps: 720 | Reward:  166.08 | Battery:  63.59% | Loss: -0.0491
 Placing Sensors
 [Episode 93/400] Steps: 720 | Reward:  230.68 | Battery:  80.36% | Loss: 
@@ -214,6 +237,7 @@ Placing Sensors
 [Episode 95/400] Steps: 720 | Reward:  245.69 | Battery:  86.17% | Loss: 
 Placing Sensors
 Policy 0.0037 | Value 12.2220 | KL 0.02104 | CF 0.2124 | Std 0.2413 | |a| 0.0807 | Alpha 0.0251 | MB 24/48
+  cert | viol 0.160 | dV -0.130844 | V 0.2382 | inball 0.285 | a*_q05 0.00029 | a*_q50 0.01176 | dV>=0 0.042 | n=150 | a_used 0.00293 -> 0.00279
 [Episode 96/400] Steps: 720 | Reward:  235.77 | Battery:  81.17% | Loss: 0.1034
 Placing Sensors
 [Episode 97/400] Steps: 720 | Reward:  195.15 | Battery:  71.31% | Loss: 
@@ -223,6 +247,7 @@ Placing Sensors
 [Episode 99/400] Steps: 720 | Reward:  244.79 | Battery:  83.20% | Loss: 
 Placing Sensors
 Policy -0.0044 | Value 9.5053 | KL 0.02232 | CF 0.2329 | Std 0.2409 | |a| 0.0760 | Alpha 0.0215 | MB 48/48
+  cert | viol 0.147 | dV -0.130714 | V 0.2374 | inball 0.205 | a*_q05 -0.00009 | a*_q50 0.01046 | dV>=0 0.056 | n=150 | a_used 0.00279 -> 0.00261
 [Episode 100/400] Steps: 720 | Reward:  254.56 | Battery:  82.94% | Loss: 0.1903
 Placing Sensors
 [Episode 101/400] Steps: 720 | Reward:  252.43 | Battery:  80.67% | Loss: 
@@ -232,6 +257,7 @@ Placing Sensors
 [Episode 103/400] Steps: 720 | Reward:  211.24 | Battery:  76.46% | Loss: 
 Placing Sensors
 Policy -0.0135 | Value 9.9884 | KL 0.02257 | CF 0.2304 | Std 0.2404 | |a| 0.0777 | Alpha 0.0185 | MB 48/48
+  cert | viol 0.100 | dV -0.124866 | V 0.2088 | inball 0.260 | a*_q05 0.00175 | a*_q50 0.01163 | dV>=0 0.008 | n=150 | a_used 0.00261 -> 0.00256
 [Episode 104/400] Steps: 720 | Reward:  230.53 | Battery:  81.22% | Loss: -0.2889
 Placing Sensors
 [Episode 105/400] Steps: 720 | Reward:  203.83 | Battery:  75.51% | Loss: 
@@ -241,6 +267,7 @@ Placing Sensors
 [Episode 107/400] Steps: 720 | Reward:  250.87 | Battery:  85.31% | Loss: 
 Placing Sensors
 Policy -0.0074 | Value 11.1463 | KL 0.02081 | CF 0.2196 | Std 0.2398 | |a| 0.0836 | Alpha 0.0158 | MB 48/48
+  cert | viol 0.171 | dV -0.134240 | V 0.2502 | inball 0.198 | a*_q05 -0.00038 | a*_q50 0.00960 | dV>=0 0.061 | n=150 | a_used 0.00256 -> 0.00243
 [Episode 108/400] Steps: 720 | Reward:  242.06 | Battery:  82.66% | Loss: 0.0516
 Placing Sensors
 [Episode 109/400] Steps: 720 | Reward:  229.90 | Battery:  82.39% | Loss: 
@@ -250,6 +277,7 @@ Placing Sensors
 [Episode 111/400] Steps: 720 | Reward:  204.33 | Battery:  74.00% | Loss: 
 Placing Sensors
 Policy -0.0025 | Value 12.0022 | KL 0.02325 | CF 0.2496 | Std 0.2395 | |a| 0.0892 | Alpha 0.0136 | MB 48/48
+  cert | viol 0.093 | dV -0.126294 | V 0.2115 | inball 0.274 | a*_q05 0.00142 | a*_q50 0.01117 | dV>=0 0.023 | n=150 | a_used 0.00243 -> 0.00233
 [Episode 112/400] Steps: 720 | Reward:  275.11 | Battery:  86.03% | Loss: -0.1036
 Placing Sensors
 [Episode 113/400] Steps: 720 | Reward:  201.70 | Battery:  69.33% | Loss: 
@@ -259,6 +287,7 @@ Placing Sensors
 [Episode 115/400] Steps: 720 | Reward:  191.94 | Battery:  71.01% | Loss: 
 Placing Sensors
 Policy -0.0087 | Value 10.8500 | KL 0.02034 | CF 0.2278 | Std 0.2392 | |a| 0.0839 | Alpha 0.0117 | MB 48/48
+  cert | viol 0.154 | dV -0.127933 | V 0.2475 | inball 0.122 | a*_q05 -0.00006 | a*_q50 0.00754 | dV>=0 0.050 | n=150 | a_used 0.00233 -> 0.00221
 [Episode 116/400] Steps: 720 | Reward:  225.15 | Battery:  76.76% | Loss: 0.0037
 Placing Sensors
 [Episode 117/400] Steps: 720 | Reward:  242.87 | Battery:  81.36% | Loss: 
@@ -268,6 +297,7 @@ Placing Sensors
 [Episode 119/400] Steps: 720 | Reward:  188.89 | Battery:  71.72% | Loss: 
 Placing Sensors
 Policy -0.0027 | Value 11.9119 | KL 0.02034 | CF 0.2129 | Std 0.2388 | |a| 0.0929 | Alpha 0.0100 | MB 48/48
+  cert | viol 0.161 | dV -0.129124 | V 0.2408 | inball 0.171 | a*_q05 -0.00077 | a*_q50 0.00968 | dV>=0 0.082 | n=150 | a_used 0.00221 -> 0.00220
 [Episode 120/400] Steps: 720 | Reward:  215.33 | Battery:  77.71% | Loss: -0.0975
 Placing Sensors
 [Episode 121/400] Steps: 720 | Reward:  252.39 | Battery:  82.97% | Loss: 
@@ -277,6 +307,7 @@ Placing Sensors
 [Episode 123/400] Steps: 720 | Reward:  250.50 | Battery:  83.96% | Loss: 
 Placing Sensors
 Policy -0.0041 | Value 13.6818 | KL 0.01834 | CF 0.1945 | Std 0.2379 | |a| 0.0882 | Alpha 0.0100 | MB 48/48
+  cert | viol 0.032 | dV -0.136558 | V 0.2177 | inball 0.316 | a*_q05 0.00287 | a*_q50 0.01276 | dV>=0 0.000 | n=150 | a_used 0.00220 -> 0.00228
 [Episode 124/400] Steps: 720 | Reward:  251.08 | Battery:  83.62% | Loss: 0.1359
 Placing Sensors
 [Episode 125/400] Steps: 720 | Reward:  249.72 | Battery:  82.05% | Loss: 
@@ -286,6 +317,7 @@ Placing Sensors
 [Episode 127/400] Steps: 720 | Reward:  214.00 | Battery:  75.48% | Loss: 
 Placing Sensors
 Policy -0.0099 | Value 17.2210 | KL 0.02197 | CF 0.2286 | Std 0.2367 | |a| 0.1007 | Alpha 0.0100 | MB 48/48
+  cert | viol 0.142 | dV -0.144597 | V 0.2464 | inball 0.173 | a*_q05 -0.00331 | a*_q50 0.00969 | dV>=0 0.072 | n=150 | a_used 0.00228 -> 0.00207
 [Episode 128/400] Steps: 720 | Reward:  182.09 | Battery:  66.41% | Loss: -0.0504
 Placing Sensors
 [Episode 129/400] Steps: 720 | Reward:  193.76 | Battery:  73.85% | Loss: 
@@ -295,6 +327,7 @@ Placing Sensors
 [Episode 131/400] Steps: 720 | Reward:  204.58 | Battery:  75.58% | Loss: 
 Placing Sensors
 Policy 0.0017 | Value 13.1875 | KL 0.02282 | CF 0.2371 | Std 0.2360 | |a| 0.0876 | Alpha 0.0100 | MB 48/48
+  cert | viol 0.127 | dV -0.132549 | V 0.2297 | inball 0.207 | a*_q05 -0.00088 | a*_q50 0.01042 | dV>=0 0.067 | n=150 | a_used 0.00207 -> 0.00183
 [Episode 132/400] Steps: 720 | Reward:  270.88 | Battery:  86.99% | Loss: 0.0147
 Placing Sensors
 [Episode 133/400] Steps: 720 | Reward:  195.49 | Battery:  67.58% | Loss: 
@@ -304,6 +337,7 @@ Placing Sensors
 [Episode 135/400] Steps: 720 | Reward:  227.39 | Battery:  79.95% | Loss: 
 Placing Sensors
 Policy 0.0097 | Value 17.7666 | KL 0.02849 | CF 0.1969 | Std 0.2355 | |a| 0.0908 | Alpha 0.0100 | MB 25/48
+  cert | viol 0.105 | dV -0.142263 | V 0.2528 | inball 0.233 | a*_q05 0.00041 | a*_q50 0.00805 | dV>=0 0.039 | n=150 | a_used 0.00183 -> 0.00174
 [Episode 136/400] Steps: 720 | Reward:  251.73 | Battery:  83.04% | Loss: -0.0753
 Placing Sensors
 [Episode 137/400] Steps: 720 | Reward:  278.42 | Battery:  87.80% | Loss: 
@@ -313,6 +347,7 @@ Placing Sensors
 [Episode 139/400] Steps: 720 | Reward:  251.98 | Battery:  81.70% | Loss: 
 Placing Sensors
 Policy -0.0055 | Value 13.0776 | KL 0.02637 | CF 0.2481 | Std 0.2352 | |a| 0.1044 | Alpha 0.0100 | MB 48/48
+  cert | viol 0.023 | dV -0.150471 | V 0.2274 | inball 0.391 | a*_q05 0.00279 | a*_q50 0.01525 | dV>=0 0.000 | n=150 | a_used 0.00174 -> 0.00177
 [Episode 140/400] Steps: 720 | Reward:  275.94 | Battery:  88.06% | Loss: 0.0461
 Placing Sensors
 [Episode 141/400] Steps: 720 | Reward:  194.43 | Battery:  73.52% | Loss: 
@@ -322,6 +357,7 @@ Placing Sensors
 [Episode 143/400] Steps: 720 | Reward:  238.52 | Battery:  83.28% | Loss: 
 Placing Sensors
 Policy -0.0116 | Value 12.3689 | KL 0.02193 | CF 0.2223 | Std 0.2349 | |a| 0.1158 | Alpha 0.0100 | MB 48/48
+  cert | viol 0.108 | dV -0.126431 | V 0.2283 | inball 0.201 | a*_q05 0.00046 | a*_q50 0.00804 | dV>=0 0.040 | n=150 | a_used 0.00177 -> 0.00182
 [Episode 144/400] Steps: 720 | Reward:  215.27 | Battery:  77.28% | Loss: -0.0021
 Placing Sensors
 [Episode 145/400] Steps: 720 | Reward:  221.42 | Battery:  76.13% | Loss: 
@@ -331,6 +367,7 @@ Placing Sensors
 [Episode 147/400] Steps: 720 | Reward:  226.27 | Battery:  76.46% | Loss: 
 Placing Sensors
 Policy 0.0004 | Value 17.8254 | KL 0.02724 | CF 0.2313 | Std 0.2347 | |a| 0.1005 | Alpha 0.0100 | MB 36/48
+  cert | viol 0.145 | dV -0.130926 | V 0.2366 | inball 0.121 | a*_q05 -0.00109 | a*_q50 0.00862 | dV>=0 0.066 | n=150 | a_used 0.00182 -> 0.00173
 [Episode 148/400] Steps: 720 | Reward:  229.75 | Battery:  80.70% | Loss: 0.1050
 Placing Sensors
 [Episode 149/400] Steps: 720 | Reward:  228.33 | Battery:  80.82% | Loss: 
@@ -340,6 +377,7 @@ Placing Sensors
 [Episode 151/400] Steps: 720 | Reward:  222.92 | Battery:  80.35% | Loss: 
 Placing Sensors
 Policy -0.0082 | Value 12.5908 | KL 0.02289 | CF 0.2257 | Std 0.2344 | |a| 0.0978 | Alpha 0.0100 | MB 48/48
+  cert | viol 0.120 | dV -0.120367 | V 0.2225 | inball 0.167 | a*_q05 -0.00102 | a*_q50 0.00944 | dV>=0 0.066 | n=150 | a_used 0.00173 -> 0.00165
 [Episode 152/400] Steps: 720 | Reward:  177.17 | Battery:  66.39% | Loss: -0.0705
 Placing Sensors
 [Episode 153/400] Steps: 720 | Reward:  255.43 | Battery:  83.50% | Loss: 
@@ -349,6 +387,7 @@ Placing Sensors
 [Episode 155/400] Steps: 720 | Reward:  233.06 | Battery:  82.98% | Loss: 
 Placing Sensors
 Policy 0.0020 | Value 10.0442 | KL 0.02765 | CF 0.2459 | Std 0.2341 | |a| 0.1069 | Alpha 0.0100 | MB 36/48
+  cert | viol 0.059 | dV -0.119184 | V 0.2041 | inball 0.200 | a*_q05 0.00147 | a*_q50 0.00996 | dV>=0 0.014 | n=150 | a_used 0.00165 -> 0.00163
 [Episode 156/400] Steps: 720 | Reward:  205.44 | Battery:  75.87% | Loss: 0.1562
 Placing Sensors
 [Episode 157/400] Steps: 720 | Reward:  261.81 | Battery:  86.58% | Loss: 
@@ -358,6 +397,7 @@ Placing Sensors
 [Episode 159/400] Steps: 720 | Reward:  232.41 | Battery:  81.62% | Loss: 
 Placing Sensors
 Policy 0.0199 | Value 14.9954 | KL 0.02911 | CF 0.2637 | Std 0.2338 | |a| 0.1031 | Alpha 0.0100 | MB 24/48
+  cert | viol 0.023 | dV -0.139437 | V 0.2143 | inball 0.385 | a*_q05 0.00243 | a*_q50 0.01564 | dV>=0 0.003 | n=150 | a_used 0.00163 -> 0.00170
 [Episode 160/400] Steps: 720 | Reward:  250.20 | Battery:  83.50% | Loss: 0.2150
 Placing Sensors
 [Episode 161/400] Steps: 720 | Reward:  241.79 | Battery:  82.82% | Loss: 
@@ -367,6 +407,7 @@ Placing Sensors
 [Episode 163/400] Steps: 720 | Reward:  178.81 | Battery:  68.78% | Loss: 
 Placing Sensors
 Policy -0.0071 | Value 18.5885 | KL 0.02536 | CF 0.2046 | Std 0.2335 | |a| 0.1042 | Alpha 0.0100 | MB 48/48
+  cert | viol 0.089 | dV -0.123290 | V 0.2094 | inball 0.260 | a*_q05 0.00015 | a*_q50 0.00901 | dV>=0 0.052 | n=150 | a_used 0.00170 -> 0.00165
 [Episode 164/400] Steps: 720 | Reward:  241.15 | Battery:  82.10% | Loss: 0.1659
 Placing Sensors
 [Episode 165/400] Steps: 720 | Reward:  244.43 | Battery:  82.15% | Loss: 
@@ -376,6 +417,7 @@ Placing Sensors
 [Episode 167/400] Steps: 720 | Reward:  212.09 | Battery:  78.73% | Loss: 
 Placing Sensors
 Policy -0.0076 | Value 12.8523 | KL 0.02211 | CF 0.2249 | Std 0.2330 | |a| 0.1091 | Alpha 0.0100 | MB 24/48
+  cert | viol 0.079 | dV -0.122858 | V 0.2099 | inball 0.250 | a*_q05 0.00087 | a*_q50 0.01183 | dV>=0 0.031 | n=150 | a_used 0.00165 -> 0.00165
 [Episode 168/400] Steps: 720 | Reward:  224.52 | Battery:  81.10% | Loss: -0.1174
 Placing Sensors
 [Episode 169/400] Steps: 720 | Reward:  241.26 | Battery:  78.09% | Loss: 
@@ -385,6 +427,7 @@ Placing Sensors
 [Episode 171/400] Steps: 720 | Reward:  241.03 | Battery:  82.22% | Loss: 
 Placing Sensors
 Policy -0.0082 | Value 10.9978 | KL 0.02298 | CF 0.2244 | Std 0.2328 | |a| 0.1124 | Alpha 0.0100 | MB 48/48
+  cert | viol 0.091 | dV -0.119890 | V 0.1886 | inball 0.186 | a*_q05 -0.00231 | a*_q50 0.00978 | dV>=0 0.068 | n=150 | a_used 0.00165 -> 0.00157
 [Episode 172/400] Steps: 720 | Reward:  213.71 | Battery:  75.55% | Loss: 0.0620
 Placing Sensors
 [Episode 173/400] Steps: 720 | Reward:  225.15 | Battery:  76.03% | Loss: 
@@ -394,6 +437,7 @@ Placing Sensors
 [Episode 175/400] Steps: 720 | Reward:  207.68 | Battery:  71.46% | Loss: 
 Placing Sensors
 Policy -0.0079 | Value 11.4116 | KL 0.02029 | CF 0.2133 | Std 0.2325 | |a| 0.1183 | Alpha 0.0100 | MB 48/48
+  cert | viol 0.170 | dV -0.134888 | V 0.2693 | inball 0.107 | a*_q05 -0.00166 | a*_q50 0.00759 | dV>=0 0.088 | n=150 | a_used 0.00157 -> 0.00149
 [Episode 176/400] Steps: 720 | Reward:  246.79 | Battery:  81.82% | Loss: -0.1004
 Placing Sensors
 [Episode 177/400] Steps: 720 | Reward:  247.37 | Battery:  85.01% | Loss: 
@@ -403,6 +447,7 @@ Placing Sensors
 [Episode 179/400] Steps: 720 | Reward:  265.18 | Battery:  84.74% | Loss: 
 Placing Sensors
 Policy -0.0020 | Value 17.2822 | KL 0.03217 | CF 0.2316 | Std 0.2323 | |a| 0.1295 | Alpha 0.0100 | MB 24/48
+  cert | viol 0.102 | dV -0.130420 | V 0.2218 | inball 0.261 | a*_q05 -0.00037 | a*_q50 0.01088 | dV>=0 0.058 | n=150 | a_used 0.00149 -> 0.00142
 [Episode 180/400] Steps: 720 | Reward:  230.90 | Battery:  77.49% | Loss: -0.0830
 Placing Sensors
 [Episode 181/400] Steps: 720 | Reward:  250.74 | Battery:  82.75% | Loss: 
@@ -412,6 +457,7 @@ Placing Sensors
 [Episode 183/400] Steps: 720 | Reward:  274.52 | Battery:  85.79% | Loss: 
 Placing Sensors
 Policy 0.0082 | Value 44.9539 | KL 0.03054 | CF 0.2077 | Std 0.2322 | |a| 0.1005 | Alpha 0.0100 | MB 22/48
+  cert | viol 0.023 | dV -0.135613 | V 0.1976 | inball 0.415 | a*_q05 0.00348 | a*_q50 0.01672 | dV>=0 0.007 | n=150 | a_used 0.00142 -> 0.00148
 [Episode 184/400] Steps: 720 | Reward:  284.59 | Battery:  87.60% | Loss: 0.0233
 Placing Sensors
 [Episode 185/400] Steps: 720 | Reward:  181.00 | Battery:  66.08% | Loss: 
@@ -421,6 +467,7 @@ Placing Sensors
 [Episode 187/400] Steps: 720 | Reward:  273.22 | Battery:  84.14% | Loss: 
 Placing Sensors
 Policy -0.0066 | Value 15.6874 | KL 0.02856 | CF 0.2148 | Std 0.2322 | |a| 0.1143 | Alpha 0.0100 | MB 36/48
+  cert | viol 0.193 | dV -0.131746 | V 0.2528 | inball 0.107 | a*_q05 -0.00599 | a*_q50 0.00772 | dV>=0 0.130 | n=150 | a_used 0.00148 -> 0.00141
 [Episode 188/400] Steps: 720 | Reward:  188.97 | Battery:  66.14% | Loss: -0.0691
 Placing Sensors
 [Episode 189/400] Steps: 720 | Reward:  220.56 | Battery:  76.64% | Loss: 
@@ -430,6 +477,7 @@ Placing Sensors
 [Episode 191/400] Steps: 720 | Reward:  225.17 | Battery:  74.74% | Loss: 
 Placing Sensors
 Policy 0.0058 | Value 14.5928 | KL 0.03420 | CF 0.2578 | Std 0.2324 | |a| 0.1179 | Alpha 0.0100 | MB 24/48
+  cert | viol 0.057 | dV -0.126213 | V 0.2225 | inball 0.221 | a*_q05 0.00134 | a*_q50 0.00972 | dV>=0 0.028 | n=150 | a_used 0.00141 -> 0.00141
 [Episode 192/400] Steps: 720 | Reward:  277.01 | Battery:  87.73% | Loss: 0.0966
 Placing Sensors
 [Episode 193/400] Steps: 720 | Reward:  176.95 | Battery:  68.22% | Loss: 
@@ -439,6 +487,7 @@ Placing Sensors
 [Episode 195/400] Steps: 720 | Reward:  225.86 | Battery:  74.53% | Loss: 
 Placing Sensors
 Policy -0.0128 | Value 9.2760 | KL 0.02372 | CF 0.2165 | Std 0.2320 | |a| 0.1237 | Alpha 0.0100 | MB 48/48
+  cert | viol 0.169 | dV -0.129252 | V 0.2396 | inball 0.089 | a*_q05 -0.00400 | a*_q50 0.00813 | dV>=0 0.109 | n=150 | a_used 0.00141 -> 0.00134
 [Episode 196/400] Steps: 720 | Reward:  216.46 | Battery:  77.15% | Loss: 0.0931
 Placing Sensors
 [Episode 197/400] Steps: 720 | Reward:  254.48 | Battery:  85.88% | Loss: 
@@ -448,6 +497,7 @@ Placing Sensors
 [Episode 199/400] Steps: 720 | Reward:  214.27 | Battery:  75.54% | Loss: 
 Placing Sensors
 Policy 0.0026 | Value 11.4323 | KL 0.02455 | CF 0.2265 | Std 0.2310 | |a| 0.1159 | Alpha 0.0100 | MB 36/48
+  cert | viol 0.098 | dV -0.125292 | V 0.2323 | inball 0.117 | a*_q05 0.00014 | a*_q50 0.00871 | dV>=0 0.048 | n=150 | a_used 0.00134 -> 0.00126
 [Episode 200/400] Steps: 720 | Reward:  236.83 | Battery:  79.86% | Loss: -0.0927
 Placing Sensors
 [Episode 201/400] Steps: 720 | Reward:  218.18 | Battery:  77.42% | Loss: 
@@ -457,6 +507,7 @@ Placing Sensors
 [Episode 203/400] Steps: 720 | Reward:  260.55 | Battery:  83.83% | Loss: 
 Placing Sensors
 Policy -0.0078 | Value 12.0315 | KL 0.01905 | CF 0.1806 | Std 0.2300 | |a| 0.1200 | Alpha 0.0100 | MB 48/48
+  cert | viol 0.082 | dV -0.131064 | V 0.2239 | inball 0.221 | a*_q05 0.00025 | a*_q50 0.00942 | dV>=0 0.044 | n=150 | a_used 0.00126 -> 0.00120
 [Episode 204/400] Steps: 720 | Reward:  216.82 | Battery:  74.39% | Loss: 0.0583
 Placing Sensors
 [Episode 205/400] Steps: 720 | Reward:  216.09 | Battery:  78.64% | Loss: 
@@ -466,6 +517,7 @@ Placing Sensors
 [Episode 207/400] Steps: 720 | Reward:  232.36 | Battery:  80.00% | Loss: 
 Placing Sensors
 Policy 0.0040 | Value 10.0232 | KL 0.03596 | CF 0.2372 | Std 0.2286 | |a| 0.1157 | Alpha 0.0100 | MB 36/48
+  cert | viol 0.030 | dV -0.141915 | V 0.2336 | inball 0.279 | a*_q05 0.00200 | a*_q50 0.01243 | dV>=0 0.001 | n=150 | a_used 0.00120 -> 0.00119
 [Episode 208/400] Steps: 720 | Reward:  250.21 | Battery:  84.50% | Loss: 0.0837
 Placing Sensors
 [Episode 209/400] Steps: 720 | Reward:  249.65 | Battery:  82.47% | Loss: 
@@ -475,6 +527,7 @@ Placing Sensors
 [Episode 211/400] Steps: 720 | Reward:  221.58 | Battery:  80.05% | Loss: 
 Placing Sensors
 Policy -0.0001 | Value 11.2116 | KL 0.02791 | CF 0.2423 | Std 0.2275 | |a| 0.1093 | Alpha 0.0100 | MB 48/48
+  cert | viol 0.116 | dV -0.127692 | V 0.2258 | inball 0.157 | a*_q05 -0.00136 | a*_q50 0.00933 | dV>=0 0.065 | n=150 | a_used 0.00119 -> 0.00118
 [Episode 212/400] Steps: 720 | Reward:  201.62 | Battery:  73.65% | Loss: 0.0637
 Placing Sensors
 [Episode 213/400] Steps: 720 | Reward:  190.25 | Battery:  71.22% | Loss: 
@@ -484,6 +537,7 @@ Placing Sensors
 [Episode 215/400] Steps: 720 | Reward:  254.65 | Battery:  82.80% | Loss: 
 Placing Sensors
 Policy -0.0063 | Value 11.6457 | KL 0.02323 | CF 0.2112 | Std 0.2265 | |a| 0.1088 | Alpha 0.0100 | MB 48/48
+  cert | viol 0.128 | dV -0.121959 | V 0.2124 | inball 0.107 | a*_q05 -0.00444 | a*_q50 0.00817 | dV>=0 0.089 | n=150 | a_used 0.00118 -> 0.00112
 [Episode 216/400] Steps: 720 | Reward:  217.51 | Battery:  74.04% | Loss: 0.0286
 Placing Sensors
 [Episode 217/400] Steps: 720 | Reward:  254.07 | Battery:  82.61% | Loss: 
@@ -493,6 +547,7 @@ Placing Sensors
 [Episode 219/400] Steps: 720 | Reward:  242.96 | Battery:  84.52% | Loss: 
 Placing Sensors
 Policy -0.0145 | Value 8.3369 | KL 0.02485 | CF 0.1829 | Std 0.2259 | |a| 0.1122 | Alpha 0.0100 | MB 36/48
+  cert | viol 0.040 | dV -0.152318 | V 0.2490 | inball 0.340 | a*_q05 0.00149 | a*_q50 0.01432 | dV>=0 0.002 | n=150 | a_used 0.00112 -> 0.00117
 [Episode 220/400] Steps: 720 | Reward:  258.01 | Battery:  83.70% | Loss: 0.0973
 Placing Sensors
 [Episode 221/400] Steps: 720 | Reward:  240.96 | Battery:  81.43% | Loss: 
@@ -502,6 +557,7 @@ Placing Sensors
 [Episode 223/400] Steps: 720 | Reward:  235.78 | Battery:  78.15% | Loss: 
 Placing Sensors
 Policy 0.0111 | Value 10.1581 | KL 0.02613 | CF 0.2796 | Std 0.2257 | |a| 0.1039 | Alpha 0.0100 | MB 24/48
+  cert | viol 0.029 | dV -0.144975 | V 0.2321 | inball 0.330 | a*_q05 0.00190 | a*_q50 0.01494 | dV>=0 0.003 | n=150 | a_used 0.00117 -> 0.00121
 [Episode 224/400] Steps: 720 | Reward:  228.01 | Battery:  81.70% | Loss: -0.0889
 Placing Sensors
 [Episode 225/400] Steps: 720 | Reward:  196.53 | Battery:  72.40% | Loss: 
@@ -511,6 +567,7 @@ Placing Sensors
 [Episode 227/400] Steps: 720 | Reward:  229.59 | Battery:  81.62% | Loss: 
 Placing Sensors
 Policy -0.0072 | Value 17.5115 | KL 0.01793 | CF 0.1729 | Std 0.2250 | |a| 0.0918 | Alpha 0.0100 | MB 48/48
+  cert | viol 0.089 | dV -0.127870 | V 0.2224 | inball 0.190 | a*_q05 -0.00046 | a*_q50 0.01081 | dV>=0 0.047 | n=150 | a_used 0.00121 -> 0.00115
 [Episode 228/400] Steps: 720 | Reward:  242.59 | Battery:  81.25% | Loss: 0.1923
 Placing Sensors
 [Episode 229/400] Steps: 720 | Reward:  222.34 | Battery:  78.98% | Loss: 
@@ -520,6 +577,7 @@ Placing Sensors
 [Episode 231/400] Steps: 720 | Reward:  241.48 | Battery:  81.49% | Loss: 
 Placing Sensors
 Policy -0.0111 | Value 13.8975 | KL 0.02232 | CF 0.1675 | Std 0.2242 | |a| 0.1034 | Alpha 0.0100 | MB 36/48
+  cert | viol 0.047 | dV -0.145721 | V 0.2431 | inball 0.301 | a*_q05 0.00135 | a*_q50 0.01304 | dV>=0 0.012 | n=150 | a_used 0.00115 -> 0.00113
 [Episode 232/400] Steps: 720 | Reward:  253.72 | Battery:  85.00% | Loss: -0.0146
 Placing Sensors
 [Episode 233/400] Steps: 720 | Reward:  220.90 | Battery:  77.45% | Loss: 
@@ -529,6 +587,7 @@ Placing Sensors
 [Episode 235/400] Steps: 720 | Reward:  226.83 | Battery:  80.79% | Loss: 
 Placing Sensors
 Policy -0.0033 | Value 10.4791 | KL 0.02012 | CF 0.1634 | Std 0.2234 | |a| 0.0858 | Alpha 0.0100 | MB 48/48
+  cert | viol 0.011 | dV -0.138001 | V 0.2123 | inball 0.365 | a*_q05 0.00258 | a*_q50 0.01541 | dV>=0 0.001 | n=150 | a_used 0.00113 -> 0.00118
 [Episode 236/400] Steps: 720 | Reward:  262.05 | Battery:  83.03% | Loss: -0.0135
 Placing Sensors
 [Episode 237/400] Steps: 720 | Reward:  223.90 | Battery:  78.02% | Loss: 
@@ -538,6 +597,7 @@ Placing Sensors
 [Episode 239/400] Steps: 720 | Reward:  246.94 | Battery:  83.50% | Loss: 
 Placing Sensors
 Policy -0.0144 | Value 10.3144 | KL 0.01664 | CF 0.1486 | Std 0.2232 | |a| 0.0992 | Alpha 0.0100 | MB 48/48
+  cert | viol 0.051 | dV -0.154516 | V 0.2536 | inball 0.318 | a*_q05 0.00133 | a*_q50 0.01312 | dV>=0 0.018 | n=150 | a_used 0.00118 -> 0.00120
 [Episode 240/400] Steps: 720 | Reward:  254.18 | Battery:  84.16% | Loss: -0.0293
 Placing Sensors
 [Episode 241/400] Steps: 720 | Reward:  216.23 | Battery:  75.47% | Loss: 
@@ -547,6 +607,7 @@ Placing Sensors
 [Episode 243/400] Steps: 720 | Reward:  188.51 | Battery:  66.85% | Loss: 
 Placing Sensors
 Policy -0.0132 | Value 10.3867 | KL 0.01724 | CF 0.1600 | Std 0.2230 | |a| 0.0944 | Alpha 0.0100 | MB 48/48
+  cert | viol 0.134 | dV -0.132115 | V 0.2592 | inball 0.145 | a*_q05 -0.00040 | a*_q50 0.00811 | dV>=0 0.072 | n=150 | a_used 0.00120 -> 0.00110
 [Episode 244/400] Steps: 720 | Reward:  193.23 | Battery:  69.70% | Loss: 0.2170
 Placing Sensors
 [Episode 245/400] Steps: 720 | Reward:  231.56 | Battery:  82.37% | Loss: 
@@ -556,6 +617,7 @@ Placing Sensors
 [Episode 247/400] Steps: 720 | Reward:  234.28 | Battery:  78.33% | Loss: 
 Placing Sensors
 Policy -0.0146 | Value 14.2657 | KL 0.02048 | CF 0.1937 | Std 0.2221 | |a| 0.1010 | Alpha 0.0100 | MB 48/48
+  cert | viol 0.115 | dV -0.142593 | V 0.2614 | inball 0.191 | a*_q05 -0.00034 | a*_q50 0.01057 | dV>=0 0.066 | n=150 | a_used 0.00110 -> 0.00102
 [Episode 248/400] Steps: 720 | Reward:  236.37 | Battery:  79.43% | Loss: 0.0723
 Placing Sensors
 [Episode 249/400] Steps: 720 | Reward:  271.16 | Battery:  86.39% | Loss: 
@@ -565,6 +627,7 @@ Placing Sensors
 [Episode 251/400] Steps: 720 | Reward:  282.77 | Battery:  88.68% | Loss: 
 Placing Sensors
 Policy -0.0124 | Value 21.2896 | KL 0.02164 | CF 0.1737 | Std 0.2214 | |a| 0.1078 | Alpha 0.0100 | MB 48/48
+  cert | viol 0.098 | dV -0.149440 | V 0.2681 | inball 0.202 | a*_q05 -0.00054 | a*_q50 0.00959 | dV>=0 0.067 | n=150 | a_used 0.00102 -> 0.00097
 [Episode 252/400] Steps: 720 | Reward:  222.95 | Battery:  77.13% | Loss: -0.0829
 Placing Sensors
 [Episode 253/400] Steps: 720 | Reward:  279.28 | Battery:  86.98% | Loss: 
@@ -574,6 +637,7 @@ Placing Sensors
 [Episode 255/400] Steps: 720 | Reward:  237.61 | Battery:  79.91% | Loss: 
 Placing Sensors
 Policy -0.0015 | Value 12.2977 | KL 0.02287 | CF 0.1600 | Std 0.2210 | |a| 0.1086 | Alpha 0.0100 | MB 24/48
+  cert | viol 0.020 | dV -0.134265 | V 0.2082 | inball 0.345 | a*_q05 0.00275 | a*_q50 0.01397 | dV>=0 0.012 | n=150 | a_used 0.00097 -> 0.00102
 [Episode 256/400] Steps: 720 | Reward:  256.62 | Battery:  84.44% | Loss: 0.0329
 Placing Sensors
 [Episode 257/400] Steps: 720 | Reward:  229.57 | Battery:  83.45% | Loss: 
@@ -583,6 +647,7 @@ Placing Sensors
 [Episode 259/400] Steps: 720 | Reward:  250.53 | Battery:  85.67% | Loss: 
 Placing Sensors
 Policy -0.0106 | Value 18.7834 | KL 0.01868 | CF 0.1807 | Std 0.2207 | |a| 0.1029 | Alpha 0.0100 | MB 48/48
+  cert | viol 0.035 | dV -0.135916 | V 0.2210 | inball 0.333 | a*_q05 0.00170 | a*_q50 0.01328 | dV>=0 0.008 | n=150 | a_used 0.00102 -> 0.00103
 [Episode 260/400] Steps: 720 | Reward:  270.40 | Battery:  84.49% | Loss: 0.1300
 Placing Sensors
 [Episode 261/400] Steps: 720 | Reward:  247.21 | Battery:  84.30% | Loss: 
@@ -592,6 +657,7 @@ Placing Sensors
 [Episode 263/400] Steps: 720 | Reward:  257.98 | Battery:  86.15% | Loss: 
 Placing Sensors
 Policy -0.0074 | Value 12.0647 | KL 0.02197 | CF 0.1830 | Std 0.2198 | |a| 0.1087 | Alpha 0.0100 | MB 48/48
+  cert | viol 0.069 | dV -0.127914 | V 0.2177 | inball 0.272 | a*_q05 0.00053 | a*_q50 0.01214 | dV>=0 0.042 | n=150 | a_used 0.00103 -> 0.00089
 [Episode 264/400] Steps: 720 | Reward:  217.64 | Battery:  74.54% | Loss: 0.0111
 Placing Sensors
 [Episode 265/400] Steps: 720 | Reward:  240.62 | Battery:  82.81% | Loss: 
@@ -601,6 +667,7 @@ Placing Sensors
 [Episode 267/400] Steps: 720 | Reward:  278.00 | Battery:  88.85% | Loss: 
 Placing Sensors
 Policy -0.0051 | Value 11.8590 | KL 0.01981 | CF 0.1684 | Std 0.2189 | |a| 0.1036 | Alpha 0.0100 | MB 36/48
+  cert | viol 0.044 | dV -0.123794 | V 0.2270 | inball 0.257 | a*_q05 0.00105 | a*_q50 0.00846 | dV>=0 0.018 | n=150 | a_used 0.00089 -> 0.00090
 [Episode 268/400] Steps: 720 | Reward:  266.73 | Battery:  85.89% | Loss: -0.0979
 Placing Sensors
 [Episode 269/400] Steps: 720 | Reward:  238.41 | Battery:  78.89% | Loss: 
@@ -610,6 +677,7 @@ Placing Sensors
 [Episode 271/400] Steps: 720 | Reward:  245.32 | Battery:  81.53% | Loss: 
 Placing Sensors
 Policy 0.0014 | Value 11.5506 | KL 0.02396 | CF 0.2116 | Std 0.2187 | |a| 0.1127 | Alpha 0.0100 | MB 24/48
+  cert | viol 0.062 | dV -0.138370 | V 0.2282 | inball 0.265 | a*_q05 0.00022 | a*_q50 0.01303 | dV>=0 0.044 | n=150 | a_used 0.00090 -> 0.00093
 [Episode 272/400] Steps: 720 | Reward:  236.08 | Battery:  82.56% | Loss: -0.1170
 Placing Sensors
 [Episode 273/400] Steps: 720 | Reward:  262.09 | Battery:  83.68% | Loss: 
@@ -619,6 +687,7 @@ Placing Sensors
 [Episode 275/400] Steps: 720 | Reward:  231.29 | Battery:  78.53% | Loss: 
 Placing Sensors
 Policy -0.0100 | Value 16.7979 | KL 0.01758 | CF 0.1875 | Std 0.2187 | |a| 0.1166 | Alpha 0.0100 | MB 48/48
+  cert | viol 0.011 | dV -0.139503 | V 0.2165 | inball 0.363 | a*_q05 0.00240 | a*_q50 0.01527 | dV>=0 0.000 | n=150 | a_used 0.00093 -> 0.00096
 [Episode 276/400] Steps: 720 | Reward:  229.16 | Battery:  79.69% | Loss: -0.0822
 Placing Sensors
 [Episode 277/400] Steps: 720 | Reward:  181.43 | Battery:  64.85% | Loss: 
@@ -628,6 +697,7 @@ Placing Sensors
 [Episode 279/400] Steps: 720 | Reward:  275.48 | Battery:  85.86% | Loss: 
 Placing Sensors
 Policy -0.0111 | Value 14.0237 | KL 0.02493 | CF 0.1439 | Std 0.2185 | |a| 0.1118 | Alpha 0.0100 | MB 24/48
+  cert | viol 0.068 | dV -0.137845 | V 0.2472 | inball 0.255 | a*_q05 0.00034 | a*_q50 0.00858 | dV>=0 0.042 | n=150 | a_used 0.00096 -> 0.00099
 [Episode 280/400] Steps: 720 | Reward:  231.18 | Battery:  81.57% | Loss: -0.0521
 Placing Sensors
 [Episode 281/400] Steps: 720 | Reward:  237.72 | Battery:  83.10% | Loss: 
@@ -637,6 +707,7 @@ Placing Sensors
 [Episode 283/400] Steps: 720 | Reward:  267.62 | Battery:  87.15% | Loss: 
 Placing Sensors
 Policy -0.0093 | Value 11.4693 | KL 0.02184 | CF 0.1804 | Std 0.2180 | |a| 0.1068 | Alpha 0.0100 | MB 48/48
+  cert | viol 0.030 | dV -0.154124 | V 0.2551 | inball 0.340 | a*_q05 0.00166 | a*_q50 0.01375 | dV>=0 0.006 | n=150 | a_used 0.00099 -> 0.00101
 [Episode 284/400] Steps: 720 | Reward:  272.95 | Battery:  85.30% | Loss: -0.0366
 Placing Sensors
 [Episode 285/400] Steps: 720 | Reward:  137.75 | Battery:  50.96% | Loss: 
@@ -646,6 +717,7 @@ Placing Sensors
 [Episode 287/400] Steps: 720 | Reward:  278.42 | Battery:  85.28% | Loss: 
 Placing Sensors
 Policy -0.0023 | Value 11.2527 | KL 0.01667 | CF 0.1714 | Std 0.2173 | |a| 0.0994 | Alpha 0.0100 | MB 48/48
+  cert | viol 0.115 | dV -0.139738 | V 0.2484 | inball 0.305 | a*_q05 -0.00176 | a*_q50 0.00877 | dV>=0 0.084 | n=150 | a_used 0.00101 -> 0.00096
 [Episode 288/400] Steps: 720 | Reward:  286.21 | Battery:  85.35% | Loss: 0.0951
 Placing Sensors
 [Episode 289/400] Steps: 720 | Reward:  274.19 | Battery:  88.91% | Loss: 
@@ -655,6 +727,7 @@ Placing Sensors
 [Episode 291/400] Steps: 720 | Reward:  241.47 | Battery:  83.53% | Loss: 
 Placing Sensors
 Policy -0.0148 | Value 12.4888 | KL 0.02281 | CF 0.2075 | Std 0.2170 | |a| 0.1285 | Alpha 0.0100 | MB 48/48
+  cert | viol 0.023 | dV -0.140182 | V 0.2137 | inball 0.394 | a*_q05 0.00227 | a*_q50 0.01642 | dV>=0 0.005 | n=150 | a_used 0.00096 -> 0.00103
 [Episode 292/400] Steps: 720 | Reward:  245.80 | Battery:  84.59% | Loss: 0.0537
 Placing Sensors
 [Episode 293/400] Steps: 720 | Reward:  251.45 | Battery:  83.50% | Loss: 
@@ -664,6 +737,7 @@ Placing Sensors
 [Episode 295/400] Steps: 720 | Reward:  216.07 | Battery:  78.40% | Loss: 
 Placing Sensors
 Policy 0.0157 | Value 13.8788 | KL 0.03204 | CF 0.2658 | Std 0.2166 | |a| 0.1295 | Alpha 0.0100 | MB 24/48
+  cert | viol 0.010 | dV -0.131433 | V 0.1989 | inball 0.363 | a*_q05 0.00270 | a*_q50 0.01500 | dV>=0 0.000 | n=150 | a_used 0.00103 -> 0.00107
 [Episode 296/400] Steps: 720 | Reward:  270.70 | Battery:  86.40% | Loss: 0.1477
 Placing Sensors
 [Episode 297/400] Steps: 720 | Reward:  238.07 | Battery:  80.89% | Loss: 
@@ -673,6 +747,7 @@ Placing Sensors
 [Episode 299/400] Steps: 720 | Reward:  275.82 | Battery:  84.94% | Loss: 
 Placing Sensors
 Policy -0.0076 | Value 12.8986 | KL 0.01549 | CF 0.1733 | Std 0.2164 | |a| 0.1193 | Alpha 0.0100 | MB 48/48
+  cert | viol 0.020 | dV -0.135035 | V 0.2159 | inball 0.335 | a*_q05 0.00224 | a*_q50 0.01375 | dV>=0 0.000 | n=150 | a_used 0.00107 -> 0.00112
 [Episode 300/400] Steps: 720 | Reward:  265.87 | Battery:  87.10% | Loss: 0.1041
 Placing Sensors
 [Episode 301/400] Steps: 720 | Reward:  245.26 | Battery:  82.75% | Loss: 
@@ -682,6 +757,7 @@ Placing Sensors
 [Episode 303/400] Steps: 720 | Reward:  205.77 | Battery:  75.36% | Loss: 
 Placing Sensors
 Policy -0.0063 | Value 12.6928 | KL 0.02387 | CF 0.2377 | Std 0.2160 | |a| 0.1368 | Alpha 0.0100 | MB 48/48
+  cert | viol 0.028 | dV -0.134711 | V 0.2090 | inball 0.330 | a*_q05 0.00216 | a*_q50 0.01351 | dV>=0 0.014 | n=150 | a_used 0.00112 -> 0.00116
 [Episode 304/400] Steps: 720 | Reward:  260.68 | Battery:  83.51% | Loss: -0.0395
 Placing Sensors
 [Episode 305/400] Steps: 720 | Reward:  236.88 | Battery:  80.85% | Loss: 
@@ -691,6 +767,7 @@ Placing Sensors
 [Episode 307/400] Steps: 720 | Reward:  229.67 | Battery:  81.29% | Loss: 
 Placing Sensors
 Policy -0.0064 | Value 8.0877 | KL 0.02174 | CF 0.1948 | Std 0.2154 | |a| 0.1460 | Alpha 0.0100 | MB 48/48
+  cert | viol 0.094 | dV -0.144620 | V 0.2427 | inball 0.227 | a*_q05 -0.00114 | a*_q50 0.01077 | dV>=0 0.067 | n=150 | a_used 0.00116 -> 0.00110
 [Episode 308/400] Steps: 720 | Reward:  224.08 | Battery:  75.05% | Loss: 0.0050
 Placing Sensors
 [Episode 309/400] Steps: 720 | Reward:  223.34 | Battery:  78.63% | Loss: 
@@ -700,6 +777,7 @@ Placing Sensors
 [Episode 311/400] Steps: 720 | Reward:  235.96 | Battery:  80.37% | Loss: 
 Placing Sensors
 Policy -0.0068 | Value 17.6999 | KL 0.01870 | CF 0.1793 | Std 0.2148 | |a| 0.1329 | Alpha 0.0100 | MB 48/48
+  cert | viol 0.013 | dV -0.144560 | V 0.2308 | inball 0.352 | a*_q05 0.00202 | a*_q50 0.01514 | dV>=0 0.000 | n=150 | a_used 0.00110 -> 0.00113
 [Episode 312/400] Steps: 720 | Reward:  247.21 | Battery:  80.10% | Loss: 0.0514
 Placing Sensors
 [Episode 313/400] Steps: 720 | Reward:  252.94 | Battery:  85.80% | Loss: 
@@ -709,6 +787,7 @@ Placing Sensors
 [Episode 315/400] Steps: 720 | Reward:  247.44 | Battery:  84.18% | Loss: 
 Placing Sensors
 Policy -0.0082 | Value 11.0165 | KL 0.02124 | CF 0.1963 | Std 0.2142 | |a| 0.1335 | Alpha 0.0100 | MB 36/48
+  cert | viol 0.036 | dV -0.149258 | V 0.2349 | inball 0.359 | a*_q05 0.00191 | a*_q50 0.01410 | dV>=0 0.011 | n=150 | a_used 0.00113 -> 0.00106
 [Episode 316/400] Steps: 720 | Reward:  255.83 | Battery:  81.86% | Loss: -0.0830
 Placing Sensors
 [Episode 317/400] Steps: 720 | Reward:  260.16 | Battery:  86.17% | Loss: 
@@ -718,6 +797,7 @@ Placing Sensors
 [Episode 319/400] Steps: 720 | Reward:  225.28 | Battery:  80.48% | Loss: 
 Placing Sensors
 Policy -0.0036 | Value 7.7066 | KL 0.02026 | CF 0.1909 | Std 0.2135 | |a| 0.1413 | Alpha 0.0100 | MB 24/48
+  cert | viol 0.044 | dV -0.129101 | V 0.2264 | inball 0.260 | a*_q05 0.00132 | a*_q50 0.00870 | dV>=0 0.023 | n=150 | a_used 0.00106 -> 0.00112
 [Episode 320/400] Steps: 720 | Reward:  202.32 | Battery:  71.06% | Loss: -0.0842
 Placing Sensors
 [Episode 321/400] Steps: 720 | Reward:  238.26 | Battery:  80.25% | Loss: 
@@ -727,6 +807,7 @@ Placing Sensors
 [Episode 323/400] Steps: 720 | Reward:  265.30 | Battery:  87.49% | Loss: 
 Placing Sensors
 Policy -0.0126 | Value 7.5828 | KL 0.01773 | CF 0.1681 | Std 0.2132 | |a| 0.1247 | Alpha 0.0100 | MB 48/48
+  cert | viol 0.086 | dV -0.127572 | V 0.2230 | inball 0.231 | a*_q05 -0.00154 | a*_q50 0.00945 | dV>=0 0.066 | n=150 | a_used 0.00112 -> 0.00115
 [Episode 324/400] Steps: 720 | Reward:  220.63 | Battery:  78.88% | Loss: -0.2002
 Placing Sensors
 [Episode 325/400] Steps: 720 | Reward:  219.97 | Battery:  77.12% | Loss: 
@@ -736,6 +817,7 @@ Placing Sensors
 [Episode 327/400] Steps: 720 | Reward:  243.07 | Battery:  84.04% | Loss: 
 Placing Sensors
 Policy -0.0100 | Value 9.6438 | KL 0.01792 | CF 0.1824 | Std 0.2127 | |a| 0.1274 | Alpha 0.0100 | MB 48/48
+  cert | viol 0.079 | dV -0.130704 | V 0.2262 | inball 0.263 | a*_q05 0.00031 | a*_q50 0.01157 | dV>=0 0.048 | n=150 | a_used 0.00115 -> 0.00118
 [Episode 328/400] Steps: 720 | Reward:  223.77 | Battery:  80.47% | Loss: 0.0193
 Placing Sensors
 [Episode 329/400] Steps: 720 | Reward:  265.80 | Battery:  86.31% | Loss: 
@@ -745,6 +827,7 @@ Placing Sensors
 [Episode 331/400] Steps: 720 | Reward:  228.06 | Battery:  77.48% | Loss: 
 Placing Sensors
 Policy -0.0061 | Value 8.0061 | KL 0.02128 | CF 0.1978 | Std 0.2119 | |a| 0.1466 | Alpha 0.0100 | MB 48/48
+  cert | viol 0.057 | dV -0.139788 | V 0.2401 | inball 0.265 | a*_q05 0.00108 | a*_q50 0.01217 | dV>=0 0.027 | n=150 | a_used 0.00118 -> 0.00122
 [Episode 332/400] Steps: 720 | Reward:  217.01 | Battery:  76.85% | Loss: 0.0786
 Placing Sensors
 [Episode 333/400] Steps: 720 | Reward:  241.36 | Battery:  82.13% | Loss: 
@@ -754,6 +837,7 @@ Placing Sensors
 [Episode 335/400] Steps: 720 | Reward:  203.71 | Battery:  75.04% | Loss: 
 Placing Sensors
 Policy -0.0121 | Value 6.8609 | KL 0.01873 | CF 0.1798 | Std 0.2115 | |a| 0.1349 | Alpha 0.0100 | MB 48/48
+  cert | viol 0.063 | dV -0.125274 | V 0.1965 | inball 0.276 | a*_q05 0.00034 | a*_q50 0.01140 | dV>=0 0.036 | n=150 | a_used 0.00122 -> 0.00116
 [Episode 336/400] Steps: 720 | Reward:  252.71 | Battery:  82.01% | Loss: 0.2913
 Placing Sensors
 [Episode 337/400] Steps: 720 | Reward:  232.00 | Battery:  78.36% | Loss: 
@@ -763,6 +847,7 @@ Placing Sensors
 [Episode 339/400] Steps: 720 | Reward:  232.08 | Battery:  77.93% | Loss: 
 Placing Sensors
 Policy -0.0107 | Value 9.3130 | KL 0.02505 | CF 0.1873 | Std 0.2110 | |a| 0.1273 | Alpha 0.0100 | MB 48/48
+  cert | viol 0.107 | dV -0.126870 | V 0.2333 | inball 0.117 | a*_q05 -0.00154 | a*_q50 0.00826 | dV>=0 0.074 | n=150 | a_used 0.00116 -> 0.00110
 [Episode 340/400] Steps: 720 | Reward:  220.69 | Battery:  76.02% | Loss: 0.0570
 Placing Sensors
 [Episode 341/400] Steps: 720 | Reward:  250.83 | Battery:  84.18% | Loss: 
@@ -772,6 +857,7 @@ Placing Sensors
 [Episode 343/400] Steps: 720 | Reward:  258.72 | Battery:  87.44% | Loss: 
 Placing Sensors
 Policy -0.0136 | Value 9.6553 | KL 0.02141 | CF 0.1781 | Std 0.2104 | |a| 0.1491 | Alpha 0.0100 | MB 48/48
+  cert | viol 0.029 | dV -0.130088 | V 0.2214 | inball 0.315 | a*_q05 0.00171 | a*_q50 0.01287 | dV>=0 0.003 | n=150 | a_used 0.00110 -> 0.00113
 [Episode 344/400] Steps: 720 | Reward:  235.95 | Battery:  81.79% | Loss: -0.1654
 Placing Sensors
 [Episode 345/400] Steps: 720 | Reward:  241.43 | Battery:  82.10% | Loss: 
@@ -781,6 +867,7 @@ Placing Sensors
 [Episode 347/400] Steps: 720 | Reward:  201.18 | Battery:  70.21% | Loss: 
 Placing Sensors
 Policy -0.0133 | Value 12.4952 | KL 0.01615 | CF 0.1638 | Std 0.2097 | |a| 0.1384 | Alpha 0.0100 | MB 48/48
+  cert | viol 0.165 | dV -0.121641 | V 0.2409 | inball 0.077 | a*_q05 -0.00378 | a*_q50 0.00713 | dV>=0 0.110 | n=150 | a_used 0.00113 -> 0.00107
 [Episode 348/400] Steps: 720 | Reward:  208.04 | Battery:  75.33% | Loss: -0.0208
 Placing Sensors
 [Episode 349/400] Steps: 720 | Reward:  248.67 | Battery:  78.83% | Loss: 
@@ -790,6 +877,7 @@ Placing Sensors
 [Episode 351/400] Steps: 720 | Reward:  253.72 | Battery:  78.47% | Loss: 
 Placing Sensors
 Policy -0.0144 | Value 9.2783 | KL 0.01828 | CF 0.1681 | Std 0.2091 | |a| 0.1412 | Alpha 0.0100 | MB 48/48
+  cert | viol 0.006 | dV -0.140832 | V 0.2098 | inball 0.383 | a*_q05 0.00287 | a*_q50 0.01623 | dV>=0 0.000 | n=150 | a_used 0.00107 -> 0.00113
 [Episode 352/400] Steps: 720 | Reward:  253.41 | Battery:  85.22% | Loss: -0.0477
 Placing Sensors
 [Episode 353/400] Steps: 720 | Reward:  244.08 | Battery:  77.23% | Loss: 
@@ -799,6 +887,7 @@ Placing Sensors
 [Episode 355/400] Steps: 720 | Reward:  239.82 | Battery:  79.82% | Loss: 
 Placing Sensors
 Policy -0.0030 | Value 8.6165 | KL 0.02287 | CF 0.1894 | Std 0.2083 | |a| 0.1461 | Alpha 0.0100 | MB 48/48
+  cert | viol 0.078 | dV -0.143365 | V 0.2637 | inball 0.158 | a*_q05 0.00048 | a*_q50 0.00768 | dV>=0 0.043 | n=150 | a_used 0.00113 -> 0.00108
 [Episode 356/400] Steps: 720 | Reward:  168.98 | Battery:  58.96% | Loss: 0.2442
 Placing Sensors
 [Episode 357/400] Steps: 720 | Reward:  231.50 | Battery:  77.75% | Loss: 
@@ -808,6 +897,7 @@ Placing Sensors
 [Episode 359/400] Steps: 720 | Reward:  255.47 | Battery:  84.53% | Loss: 
 Placing Sensors
 Policy -0.0158 | Value 11.6350 | KL 0.01788 | CF 0.1740 | Std 0.2081 | |a| 0.1267 | Alpha 0.0100 | MB 48/48
+  cert | viol 0.045 | dV -0.132248 | V 0.2181 | inball 0.207 | a*_q05 0.00114 | a*_q50 0.01050 | dV>=0 0.033 | n=150 | a_used 0.00108 -> 0.00102
 [Episode 360/400] Steps: 720 | Reward:  233.99 | Battery:  77.86% | Loss: -0.0477
 Placing Sensors
 [Episode 361/400] Steps: 720 | Reward:  199.43 | Battery:  68.09% | Loss: 
@@ -817,6 +907,7 @@ Placing Sensors
 [Episode 363/400] Steps: 720 | Reward:  240.80 | Battery:  82.57% | Loss: 
 Placing Sensors
 Policy -0.0162 | Value 15.5254 | KL 0.02189 | CF 0.1943 | Std 0.2080 | |a| 0.1237 | Alpha 0.0100 | MB 48/48
+  cert | viol 0.113 | dV -0.118382 | V 0.2038 | inball 0.201 | a*_q05 -0.00451 | a*_q50 0.00735 | dV>=0 0.093 | n=150 | a_used 0.00102 -> 0.00097
 [Episode 364/400] Steps: 720 | Reward:  248.76 | Battery:  84.14% | Loss: -0.0955
 Placing Sensors
 [Episode 365/400] Steps: 720 | Reward:  207.85 | Battery:  73.27% | Loss: 
@@ -826,6 +917,7 @@ Placing Sensors
 [Episode 367/400] Steps: 720 | Reward:  225.66 | Battery:  79.19% | Loss: 
 Placing Sensors
 Policy -0.0213 | Value 9.2724 | KL 0.02509 | CF 0.1847 | Std 0.2076 | |a| 0.1223 | Alpha 0.0100 | MB 36/48
+  cert | viol 0.058 | dV -0.132773 | V 0.2401 | inball 0.181 | a*_q05 0.00087 | a*_q50 0.00967 | dV>=0 0.030 | n=150 | a_used 0.00097 -> 0.00099
 [Episode 368/400] Steps: 720 | Reward:  246.52 | Battery:  83.05% | Loss: -0.1111
 Placing Sensors
 [Episode 369/400] Steps: 720 | Reward:  245.23 | Battery:  83.23% | Loss: 
@@ -835,6 +927,7 @@ Placing Sensors
 [Episode 371/400] Steps: 720 | Reward:  231.53 | Battery:  77.49% | Loss: 
 Placing Sensors
 Policy -0.0157 | Value 8.6423 | KL 0.01969 | CF 0.1724 | Std 0.2071 | |a| 0.1010 | Alpha 0.0100 | MB 48/48
+  cert | viol 0.000 | dV -0.136292 | V 0.2130 | inball 0.325 | a*_q05 0.00278 | a*_q50 0.01509 | dV>=0 0.000 | n=150 | a_used 0.00099 -> 0.00105
 [Episode 372/400] Steps: 720 | Reward:  249.28 | Battery:  83.73% | Loss: -0.1620
 Placing Sensors
 [Episode 373/400] Steps: 720 | Reward:  277.81 | Battery:  85.88% | Loss: 
@@ -844,6 +937,7 @@ Placing Sensors
 [Episode 375/400] Steps: 720 | Reward:  259.53 | Battery:  83.70% | Loss: 
 Placing Sensors
 Policy -0.0129 | Value 9.4364 | KL 0.01159 | CF 0.1218 | Std 0.2069 | |a| 0.1118 | Alpha 0.0100 | MB 48/48
+  cert | viol 0.000 | dV -0.146313 | V 0.2219 | inball 0.406 | a*_q05 0.00293 | a*_q50 0.01559 | dV>=0 0.000 | n=150 | a_used 0.00105 -> 0.00111
 [Episode 376/400] Steps: 720 | Reward:  280.60 | Battery:  88.57% | Loss: 0.0018
 Placing Sensors
 [Episode 377/400] Steps: 720 | Reward:  255.28 | Battery:  84.70% | Loss: 
@@ -853,6 +947,7 @@ Placing Sensors
 [Episode 379/400] Steps: 720 | Reward:  197.19 | Battery:  69.57% | Loss: 
 Placing Sensors
 Policy -0.0041 | Value 8.1515 | KL 0.01946 | CF 0.1652 | Std 0.2064 | |a| 0.1032 | Alpha 0.0100 | MB 48/48
+  cert | viol 0.079 | dV -0.132594 | V 0.2120 | inball 0.307 | a*_q05 -0.00189 | a*_q50 0.01187 | dV>=0 0.060 | n=150 | a_used 0.00111 -> 0.00106
 [Episode 380/400] Steps: 720 | Reward:  279.30 | Battery:  89.78% | Loss: 0.1176
 Placing Sensors
 [Episode 381/400] Steps: 720 | Reward:  251.02 | Battery:  81.53% | Loss: 
@@ -862,6 +957,7 @@ Placing Sensors
 [Episode 383/400] Steps: 720 | Reward:  251.24 | Battery:  82.44% | Loss: 
 Placing Sensors
 Policy -0.0159 | Value 7.6185 | KL 0.01565 | CF 0.1556 | Std 0.2056 | |a| 0.1121 | Alpha 0.0100 | MB 48/48
+  cert | viol 0.000 | dV -0.144142 | V 0.2080 | inball 0.398 | a*_q05 0.00329 | a*_q50 0.01792 | dV>=0 0.000 | n=150 | a_used 0.00106 -> 0.00115
 [Episode 384/400] Steps: 720 | Reward:  242.10 | Battery:  80.73% | Loss: -0.0546
 Placing Sensors
 [Episode 385/400] Steps: 720 | Reward:  266.64 | Battery:  86.18% | Loss: 
@@ -871,6 +967,7 @@ Placing Sensors
 [Episode 387/400] Steps: 720 | Reward:  242.42 | Battery:  78.74% | Loss: 
 Placing Sensors
 Policy -0.0161 | Value 7.3961 | KL 0.01105 | CF 0.1215 | Std 0.2046 | |a| 0.1015 | Alpha 0.0100 | MB 48/48
+  cert | viol 0.008 | dV -0.131748 | V 0.1963 | inball 0.391 | a*_q05 0.00315 | a*_q50 0.01606 | dV>=0 0.000 | n=150 | a_used 0.00115 -> 0.00120
 [Episode 388/400] Steps: 720 | Reward:  263.47 | Battery:  87.06% | Loss: -0.0057
 Placing Sensors
 [Episode 389/400] Steps: 720 | Reward:  257.17 | Battery:  83.33% | Loss: 
@@ -880,6 +977,7 @@ Placing Sensors
 [Episode 391/400] Steps: 720 | Reward:  264.00 | Battery:  83.26% | Loss: 
 Placing Sensors
 Policy -0.0122 | Value 8.6773 | KL 0.01367 | CF 0.1188 | Std 0.2036 | |a| 0.1108 | Alpha 0.0100 | MB 48/48
+  cert | viol 0.045 | dV -0.143417 | V 0.2354 | inball 0.326 | a*_q05 0.00156 | a*_q50 0.01306 | dV>=0 0.026 | n=150 | a_used 0.00120 -> 0.00118
 [Episode 392/400] Steps: 720 | Reward:  274.34 | Battery:  85.63% | Loss: -0.0656
 Placing Sensors
 [Episode 393/400] Steps: 720 | Reward:  223.94 | Battery:  76.16% | Loss: 
@@ -889,6 +987,7 @@ Placing Sensors
 [Episode 395/400] Steps: 720 | Reward:  266.99 | Battery:  85.68% | Loss: 
 Placing Sensors
 Policy -0.0241 | Value 9.1352 | KL 0.01567 | CF 0.1436 | Std 0.2028 | |a| 0.1054 | Alpha 0.0100 | MB 48/48
+  cert | viol 0.008 | dV -0.152293 | V 0.2387 | inball 0.354 | a*_q05 0.00227 | a*_q50 0.01558 | dV>=0 0.000 | n=150 | a_used 0.00118 -> 0.00123
 [Episode 396/400] Steps: 720 | Reward:  259.56 | Battery:  82.86% | Loss: -0.0670
 Placing Sensors
 [Episode 397/400] Steps: 720 | Reward:  237.88 | Battery:  81.48% | Loss: 
@@ -898,6 +997,7 @@ Placing Sensors
 [Episode 399/400] Steps: 720 | Reward:  264.32 | Battery:  86.02% | Loss: 
 Placing Sensors
 Policy -0.0109 | Value 7.8350 | KL 0.01798 | CF 0.1526 | Std 0.2018 | |a| 0.1027 | Alpha 0.0100 | MB 48/48
+  cert | viol 0.017 | dV -0.137191 | V 0.2026 | inball 0.397 | a*_q05 0.00314 | a*_q50 0.01664 | dV>=0 0.004 | n=150 | a_used 0.00123 -> 0.00129
 [Episode 400/400] Steps: 720 | Reward:  282.52 | Battery:  86.68% | Loss: -0.1195
 Placing Sensors
   [validation 1/10] steps 720 | battery  36.7% ->  85.3% (min  35.7%) | reward   408.97 | |a| 0.069 | path     342 m
@@ -946,21 +1046,21 @@ total step rows written: 7200
 ==============================================
 WALL CLOCK BREAKDOWN
 ==============================================
-Total run time        :   22532.48 s
-  Rollout (training)  :   21900.23 s  ( 97.2%)
-    - policy inference:     213.89 s  (  0.9%)
-    - env + reward    :   21686.33 s  ( 96.2%)
-  PPO update()        :      40.06 s  (  0.2%)
+Total run time        :   22586.09 s
+  Rollout (training)  :   21950.21 s  ( 97.2%)
+    - policy inference:     213.20 s  (  0.9%)
+    - env + reward    :   21737.01 s  ( 96.2%)
+  PPO update()        :      42.28 s  (  0.2%)
   Checkpoint saves    :       0.01 s  (  0.0%)
-  Final evaluation    :     474.68 s  (  2.1%)
-  Other / logging     :     117.50 s  (  0.5%)
+  Final evaluation    :     475.97 s  (  2.1%)
+  Other / logging     :     117.62 s  (  0.5%)
 
 ==============================================
 PER-CALL AVERAGES
 ==============================================
-Policy inference      :   295200 calls |    0.742 ms/step
-  final eval only     :     7200 calls |    0.724 ms/step
-PPO update()          :      100 calls |  400.629 ms/update
-Episode               :      400 eps   |   55.144 s/episode
+Policy inference      :   295200 calls |    0.740 ms/step
+  final eval only     :     7200 calls |    0.731 ms/step
+PPO update()          :      100 calls |  422.814 ms/update
+Episode               :      400 eps   |   55.275 s/episode
 
 update() share of wall clock: 0.2%
