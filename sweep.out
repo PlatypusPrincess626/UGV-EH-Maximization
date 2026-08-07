@@ -1,0 +1,13 @@
+nohup: ignoring input
+==============================================================
+paired sweep: 4 runs
+  seeds     : 1
+  variants  : cost cost_plain normal lyapunov
+  episodes  : 400
+  logs      : sweep_logs/
+  started   : Fri Aug  7 05:27:41 PM UTC 2026
+==============================================================
+[1/4] START cost seed 1 at 17:27:41 -> sweep_logs/cost_s1.out
+[1/4] DONE  cost seed 1 in 285 min
+          elapsed 285 min, ~855 min remaining
+[2/4] START cost_plain seed 1 at 22:12:43 -> sweep_logs/cost_plain_s1.out
