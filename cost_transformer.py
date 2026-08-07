@@ -83,7 +83,29 @@ except ImportError:                         # older torch
 
 # Mirrors transformer.py and lyupnov_transformer.py.
 LOG_STD_MIN = -4.0
-LOG_STD_MAX = 0.5
+# Tightened from 0.5.
+#
+# Exploration noise is applied in ACTION space and then scaled by
+# MAX_MOVE_PER_STEP = 20, so a std of 0.215 is ~4.3 cells of random
+# walk per step on top of the intended move. Measured on cost seed 1,
+# the SAME policy sampled vs taken at the mean:
+#
+#                 stochastic   deterministic   ratio
+#   path m             2427            550      4.4x
+#   motion mAh         1645            398      4.1x
+#   min battery %      7.54          21.04      0.36
+#
+# The deployed policy had 21% battery margin; the sampled one had 7.5%
+# and died in 38% of episodes. The agent was being killed by its own
+# exploration and then learning from a state distribution its own
+# deterministic policy never visits.
+#
+# At MIN=-4 the squash is std = exp(-4 + (MAX+4)/2 * (tanh(raw)+1)), so
+# MAX=-0.5 moves the raw=0 std from 0.174 to 0.105 and the ceiling
+# under the RAW_LOG_STD_TARGET regulariser from ~0.335 to ~0.176 --
+# roughly halving the positional noise. Mirrored across all three model
+# files so the arms stay comparable.
+LOG_STD_MAX = -0.5
 RAW_LOG_STD_TARGET = 0.3
 
 

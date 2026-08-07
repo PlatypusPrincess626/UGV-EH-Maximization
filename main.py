@@ -73,6 +73,31 @@ IS_COST = TRANSFORMER_VARIANT in COST_VARIANTS
 RUN_SEED = int(os.environ.get("LTAC_SEED", "0"))
 
 TOTAL_EPISODES = int(os.environ.get("LTAC_EPISODES", "1000"))
+
+# The real budget is TRANSITIONS, not episodes.
+#
+# Once mission failure became reachable, "400 episodes" stopped meaning
+# a fixed amount of experience. Measured on cost seed 1: 151 deaths,
+# mean episode length 496 of 720 steps, so the run collected 198k
+# transitions where a death-free run collects 288k -- 31% less, and all
+# of the missing experience is from the late-episode phase the policy
+# most needs to learn. Comparing that run to an earlier one with 40
+# deaths was comparing different amounts of training.
+#
+# The loop now runs until the step budget is met, with an episode cap
+# so a pathological run cannot go forever. Every schedule below keys
+# off step progress rather than episode index for the same reason.
+TOTAL_STEP_BUDGET = TOTAL_EPISODES * 720
+MAX_EPISODES_CAP = 3 * TOTAL_EPISODES
+
+# Mutable, updated by the training loop; read by the LR and entropy
+# schedules so both stretch with the actual pace of experience.
+PROGRESS = {"steps": 0}
+
+
+def progress_frac():
+    """0 -> 1 over the run, measured in transitions collected."""
+    return min(PROGRESS["steps"] / max(TOTAL_STEP_BUDGET, 1), 1.0)
 MAX_STEPS_PER_EPISODE=720; VIEW_DISTANCE=20
 
 # Auxiliary-head curriculum, as fractions of the run so that short
@@ -143,8 +168,74 @@ UPDATE_EVERY_EPISODES=2
 #
 # UPDATE_EVERY_EPISODES stays as a ceiling so a run of unusually long
 # episodes cannot go too far between updates.
+#
+# SIZED FROM MEASUREMENT, NOT FROM THE EPISODE COUNT.
+#
+# 1440 was chosen to match "2 episodes" and it was too small. Against
+# an otherwise identical run at ~2760 samples per update (4 episodes,
+# same GAE_LAMBDA=0.95, same environment):
+#
+#                        2760/update    1440/update
+#   deaths (of 400)              40            151
+#   deaths, last 80 eps           1             19
+#   KL per update           0.003-0.005      0.017
+#   clip fraction                ~0.06         0.17
+#   KL early-stops                 --      26 of 146
+#   a*_q05 (certified)      +0.0029        -0.0009
+#
+# Total experience is the same either way -- 137 x 1440 and 100 x 2760
+# are both ~205k transitions -- so this is purely how the experience is
+# carved up, and fewer/larger won decisively. Halving the batch
+# quadrupled the KL per update: noisier advantages, oversized policy
+# steps, and a run that never learned to stop dying.
+#
+# HELD AT 1440 for now, with GRAD_CLIP raised instead. The two
+# hypotheses are plausibly the same mechanism: a larger batch reduces
+# gradient noise, which reduces the VARIANCE of the clip rescale
+# factor, which is what distorts Adam's moment estimates. Attacking
+# the clip directly gets at that without halving the update count.
+# If the clip change does not restore the death curve, come back and
+# set this to 2880 -- that comparison is still the cleanest single
+# piece of evidence in the project (40 deaths vs 151, same lambda,
+# same environment, batch the only difference).
 UPDATE_MIN_STEPS = 1440
-LR=3e-4; MAX_MOVE_PER_STEP=20.0; ENTROPY_COEF=.01; VALUE_COEF=.5
+# Gradient-norm clip on the control parameters.
+#
+# RAISED FROM 1.0. Measured over 146 updates of cost seed 1 it fired on
+# 100% of them -- median norm 3.51, range 1.85 to 13.57. That is not
+# exploding gradients: norm scales with sqrt(parameter count), so ~3e-3
+# per parameter across a full transformer gives exactly this. The
+# threshold was simply below the model's natural scale.
+#
+# Adam is invariant to a CONSTANT gradient rescale, so a clip that
+# always fires by the same factor would be harmless. This one varied
+# 7.3x between updates, and that does not cancel: the updates with the
+# largest raw gradients get damped hardest, so the most informative
+# steps contribute least to the moment estimates.
+#
+#   clip   mean scale   rescale cv   fires on
+#    1.0      0.292        0.262       100%
+#    2.0      0.583        0.257        99%
+#    5.0      0.986        0.069         9%
+#
+# 5.0 restores clipping to catching genuine spikes while cutting the
+# rescale variance by 4x. 2.0 would NOT help -- it barely moves the cv
+# and only raises the effective step.
+GRAD_CLIP = 5.0
+
+# LR compensation for the above. The clip at 1.0 was acting as a 3.4x
+# brake on every step; removing it triples the effective learning rate
+# and projects approx_kl from 0.0142 to ~0.048, past TARGET_KL=0.03,
+# which would early-stop most updates.
+#
+# Scaling LR by 1/3.38 holds the MEAN step size where it was while
+# removing the variance. That is the actual hypothesis under test --
+# that the inconsistency of the clipping hurt, not its magnitude -- so
+# holding the magnitude fixed is what isolates it. Set to 1.0 to take
+# the larger steps as well, but expect the KL early-stop to bind.
+LR_CLIP_COMPENSATION = 0.296
+
+LR=3e-4 * LR_CLIP_COMPENSATION; MAX_MOVE_PER_STEP=20.0; ENTROPY_COEF=.01; VALUE_COEF=.5
 
 ###############################################################
 # Lyapunov Hyperparameters
@@ -199,6 +290,9 @@ ALPHA_END = 0.01
 # same schedule shape. At the default 1000 episodes this reproduces
 # the previous fixed value of 300 exactly.
 ALPHA_DECAY_EPISODES = max(1, int(0.30 * TOTAL_EPISODES))
+# Same 30% of the run, measured in steps so short episodes do not
+# compress the exploration phase.
+ALPHA_DECAY_FRAC = 0.30
 # Reactive safety net (see the entropy check in update()): if a
 # batch's mean entropy drops below this floor, alpha jumps to at
 # least SAFETY_ALPHA_BOOST regardless of the schedule. Floor sits
@@ -316,6 +410,19 @@ REWARD_CONVERGENCE_THRESHOLD = -7.0 if TRANSFORMER_VARIANT in COST_VARIANTS else
 # still improving at the end of the run (lyap_v_rmse 0.247 -> 0.102),
 # so decaying it would slow the one thing that had not converged.
 LR_DECAY_FINAL = 0.30
+
+# Linear LR warmup over the first LR_WARMUP_FRAC of the step budget,
+# starting at LR_WARMUP_START x the base rate.
+#
+# The measured failure mode: |a| went 0.067 -> 0.174 in the first 30
+# updates and never came back, while grad_norm_control exceeded the 1.0
+# clip on 100% of updates (median 3.51, max 13.57). The policy took its
+# largest steps when its advantage estimates were worst -- batches
+# dominated by early-episode states from short, death-truncated
+# rollouts -- and locked in an over-aggressive action scale it then
+# spent the rest of the run paying for.
+LR_WARMUP_FRAC = 0.05
+LR_WARMUP_START = 0.10
 
 PLATEAU_WINDOW = 200
 PLATEAU_T_CRIT = 1.65      # one-sided 95%
@@ -1214,10 +1321,14 @@ def update(model,opt,rollouts,device, ep, metrics_writer=None, return_var_tracke
     # Cosine LR decay on the control groups. Groups are tagged with
     # "initial_lr" at construction; any group without the tag (the
     # auxiliary heads) is left at a constant rate.
-    decay_frac = min(ep, TOTAL_EPISODES) / max(TOTAL_EPISODES, 1)
+    decay_frac = progress_frac()
     lr_scale = LR_DECAY_FINAL + (1.0 - LR_DECAY_FINAL) * 0.5 * (
         1.0 + math.cos(math.pi * decay_frac)
     )
+    if decay_frac < LR_WARMUP_FRAC:
+        warm = LR_WARMUP_START + (1.0 - LR_WARMUP_START) * (
+            decay_frac / LR_WARMUP_FRAC)
+        lr_scale *= warm
     for group in opt.param_groups:
         if "initial_lr" in group:
             group["lr"] = group["initial_lr"] * lr_scale
@@ -1260,7 +1371,7 @@ def update(model,opt,rollouts,device, ep, metrics_writer=None, return_var_tracke
         # its value at this episode is known in advance, with no
         # dependence on gradient noise or how fast anything else
         # happens to be converging.
-        decay_frac = min(ep, ALPHA_DECAY_EPISODES) / ALPHA_DECAY_EPISODES
+        decay_frac = min(progress_frac() / ALPHA_DECAY_FRAC, 1.0)
         scheduled_alpha = ALPHA_START * (ALPHA_END / ALPHA_START) ** decay_frac
 
         if return_var_tracker is not None:
@@ -1430,9 +1541,9 @@ def update(model,opt,rollouts,device, ep, metrics_writer=None, return_var_tracke
                 opt.zero_grad()
                 loss.backward()
 
-                control_norm = torch.nn.utils.clip_grad_norm_(control_params, 1.0)
+                control_norm = torch.nn.utils.clip_grad_norm_(control_params, GRAD_CLIP)
                 if auxiliary_param_list:
-                    aux_norm = torch.nn.utils.clip_grad_norm_(auxiliary_param_list, 1.0)
+                    aux_norm = torch.nn.utils.clip_grad_norm_(auxiliary_param_list, GRAD_CLIP)
                 else:
                     aux_norm = torch.zeros((), device=control_norm.device)
                 opt.step()
@@ -1562,7 +1673,7 @@ def update(model,opt,rollouts,device, ep, metrics_writer=None, return_var_tracke
         diag_lyap_in_ball = avg["lyap_in_ball_rate"]
         loss_value = last_loss
     else:
-        decay_frac = min(ep, ALPHA_DECAY_EPISODES) / ALPHA_DECAY_EPISODES
+        decay_frac = min(progress_frac() / ALPHA_DECAY_FRAC, 1.0)
         alpha = ALPHA_START * (ALPHA_END / ALPHA_START) ** decay_frac
 
         if return_var_tracker is not None:
@@ -1694,7 +1805,7 @@ def update(model,opt,rollouts,device, ep, metrics_writer=None, return_var_tracke
 
                 opt.zero_grad()
                 loss.backward()
-                control_norm = torch.nn.utils.clip_grad_norm_(control_params, 1.0)
+                control_norm = torch.nn.utils.clip_grad_norm_(control_params, GRAD_CLIP)
                 opt.step()
                 last_loss = float(loss.item())
 
@@ -1886,8 +1997,8 @@ def run():
             # The auxiliary group is left untagged and so runs at a
             # constant rate -- see LR_DECAY_FINAL.
             opt = optim.AdamW([{"params": transformer_params, "lr": 1e-3, "weight_decay":1e-5, "initial_lr": 1e-3},
-                               {"params": actor_params,       "lr": 3e-4, "weight_decay":1e-5, "initial_lr": 3e-4},
-                               {"params": critic_params,      "lr": 3e-4, "weight_decay":1e-5, "initial_lr": 3e-4},
+                               {"params": actor_params,       "lr": LR, "weight_decay":1e-5, "initial_lr": LR},
+                               {"params": critic_params,      "lr": LR, "weight_decay":1e-5, "initial_lr": LR},
                                {"params": auxiliary_params,   "lr": 2e-4, "weight_decay":1e-5},
                                # log_std_param is now a fixed, non-
                                # state-dependent parameter (see the
@@ -1913,7 +2024,7 @@ def run():
                                # either way on whether it needs
                                # adjustment now that the moving-target
                                # problem is gone.
-                               {"params": log_std_params,     "lr": 3e-4, "weight_decay":1e-5, "initial_lr": 3e-4},],
+                               {"params": log_std_params,     "lr": LR, "weight_decay":1e-5, "initial_lr": LR},],
                               eps=1e-5,)
         elif TRANSFORMER_VARIANT in COST_VARIANTS:
             from cost_transformer import CostTransformerActorCritic
@@ -1950,7 +2061,7 @@ def run():
                             + [model.position_embedding]),
                  "lr": 1e-3, "weight_decay": 1e-5, "initial_lr": 1e-3},
                 {"params": list(model.actor.parameters()),
-                 "lr": 3e-4, "weight_decay": 1e-5, "initial_lr": 3e-4},
+                 "lr": LR, "weight_decay": 1e-5, "initial_lr": LR},
                 # weight_decay = 0 on the critic, unlike the other
                 # arms. Its Linear layers are spectral-normalized, so
                 # the learnable tensor is `original` and the EFFECTIVE
@@ -1967,12 +2078,12 @@ def run():
                 # a bare critic, so it takes the same 1e-5 as every
                 # other unnormalized parameter group in every arm.
                 {"params": list(model.critic_body.parameters()),
-                 "lr": 3e-4,
+                 "lr": LR,
                  "weight_decay": (1e-5 if TRANSFORMER_VARIANT == "cost_plain"
                                   else 0.0),
-                 "initial_lr": 3e-4},
+                 "initial_lr": LR},
                 {"params": [model.log_std_param],
-                 "lr": 3e-4, "weight_decay": 1e-5, "initial_lr": 3e-4},
+                 "lr": LR, "weight_decay": 1e-5, "initial_lr": LR},
             ],
                 # Matches the lyapunov and normal arms. Omitting it
                 # left this arm on AdamW's default 1e-8, which is a
@@ -2002,11 +2113,11 @@ def run():
                             + [model.position_embedding]),
                  "lr": 1e-3, "weight_decay": 1e-5, "initial_lr": 1e-3},
                 {"params": list(model.actor.parameters()),
-                 "lr": 3e-4, "weight_decay": 1e-5, "initial_lr": 3e-4},
+                 "lr": LR, "weight_decay": 1e-5, "initial_lr": LR},
                 {"params": list(model.critic.parameters()),
-                 "lr": 3e-4, "weight_decay": 1e-5, "initial_lr": 3e-4},
+                 "lr": LR, "weight_decay": 1e-5, "initial_lr": LR},
                 {"params": [model.log_std_param],
-                 "lr": 3e-4, "weight_decay": 1e-5, "initial_lr": 3e-4},
+                 "lr": LR, "weight_decay": 1e-5, "initial_lr": LR},
             ])
             control_params = list(model.parameters())
             auxiliary_param_list = []
@@ -2100,7 +2211,11 @@ def run():
     checks_since_best = 0
     converged = False
 
-    for ep in range(1,TOTAL_EPISODES+1):
+    for ep in range(1, MAX_EPISODES_CAP + 1):
+        if PROGRESS["steps"] >= TOTAL_STEP_BUDGET:
+            print(f"[budget] {PROGRESS['steps']} transitions collected over "
+                  f"{ep-1} episodes -- step budget met, stopping.")
+            break
         ep_start = time.perf_counter()
         ep_inference_time = 0.0
         ep_update_time = 0.0
@@ -2239,6 +2354,10 @@ def run():
             r["bootstrap_value"] = bootstrap_value
 
         rollouts.append(r); loss=""
+        # Progress is measured in transitions, so every schedule keyed
+        # to progress_frac() stretches with the actual pace of
+        # experience rather than the episode counter.
+        PROGRESS["steps"] += len(r["rewards"])
         reward_history.append(total)
         plateau_history.append(total)
 
