@@ -123,6 +123,27 @@ SEQUENCE_LENGTH=32; GAMMA=.99; GAE_LAMBDA=.95
 # samples, which at MINIBATCH_SIZE=256 is still 5-6 minibatches per
 # epoch.
 UPDATE_EVERY_EPISODES=2
+
+# ...but the trigger is a STEP budget, not an episode count.
+#
+# Episode count was a fine proxy while every episode ran the full 720
+# steps. Once mission failure became reachable it stopped being one: a
+# run that dies at step 161 contributes a fifth of a normal batch, and
+# two of them together give ~320 samples. At MINIBATCH_SIZE=256 that
+# is ONE minibatch per epoch -- the "MB 4/4" lines -- so PPO does four
+# full-batch passes on 320 correlated samples. Advantage normalization,
+# the return-variance tracker and the KL early-stop all degrade at that
+# size, and it happens exactly when deaths are frequent, i.e. early in
+# training when the updates matter most.
+#
+# Accumulating to a fixed number of TRANSITIONS instead makes the batch
+# shape independent of how long the episodes happened to be: short
+# episodes simply mean more of them per update. 1440 = the two full
+# episodes UPDATE_EVERY_EPISODES=2 was meant to deliver.
+#
+# UPDATE_EVERY_EPISODES stays as a ceiling so a run of unusually long
+# episodes cannot go too far between updates.
+UPDATE_MIN_STEPS = 1440
 LR=3e-4; MAX_MOVE_PER_STEP=20.0; ENTROPY_COEF=.01; VALUE_COEF=.5
 
 ###############################################################
@@ -1110,7 +1131,7 @@ def compute_batch(rollouts, device):
     `states += r["states"]`. insert(0, ...) PREPENDS; += APPENDS.
 
     With a single episode per update those agree by accident. With
-    UPDATE_EVERY_EPISODES=2 they do not:
+    two or more episodes per update they do not:
 
         states  ['A0','A1','A2','B0','B1','B2']
         adv     [ B advantages... , A advantages... ]
@@ -2223,7 +2244,9 @@ def run():
 
         # 3. Training Update Logic
         if POLICY_TYPE == "transformer":
-            if ep % UPDATE_EVERY_EPISODES == 0:
+            pending_steps = sum(len(r["rewards"]) for r in rollouts)
+            if pending_steps >= UPDATE_MIN_STEPS or (
+                    rollouts and ep % (4 * UPDATE_EVERY_EPISODES) == 0):
                 update_start = time.perf_counter()
                 (loss, diag_lyap, diag_barrier, diag_std,
                  diag_abs_action, diag_mean_V, diag_std_V,
