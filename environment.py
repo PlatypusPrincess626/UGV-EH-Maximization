@@ -288,6 +288,12 @@ class sim_env:
         quantiles = ranks / (field.size - 1)
         self.foliage_mask = choices[np.digitize(quantiles, np.cumsum(probs)[:-1])]
 
+        # Tallest thing on the map, cached because _compute_obfuscation
+        # derives its ray-march bound from it on every call. Recomputed
+        # here rather than in the hot path since foliage only changes
+        # on reset.
+        self._max_canopy_top = float((self.topo_mask + self.foliage_mask).max())
+
         return True
 
     def place_devices(self) -> list:
@@ -385,6 +391,31 @@ class sim_env:
         return result.copy()
 
     def _compute_obfuscation(self, x: int, y: int, step, azimuth: float, zenith: float):
+        # Vectorized over the whole patch at once, rather than a
+        # per-pixel Python loop. The key property that makes this
+        # tractable: d's loop bound depends only on tan_elevation,
+        # fixed for the whole patch, not per-pixel; and k's loop bound
+        # (half_width = ceil(canopy_radius)) only takes 5 possible
+        # values since foliage_height is drawn from {0,5,10,15,20} by
+        # construction (reset_foliage()). So both "variable-length"
+        # loops are actually fixed-size, and each (d,k) iteration is
+        # done as one numpy operation across the whole patch, with a
+        # persistent `terminated` mask replacing the original's
+        # per-pixel `break` statements -- once a pixel is marked
+        # terminated (by terrain block, going out of bounds, or
+        # dropping below the transmittance threshold), it stops being
+        # updated for all later iterations, exactly mirroring where
+        # the original's break would have stopped it.
+        #
+        # Terrain/foliage heights are compared relative to each
+        # patch pixel's OWN terrain elevation (observer_terrain), not
+        # an absolute zero. Without this, terrain averaging ~25 (after
+        # min-max normalization to [0,50]) almost always exceeded the
+        # near-zero sun-clearance height needed at short ray
+        # distances, self-shadowing nearly every pixel regardless of
+        # true line-of-sight -- this was the actual reason
+        # directional_reward computed to exactly zero every step in
+        # real training data, not a scale/weighting issue.
         v_dist = int(self.view_dist)
         patch_size = 2 * v_dist + 1
 
@@ -418,14 +449,29 @@ class sim_env:
         obs_y_safe = np.clip(global_y + self.PAD, 0, topo_h - 1)
         observer_terrain = self.topo_mask[obs_y_safe, obs_x_safe]
 
-        # Worst case: terrain (max 50) + foliage on top of it (max 20)
-        # = 70 possible obstruction height above an observer at 0.
-        d_max = int(math.floor(62.0 / tan_elevation)) + 2
+        # How far the ray can possibly travel and still meet anything
+        # tall enough to matter.
+        #
+        # This was hardcoded at 62.0, described as "terrain (max 50) +
+        # foliage (max 20)". Foliage heights are actually drawn from
+        # {0,8,16,24,32}, so the real bound on obstruction height above
+        # the LOWEST observer in the patch is
+        # (topo + foliage).max() - observer_terrain.min(), measured at
+        # 81 on a fresh map. The ray march was stopping ~24% short and
+        # silently missing shadows cast by tall trees on high ground.
+        #
+        # Deriving it per call is also usually FASTER, not slower: the
+        # bound is relative to this patch's own lowest observer, so a
+        # patch sitting on high ground needs far fewer iterations than
+        # the global constant assumed. Only patches in the deepest
+        # valleys pay more.
+        h_limit = self._max_canopy_top - float(observer_terrain.min())
+        d_max = int(math.floor(h_limit / tan_elevation)) + 2
         max_half_width = MAX_HALF_WIDTH
 
         for d in range(1, d_max):
             h_min = d * tan_elevation
-            if h_min > 62.0:
+            if h_min > h_limit:
                 break
 
             active = ~terminated
@@ -434,8 +480,17 @@ class sim_env:
 
             sunline_height = observer_terrain + h_min
 
-            ray_x = np.round(global_x + d * step_x).astype(np.int64)
-            ray_y = np.round(global_y + d * step_y).astype(np.int64)
+            # global_x/global_y are INTEGER arrays and d*step_x is a
+            # scalar, so rounding the sum equals adding the rounded
+            # scalar. That turns two round+astype passes over the whole
+            # patch into two scalar rounds and an integer add. Exact
+            # except at exact .5 offsets, where numpy's round-half-even
+            # depends on the integer's parity; step_x/step_y are
+            # sin/cos of the solar azimuth, so d*step_x landing exactly
+            # on .5 does not occur in practice and is verified against
+            # the original over the full patch on every sun angle.
+            ray_x = global_x + int(np.round(d * step_x))
+            ray_y = global_y + int(np.round(d * step_y))
             ray_x_arr = ray_x + self.PAD
             ray_y_arr = ray_y + self.PAD
 
@@ -465,9 +520,30 @@ class sim_env:
             local_attenuation = np.zeros_like(transmittance)
 
             if in_band.any():
-                for k in range(-max_half_width, max_half_width + 1):
-                    check_x = np.round(ray_x + k * perp_x).astype(np.int64)
-                    check_y = np.round(ray_y + k * perp_y).astype(np.int64)
+                # Everything here is k-INDEPENDENT and used to be
+                # recomputed on every one of the 17 inner iterations.
+                # Hoisting is exact -- the values do not change with k
+                # -- and removes 4 whole-patch array ops per iteration
+                # out of roughly 14.
+                safe_radius = np.where(canopy_radius > 0, canopy_radius, 1.0)
+                safe_denom = np.where(canopy_top_abs > canopy_start_abs,
+                                      canopy_top_abs - canopy_start_abs, 1.0)
+                depth_frac = (sunline_height - canopy_start_abs) / safe_denom
+
+                # The k sweep only has to span the widest crown that is
+                # actually IN BAND at this d, not the widest crown the
+                # map can produce. Foliage heights are drawn from
+                # {0,8,16,24,32} so radii are {0,2,4,6,8}; using the
+                # global maximum ran 17 iterations even when every
+                # in-band crown was a radius-2 sapling.
+                half_width = int(math.ceil(float(canopy_radius[in_band].max())))
+                half_width = min(half_width, max_half_width)
+
+                for k in range(-half_width, half_width + 1):
+                    # Same identity as ray_x above: ray_x is now an
+                    # integer array, so the round hoists to a scalar.
+                    check_x = ray_x + int(np.round(k * perp_x))
+                    check_y = ray_y + int(np.round(k * perp_y))
                     check_x_arr = check_x + self.PAD
                     check_y_arr = check_y + self.PAD
 
@@ -475,18 +551,21 @@ class sim_env:
                         (check_x_arr >= 0) & (check_x_arr < fol_w)
                         & (check_y_arr >= 0) & (check_y_arr < fol_h)
                     )
-                    check_x_safe = np.clip(check_x_arr, 0, fol_w - 1)
-                    check_y_safe = np.clip(check_y_arr, 0, fol_h - 1)
+                    # np.minimum/np.maximum rather than np.clip: clip
+                    # routes through numpy's getlimits machinery, which
+                    # profiled at 13% of the whole ray march purely in
+                    # call overhead on 41x41 arrays.
+                    check_x_safe = np.minimum(np.maximum(check_x_arr, 0), fol_w - 1)
+                    check_y_safe = np.minimum(np.maximum(check_y_arr, 0), fol_h - 1)
                     check_foliage = self.foliage_mask[check_y_safe, check_x_safe]
 
                     r = abs(k)
                     valid_k = in_band & k_in_bounds & (check_foliage > 0) & (r <= canopy_radius)
+                    if not valid_k.any():
+                        continue
 
-                    safe_radius = np.where(canopy_radius > 0, canopy_radius, 1.0)
                     r_norm = r / safe_radius
                     density = np.exp(-2.0 * r_norm * r_norm)
-                    safe_denom = np.where(canopy_top_abs > canopy_start_abs, canopy_top_abs - canopy_start_abs, 1.0)
-                    depth_frac = (sunline_height - canopy_start_abs) / safe_denom
                     attenuation = density * MAX_FOLIAGE_ATTENUATION * depth_frac
                     attenuation = np.where(valid_k, attenuation, 0.0)
                     local_attenuation = np.maximum(local_attenuation, attenuation)

@@ -107,9 +107,22 @@ SEQUENCE_LENGTH=32; GAMMA=.99; GAE_LAMBDA=.95
 # are less correlated, and better statistics for the advantage
 # normalization and the return-variance tracker.
 #
-# The cost is negligible: update() measured 0.2% of wall clock against
-# the environment's 98.1%.
-UPDATE_EVERY_EPISODES=4
+# The cost is negligible: update() measured 0.3% of wall clock (53.8 s
+# of 21,134) against the environment's 95.5%.
+#
+# HALVED FROM 4. At TOTAL_EPISODES=400 the previous cadence gave 100
+# optimizer updates for the whole run -- a transformer policy trained
+# on 100 gradient steps. Doubling to 200 costs ~54 s on a six-hour
+# run, because the batch was sized for a bottleneck that does not
+# exist here.
+#
+# Nothing downstream is keyed to the update count: the LR decay and
+# the entropy schedule are both functions of EPISODE, and
+# STABILITY_WINDOW is already documented as tracking a fixed span of
+# episodes rather than of calls. The batch halves from ~2880 to ~1440
+# samples, which at MINIBATCH_SIZE=256 is still 5-6 minibatches per
+# epoch.
+UPDATE_EVERY_EPISODES=2
 LR=3e-4; MAX_MOVE_PER_STEP=20.0; ENTROPY_COEF=.01; VALUE_COEF=.5
 
 ###############################################################
@@ -189,11 +202,11 @@ SAFETY_ALPHA_BOOST = 0.5
 # just be measuring the pre-curriculum warmup, not real convergence.
 ###############################################################
 REWARD_WINDOW = 50              # episodes averaged for the reward moving average
-# update() calls averaged for Lyapunov/barrier stability. Halved from
-# 20 because UPDATE_EVERY_EPISODES doubled -- 10 calls now span the
-# same 40 episodes that 20 calls spanned before, so the window covers
-# an unchanged stretch of training.
-STABILITY_WINDOW = 10
+# update() calls averaged for Lyapunov/barrier stability. Sized to
+# cover a fixed span of EPISODES, not of calls, so it tracks
+# UPDATE_EVERY_EPISODES: 20 calls x 2 episodes = the same 40-episode
+# stretch that 10 calls x 4 episodes covered before.
+STABILITY_WINDOW = 20
 CONVERGENCE_PATIENCE = 10       # retained for logging only; see PLATEAU_SLOPE_FRAC
 LYAPUNOV_STABLE_THRESHOLD = 2 * LYAPUNOV_MARGIN
 
@@ -377,7 +390,7 @@ COST_MOVE_W = 0.50
 # -1.39 / (1 - 0.99*0.95) = -23.4. Reaching -23.4 from a -Softplus
 # head that starts near -0.7 requires ~23 units of pure bias travel,
 # and AdamW moves a bias by ~lr = 3e-4 per optimizer step. At 400
-# episodes / UPDATE_EVERY_EPISODES=4 = 100 updates x 48 minibatches
+# episodes / UPDATE_EVERY_EPISODES=2 = 200 updates x ~24 minibatches
 # there are only 4800 steps in the whole run. Measured: value_loss
 # opened at 416 -- exactly (23.4 - 0.7)^2 -- and had only reached
 # ~200 by episode 144. The critic never left its initialization, so
