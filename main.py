@@ -118,7 +118,7 @@ if torch.cuda.is_available():
 torch.backends.cudnn.deterministic = True
 torch.backends.cudnn.benchmark = False
 
-SEQUENCE_LENGTH=32; GAMMA=.99; GAE_LAMBDA=.98
+SEQUENCE_LENGTH=32; GAMMA=.99; GAE_LAMBDA=.95
 # 2 -> 4 episodes per update (1440 -> 2880 samples).
 #
 # The KL early stop was discarding 26% of the gradient budget and
@@ -221,7 +221,7 @@ UPDATE_MIN_STEPS = 1440
 # 5.0 restores clipping to catching genuine spikes while cutting the
 # rescale variance by 4x. 2.0 would NOT help -- it barely moves the cv
 # and only raises the effective step.
-GRAD_CLIP = 8.0
+GRAD_CLIP = 5.0
 
 # LR compensation for the above. The clip at 1.0 was acting as a 3.4x
 # brake on every step; removing it triples the effective learning rate
@@ -914,6 +914,32 @@ def reward_fn(after, telemetry, delta_batt, action=None):
 # critic_certification().
 CERT_NSTEP = 150
 
+# Payload draw, in watts at the charge voltage. Mirrors
+# ugv_simulator.consume_idle_energy(): cpu + payload + LoRa, all in uA.
+CERT_DRAW_W = ((1_000 + 960_000 + 0) / 1_000 / 1000.0) * 16.8
+
+
+def achievable_panel_w(solar_w, exposure, patch_max):
+    """
+    Best panel output reachable from HERE, right now.
+
+    ugv_simulator.find_power computes
+
+        panel_power = poa_total * area * eff * fill * spectral * (1 - interference)
+
+    where every factor except (1 - interference) depends only on the sun,
+    not on where the robot is standing. So panel power is LINEAR in
+    exposure with a per-step constant K:
+
+        K(step) = solar_w / exposure          (both already measured)
+        achievable = K(step) * max(view patch)
+
+    which is what a robot at this position could get by stepping to the
+    sunniest cell it can see. One divide and one multiply, no spectral
+    integration.
+    """
+    return (solar_w / max(float(exposure), 1e-3)) * float(patch_max)
+
 CERT_QUANTILES = (0.05, 0.25, 0.50)
 
 
@@ -927,7 +953,7 @@ def _masked_quantiles(x, mask, qs=CERT_QUANTILES):
     return [float(v) for v in q]
 
 
-def analytic_certification(soc, soc_next, elev_deg, valid=None,
+def analytic_certification(soc, soc_next, achievable_w, valid=None,
                            nstep=1, alpha=None,
                            ball=COST_LYAPUNOV_BALL,
                            margin=LYAPUNOV_MARGIN):
@@ -983,7 +1009,30 @@ def analytic_certification(soc, soc_next, elev_deg, valid=None,
     # certifiable region: below CERTIFY_MIN_ELEVATION no attainable
     # position sustains the robot, so dV < 0 is physically impossible
     # there and claiming it would be dishonest.
-    certifiable = (elev_deg >= CERTIFY_MIN_ELEVATION).float()
+    # CERTIFIABILITY IS A POWER BALANCE, NOT AN ANGLE.
+    #
+    # This used to be (elev_deg >= CERTIFY_MIN_ELEVATION), a constant
+    # derived as "the elevation where the 95th percentile of ACHIEVED
+    # panel power crosses a 15.92 W breakeven". Two problems. It was
+    # calibrated on the best-positioned robot, so it is a lower bound on
+    # usefulness rather than a typical one; and an angle cannot express
+    # terrain shadowing, which is what actually ends the charging day.
+    #
+    # Measured on cost seed 1: the 18.5 deg gate admitted 96.2% of steps
+    # while only 58% were net-charging, and 100% of the per-episode rise
+    # in V_true fell in the 42% it let through. Restricting to the
+    # net-charging window took dV>=0 from 0.0089 to 0.0000.
+    #
+    # The condition below says what the certificate actually needs: at
+    # this state, is there a reachable position where charging beats
+    # draw? If not, V_true cannot decrease and asserting that it should
+    # is dishonest rather than merely strict.
+    #
+    # Still one scalar comparison per sample -- the same cost as the
+    # constant it replaces, no branching. All the physics is folded into
+    # achievable_w upstream, where solar_w and exposure were already
+    # being computed for the reward.
+    certifiable = (achievable_w >= CERT_DRAW_W).float()
 
     # TWO masks, because the two candidates are certified at DIFFERENT
     # windows and must not inherit each other's sample restrictions.
@@ -1272,12 +1321,13 @@ def compute_batch(rollouts, device):
     # CERT_NSTEP ahead WITHIN THE SAME EPISODE (-1 where the window
     # would run past the end). Both are certification-only; neither
     # touches the loss.
-    costs=[]; nstep_idx=[]
+    costs=[]; nstep_idx=[]; achievable=[]
     offset = 0
 
     for r in rollouts:
         T = len(r["rewards"])
         costs += [-x for x in r["rewards"]]
+        achievable += r["achievable_w"]
         nstep_idx += [offset + t + CERT_NSTEP if t + CERT_NSTEP < T else -1
                       for t in range(T)]
         offset += T
@@ -1303,12 +1353,13 @@ def compute_batch(rollouts, device):
     next_states = torch.tensor(np.asarray(next_states), dtype=torch.float32, device=device)
 
     costs = torch.tensor(costs, device=device, dtype=torch.float32)
+    achievable = torch.tensor(achievable, device=device, dtype=torch.float32)
     nstep_idx = torch.tensor(nstep_idx, device=device, dtype=torch.long)
 
     adv = (adv - adv.mean()) / (adv.std(unbiased=False) + 1e-8)
 
     return (states, next_states, actions, oldlp, adv, returns,
-            costs, nstep_idx)
+            costs, nstep_idx, achievable)
 
 def update(model,opt,rollouts,device, ep, metrics_writer=None, return_var_tracker=None,
            control_params=None, auxiliary_param_list=None):
@@ -1334,7 +1385,7 @@ def update(model,opt,rollouts,device, ep, metrics_writer=None, return_var_tracke
             group["lr"] = group["initial_lr"] * lr_scale
 
     (states, next_states, actions, oldlp, adv, returns,
-     costs, nstep_idx) = compute_batch(rollouts, device)
+     costs, nstep_idx, achievable_w) = compute_batch(rollouts, device)
     # SOC for every state in the batch, so the n-step analytic check
     # can index forward without a second forward pass.
     soc_all = states[:, -1, SOC_OBS_INDEX]
@@ -1443,14 +1494,14 @@ def update(model,opt,rollouts,device, ep, metrics_writer=None, return_var_tracke
                 # they use this arm's linear V_true and its own alpha,
                 # and answer a different question.
                 with torch.no_grad():
-                    mb_elev_cert = mb_states[:, -1, ELEV_OBS_INDEX] * 90.0
+                    mb_ach_cert = achievable_w[mb]
                     mb_fwd = nstep_idx[mb]
                     mb_valid = mb_fwd >= 0
                     mb_soc_fwd = soc_all[mb_fwd.clamp(min=0)]
                     (cert_metrics, _cert_outside, _cert_n_out,
                      _cert_alpha_feasible, _cert_base,
                      _cert_n_base) = analytic_certification(
-                        mb_soc, mb_soc_fwd, mb_elev_cert,
+                        mb_soc, mb_soc_fwd, mb_ach_cert,
                         valid=mb_valid, nstep=CERT_NSTEP)
                     last_alpha_feasible = (_cert_alpha_feasible.detach(),
                                            _cert_outside.detach())
@@ -1727,7 +1778,7 @@ def update(model,opt,rollouts,device, ep, metrics_writer=None, return_var_tracke
                 # can finally be compared on one scale.
                 with torch.no_grad():
                     mb_soc = states[mb][:, -1, SOC_OBS_INDEX]
-                    mb_elev = states[mb][:, -1, ELEV_OBS_INDEX] * 90.0
+                    mb_ach = achievable_w[mb]
                     # n-step ahead SOC, from the precomputed index.
                     # -1 marks a window that ran off the end of its
                     # episode; clamped so the gather is safe and then
@@ -1738,7 +1789,7 @@ def update(model,opt,rollouts,device, ep, metrics_writer=None, return_var_tracke
                     (cert_metrics, cert_outside, cert_n_out,
                      cert_alpha_feasible, cert_base,
                      cert_n_base) = analytic_certification(
-                        mb_soc, mb_soc_next, mb_elev,
+                        mb_soc, mb_soc_next, mb_ach,
                         valid=mb_valid, nstep=CERT_NSTEP)
                     last_alpha_feasible = (cert_alpha_feasible.detach(),
                                            cert_outside.detach())
@@ -2223,7 +2274,7 @@ def run():
         ep_start_x, ep_start_y = x, y
         h=deque([obs(env,x,y,yaw,0)]*SEQUENCE_LENGTH,maxlen=SEQUENCE_LENGTH);total=0;
         total_directional=0.0; total_battery_reward=0.0; total_movement_penalty=0.0
-        r={"states":[],"next_states":[],"actions":[],"logps":[],"values":[],"rewards":[],"lyapunov":[], "barrier":[]};
+        r={"states":[],"next_states":[],"actions":[],"logps":[],"values":[],"rewards":[],"lyapunov":[], "barrier":[],"achievable_w":[]};
         previous_action = None; smoothness = 0.0
         solar_samples = []
         min_battery = 100.0
@@ -2292,6 +2343,12 @@ def run():
                                          sol.apparent_zenith.iloc[0]).flatten()
             aft_batt = env.ch.get_battery()
             solar_samples.append(float(env.ch.solar_potential))
+            # Certification gate input. `after` is the obfuscation patch,
+            # so 1 - after is the potential and its max is the sunniest
+            # cell in view. Computed here because solar_w and exposure
+            # are already in hand for the reward -- nothing extra runs.
+            r["achievable_w"].append(achievable_panel_w(
+                float(env.ch.solar_potential), score_after, float((1.0 - after).max())))
             min_battery = min(min_battery, aft_batt)
             ep_idle_mAh += float(env.ch.step_idle_mAh)
             ep_motion_mAh += float(env.ch.step_motion_mAh)
