@@ -233,7 +233,7 @@ GRAD_CLIP = 8.0
 # that the inconsistency of the clipping hurt, not its magnitude -- so
 # holding the magnitude fixed is what isolates it. Set to 1.0 to take
 # the larger steps as well, but expect the KL early-stop to bind.
-LR_CLIP_COMPENSATION = 1.0
+LR_CLIP_COMPENSATION = 0.23
 
 LR=3e-4 * LR_CLIP_COMPENSATION; MAX_MOVE_PER_STEP=20.0; ENTROPY_COEF=.01; VALUE_COEF=.5
 
