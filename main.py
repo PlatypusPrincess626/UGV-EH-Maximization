@@ -118,7 +118,7 @@ if torch.cuda.is_available():
 torch.backends.cudnn.deterministic = True
 torch.backends.cudnn.benchmark = False
 
-SEQUENCE_LENGTH=32; GAMMA=.99; GAE_LAMBDA=.95
+SEQUENCE_LENGTH=32; GAMMA=.99; GAE_LAMBDA=.98
 # 2 -> 4 episodes per update (1440 -> 2880 samples).
 #
 # The KL early stop was discarding 26% of the gradient budget and
@@ -221,7 +221,7 @@ UPDATE_MIN_STEPS = 1440
 # 5.0 restores clipping to catching genuine spikes while cutting the
 # rescale variance by 4x. 2.0 would NOT help -- it barely moves the cv
 # and only raises the effective step.
-GRAD_CLIP = 5.0
+GRAD_CLIP = 8.0
 
 # LR compensation for the above. The clip at 1.0 was acting as a 3.4x
 # brake on every step; removing it triples the effective learning rate
