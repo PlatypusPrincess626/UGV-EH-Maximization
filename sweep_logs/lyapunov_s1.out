@@ -1,0 +1,24 @@
+Placing Sensors
+Placing Sensors
+[Episode 1/400] Steps: 720 | Reward:  126.59 | Battery:  42.98% | Loss: 
+Placing Sensors
+Policy -0.0046 | Value 249.7423 | Lyap 0.0053 | Dynamics 1.3104 | Barrier 0.8810 | KL 0.00386 | CF 0.0425 | Std 0.1054 | RawLogStd 0.0002 | |a| 0.0059 | Alpha 0.9261 | MB 24/24
+  cert | viol 0.494 | dV -0.183480 | V 0.3018 | inball 0.110 | a*_q05 -0.01906 | a*_q50 0.01039 | dV>=0 0.177 | n=150 | a_used 0.01000 -> 0.00950
+[Episode 2/400] Steps: 720 | Reward:  155.11 | Battery:  54.20% | Loss: 1.9481
+Placing Sensors
+[Episode 3/400] Steps: 720 | Reward:  161.29 | Battery:  51.49% | Loss: 
+Placing Sensors
+[Episode 4/400] Steps: 151 | Reward:  -54.30 | Battery:   0.00% | Loss: 
+Placing Sensors
+Policy -0.0167 | Value 300.7875 | Lyap 0.0056 | Dynamics 1.2741 | Barrier 0.8350 | KL 0.00505 | CF 0.0559 | Std 0.1055 | RawLogStd 0.0006 | |a| 0.0080 | Alpha 0.8508 | MB 28/28
+  cert | viol 0.324 | dV -0.222905 | V 0.3566 | inball 0.169 | a*_q05 -0.01330 | a*_q50 0.01547 | dV>=0 0.100 | n=150 | a_used 0.00950 -> 0.00903
+[Episode 5/400] Steps: 720 | Reward:  128.51 | Battery:  37.09% | Loss: 1.8972
+Placing Sensors
+[Episode 6/400] Steps: 720 | Reward:  194.95 | Battery:  65.50% | Loss: 
+Placing Sensors
+Policy -0.0028 | Value 306.4274 | Lyap 0.0039 | Dynamics 1.3125 | Barrier 0.8361 | KL 0.00657 | CF 0.0868 | Std 0.1056 | RawLogStd 0.0011 | |a| 0.0084 | Alpha 0.7880 | MB 24/24
+  cert | viol 0.370 | dV -0.226976 | V 0.4217 | inball 0.317 | a*_q05 -0.00273 | a*_q50 0.01917 | dV>=0 0.205 | n=150 | a_used 0.00903 -> 0.00857
+[Episode 7/400] Steps: 720 | Reward:  159.29 | Battery:  45.89% | Loss: 1.7656
+Placing Sensors
+[Episode 8/400] Steps: 720 | Reward:  108.10 | Battery:  37.51% | Loss: 
+Placing Sensors
