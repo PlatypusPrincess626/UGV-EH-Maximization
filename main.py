@@ -919,33 +919,58 @@ CERT_NSTEP = 150
 CERT_DRAW_W = ((1_000 + 960_000 + 0) / 1_000 / 1000.0) * 16.8
 
 
-def achievable_panel_w(solar_w, exposure, patch_max):
+# Minimum centre exposure for the K recovery below to be conditioned.
+CERT_EXPOSURE_MIN = 0.05
+
+
+def panel_k(solar_w, exposure_centre, last_k):
     """
-    Best panel output reachable from HERE, right now.
+    Per-step panel constant K, or `last_k` if this sample cannot resolve it.
 
     ugv_simulator.find_power computes
 
         panel_power = poa_total * area * eff * fill * spectral * (1 - interference)
 
     where every factor except (1 - interference) depends only on the sun,
-    not on where the robot is standing. So panel power is LINEAR in
-    exposure with a per-step constant K:
-
-        K(step) = solar_w / exposure          (both already measured)
-        achievable = K(step) * max(view patch)
-
-    which is what a robot at this position could get by stepping to the
-    sunniest cell it can see. One divide and one multiply, no spectral
+    not on where the robot stands. So panel power is exactly LINEAR in
+    the centre exposure, and K = solar_w / exposure_centre recovers the
+    sun-only part with NO approximation -- one divide, no spectral
     integration.
+
+    The one place it breaks is deep shade. As exposure_centre -> 0 so
+    does solar_w, and the ratio becomes 0/0. Flooring the denominator
+    (the previous approach) does not spike K upward -- it collapses it:
+    at exposure 1e-5 with a floor of 1e-3, K comes back 100x too SMALL,
+    so achievable_w is underestimated and the sample is wrongly judged
+    non-certifiable. Silent, one-directional, and it would bite hardest
+    in the dense canopy where the certificate is most interesting.
+
+    K is a property of the sun alone and the sun moves slowly, so when
+    this sample cannot resolve it, the most recent well-conditioned
+    value is the right answer rather than a floored guess. Carrying it
+    forward is exact to within a minute of solar motion.
     """
-    return (solar_w / max(float(exposure), 1e-3)) * float(patch_max)
+    if exposure_centre > CERT_EXPOSURE_MIN:
+        return solar_w / exposure_centre
+    return last_k
 
 CERT_QUANTILES = (0.05, 0.25, 0.50)
 
 
 def _masked_quantiles(x, mask, qs=CERT_QUANTILES):
-    """Quantiles of x over the entries where mask > 0; nan if empty."""
+    """
+    Quantiles of x over the entries where mask > 0; nan if empty.
+
+    NaNs are dropped as well as masked entries. torch.quantile
+    propagates NaN silently -- a single one turns every returned
+    quantile into NaN, which the accumulators then skip, so a whole
+    update's alpha statistics would vanish without any error. The
+    critic-side alpha_feasible can carry NaN by construction (see
+    critic_certification), so filter here rather than relying on the
+    caller.
+    """
     sel = x[mask > 0]
+    sel = sel[~torch.isnan(sel)]
     if sel.numel() == 0:
         return [float("nan")] * len(qs)
     q = torch.quantile(sel.float(),
@@ -1047,24 +1072,42 @@ def analytic_certification(soc, soc_next, achievable_w, valid=None,
     # not apply to a one-step check.
     base = (V > ball).float() * certifiable
     outside = base * valid.float() if valid is not None else base
-    n_out = outside.sum().clamp(min=1.0)
-    n_base = base.sum().clamp(min=1.0)
+    # The clamp keeps the division finite when a minibatch has NO
+    # certifiable samples outside the ball. What it must NOT do is make
+    # the resulting numbers look real: every ratio below would come back
+    # 0/1 = 0.0, i.e. "zero violations", and get averaged in as if it
+    # were a measurement. cert_n_samples read 0 on 9 of 146 updates in
+    # the last run, and those rows were being counted.
+    #
+    # `empty` gates the emitted metrics to NaN instead. The per-key
+    # accumulators in update() already skip NaN, so those rows drop out
+    # of the averages rather than pulling them toward zero.
+    n_out_raw = outside.sum()
+    n_base_raw = base.sum()
+    empty = bool(n_out_raw.item() < 1.0)
+    n_out = n_out_raw.clamp(min=1.0)
+    n_base = n_base_raw.clamp(min=1.0)
+    nanf = lambda v: float("nan") if empty else v
 
     slack = dV + alpha_n * V + margin
     # Invert to the per-step rate so the quantiles mean the same thing
     # at any nstep: alpha_n <= (-dV - margin)/V, then
     # alpha = 1 - (1 - alpha_n)^(1/n).
+    # V > ball > 0 wherever `outside` is set, so this clamp only ever
+    # touches samples that are masked out of the quantiles below. Kept
+    # to keep the division finite on the masked entries; it cannot
+    # affect a reported number.
     alpha_n_feasible = (-dV - margin) / V.clamp(min=1e-8)
     alpha_feasible = 1.0 - (1.0 - alpha_n_feasible.clamp(max=1.0 - 1e-9)) ** (
         1.0 / float(nstep))
     q05, q25, q50 = _masked_quantiles(alpha_feasible, outside)
 
     return {
-        "cert_violation": float((((slack > 0).float() * outside).sum() / n_out).item()),
-        "cert_mean_dV": float(((dV * outside).sum() / n_out).item()),
-        "cert_mean_V": float(((V * outside).sum() / n_out).item()),
-        "cert_worst_slack": float(torch.where(
-            outside > 0, slack, torch.full_like(slack, -1e9)).max().item()),
+        "cert_violation": nanf(float((((slack > 0).float() * outside).sum() / n_out).item())),
+        "cert_mean_dV": nanf(float(((dV * outside).sum() / n_out).item())),
+        "cert_mean_V": nanf(float(((V * outside).sum() / n_out).item())),
+        "cert_worst_slack": nanf(float(torch.where(
+            outside > 0, slack, torch.full_like(slack, -1e9)).max().item())),
         "cert_in_ball_rate": float((1.0 - (V > ball).float().mean()).item()),
         "cert_certifiable_frac": float(certifiable.mean().item()),
         "cert_alpha_q05": q05,
@@ -1095,8 +1138,8 @@ def analytic_certification(soc, soc_next, achievable_w, valid=None,
         # motion, so it can fall while SOC falls. If it does, that is
         # the result: the critic is a valid candidate where the
         # analytic one is not.
-        "cert_alpha_nonpos_frac": float(
-            (((alpha_feasible <= 0).float() * outside).sum() / n_out).item()),
+        "cert_alpha_nonpos_frac": nanf(float(
+            (((alpha_feasible <= 0).float() * outside).sum() / n_out).item())),
     }, outside, n_out, alpha_feasible, base, n_base
 
 
@@ -1202,8 +1245,17 @@ def critic_certification(V_cost, V_cost_next, cost, outside, n_out,
 
     slack_b = dV_bellman + alpha * V_cost + margin
     slack_d = dV_direct + alpha * V_cost + margin
-    alpha_feasible = (-dV_bellman - margin) / V_cost.clamp(min=1e-8)
-    q05, q25, q50 = _masked_quantiles(alpha_feasible, outside)
+    # Unlike the analytic V, V_cost is NOT bounded below by the ball --
+    # the ball is defined on V_true. A critic output near zero here is a
+    # real state, and the clamp would turn its feasible alpha into a
+    # huge positive number that skews the quantiles upward. Mask it
+    # instead: those samples cannot support any finite decay rate
+    # statement, so they are excluded rather than flattered.
+    _v_ok = V_cost > 1e-6
+    alpha_feasible = torch.where(
+        _v_ok, (-dV_bellman - margin) / V_cost.clamp(min=1e-6),
+        torch.full_like(V_cost, float("nan")))
+    q05, q25, q50 = _masked_quantiles(alpha_feasible, outside * _v_ok.float())
 
     sel = delta[outside > 0]
     if sel.numel() == 0:
@@ -1213,7 +1265,11 @@ def critic_certification(V_cost, V_cost_next, cost, outside, n_out,
         d_std = float(sel.std().item()) if sel.numel() > 1 else 0.0
         d_q95 = float(torch.quantile(sel.abs().float(), 0.95).item())
 
-    frac = lambda t: float(((t.float() * outside).sum() / n_out).item())
+    # Same guard as analytic_certification: an empty mask must not
+    # report 0.0 violations as if it had measured something.
+    _empty = bool(outside.sum().item() < 1.0)
+    frac = lambda t: (float("nan") if _empty
+                      else float(((t.float() * outside).sum() / n_out).item()))
     return {
         "v_critic_violation": frac(slack_b > 0),
         "v_critic_violation_direct": frac(slack_d > 0),
@@ -2277,6 +2333,10 @@ def run():
         r={"states":[],"next_states":[],"actions":[],"logps":[],"values":[],"rewards":[],"lyapunov":[], "barrier":[],"achievable_w":[]};
         previous_action = None; smoothness = 0.0
         solar_samples = []
+        # 0.0 until the first step with enough centre exposure to
+        # resolve it. Until then achievable_w is 0 and those samples are
+        # judged non-certifiable -- correct, since that is pre-dawn.
+        panel_k_last = 0.0
         min_battery = 100.0
         ep_idle_mAh = 0.0
         ep_motion_mAh = 0.0
@@ -2343,12 +2403,24 @@ def run():
                                          sol.apparent_zenith.iloc[0]).flatten()
             aft_batt = env.ch.get_battery()
             solar_samples.append(float(env.ch.solar_potential))
-            # Certification gate input. `after` is the obfuscation patch,
-            # so 1 - after is the potential and its max is the sunniest
-            # cell in view. Computed here because solar_w and exposure
-            # are already in hand for the reward -- nothing extra runs.
-            r["achievable_w"].append(achievable_panel_w(
-                float(env.ch.solar_potential), score_after, float((1.0 - after).max())))
+            # Certification gate input.
+            #
+            # `after` is the flattened obfuscation patch, so 1 - after is
+            # the potential. The CENTRE pixel is what find_power uses as
+            # its `interference` term, so 1 - after[centre] is exactly
+            # the exposure that produced env.ch.solar_potential -- their
+            # ratio recovers the per-step constant K exactly. The patch
+            # side is odd ((2d+1)^2), so the centre is the middle element.
+            #
+            # score_after (the Gaussian-weighted exposure) is a local of
+            # reward_fn_cost and is not in scope here; it would also be
+            # the wrong quantity, since find_power weights only the
+            # centre.
+            _after_centre = 1.0 - float(after[after.size // 2])
+            panel_k_last = panel_k(float(env.ch.solar_potential),
+                                   _after_centre, panel_k_last)
+            r["achievable_w"].append(
+                panel_k_last * float((1.0 - after).max()))
             min_battery = min(min_battery, aft_batt)
             ep_idle_mAh += float(env.ch.step_idle_mAh)
             ep_motion_mAh += float(env.ch.step_motion_mAh)
