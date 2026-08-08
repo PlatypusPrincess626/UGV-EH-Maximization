@@ -230,7 +230,28 @@ class CostTransformerActorCritic(nn.Module):
         if spectral_critic:
             for layer in self.critic_body:
                 if isinstance(layer, nn.Linear):
-                    spectral_norm(layer)
+                    # n_power_iterations=5, not the default 1.
+                    #
+                    # torch re-runs power iteration on EVERY forward in
+                    # training mode, so with n=1 the sigma estimate is
+                    # still converging and moves a little each time. One
+                    # update runs ~24 minibatch forwards, which means the
+                    # critic is a slightly DIFFERENT function for each of
+                    # them -- the value targets, the advantages and the
+                    # gradients all see a drifting normalisation that has
+                    # nothing to do with the data.
+                    #
+                    # This is mechanical noise, not environment noise: it
+                    # exists only because the estimator is under-converged.
+                    # The evidence it costs something is the ablation --
+                    # late approx_kl was 0.0102 (normal), 0.0152
+                    # (cost_plain, no spectral norm), 0.0166 (cost), so
+                    # roughly 22% of this arm's excess policy churn tracks
+                    # the spectral machinery rather than the reward.
+                    #
+                    # Cost is negligible: the critic body is four small
+                    # layers and the iteration is one matvec each.
+                    spectral_norm(layer, n_power_iterations=5)
 
         POLICY_OUTPUT_GAIN = 0.01
         policy_out = [m for m in self.actor if isinstance(m, nn.Linear)][-1]

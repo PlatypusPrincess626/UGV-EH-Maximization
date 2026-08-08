@@ -914,6 +914,10 @@ def reward_fn(after, telemetry, delta_batt, action=None):
 # differences vanish into fluctuation. The critic's check stays at
 # one step and fixes its noise a different way -- see
 # critic_certification().
+# Effective window of the return-variance tracker, in samples.
+# 20 updates at UPDATE_MIN_STEPS=1440.
+RETURN_VAR_HORIZON = 28800
+
 CERT_NSTEP = 150
 
 # Payload draw, in watts at the charge voltage. Mirrors
@@ -1310,11 +1314,32 @@ class RunningVariance:
     advantage estimate -- and therefore the policy gradient itself.
     Rescaling only how much the (still raw-scale) MSE contributes to
     the total loss avoids that risk entirely.
+
+    HORIZON WINDOW -- WHY count IS CAPPED
+
+    Welford's count grows without bound, making this a CUMULATIVE
+    estimator: by update 198 the count is ~285k and a fresh batch of
+    1440 carries 0.5% weight. The estimate is then effectively frozen
+    at the return distribution of EARLY training.
+
+    Returns are not stationary. On cost seed 1, v_critic_mean fell from
+    0.88 to 0.525 over the run, so the true return variance late is
+    roughly a third of what it was early -- and the frozen return_scale
+    under-weights value_loss by that factor for the rest of training.
+    Since actor and critic share the trunk, that silently drifts the
+    policy/value gradient balance over the run for no reason connected
+    to the task.
+
+    Capping the count turns this into an EMA with an effective window
+    of RETURN_VAR_HORIZON samples. 28800 = 20 updates at
+    UPDATE_MIN_STEPS=1440: long enough to be stable, short enough to
+    track a policy that is still improving.
     """
-    def __init__(self, epsilon=1e-4):
+    def __init__(self, epsilon=1e-4, horizon=RETURN_VAR_HORIZON):
         self.mean = 0.0
         self.var = 1.0
         self.count = epsilon
+        self.horizon = float(horizon)
 
     def update(self, x):
         batch_mean = float(x.mean())
@@ -1332,7 +1357,9 @@ class RunningVariance:
 
         self.mean = new_mean
         self.var = new_var
-        self.count = tot_count
+        # Cap, not reset: old samples decay out at the batch rate
+        # instead of accumulating forever. See the class docstring.
+        self.count = min(tot_count, self.horizon)
 
 def compute_batch(rollouts, device):
     """
