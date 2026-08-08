@@ -166,8 +166,10 @@ UPDATE_EVERY_EPISODES=2
 # episodes simply mean more of them per update. 1440 = the two full
 # episodes UPDATE_EVERY_EPISODES=2 was meant to deliver.
 #
-# UPDATE_EVERY_EPISODES stays as a ceiling so a run of unusually long
-# episodes cannot go too far between updates.
+# UPDATE_EVERY_EPISODES is now DOCUMENTATION ONLY -- it records the
+# batch this budget was sized to deliver (2 x MAX_STEPS_PER_EPISODE).
+# It is no longer part of the trigger; see the note at the update site
+# for why the episode-count ceiling it fed was actively harmful.
 #
 # SIZED FROM MEASUREMENT, NOT FROM THE EPISODE COUNT.
 #
@@ -2492,9 +2494,23 @@ def run():
 
         # 3. Training Update Logic
         if POLICY_TYPE == "transformer":
+            # STEP BUDGET ONLY -- no episode-count ceiling.
+            #
+            # This used to also fire on `ep % (4 * UPDATE_EVERY_EPISODES)
+            # == 0`, intended as "do not go too long between updates if
+            # episodes run long". It could not do that and did the
+            # opposite: an episode cannot exceed MAX_STEPS_PER_EPISODE,
+            # and UPDATE_MIN_STEPS is 2x that, so two full episodes
+            # always meet the budget on their own. The clause could only
+            # ever fire EARLY -- when deaths made episodes short and the
+            # step budget had not been reached -- which is exactly when
+            # waiting for more episodes is the right thing to do.
+            #
+            # Observed: two consecutive failures landing on a multiple
+            # of 8 produced ~300 samples and an "MB 8/8" update, the
+            # degenerate batch the step budget exists to prevent.
             pending_steps = sum(len(r["rewards"]) for r in rollouts)
-            if pending_steps >= UPDATE_MIN_STEPS or (
-                    rollouts and ep % (4 * UPDATE_EVERY_EPISODES) == 0):
+            if pending_steps >= UPDATE_MIN_STEPS:
                 update_start = time.perf_counter()
                 (loss, diag_lyap, diag_barrier, diag_std,
                  diag_abs_action, diag_mean_V, diag_std_V,
