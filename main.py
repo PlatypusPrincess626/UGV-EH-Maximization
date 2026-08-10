@@ -8,6 +8,7 @@ import torch.optim as optim
 from pvlib import solarposition
 from environment import sim_env, MIN_USABLE_ELEVATION
 from lyupnov_transformer import LyapunovTransformerActorCritic
+from diagnostics import pre_update_diagnostics, DIAGNOSTIC_FIELDS
 import datetime
 import time
 
@@ -502,7 +503,51 @@ COST_SHADE_RELATIVE = True
 # trades a real learning signal for a metric.
 COST_SHADE_W = 1.00
 COST_DEFICIT_W = 2.00
-COST_MOVE_W = 0.50
+
+# Raised from 0.50.
+#
+# WHY
+#
+# Decomposing the incurred cost over the 10 deterministic evaluation
+# episodes of cost and cost_plain, seeds 1 and 2:
+#
+#     shade    47%
+#     deficit  49%
+#     move     2.5% - 7.1%
+#
+# Movement was effectively free. The consequence is visible in the
+# reward-independent task metrics: the cost arm walked 637 m per
+# episode against the lyapunov arm's 260 m and arrived at a WORSE
+# battery outcome for it (mean min SOC 26.1% vs 26.9%, tenth
+# percentile 18.5% vs 21.6%). It was paying 2.4x the motion energy to
+# do the same job, and nothing in the reward objected.
+#
+# At 2.00, c_move carries roughly 15-25% of total cost at the
+# currently observed movement level -- enough to be a real term
+# without displacing the deficit signal, which must stay dominant
+# because it is the coordinate the Lyapunov function is defined on.
+#
+# WHAT THIS DOES NOT DISTURB
+#
+# c_move = distance / MAX_MOVE_PER_STEP is non-negative and exactly
+# zero at rest, so raising its weight leaves both structural
+# properties of the cost MDP intact: V_cost >= 0 everywhere, and
+# V_cost = 0 at the goal. Nothing about what is certified changes.
+#
+# COST_DEATH_COST is sized off COST_DEFICIT_W, not off the total, so
+# it is unaffected. REWARD_CONVERGENCE_THRESHOLD = -7.0 still clears:
+# converged per-episode reward measured -2.87, and the added move
+# cost at unchanged behaviour is ~+0.3, so the bar is untouched at
+# both ends.
+#
+# Overridable so the sweep can vary it without editing this file:
+#
+#     LTAC_COST_MOVE_W=3.0 LTAC_VARIANT=cost LTAC_SEED=1 python main.py
+#
+# Change this ONE weight per sweep. It is the recommendation with a
+# mechanism visible in the data; stacking it with a deficit-tail term
+# or a death-cost change would confound all three.
+COST_MOVE_W = float(os.environ.get("LTAC_COST_MOVE_W", 2.00))
 
 # Global scale on the cost-MDP reward.
 #
@@ -707,7 +752,17 @@ timestamp = datetime.datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
 _variant_tag = TRANSFORMER_VARIANT if POLICY_TYPE == "transformer" else POLICY_TYPE
 # Seed in the directory name: a paired sweep launches many runs that
 # differ only by seed, and timestamps alone make them hard to match up.
-OUT=Path(f"rl_csv_{_variant_tag}_s{RUN_SEED}_{timestamp}"); OUT.mkdir(exist_ok=True)
+#
+# COST_MOVE_W too, when it is not the default, for the same reason one
+# step further out: a weight sweep launches runs that differ only by
+# that number, and two runs of the same variant and seed at different
+# weights would otherwise be told apart only by their timestamps.
+# Suppressed at the default so existing run directories keep their
+# current names and nothing downstream that globs rl_csv_{variant}_s{n}
+# has to change.
+_mw_tag = ("" if not IS_COST or COST_MOVE_W == 2.00
+           else f"_mw{COST_MOVE_W:g}")
+OUT=Path(f"rl_csv_{_variant_tag}_s{RUN_SEED}{_mw_tag}_{timestamp}"); OUT.mkdir(exist_ok=True)
 
 size = 2 * VIEW_DISTANCE + 1
 y, x = np.mgrid[-VIEW_DISTANCE:VIEW_DISTANCE+1,
@@ -1475,6 +1530,23 @@ def update(model,opt,rollouts,device, ep, metrics_writer=None, return_var_tracke
     # can index forward without a second forward pass.
     soc_all = states[:, -1, SOC_OBS_INDEX]
 
+    # Held-out critic diagnostics.
+    #
+    # Placed HERE, before any gradient step, deliberately: this batch
+    # came out of a rollout collected under the current weights and
+    # has not been fit yet, so scoring it now is genuine held-out
+    # evaluation without withholding anything from training. Moving
+    # this below the PPO loop would turn it into a training-set
+    # measurement and make it the same quantity `value_loss` already
+    # reports.
+    #
+    # Runs in EVERY arm. The whole point is that the reward arms
+    # previously logged NaN for every column the cost arm was claimed
+    # to win on, so there was nothing to compare against.
+    diag = pre_update_diagnostics(
+        model, states, returns, soc_all,
+        soc_target=SOC_TARGET, soc_index=SOC_OBS_INDEX)
+
     if TRANSFORMER_VARIANT == "lyapunov":
         # Curriculum boundaries scale with TOTAL_EPISODES. Hardcoded at
         # 100 and 300 they were 10% and 30% of a 1000-episode run; on a
@@ -1795,6 +1867,10 @@ def update(model,opt,rollouts,device, ep, metrics_writer=None, return_var_tracke
                    "minibatches_possible": PPO_EPOCHS * math.ceil(n / MINIBATCH_SIZE),
                    "first_mb_kl": first_mb_kl if first_mb_kl is not None else 0.0}
             row.update(avg)
+            # After avg, not before: the diagnostics are measured once
+            # per update on held-out states and must not be overwritten
+            # by a same-named minibatch average.
+            row.update(diag)
             metrics_writer.writerow(row)
 
         diag_lyap = avg["lyap_penalty"]
@@ -2062,6 +2138,7 @@ def update(model,opt,rollouts,device, ep, metrics_writer=None, return_var_tracke
                    "minibatches_possible": PPO_EPOCHS * math.ceil(n / MINIBATCH_SIZE),
                    "first_mb_kl": 0.0}
             row.update(avg)
+            row.update(diag)
             metrics_writer.writerow(row)
 
         # Left None deliberately. The convergence block gated on
@@ -2312,7 +2389,7 @@ def run():
         "lyap_penalty","dynamics_loss",
         "barrier_loss","approx_kl","clip_fraction","mean_std","mean_raw_log_std",
         "mean_abs_action","alpha",
-    ])
+    ] + DIAGNOSTIC_FIELDS)
     metrics_writer.writeheader()
 
     # Same numbers as the [Convergence check] print line.

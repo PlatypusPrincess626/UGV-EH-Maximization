@@ -795,6 +795,20 @@ class LyapunovTransformerActorCritic(nn.Module):
     # Next-State Evaluation
     ############################################################
 
+    def value_only(self, sequence):
+        """
+        PPO value for a state, without the policy or auxiliary heads.
+
+        Mirrors CostTransformerActorCritic.value_only so diagnostics.py
+        can score any arm's critic through one interface. This is the
+        PPO critic, NOT `lyapunov_value` -- the point of the cross-arm
+        comparison is to ask what each arm's CRITIC learned, and in the
+        cost arms the critic and the Lyapunov function are the same
+        object. Scoring the auxiliary Lyapunov head here instead would
+        compare different things under one column name.
+        """
+        return self.critic(self.encode(sequence)).squeeze(-1)
+
     def evaluate_next(self, next_sequence):
         """
         Computes only the quantities needed for the NEXT state:

@@ -168,6 +168,16 @@ class TransformerActorCritic(nn.Module):
         critic = self.critic(latent).squeeze(-1)
         return raw_mean, raw_log_std, critic, latent
 
+    def value_only(self, sequence):
+        """
+        Value for a state, without the policy head.
+
+        Mirrors CostTransformerActorCritic.value_only so diagnostics.py
+        can score any arm's critic through one interface. Present on
+        every arm for that reason alone -- nothing in training calls it.
+        """
+        return self.critic(self.encode(sequence)).squeeze(-1)
+
     def _squash(self, z):
         action = torch.tanh(z)
         correction = torch.log(1.0 - action.pow(2) + self._TANH_EPS)
