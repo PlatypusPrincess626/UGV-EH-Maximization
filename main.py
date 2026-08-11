@@ -591,24 +591,59 @@ COST_MOVE_W = float(os.environ.get("LTAC_COST_MOVE_W", 0.50))
 # the old worst case -- report it rather than assuming the old
 # constant still applies.
 #
-# SELECTIVITY, MEASURED
+# WHERE THE KNEE GOES, AND WHY NOT 0.25
 #
-# Applied to cost seed 1's ten evaluation episodes, the tail term
-# fires on exactly two of them:
+# A first attempt put SOC_SAFE at 0.25 with weight 2.0 and training
+# stalled. The knee was sized against DETERMINISTIC evaluation, where
+# it looked selective -- two of ten episodes. It is not selective
+# during TRAINING. Percentage of deterministic eval steps below each
+# threshold, across cost and cost_plain seeds 1-2:
 #
-#     episode 7 (min SOC 18.6%)  reward -3.60 -> -3.76
-#     episode 8 (min SOC  0.98%) reward -5.62 -> -7.50
+#     threshold   <25%   <20%   <15%   <10%   <5%
+#     cost s1     3.33   2.26   1.62   1.17   0.33
+#     cost s2     1.68   0.65   0.00   0.00   0.00
+#     plain s1    3.35   0.90   0.00   0.00   0.00
+#     plain s2    3.60   2.35   1.04   0.00   0.00
 #
-# The other eight are untouched at 0.000 added cost. That is the
-# opposite profile to the COST_MOVE_W attempt, which taxed every
-# episode for a term worth 2.6% of the energy budget. Mean episode
-# reward moves -2.87 -> -3.08, so REWARD_CONVERGENCE_THRESHOLD = -7.0
-# is unaffected.
+# Per-episode minima cluster at 26-35%, so 0.25 sits AT the operating
+# floor, not below it. And training samples the policy rather than
+# taking its mean: the measurement in transformer.py's LOG_STD_MAX
+# note has the sampled policy at 4.4x the path length and 7.5%
+# minimum battery against 21% deterministic. At 0.25 the term fires
+# almost continuously under exploration, penalising a state the
+# physics may not permit avoiding -- every state becomes costly, and
+# a cost with no gradient toward recovery teaches nothing.
+#
+# 0.10 is the only threshold that stays genuinely rare: one of four
+# runs reaches it, in one episode. Below it the tail is the ONLY
+# term changing shape, which is what "near zero" was supposed to
+# mean.
+#
+# WEIGHT
+#
+#     knee   w     ratio 5->0 vs 50->45   L_tail   L_total
+#     0.25   2.0        5.87x              8.00     12.44   <- stalled
+#     0.10   0.5        4.44x              5.00      9.44   <- current
+#     0.15   0.5        3.65x              3.33      7.78
+#
+# 0.5 keeps most of the ratio at a quarter of the weight. The
+# Lipschitz constant rises 4.44 -> 9.44 rather than 12.44; steeper
+# near zero necessarily costs Lipschitz constant, and that trade is
+# the whole point of the term.
+#
+# THE RISK THIS CARRIES
+#
+# GAE's credit horizon is ~34 steps. A signal that only activates
+# below 10% SOC gives the agent ~34 steps of warning, and recovery
+# needs finding sun. If the knee is too low the penalty arrives too
+# late to act on -- the mirror of the 0.25 failure. If a run at 0.10
+# shows the tail firing but the death rate unmoved, that is the
+# reading, and the answer is the discount rather than the knee.
 #
 # Set COST_TAIL_W = 0.0 to disable; that exactly recovers the
 # previous cost function INCLUDING the death-cost derivation below.
-COST_SOC_SAFE = float(os.environ.get("LTAC_COST_SOC_SAFE", 0.25))
-COST_TAIL_W = float(os.environ.get("LTAC_COST_TAIL_W", 2.00))
+COST_SOC_SAFE = float(os.environ.get("LTAC_COST_SOC_SAFE", 0.10))
+COST_TAIL_W = float(os.environ.get("LTAC_COST_TAIL_W", 0.50))
 
 # Global scale on the cost-MDP reward.
 #
@@ -764,15 +799,23 @@ COST_BETA_GAIN_TARGET = 0.90
 #
 # SIZING
 #
-#     mult   COST_DEATH_COST   discounted CTG   vs healthy V_cost
-#     1.0        0.020              2.00              3.1x
-#     2.0        0.040              3.99              6.1x
-#     3.0        0.060              5.99              9.2x
-#     5.0        0.100              9.98             15.3x
-#    10.0        0.200             19.95             30.7x
+# Sized against c_fail = COST_DEFICIT_W + COST_TAIL_W = 4.0. The
+# earlier version of this table used the deficit-only c_fail of 2.0
+# and every ratio in it was half of the truth; adding the tail term
+# doubled c_fail without the multiplier being re-derived, which
+# shipped a config at 18.4x and stalled learning.
 #
-# 3.0 puts death at ~9x the healthy value scale: clearly dominant,
-# without the dynamic-range cost of the larger settings. That cost is
+#     mult   COST_DEATH_COST   discounted CTG   vs healthy V_cost
+#     1.0        0.040              3.99              6.1x
+#     1.5        0.060              5.99              9.2x
+#     2.0        0.080              7.98             12.3x
+#     3.0        0.120             11.97             18.4x
+#
+# 1.5 puts death at ~9x the healthy value scale: clearly dominant,
+# without the dynamic-range cost of the larger settings.
+#
+# FLOOR: mult >= 1.0. Below it, dead pays less per step than alive at
+# SOC 0 (4.0) and the suicide-optimal failure returns. See c_fail. That cost is
 # real and is the reason this is not set higher. The critic head is
 # spectral-normalized to L <= 1, so widening the range it must span
 # compresses its resolution everywhere else -- including the 0.65
@@ -797,7 +840,7 @@ COST_BETA_GAIN_TARGET = 0.90
 # there at step 20. If a run at 3.0 shows better late-episode
 # recovery and an unchanged death rate, that is the discount binding,
 # not this constant being too small.
-COST_DEATH_MULT = float(os.environ.get("LTAC_COST_DEATH_MULT", 3.0))
+COST_DEATH_MULT = float(os.environ.get("LTAC_COST_DEATH_MULT", 1.0))
 COST_DEATH_COST = (COST_DEFICIT_W + COST_TAIL_W) * COST_REWARD_SCALE * COST_DEATH_MULT
 
 
@@ -895,9 +938,9 @@ _variant_tag = TRANSFORMER_VARIANT if POLICY_TYPE == "transformer" else POLICY_T
 # has to change.
 _mw_tag = ("" if not IS_COST or COST_MOVE_W == 0.50
            else f"_mw{COST_MOVE_W:g}")
-_dm_tag = ("" if not IS_COST or COST_DEATH_MULT == 3.0
+_dm_tag = ("" if not IS_COST or COST_DEATH_MULT == 1.0
            else f"_dm{COST_DEATH_MULT:g}")
-_tw_tag = ("" if not IS_COST or COST_TAIL_W == 2.00
+_tw_tag = ("" if not IS_COST or COST_TAIL_W == 0.50
            else f"_tw{COST_TAIL_W:g}")
 OUT=Path(f"rl_csv_{_variant_tag}_s{RUN_SEED}{_mw_tag}{_dm_tag}{_tw_tag}_{timestamp}"); OUT.mkdir(exist_ok=True)
 
