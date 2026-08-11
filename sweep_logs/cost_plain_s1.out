@@ -1,5 +1,0 @@
-Placing Sensors
-[cost_plain] critic head: unconstrained linear, spectral_norm = False. V_cost >= 0 is NOT structural in this arm -- watch v_critic_min.
-Placing Sensors
-[Episode 1/400] Steps: 720 | Reward:   -7.90 | Battery:  42.27% | Loss: 
-Placing Sensors
