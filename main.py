@@ -504,50 +504,111 @@ COST_SHADE_RELATIVE = True
 COST_SHADE_W = 1.00
 COST_DEFICIT_W = 2.00
 
-# Raised from 0.50.
+# 0.50. Raising this was TRIED AND REVERTED -- do not retry it.
 #
-# WHY
+# The reasoning for raising it was that movement carried only 2.5-7%
+# of the incurred cost while the cost arm walked far more than the
+# lyapunov arm for no battery benefit. That reasoning sized c_move
+# against the COST FUNCTION and never against the ENERGY BUDGET,
+# which is where it falls apart. Measured on cost seed 1's evaluation
+# episodes:
 #
-# Decomposing the incurred cost over the 10 deterministic evaluation
-# episodes of cost and cost_plain, seeds 1 and 2:
+#     idle draw     11582 mAh
+#     motion draw     314 mAh   ->  motion is 2.6% of total draw
 #
-#     shade    47%
-#     deficit  49%
-#     move     2.5% - 7.1%
+# Movement was never the energy problem, so economising on it cannot
+# improve the battery outcome at any weight -- and the only way to
+# reach sun is to move.
 #
-# Movement was effectively free. The consequence is visible in the
-# reward-independent task metrics: the cost arm walked 637 m per
-# episode against the lyapunov arm's 260 m and arrived at a WORSE
-# battery outcome for it (mean min SOC 26.1% vs 26.9%, tenth
-# percentile 18.5% vs 21.6%). It was paying 2.4x the motion energy to
-# do the same job, and nothing in the reward objected.
+# Measured at COST_MOVE_W = 2.00, seed 1, 400 episodes:
 #
-# At 2.00, c_move carries roughly 15-25% of total cost at the
-# currently observed movement level -- enough to be a real term
-# without displacing the deficit signal, which must stay dominant
-# because it is the coordinate the Lyapunov function is defined on.
+#                          w=0.50    w=2.00
+#     survived 720 steps    10/10      9/10
+#     mean min SOC          26.09%    19.83%
+#     mean solar            28.9 W    25.6 W   (one episode at 0.30 W)
+#     path                   439 m     274 m
 #
-# WHAT THIS DOES NOT DISTURB
+# Path fell as intended. The intervention worked mechanically and the
+# mechanism was the wrong one.
 #
-# c_move = distance / MAX_MOVE_PER_STEP is non-negative and exactly
-# zero at rest, so raising its weight leaves both structural
-# properties of the cost MDP intact: V_cost >= 0 everywhere, and
-# V_cost = 0 at the goal. Nothing about what is certified changes.
+# The decisive comparison scores BOTH policies under the SAME
+# objective, so the difference cannot be a reward-definition
+# artifact. Rescoring the w=0.50 trajectories with their move
+# component multiplied by 4:
 #
-# COST_DEATH_COST is sized off COST_DEFICIT_W, not off the total, so
-# it is unaffected. REWARD_CONVERGENCE_THRESHOLD = -7.0 still clears:
-# converged per-episode reward measured -2.87, and the added move
-# cost at unchanged behaviour is ~+0.3, so the bar is untouched at
-# both ends.
+#     policy trained at w=0.50, rescored at w=2.0 :  -3.19
+#     policy trained at w=2.00, as run            :  -4.51
 #
-# Overridable so the sweep can vary it without editing this file:
+# Training at 2.00 produced a policy that is worse on the 2.00
+# objective itself. Caveat for the record: one seed, ten episodes,
+# and the reward CI (-6.89, -2.14) contains the rescored baseline, so
+# this is "no evidence of benefit plus a clear mechanism for harm"
+# rather than a significant regression.
 #
-#     LTAC_COST_MOVE_W=3.0 LTAC_VARIANT=cost LTAC_SEED=1 python main.py
+# Kept overridable so the negative result is reproducible without
+# editing this file:
 #
-# Change this ONE weight per sweep. It is the recommendation with a
-# mechanism visible in the data; stacking it with a deficit-tail term
-# or a death-cost change would confound all three.
-COST_MOVE_W = float(os.environ.get("LTAC_COST_MOVE_W", 2.00))
+#     LTAC_COST_MOVE_W=2.0 LTAC_VARIANT=cost LTAC_SEED=1 python main.py
+COST_MOVE_W = float(os.environ.get("LTAC_COST_MOVE_W", 0.50))
+
+# Option A: a second, LINEAR hinge on the low-SOC tail.
+#
+# WHAT PROBLEM
+#
+# c_deficit is quadratic, so its slope is steepest at soc = 0 -- the
+# gradient does NOT vanish there. The problem is the RATIO. Losing
+# five points from 5% costs 0.108; losing five from 50% costs 0.053.
+# Only 2.06x steeper, while the consequence goes from "worse day" to
+# "mission over". The cost is bounded on [0,1] and near-linear across
+# the whole danger zone, so nothing tells the agent the last ten
+# points are categorically different.
+#
+# c_tail = relu(SOC_SAFE - soc) / SOC_SAFE adds a second hinge that
+# is exactly zero above SOC_SAFE and rises linearly below it. At
+# COST_TAIL_W = 2.0 the 5%->0% marginal becomes 0.108 + 0.222 = 0.33,
+# a 6.3x ratio against mid-range instead of 2.06x.
+#
+# WHY LINEAR AND NOT SMOOTHER
+#
+# A higher power is C1 at the knee, which is prettier, but its slope
+# is ZERO at the knee and only grows near empty -- so it adds almost
+# nothing at 20-25% SOC, which is where the intervention should start
+# biting. A log or reciprocal barrier is unbounded at the origin,
+# which would make V_cost unbounded and break the sizing of the death
+# cost, the alpha calibration, and every region claim built on the
+# Lipschitz bound.
+#
+# LIPSCHITZ
+#
+# Bounded on [0, 1] with constant 1/SOC_SAFE = 4.0, times the weight:
+#
+#     d(total cost)/d(soc) at soc=0
+#       deficit  2*COST_DEFICIT_W/SOC_TARGET =  4.44
+#       tail     COST_TAIL_W/SOC_SAFE        =  8.00
+#       combined                                12.44   (was 4.44)
+#
+# Finite and analytic, which is the property that matters, but 2.8x
+# the old worst case -- report it rather than assuming the old
+# constant still applies.
+#
+# SELECTIVITY, MEASURED
+#
+# Applied to cost seed 1's ten evaluation episodes, the tail term
+# fires on exactly two of them:
+#
+#     episode 7 (min SOC 18.6%)  reward -3.60 -> -3.76
+#     episode 8 (min SOC  0.98%) reward -5.62 -> -7.50
+#
+# The other eight are untouched at 0.000 added cost. That is the
+# opposite profile to the COST_MOVE_W attempt, which taxed every
+# episode for a term worth 2.6% of the energy budget. Mean episode
+# reward moves -2.87 -> -3.08, so REWARD_CONVERGENCE_THRESHOLD = -7.0
+# is unaffected.
+#
+# Set COST_TAIL_W = 0.0 to disable; that exactly recovers the
+# previous cost function INCLUDING the death-cost derivation below.
+COST_SOC_SAFE = float(os.environ.get("LTAC_COST_SOC_SAFE", 0.25))
+COST_TAIL_W = float(os.environ.get("LTAC_COST_TAIL_W", 2.00))
 
 # Global scale on the cost-MDP reward.
 #
@@ -655,17 +716,89 @@ COST_BETA_GAIN_TARGET = 0.90
 # cost is the deficit term at maximum:
 #
 #     c_fail = COST_DEFICIT_W * ((SOC_TARGET - 0)/SOC_TARGET)^2
-#            = COST_DEFICIT_W
+#            + COST_TAIL_W    * (COST_SOC_SAFE - 0)/COST_SOC_SAFE
+#            = COST_DEFICIT_W + COST_TAIL_W
 #
 # discounted over the steps that remain. Shade and move are left out
-# deliberately -- they depend on where the corpse is, and the deficit
-# term alone already dominates.
+# deliberately -- they depend on where the corpse is, and the two
+# SOC terms already dominate.
 #
-# Sizing check: c_fail * COST_REWARD_SCALE / (1 - GAMMA) = 2.0 against
-# a measured healthy V_cost of ~0.65, so death is ~3x worse than the
-# worst normal state. Finite-horizon rather than 1/(1-gamma) so that
-# dying at step 719 is not charged the same as dying at step 10.
-COST_DEATH_COST = COST_DEFICIT_W * COST_REWARD_SCALE
+# THE TAIL TERM MUST BE IN HERE. This is not bookkeeping tidiness.
+# With COST_TAIL_W = 2.0, a robot alive at SOC 0 pays 4.0 per step
+# (deficit 2.0 + tail 2.0). If c_fail kept counting only the deficit
+# term, a corpse would pay 2.0 per step -- and DYING WOULD BE CHEAPER
+# THAN STAYING ALIVE AT 1% BATTERY. That is exactly the suicide-
+# optimal failure described above, reintroduced through the side
+# door. The current COST_DEATH_MULT of 3.0 happens to mask it (6.0
+# against 4.0), which is worse than failing loudly: anyone setting
+# LTAC_COST_DEATH_MULT=1 for an ablation would silently get a cost
+# MDP that rewards death. Deriving c_fail from both terms makes the
+# guarantee hold at every multiplier.
+#
+# It also means options A and E are NOT independent knobs: adding the
+# tail changes what E's accrual-faithful baseline IS. Written this
+# way, COST_TAIL_W = 0.0 recovers the deficit-only derivation exactly,
+# so the four-cell design (neither / A / E / both) is reachable from
+# this one code path.
+#
+# Finite-horizon rather than 1/(1-gamma) so that dying at step 719 is
+# not charged the same as dying at step 10.
+#
+# COST_DEATH_MULT scales the accrual-faithful figure above.
+#
+# WHY A MULTIPLIER AT ALL, GIVEN THE DERIVATION
+#
+# At mult = 1.0 this is exactly what the agent would accrue: a dead
+# robot sits at SOC 0, so it pays c_fail every remaining step and
+# nothing more. That is honest accounting, and it prices death at
+# 2.00 discounted against a measured healthy V_cost of ~0.65 -- only
+# ~3x the worst normal state. The consequence is categorical
+# (mission over) and the price is not, which is the same mismatch the
+# deficit term has near zero.
+#
+# Above 1.0 this stops being accounting and becomes a punitive
+# charge: the failure state costs MORE than sitting at SOC 0 would.
+# That is a deliberate departure and should be reported as one -- the
+# cost MDP is no longer a faithful cost model of the physical system,
+# it is a shaped one.
+#
+# SIZING
+#
+#     mult   COST_DEATH_COST   discounted CTG   vs healthy V_cost
+#     1.0        0.020              2.00              3.1x
+#     2.0        0.040              3.99              6.1x
+#     3.0        0.060              5.99              9.2x
+#     5.0        0.100              9.98             15.3x
+#    10.0        0.200             19.95             30.7x
+#
+# 3.0 puts death at ~9x the healthy value scale: clearly dominant,
+# without the dynamic-range cost of the larger settings. That cost is
+# real and is the reason this is not set higher. The critic head is
+# spectral-normalized to L <= 1, so widening the range it must span
+# compresses its resolution everywhere else -- including the 0.65
+# region where v_agreement and alpha_hat are actually measured. At
+# mult = 10 the critic would be asked to cover 30x while keeping unit
+# Lipschitz constant, and the certification metrics would pay for it.
+#
+# WHAT THIS DOES NOT CHANGE
+#
+# V_cost >= 0 and V_cost = 0 at the goal both hold -- this only makes
+# one already-positive cost larger. The critic's Lipschitz bound is
+# structural (spectral norm on the head) and is unaffected by the
+# target's scale.
+#
+# WHAT IT CANNOT FIX
+#
+# GAE at gamma=0.99, lambda=0.98 has a credit horizon of ~34 steps.
+# The death observed at step 121 can therefore only sharpen behaviour
+# from about step 87 onward. Raising this makes the last ~34 steps
+# before death strongly aversive -- useful emergency behaviour -- but
+# it will NOT teach the agent to avoid the trajectory that put it
+# there at step 20. If a run at 3.0 shows better late-episode
+# recovery and an unchanged death rate, that is the discount binding,
+# not this constant being too small.
+COST_DEATH_MULT = float(os.environ.get("LTAC_COST_DEATH_MULT", 3.0))
+COST_DEATH_COST = (COST_DEFICIT_W + COST_TAIL_W) * COST_REWARD_SCALE * COST_DEATH_MULT
 
 
 def death_cost_to_go(step, horizon=None):
@@ -760,9 +893,13 @@ _variant_tag = TRANSFORMER_VARIANT if POLICY_TYPE == "transformer" else POLICY_T
 # Suppressed at the default so existing run directories keep their
 # current names and nothing downstream that globs rl_csv_{variant}_s{n}
 # has to change.
-_mw_tag = ("" if not IS_COST or COST_MOVE_W == 2.00
+_mw_tag = ("" if not IS_COST or COST_MOVE_W == 0.50
            else f"_mw{COST_MOVE_W:g}")
-OUT=Path(f"rl_csv_{_variant_tag}_s{RUN_SEED}{_mw_tag}_{timestamp}"); OUT.mkdir(exist_ok=True)
+_dm_tag = ("" if not IS_COST or COST_DEATH_MULT == 3.0
+           else f"_dm{COST_DEATH_MULT:g}")
+_tw_tag = ("" if not IS_COST or COST_TAIL_W == 2.00
+           else f"_tw{COST_TAIL_W:g}")
+OUT=Path(f"rl_csv_{_variant_tag}_s{RUN_SEED}{_mw_tag}{_dm_tag}{_tw_tag}_{timestamp}"); OUT.mkdir(exist_ok=True)
 
 size = 2 * VIEW_DISTANCE + 1
 y, x = np.mgrid[-VIEW_DISTANCE:VIEW_DISTANCE+1,
@@ -872,10 +1009,12 @@ def reward_fn_cost(after, telemetry, soc_after):
     else:
         c_shade = 1.0 - exposure
     c_deficit = (max(SOC_TARGET - soc_after, 0.0) / SOC_TARGET) ** 2
+    c_tail = max(COST_SOC_SAFE - soc_after, 0.0) / COST_SOC_SAFE
     c_move = distance / MAX_MOVE_PER_STEP
 
     total = -(COST_SHADE_W * c_shade
               + COST_DEFICIT_W * c_deficit
+              + COST_TAIL_W * c_tail
               + COST_MOVE_W * c_move)
 
     # COST_REWARD_SCALE applies to the total AND to every component,
@@ -886,9 +1025,16 @@ def reward_fn_cost(after, telemetry, soc_after):
     # Signs match reward_fn's convention so the episode CSV columns
     # stay comparable in magnitude: directional and battery are
     # contributions to the reward, movement is reported positive.
+    # The tail rides in the deficit column rather than getting its own.
+    # Both are functions of SOC alone and the column is already named
+    # for the battery contribution, so folding keeps the CSV schema
+    # stable -- every existing analysis that reads battery_reward
+    # keeps working, and the breakdown still sums to the logged
+    # reward. Separating them is recoverable offline anyway: c_tail is
+    # a closed form in battery_after, which is logged per step.
     return (float(k * total),
             float(k * -COST_SHADE_W * c_shade),
-            float(k * -COST_DEFICIT_W * c_deficit),
+            float(k * -(COST_DEFICIT_W * c_deficit + COST_TAIL_W * c_tail)),
             float(k * COST_MOVE_W * c_move))
 
 
