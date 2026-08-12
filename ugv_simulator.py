@@ -44,7 +44,7 @@ import random
 #
 # THIS INVALIDATES PRIOR RUNS. Every arm must be re-run before its
 # numbers are comparable to anything produced under "honest".
-BATTERY_MODEL = os.environ.get("LTAC_BATTERY_MODEL", "honest").strip().lower()
+BATTERY_MODEL = os.environ.get("LTAC_BATTERY_MODEL", "legacy").strip().lower()
 if BATTERY_MODEL not in ("honest", "legacy"):
     raise ValueError(
         f"LTAC_BATTERY_MODEL must be 'honest' or 'legacy', got {BATTERY_MODEL!r}"
@@ -65,6 +65,58 @@ if abs(sum(ZIP_COEFFS) - 1.0) > 1e-9:
     raise ValueError(f"LTAC_ZIP must sum to 1.0, got {sum(ZIP_COEFFS)}")
 if any(x < 0.0 for x in ZIP_COEFFS):
     raise ValueError(f"LTAC_ZIP coefficients must be non-negative, got {_zip_raw!r}")
+ZIP_EXPLICIT = "LTAC_ZIP" in os.environ
+
+# Discharge-efficiency wall: where the accelerating low-SOC penalty
+# begins, how deep it goes, and how sharply it climbs.
+#
+#   u    = max(0, WALL_SOC - soc)
+#   knee = DEPTH * (exp(u/TAU) - 1) / (exp(WALL_SOC/TAU) - 1)
+#   eta  = eta_0 * (1 - knee)
+#
+# so the drain MULTIPLIER is 1/(1 - knee): exactly 1.000 at and above
+# WALL_SOC, then exponential below it, reaching 1/(1 - DEPTH) at empty.
+#
+# WHY HINGED RATHER THAN A PLAIN EXPONENTIAL
+#
+# A bare exp(-soc/TAU) has no hard start -- pushing its knee up to 20%
+# also puts a 7-11% penalty at 30-35% SOC. That band is where every
+# episode's opening deficit plays out (solar is 3-6 W against a 15.5 W
+# idle draw, and minimum state of charge is set around step 40-54), and
+# taxing it is exactly the mistake that took deaths from ~7 per 50
+# episodes to 45. The hinge normalises the exponential so it is
+# identically zero at and above the wall and carries the entire
+# penalty below it.
+#
+# DEPTH 0.85, TAU 0.05, WALL 0.20 gives:
+#
+#   SOC    30%   25%   20%   15%   10%    7%    5%    2%    0%
+#   mult  1.00  1.00  1.00  1.03  1.11  1.25  1.43  2.30  6.67
+#
+# Raise DEPTH for a harder floor (0.90 -> 10x at empty, 0.95 -> 20x);
+# lower TAU to concentrate the penalty nearer empty; move WALL_SOC to
+# shift where it starts. Applies only under LTAC_BATTERY_MODEL=honest.
+#
+# A NOTE ON WHERE 0.20 SITS
+#
+# The converged deterministic policy bottoms out around 26% state of
+# charge, so a wall at 20% is below it and should not tax normal
+# operation. Training samples the policy rather than taking its mean,
+# and the measurement in transformer.py's LOG_STD_MAX note has the
+# sampled policy reaching 7.5% against 21% deterministic -- so this
+# WILL fire during exploration. That is arguably the point, but it is
+# also the shape of the earlier COST_SOC_SAFE=0.25 failure, so watch
+# the early-episode death rate on the first short run.
+DISCHARGE_WALL_SOC = float(os.environ.get("LTAC_WALL_SOC", "0.20"))
+DISCHARGE_KNEE_DEPTH = float(os.environ.get("LTAC_KNEE_DEPTH", "0.85"))
+DISCHARGE_KNEE_TAU = float(os.environ.get("LTAC_KNEE_TAU", "0.05"))
+if not 0.0 < DISCHARGE_WALL_SOC <= 1.0:
+    raise ValueError("LTAC_WALL_SOC must be in (0, 1]")
+if not 0.0 <= DISCHARGE_KNEE_DEPTH < 1.0:
+    raise ValueError("LTAC_KNEE_DEPTH must be in [0, 1)")
+if DISCHARGE_KNEE_TAU <= 0.0:
+    raise ValueError("LTAC_KNEE_TAU must be > 0")
+_WALL_NORM = math.exp(DISCHARGE_WALL_SOC / DISCHARGE_KNEE_TAU) - 1.0
 
 # Consecutive steps below cutoff_voltage before the BMS latches.
 # See UGVSimulator.note_undervoltage. dt is 1 s, so this is seconds.
@@ -118,6 +170,8 @@ class UGVSimulator:
         self._bms_tripped = False
         self._bms_reason = None
         self._undervoltage_steps = 0
+        self._tick_current_A = 0.0
+        self._tick_collapsed = False
 
         # Coulombic efficiencies
         self.charge_efficiency = 0.97
@@ -244,6 +298,8 @@ class UGVSimulator:
         self._bms_tripped = False
         self._bms_reason = None
         self._undervoltage_steps = 0
+        self._tick_current_A = 0.0
+        self._tick_collapsed = False
         self.update_soc()
         self.x, self.y, self.yaw = self.origin
         self.velocity = 0.0
@@ -356,6 +412,52 @@ class UGVSimulator:
     #   LTAC_ZIP=0.0,0.2,0.8 python main.py
     ZIP_Z, ZIP_I, ZIP_P = ZIP_COEFFS
 
+    # State of charge below which the housekeeping load starts
+    # behaving as constant power. At or above it the load is pure
+    # constant current -- bit-identical to legacy.
+    #
+    # WHY A KNEE AND NOT A GLOBAL BLEND
+    #
+    # The first version anchored a pure constant-power load at SOC
+    # 0.90 on the reasoning that this is where the vehicle spends most
+    # of its time (median 0.926). That was the wrong anchor. Time
+    # spent is not where difficulty is decided: every episode opens in
+    # deficit -- solar is 3-6 W against a 15.5 W idle draw -- and the
+    # minimum state of charge is set around step 40-54, at 26-35% SOC.
+    # Anchoring at 0.90 left the phase that decides nothing unchanged
+    # and made the phase that decides everything 22-24% harder. Deaths
+    # went from roughly 7 per 50 episodes to 45.
+    #
+    # The stated requirement was that the healthy region stay as
+    # difficult as before and only the DANGER region get harder. A
+    # knee delivers that literally: above SOC_CC_KNEE the load is
+    # constant current and the arithmetic is legacy's, so the opening
+    # deficit is untouched.
+    SOC_CC_KNEE = float(os.environ.get("LTAC_SOC_CC_KNEE", "0.25"))
+
+    def idle_zip_weights(self):
+        """
+        ZIP weights for the housekeeping load at the current state of
+        charge.
+
+        Ramps linearly from pure constant-current at SOC_CC_KNEE to
+        pure constant-power at empty. Above the knee this returns
+        (0, 1, 0), which reproduces the legacy fixed current exactly
+        -- not approximately, since the constant-current branch of the
+        ZIP form has no voltage dependence at all.
+
+        If LTAC_ZIP was set explicitly, that fixed blend wins and this
+        ramp is bypassed; the knee is the default behaviour, not a
+        constraint on experimentation.
+        """
+        if ZIP_EXPLICIT:
+            return (self.ZIP_Z, self.ZIP_I, self.ZIP_P)
+        knee = self.SOC_CC_KNEE
+        if knee <= 0.0:
+            return (0.0, 1.0, 0.0)
+        a_p = min(1.0, max(0.0, (knee - self.soc) / knee))
+        return (0.0, 1.0 - a_p, a_p)
+
     def solve_load_current(self, current_A_ref, zip_coeffs=None):
         """
         Current drawn by a ZIP load, solved exactly against the pack's
@@ -400,8 +502,8 @@ class UGVSimulator:
         if current_A_ref <= 0.0:
             return 0.0, self.compute_open_circuit_voltage(), "ok"
 
-        aZ, aI, aP = zip_coeffs if zip_coeffs is not None else (
-            self.ZIP_Z, self.ZIP_I, self.ZIP_P)
+        aZ, aI, aP = (zip_coeffs if zip_coeffs is not None
+                      else self.idle_zip_weights())
 
         ocv = self.compute_open_circuit_voltage()
         resistance = self.compute_internal_resistance()
@@ -470,7 +572,7 @@ class UGVSimulator:
     # arbitrary number. It is also where the vehicle actually lives:
     # across all eight collected runs the time-weighted median state
     # of charge is 0.926 and 76% of steps sit above 0.60.
-    IDLE_CALIBRATION_SOC = 0.90
+    IDLE_CALIBRATION_SOC = float(os.environ.get("LTAC_IDLE_CALIB_SOC", "0.25"))
 
     def reference_terminal_voltage(self, current_A_ref):
         """
@@ -511,7 +613,39 @@ class UGVSimulator:
         r_ref = self.internal_resistance * (1.0 + 1.8 * (1.0 - s_ref) ** 2)
         return ocv_ref - current_A_ref * r_ref
 
-    def note_undervoltage(self, terminal_V, status, source):
+    def effective_discharge_efficiency(self):
+        """
+        Coulombic efficiency, degraded near empty.
+
+            u    = max(0, WALL_SOC - soc)
+            knee = DEPTH * (exp(u/TAU) - 1) / (exp(WALL_SOC/TAU) - 1)
+            eta  = eta_0 * (1 - knee)
+
+        Charge removed from the pack is energy_used / eta, so the
+        drain multiplier is 1/(1 - knee): identically 1.000 at and
+        above WALL_SOC, then exponential below it. See
+        DISCHARGE_WALL_SOC for why the accelerating penalty belongs
+        here and not in the load model, and why it is hinged rather
+        than a bare exponential.
+
+        Evaluated at the state of charge at the START of the step,
+        since update_battery_state runs once after the tick loop. That
+        makes the penalty lag by one step -- 60 s -- which is
+        conservative: the pack is always charged slightly less than
+        the instantaneous state would justify, never more.
+        """
+        if not HONEST_BATTERY:
+            return self.discharge_efficiency
+
+        below = DISCHARGE_WALL_SOC - self.soc
+        if below <= 0.0:
+            return self.discharge_efficiency
+
+        knee = DISCHARGE_KNEE_DEPTH * (
+            math.exp(below / DISCHARGE_KNEE_TAU) - 1.0) / _WALL_NORM
+        return self.discharge_efficiency * max(1.0 - knee, 1e-3)
+
+    def evaluate_pack_state(self):
         """
         Decide whether this step's operating point constitutes a fault.
 
@@ -545,11 +679,16 @@ class UGVSimulator:
 
         Set LTAC_UV_TRIP_STEPS=1 to trip on the first step.
         """
-        if status == "collapsed" or terminal_V < self.cutoff_voltage:
+        current = min(self._tick_current_A, self.max_discharge_current)
+        terminal = self.compute_terminal_voltage_raw(current)
+        self._tick_collapsed = False
+
+        if terminal < self.cutoff_voltage:
             self._undervoltage_steps += 1
             if self._undervoltage_steps >= UNDERVOLTAGE_TRIP_STEPS:
-                self.trip_bms(f"{source} load below cutoff for "
-                              f"{self._undervoltage_steps} steps")
+                self.trip_bms(
+                    f"pack at {terminal:.2f} V under {current:.2f} A for "
+                    f"{self._undervoltage_steps} s (soc {self.soc:.3f})")
         else:
             self._undervoltage_steps = 0
 
@@ -648,7 +787,7 @@ class UGVSimulator:
 
     def update_battery_state(self):
         charge = self.energy_gained_mAh * self.compute_charge_acceptance() * self.charge_efficiency
-        discharge = self.energy_used_mAh / self.discharge_efficiency
+        discharge = self.energy_used_mAh / self.effective_discharge_efficiency()
 
         self.battery_mAh += charge
         self.battery_mAh -= discharge
@@ -783,7 +922,9 @@ class UGVSimulator:
         if HONEST_BATTERY:
             current_A, terminal, status = self.solve_load_current(
                 current_mA / 1000.0)
-            self.note_undervoltage(terminal, status, "idle")
+            self._tick_current_A += current_A
+            if status == "collapsed":
+                self._tick_collapsed = True
             current_mA = current_A * 1000.0
 
         used = current_mA * (self.dt / 3600.0)
@@ -807,7 +948,9 @@ class UGVSimulator:
         if HONEST_BATTERY:
             current_A, terminal_voltage, status = self.solve_constant_power_current(
                 battery_power)
-            self.note_undervoltage(terminal_voltage, status, "motion")
+            self._tick_current_A += current_A
+            if status == "collapsed":
+                self._tick_collapsed = True
             terminal_voltage = max(terminal_voltage, 1e-6)
         else:
             voltage = self.compute_open_circuit_voltage()
@@ -844,8 +987,17 @@ class UGVSimulator:
 
         for second in range(self.ticks_per_step):
             self.update_vehicle_dynamics(target_x, target_y)
+            self._tick_current_A = 0.0
             self.consume_motion_energy()
             self.consume_idle_energy()
+            # ONE check per tick, on the SUM of the loads.
+            #
+            # Previously each consume_* called note_undervoltage with
+            # its own load in isolation, so a motion sag was cleared by
+            # the healthy idle reading that followed it and the counter
+            # could never reach its threshold except from idle alone.
+            # The pack sees the sum, not each load separately.
+            self.evaluate_pack_state()
 
         self.harvest_energy(env, sim_step)
         self.update_battery_state()
