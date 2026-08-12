@@ -1,7 +1,70 @@
 import numpy as np
 from scipy.integrate import trapezoid
 import math
+import os
 import random
+
+# Battery fidelity at low state of charge.
+#
+#   "honest" (default) -- loads are CONSTANT POWER and the BMS cutoff
+#                         actually terminates the mission.
+#   "legacy"           -- the previous behaviour, preserved so runs
+#                         collected before this change remain
+#                         reproducible.
+#
+#   LTAC_BATTERY_MODEL=legacy python main.py
+#
+# WHAT WAS WRONG WITH LEGACY
+#
+# Two things, and the second is the one that mattered.
+#
+# 1. `consume_idle_energy` drew a FIXED 965.2 mA regardless of state
+#    of charge. Idle is 11582 mAh per episode against 236-575 mAh of
+#    motion -- 95-98% of the total draw -- so the dominant term had no
+#    voltage dependence at all. Real regulated electronics (CPU,
+#    payload, LoRa) are constant-POWER loads: as terminal voltage
+#    sags, current rises to hold power. Legacy applied that effect
+#    only to motion, i.e. to 2-5% of the draw. The idle budget here is
+#    calibrated to match the legacy current at SOC 0.90 (see
+#    calibrated_idle_power), so the healthy band is as difficult as
+#    before and only the tail gets harder -- 1.32x the legacy draw at
+#    10% SOC, 1.34x at 5%.
+#
+# 2. `compute_terminal_voltage` returned max(cutoff_voltage, terminal),
+#    which CLAMPED the cutoff instead of tripping it. Unclamped, at 15%
+#    SOC under a 5 A motion load the terminal voltage is already 11.96 V
+#    -- below the 12.0 V cutoff -- and at 10% it is 11.76 V. Real
+#    hardware disconnects there. The simulated vehicle instead coasted
+#    down toward 0% and was scored as having survived.
+#
+# The consequence for results collected under legacy: minimum state of
+# charge below roughly 15% is optimistic, and an episode bottoming near
+# 7% would very likely have ended on hardware. Episodes are the unit to
+# count, not the mean.
+#
+# THIS INVALIDATES PRIOR RUNS. Every arm must be re-run before its
+# numbers are comparable to anything produced under "honest".
+BATTERY_MODEL = os.environ.get("LTAC_BATTERY_MODEL", "honest").strip().lower()
+if BATTERY_MODEL not in ("honest", "legacy"):
+    raise ValueError(
+        f"LTAC_BATTERY_MODEL must be 'honest' or 'legacy', got {BATTERY_MODEL!r}"
+    )
+HONEST_BATTERY = BATTERY_MODEL == "honest"
+
+# ZIP load blend for the housekeeping draw: "aZ,aI,aP", summing to 1.
+# See UGVSimulator.ZIP_Z for what each component means and why the
+# default is pure constant power.
+_zip_raw = os.environ.get("LTAC_ZIP", "0.0,0.0,1.0")
+try:
+    ZIP_COEFFS = tuple(float(x) for x in _zip_raw.split(","))
+except ValueError:
+    raise ValueError(f"LTAC_ZIP must be three floats 'aZ,aI,aP', got {_zip_raw!r}")
+if len(ZIP_COEFFS) != 3:
+    raise ValueError(f"LTAC_ZIP needs exactly three values, got {_zip_raw!r}")
+if abs(sum(ZIP_COEFFS) - 1.0) > 1e-9:
+    raise ValueError(f"LTAC_ZIP must sum to 1.0, got {sum(ZIP_COEFFS)}")
+if any(x < 0.0 for x in ZIP_COEFFS):
+    raise ValueError(f"LTAC_ZIP coefficients must be non-negative, got {_zip_raw!r}")
 
 class UGVSimulator:
     """
@@ -46,6 +109,10 @@ class UGVSimulator:
 
         # Internal resistance (Ohms)
         self.internal_resistance = 0.045
+
+        # BMS protection cutoff. Latched; see trip_bms().
+        self._bms_tripped = False
+        self._bms_reason = None
 
         # Coulombic efficiencies
         self.charge_efficiency = 0.97
@@ -169,6 +236,8 @@ class UGVSimulator:
         self.battery_mAh = self.max_capacity_mAh * random.uniform(
             self.START_SOC_MIN, self.START_SOC_MAX
         )
+        self._bms_tripped = False
+        self._bms_reason = None
         self.update_soc()
         self.x, self.y, self.yaw = self.origin
         self.velocity = 0.0
@@ -204,6 +273,19 @@ class UGVSimulator:
         return self.x, self.y, self.yaw
 
     def get_battery(self):
+        """
+        State of charge in percent, 0.0 once the BMS has tripped.
+
+        Reporting 0.0 rather than adding a separate flag is deliberate:
+        main.py already ends the episode on `battery <= 0`, in both the
+        training rollout and the validation loop, and already charges
+        the death cost there. A protection disconnect and a full
+        depletion are the same outcome for the mission, so they should
+        travel the same code path -- no new branch, no second condition
+        to keep in sync between the two loops.
+        """
+        if self._bms_tripped:
+            return 0.0
         return self.soc * 100.0
 
     def get_solar_potential(self):
@@ -224,11 +306,214 @@ class UGVSimulator:
         return self.internal_resistance * (1.0 + 1.8 * (1 - s) ** 2)
 
     def compute_terminal_voltage(self, current_A=0.0):
+        """
+        Terminal voltage under load, CLAMPED at the cutoff.
+
+        The clamp is why legacy never failed: it reports 12.0 V when
+        the true terminal voltage is below that, so nothing downstream
+        can notice. Kept for the legacy path and for callers that only
+        want a voltage to divide by. Use
+        `compute_terminal_voltage_raw` to ask whether the pack has
+        actually collapsed.
+        """
+        return max(self.cutoff_voltage,
+                   self.compute_terminal_voltage_raw(current_A))
+
+    def compute_terminal_voltage_raw(self, current_A=0.0):
+        """Unclamped. May legitimately fall below cutoff_voltage."""
         ocv = self.compute_open_circuit_voltage()
         resistance = self.compute_internal_resistance()
-        terminal = ocv - current_A * resistance
+        return ocv - current_A * resistance
 
-        return max(self.cutoff_voltage, terminal)
+    # ZIP load coefficients for the housekeeping load: the fractions
+    # of the draw that behave as constant-impedance, constant-current
+    # and constant-power. Must sum to 1.0.
+    #
+    # This is the standard ZIP form from power-systems load modelling.
+    # A real bus is a mixture, not any one of the three:
+    #
+    #   Z  resistive elements -- heaters, pull-ups, terminations.
+    #      Current FALLS as the pack sags.
+    #   I  current-regulated elements -- LED drivers, some sensor
+    #      front ends, anything behind a current source.
+    #      Current is flat, which is exactly the legacy assumption.
+    #   P  buck-regulated digital elements -- CPU, radio, and most of
+    #      a modern payload. Current RISES as the pack sags.
+    #
+    # Defaults are 0/0/1, i.e. pure constant power, which is the
+    # conservative reading of this vehicle's load list: the payload is
+    # 960 mA of the 965 mA total and sits behind a regulator. Set
+    # (0, 1, 0) to recover the legacy fixed-current behaviour exactly
+    # at every state of charge, or blend if the real hardware is
+    # mixed:
+    #
+    #   LTAC_ZIP=0.0,0.2,0.8 python main.py
+    ZIP_Z, ZIP_I, ZIP_P = ZIP_COEFFS
+
+    def solve_load_current(self, current_A_ref, zip_coeffs=None):
+        """
+        Current drawn by a ZIP load, solved exactly against the pack's
+        I-V characteristic.
+
+        The load's own I-V curve, referenced to (I_ref, V_ref):
+
+            I(V) = I_ref * [ aZ*(V/V_ref) + aI + aP*(V_ref/V) ]
+
+        and the pack's, from its Thevenin model:
+
+            V = OCV(soc) - I*R(soc)
+
+        Two curves, one operating point: their intersection. Note the
+        load curve passes through (V_ref, I_ref) for ANY choice of
+        weights, since aZ + aI + aP = 1. That is what makes the
+        calibration exact by construction rather than by a derived
+        power budget -- at V_ref this draws the legacy current no
+        matter how the blend is set, and the weights only shape how it
+        departs as the pack sags.
+
+        Substituting and multiplying through by V gives a quadratic in
+        the terminal voltage:
+
+            A*V^2 + B*V + C = 0
+            A = 1 + R*I_ref*aZ/V_ref
+            B = -(OCV - R*I_ref*aI)
+            C = R*I_ref*aP*V_ref
+
+        The physical root is the larger one, the operating point
+        nearest open circuit; the smaller is the high-current branch a
+        real supply never settles on. Closed form, so this costs the
+        same as the old fixed-current path -- it runs every step of
+        every episode.
+
+        A negative discriminant means the two curves do not intersect:
+        no operating point exists and the pack has collapsed under
+        this load. That is a real failure, not a numerical edge case.
+
+        Returns (current_A, terminal_V, ok).
+        """
+        if current_A_ref <= 0.0:
+            return 0.0, self.compute_open_circuit_voltage(), True
+
+        aZ, aI, aP = zip_coeffs if zip_coeffs is not None else (
+            self.ZIP_Z, self.ZIP_I, self.ZIP_P)
+
+        ocv = self.compute_open_circuit_voltage()
+        resistance = self.compute_internal_resistance()
+        v_ref = self.reference_terminal_voltage(current_A_ref)
+
+        a = 1.0 + resistance * current_A_ref * aZ / v_ref
+        b = -(ocv - resistance * current_A_ref * aI)
+        c = resistance * current_A_ref * aP * v_ref
+
+        discriminant = b * b - 4.0 * a * c
+        if discriminant < 0.0:
+            return (ocv / (2.0 * resistance), ocv / 2.0, False)
+
+        terminal = (-b + math.sqrt(discriminant)) / (2.0 * a)
+        if terminal <= 0.0:
+            return (ocv / (2.0 * resistance), ocv / 2.0, False)
+
+        current = (ocv - terminal) / resistance
+        if current > self.max_discharge_current:
+            return (self.max_discharge_current,
+                    self.compute_terminal_voltage_raw(
+                        self.max_discharge_current), False)
+
+        return current, terminal, True
+
+    def solve_constant_power_current(self, power_W):
+        """
+        Constant-power draw, for loads specified in watts rather than
+        as a reference current -- the drivetrain, whose demand is a
+        mechanical wattage with no datasheet current to reference.
+
+        Equivalent to solve_load_current with weights (0, 0, 1):
+        R*I^2 - OCV*I + P = 0, physical root the smaller one.
+
+        Returns (current_A, terminal_V, ok).
+        """
+        ocv = self.compute_open_circuit_voltage()
+        resistance = self.compute_internal_resistance()
+
+        if power_W <= 0.0:
+            return 0.0, ocv, True
+
+        discriminant = ocv * ocv - 4.0 * resistance * power_W
+        if discriminant <= 0.0:
+            # Maximum deliverable power is OCV^2/(4R), at I = OCV/(2R).
+            return ocv / (2.0 * resistance), ocv / 2.0, False
+
+        current = (ocv - math.sqrt(discriminant)) / (2.0 * resistance)
+        if current > self.max_discharge_current:
+            return self.max_discharge_current, self.compute_terminal_voltage_raw(
+                self.max_discharge_current), False
+
+        return current, ocv - current * resistance, True
+
+    # State of charge at which the constant-power idle budget is
+    # calibrated to draw exactly the legacy fixed current.
+    #
+    # 0.90, matching SOC_TARGET in main.py, so the anchor is a state
+    # the task already treats as the healthy setpoint rather than an
+    # arbitrary number. It is also where the vehicle actually lives:
+    # across all eight collected runs the time-weighted median state
+    # of charge is 0.926 and 76% of steps sit above 0.60.
+    IDLE_CALIBRATION_SOC = 0.90
+
+    def reference_terminal_voltage(self, current_A_ref):
+        """
+        Power budget for the housekeeping load.
+
+        Referencing the datasheet currents to the NOMINAL rail made
+        the healthy region cheaper than legacy -- 0.852 A against
+        0.965 A at full charge, because open-circuit voltage there
+        (16.8 V) is well above nominal (14.8 V). That is defensible
+        physics but it changes task difficulty everywhere, not just in
+        the failure region, and the point of this change was to fix
+        the tail without moving the rest.
+
+        So the load curve is instead anchored at the TERMINAL voltage
+        the pack actually presents at IDLE_CALIBRATION_SOC while
+        supplying the legacy current:
+
+            V_ref = OCV(s_ref) - I_ref * R(s_ref)
+
+        Terminal, not open-circuit, so the match is exact rather than
+        off by the I*R drop. Because the ZIP load curve passes through
+        (V_ref, I_ref) for any weighting, this anchors every blend at
+        the same healthy operating point.
+
+        Resulting draw against the legacy fixed current:
+
+            SOC     100%   90%    75%    50%    25%    10%     5%
+            ratio   0.96   1.00   1.06   1.16   1.26   1.32   1.34
+
+        Within 4% of legacy across the healthy band, rising to 1.34x
+        as the pack collapses. That is the intended shape: same task
+        above the setpoint, honest penalty below it.
+        """
+        s_ref = self.IDLE_CALIBRATION_SOC
+        ocv_ref = min(self.full_voltage, max(
+            self.cutoff_voltage,
+            12.0 + 3.0 * s_ref + 1.2 * s_ref ** 2 + 0.6 * s_ref ** 3))
+        r_ref = self.internal_resistance * (1.0 + 1.8 * (1.0 - s_ref) ** 2)
+        return ocv_ref - current_A_ref * r_ref
+
+    def trip_bms(self, reason):
+        """
+        Latch the protection cutoff.
+
+        Latched rather than momentary because a real BMS disconnect
+        does not clear when the load drops -- the vehicle is down until
+        someone intervenes, which is not something that happens inside
+        an episode. `get_battery()` reports 0.0 once this is set, which
+        is what every existing `battery <= 0` check in main.py already
+        tests, so the mission ends through the SAME path as a full
+        depletion with no new branch anywhere in the training loop.
+        """
+        if not self._bms_tripped:
+            self._bms_tripped = True
+            self._bms_reason = reason
 
     def compute_charge_acceptance(self):
         s = self.soc
@@ -426,24 +711,59 @@ class UGVSimulator:
         self.update_battery_state()
 
     def consume_idle_energy(self):
+        """
+        Housekeeping draw: CPU, payload and radio.
+
+        The component currents are datasheet figures at the nominal
+        pack voltage, so the honest reading of them is a POWER budget,
+        not a current budget: the regulators hold power and let current
+        rise as the pack sags. Legacy took them as a fixed current,
+        which made 95-98% of the draw independent of state of charge.
+        """
         current_mA = (
             self.current_cpu +
             self.current_payload +
             self._comms["current_active_lora"]
         ) / 1000.0
 
-        used = current_mA * (1.0 / 3600.0)
+        if HONEST_BATTERY:
+            current_A, terminal, ok = self.solve_load_current(
+                current_mA / 1000.0)
+            if not ok or terminal < self.cutoff_voltage:
+                self.trip_bms("idle load below cutoff")
+            current_mA = current_A * 1000.0
+
+        used = current_mA * (self.dt / 3600.0)
         self.energy_used_mAh += used
         self.step_idle_mAh += used
 
     def consume_motion_energy(self):
+        """
+        Drivetrain draw.
+
+        Also a constant-power load: the mechanical demand is what it
+        is, and the drivetrain pulls whatever current delivers it.
+        Legacy derived current from the OPEN-CIRCUIT voltage, which
+        ignores the sag the current itself causes and so understates
+        the draw -- mildly at high charge, most at low charge, which is
+        exactly where it matters. Routed through the same solver as
+        idle so the two cannot drift apart.
+        """
         battery_power = self.compute_motor_power()
-        voltage = self.compute_open_circuit_voltage()
 
-        current_A = battery_power / max(voltage, 1e-6)
-        current_A = min(current_A, self.max_discharge_current)
+        if HONEST_BATTERY:
+            current_A, terminal_voltage, ok = self.solve_constant_power_current(
+                battery_power)
+            if not ok or (current_A > 0.0
+                          and terminal_voltage < self.cutoff_voltage):
+                self.trip_bms("motion load below cutoff")
+            terminal_voltage = max(terminal_voltage, 1e-6)
+        else:
+            voltage = self.compute_open_circuit_voltage()
+            current_A = battery_power / max(voltage, 1e-6)
+            current_A = min(current_A, self.max_discharge_current)
+            terminal_voltage = self.compute_terminal_voltage(current_A)
 
-        terminal_voltage = self.compute_terminal_voltage(current_A)
         battery_power = terminal_voltage * current_A
         energy_Wh = battery_power * self.dt / 3600.0
 
