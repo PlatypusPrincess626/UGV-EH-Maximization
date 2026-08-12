@@ -88,26 +88,33 @@ ZIP_EXPLICIT = "LTAC_ZIP" in os.environ
 # identically zero at and above the wall and carries the entire
 # penalty below it.
 #
-# DEPTH 0.85, TAU 0.05, WALL 0.20 gives:
+# DEPTH 0.85, TAU 0.05, WALL 0.15 gives:
 #
-#   SOC    30%   25%   20%   15%   10%    7%    5%    2%    0%
-#   mult  1.00  1.00  1.00  1.03  1.11  1.25  1.43  2.30  6.67
+#   SOC    30%   20%   15%   10%    7%    5%    3%    2%    0%
+#   mult  1.00  1.00  1.00  1.06  1.16  1.30  1.60  1.87  6.67
 #
 # Raise DEPTH for a harder floor (0.90 -> 10x at empty, 0.95 -> 20x);
 # lower TAU to concentrate the penalty nearer empty; move WALL_SOC to
 # shift where it starts. Applies only under LTAC_BATTERY_MODEL=honest.
 #
-# A NOTE ON WHERE 0.20 SITS
+# A NOTE ON WHERE 0.15 SITS
 #
 # The converged deterministic policy bottoms out around 26% state of
-# charge, so a wall at 20% is below it and should not tax normal
-# operation. Training samples the policy rather than taking its mean,
-# and the measurement in transformer.py's LOG_STD_MAX note has the
-# sampled policy reaching 7.5% against 21% deterministic -- so this
-# WILL fire during exploration. That is arguably the point, but it is
-# also the shape of the earlier COST_SOC_SAFE=0.25 failure, so watch
-# the early-episode death rate on the first short run.
-DISCHARGE_WALL_SOC = float(os.environ.get("LTAC_WALL_SOC", "0.20"))
+# charge, so a wall at 15% is well clear of normal operation and
+# should not tax the trained policy at all. Training samples the
+# policy rather than taking its mean, and the measurement in
+# transformer.py's LOG_STD_MAX note has the sampled policy reaching
+# 7.5% against 21% deterministic -- so this WILL fire during
+# exploration, which is the intent: it makes reckless exploration
+# expensive without touching the operating band.
+#
+# Across the eight legacy runs, the fraction of deterministic
+# evaluation steps below 15% was 0-1.6% depending on arm and seed, so
+# the wall is aimed at a genuinely rare region rather than at the
+# floor the policy normally rides. Watch the early-episode death rate
+# on the first short run anyway -- the earlier COST_SOC_SAFE=0.25
+# attempt had this same shape and stalled training.
+DISCHARGE_WALL_SOC = float(os.environ.get("LTAC_WALL_SOC", "0.15"))
 DISCHARGE_KNEE_DEPTH = float(os.environ.get("LTAC_KNEE_DEPTH", "0.85"))
 DISCHARGE_KNEE_TAU = float(os.environ.get("LTAC_KNEE_TAU", "0.05"))
 if not 0.0 < DISCHARGE_WALL_SOC <= 1.0:
