@@ -44,7 +44,7 @@ import random
 #
 # THIS INVALIDATES PRIOR RUNS. Every arm must be re-run before its
 # numbers are comparable to anything produced under "honest".
-BATTERY_MODEL = os.environ.get("LTAC_BATTERY_MODEL", "legacy").strip().lower()
+BATTERY_MODEL = os.environ.get("LTAC_BATTERY_MODEL", "honest").strip().lower()
 if BATTERY_MODEL not in ("honest", "legacy"):
     raise ValueError(
         f"LTAC_BATTERY_MODEL must be 'honest' or 'legacy', got {BATTERY_MODEL!r}"
