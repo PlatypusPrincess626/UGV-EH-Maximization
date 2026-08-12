@@ -120,7 +120,11 @@ _WALL_NORM = math.exp(DISCHARGE_WALL_SOC / DISCHARGE_KNEE_TAU) - 1.0
 
 # Consecutive steps below cutoff_voltage before the BMS latches.
 # See UGVSimulator.note_undervoltage. dt is 1 s, so this is seconds.
-UNDERVOLTAGE_TRIP_STEPS = max(1, int(os.environ.get("LTAC_UV_TRIP_STEPS", "3")))
+# 0 disables the protection cutoff entirely, which is what isolates
+# the discharge wall from the BMS when attributing a change in the
+# death rate to one or the other.
+UNDERVOLTAGE_TRIP_STEPS = max(0, int(os.environ.get("LTAC_UV_TRIP_STEPS", "3")))
+BMS_ENABLED = UNDERVOLTAGE_TRIP_STEPS > 0
 
 class UGVSimulator:
     """
@@ -679,6 +683,9 @@ class UGVSimulator:
 
         Set LTAC_UV_TRIP_STEPS=1 to trip on the first step.
         """
+        if not BMS_ENABLED:
+            return
+
         current = min(self._tick_current_A, self.max_discharge_current)
         terminal = self.compute_terminal_voltage_raw(current)
         self._tick_collapsed = False
