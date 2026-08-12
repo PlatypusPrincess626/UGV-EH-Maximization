@@ -8,6 +8,7 @@ import torch.optim as optim
 from pvlib import solarposition
 from environment import sim_env, MIN_USABLE_ELEVATION
 from lyupnov_transformer import LyapunovTransformerActorCritic
+from cost_transformer import SPECTRAL_C as SPECTRAL_C_TAG
 from diagnostics import pre_update_diagnostics, DIAGNOSTIC_FIELDS
 import datetime
 import time
@@ -942,7 +943,10 @@ _dm_tag = ("" if not IS_COST or COST_DEATH_MULT == 1.0
            else f"_dm{COST_DEATH_MULT:g}")
 _tw_tag = ("" if not IS_COST or COST_TAIL_W == 0.50
            else f"_tw{COST_TAIL_W:g}")
-OUT=Path(f"rl_csv_{_variant_tag}_s{RUN_SEED}{_mw_tag}{_dm_tag}{_tw_tag}_{timestamp}"); OUT.mkdir(exist_ok=True)
+
+_sc_tag = ("" if not IS_COST or SPECTRAL_C_TAG == 1.40
+           else f"_c{SPECTRAL_C_TAG:g}")
+OUT=Path(f"rl_csv_{_variant_tag}_s{RUN_SEED}{_mw_tag}{_dm_tag}{_tw_tag}{_sc_tag}_{timestamp}"); OUT.mkdir(exist_ok=True)
 
 size = 2 * VIEW_DISTANCE + 1
 y, x = np.mgrid[-VIEW_DISTANCE:VIEW_DISTANCE+1,
@@ -1796,6 +1800,24 @@ def update(model,opt,rollouts,device, ep, metrics_writer=None, return_var_tracke
             np.random.shuffle(indices)
 
             for start_idx in range(0, n, MINIBATCH_SIZE):
+                # Drop a trailing minibatch of one sample.
+                #
+                # V_now.std() over a single element is NaN (torch warns
+                # "degrees of freedom is <= 0"), which propagates into
+                # lyapunov_collapse_penalty, the total loss, and then
+                # the weights. The next update's first minibatch then
+                # reports an exploded KL, trips the emergency stop
+                # before anything accumulates, and the summary print
+                # raises KeyError on an empty accum -- which is how
+                # this surfaced, several steps downstream of the cause.
+                #
+                # Ragged batch sizes are the norm here rather than the
+                # exception: episodes terminate early on death, so n is
+                # rarely a multiple of MINIBATCH_SIZE, and n % 256 == 1
+                # happens often enough to matter. One sample carries no
+                # useful gradient anyway.
+                if n - start_idx < 2:
+                    break
                 mb = torch.as_tensor(
                     indices[start_idx:start_idx + MINIBATCH_SIZE],
                     dtype=torch.long, device=device,
@@ -2017,18 +2039,25 @@ def update(model,opt,rollouts,device, ep, metrics_writer=None, return_var_tracke
         if last_alpha_feasible is not None:
             avg["cert_alpha_next"] = adapt_alpha(*last_alpha_feasible)
 
+        # .get with defaults: if the emergency KL stop fires on the
+        # very first minibatch, no keys were accumulated and every
+        # lookup below would raise. A run should not die in its own
+        # logging.
+        def _a(key, default=float("nan")):
+            return avg.get(key, default)
+
         print(
-            f"Policy {avg['policy_loss']:.4f} | "
-            f"Value {avg['value_loss']:.4f} | "
-            f"Lyap {avg['lyap_penalty']:.4f} | "
-            f"Dynamics {avg['dynamics_loss']:.4f} | "
-            f"Barrier {avg['barrier_loss']:.4f} | "
-            f"KL {avg['approx_kl']:.5f} | "
-            f"CF {avg['clip_fraction']:.4f} | "
-            f"Std {avg['mean_std']:.4f} | "
-            f"RawLogStd {avg['mean_raw_log_std']:.4f} | "
-            f"|a| {avg['mean_abs_action']:.4f} | "
-            f"Alpha {avg['alpha']:.4f} | "
+            f"Policy {_a('policy_loss'):.4f} | "
+            f"Value {_a('value_loss'):.4f} | "
+            f"Lyap {_a('lyap_penalty'):.4f} | "
+            f"Dynamics {_a('dynamics_loss'):.4f} | "
+            f"Barrier {_a('barrier_loss'):.4f} | "
+            f"KL {_a('approx_kl'):.5f} | "
+            f"CF {_a('clip_fraction'):.4f} | "
+            f"Std {_a('mean_std'):.4f} | "
+            f"RawLogStd {_a('mean_raw_log_std'):.4f} | "
+            f"|a| {_a('mean_abs_action'):.4f} | "
+            f"Alpha {_a('alpha'):.4f} | "
             f"MB {n_minibatches}/{PPO_EPOCHS * math.ceil(n / MINIBATCH_SIZE)}"
         )
 
@@ -2102,6 +2131,24 @@ def update(model,opt,rollouts,device, ep, metrics_writer=None, return_var_tracke
             np.random.shuffle(indices)
 
             for start_idx in range(0, n, MINIBATCH_SIZE):
+                # Drop a trailing minibatch of one sample.
+                #
+                # V_now.std() over a single element is NaN (torch warns
+                # "degrees of freedom is <= 0"), which propagates into
+                # lyapunov_collapse_penalty, the total loss, and then
+                # the weights. The next update's first minibatch then
+                # reports an exploded KL, trips the emergency stop
+                # before anything accumulates, and the summary print
+                # raises KeyError on an empty accum -- which is how
+                # this surfaced, several steps downstream of the cause.
+                #
+                # Ragged batch sizes are the norm here rather than the
+                # exception: episodes terminate early on death, so n is
+                # rarely a multiple of MINIBATCH_SIZE, and n % 256 == 1
+                # happens often enough to matter. One sample carries no
+                # useful gradient anyway.
+                if n - start_idx < 2:
+                    break
                 mb = torch.as_tensor(
                     indices[start_idx:start_idx + MINIBATCH_SIZE],
                     dtype=torch.long, device=device,

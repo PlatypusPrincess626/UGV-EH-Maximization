@@ -114,7 +114,7 @@ ZIP_EXPLICIT = "LTAC_ZIP" in os.environ
 # floor the policy normally rides. Watch the early-episode death rate
 # on the first short run anyway -- the earlier COST_SOC_SAFE=0.25
 # attempt had this same shape and stalled training.
-DISCHARGE_WALL_SOC = float(os.environ.get("LTAC_WALL_SOC", "0.15"))
+DISCHARGE_WALL_SOC = float(os.environ.get("LTAC_WALL_SOC", "0.20"))
 DISCHARGE_KNEE_DEPTH = float(os.environ.get("LTAC_KNEE_DEPTH", "0.85"))
 DISCHARGE_KNEE_TAU = float(os.environ.get("LTAC_KNEE_TAU", "0.05"))
 if not 0.0 < DISCHARGE_WALL_SOC <= 1.0:
