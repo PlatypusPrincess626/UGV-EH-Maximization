@@ -66,6 +66,10 @@ if abs(sum(ZIP_COEFFS) - 1.0) > 1e-9:
 if any(x < 0.0 for x in ZIP_COEFFS):
     raise ValueError(f"LTAC_ZIP coefficients must be non-negative, got {_zip_raw!r}")
 
+# Consecutive steps below cutoff_voltage before the BMS latches.
+# See UGVSimulator.note_undervoltage. dt is 1 s, so this is seconds.
+UNDERVOLTAGE_TRIP_STEPS = max(1, int(os.environ.get("LTAC_UV_TRIP_STEPS", "3")))
+
 class UGVSimulator:
     """
     Simulator for an Unmanned Ground Vehicle with movement control and telemetry capabilities.
@@ -113,6 +117,7 @@ class UGVSimulator:
         # BMS protection cutoff. Latched; see trip_bms().
         self._bms_tripped = False
         self._bms_reason = None
+        self._undervoltage_steps = 0
 
         # Coulombic efficiencies
         self.charge_efficiency = 0.97
@@ -238,6 +243,7 @@ class UGVSimulator:
         )
         self._bms_tripped = False
         self._bms_reason = None
+        self._undervoltage_steps = 0
         self.update_soc()
         self.x, self.y, self.yaw = self.origin
         self.velocity = 0.0
@@ -392,7 +398,7 @@ class UGVSimulator:
         Returns (current_A, terminal_V, ok).
         """
         if current_A_ref <= 0.0:
-            return 0.0, self.compute_open_circuit_voltage(), True
+            return 0.0, self.compute_open_circuit_voltage(), "ok"
 
         aZ, aI, aP = zip_coeffs if zip_coeffs is not None else (
             self.ZIP_Z, self.ZIP_I, self.ZIP_P)
@@ -407,19 +413,24 @@ class UGVSimulator:
 
         discriminant = b * b - 4.0 * a * c
         if discriminant < 0.0:
-            return (ocv / (2.0 * resistance), ocv / 2.0, False)
+            return (ocv / (2.0 * resistance), ocv / 2.0, "collapsed")
 
         terminal = (-b + math.sqrt(discriminant)) / (2.0 * a)
         if terminal <= 0.0:
-            return (ocv / (2.0 * resistance), ocv / 2.0, False)
+            return (ocv / (2.0 * resistance), ocv / 2.0, "collapsed")
 
         current = (ocv - terminal) / resistance
         if current > self.max_discharge_current:
+            # SATURATION, not failure. The pack cannot source what was
+            # asked for, so it delivers what it can -- exactly what
+            # legacy's min(current, max_discharge_current) did. Whether
+            # that constitutes a fault is decided by the resulting
+            # terminal voltage, not by the clamp itself.
             return (self.max_discharge_current,
                     self.compute_terminal_voltage_raw(
-                        self.max_discharge_current), False)
+                        self.max_discharge_current), "limited")
 
-        return current, terminal, True
+        return current, terminal, "ok"
 
     def solve_constant_power_current(self, power_W):
         """
@@ -436,19 +447,20 @@ class UGVSimulator:
         resistance = self.compute_internal_resistance()
 
         if power_W <= 0.0:
-            return 0.0, ocv, True
+            return 0.0, ocv, "ok"
 
         discriminant = ocv * ocv - 4.0 * resistance * power_W
         if discriminant <= 0.0:
             # Maximum deliverable power is OCV^2/(4R), at I = OCV/(2R).
-            return ocv / (2.0 * resistance), ocv / 2.0, False
+            return ocv / (2.0 * resistance), ocv / 2.0, "collapsed"
 
         current = (ocv - math.sqrt(discriminant)) / (2.0 * resistance)
         if current > self.max_discharge_current:
-            return self.max_discharge_current, self.compute_terminal_voltage_raw(
-                self.max_discharge_current), False
+            return (self.max_discharge_current,
+                    self.compute_terminal_voltage_raw(
+                        self.max_discharge_current), "limited")
 
-        return current, ocv - current * resistance, True
+        return current, ocv - current * resistance, "ok"
 
     # State of charge at which the constant-power idle budget is
     # calibrated to draw exactly the legacy fixed current.
@@ -498,6 +510,48 @@ class UGVSimulator:
             12.0 + 3.0 * s_ref + 1.2 * s_ref ** 2 + 0.6 * s_ref ** 3))
         r_ref = self.internal_resistance * (1.0 + 1.8 * (1.0 - s_ref) ** 2)
         return ocv_ref - current_A_ref * r_ref
+
+    def note_undervoltage(self, terminal_V, status, source):
+        """
+        Decide whether this step's operating point constitutes a fault.
+
+        THE BUG THIS REPLACES
+
+        The first version tripped the BMS whenever the solver returned
+        not-ok, and the solver returned not-ok for TWO different
+        things: no operating point exists, and the demand exceeded
+        max_discharge_current. The second is saturation, which legacy
+        handled with a plain min() and which happens routinely --
+        early exploration commands large accelerations, the drivetrain
+        asks for more than 10 A, and the mission was being killed for
+        it. That is why almost every episode was dying within the
+        first 50 steps regardless of state of charge.
+
+        A current clamp is not a fault. Only the resulting VOLTAGE
+        decides: if the pack still holds above cutoff while delivering
+        its maximum, the vehicle is merely underpowered, which is a
+        control problem and not a protection event.
+
+        PERSISTENCE
+
+        Real undervoltage protection has a delay -- typically a few
+        hundred milliseconds to a few seconds -- precisely so a
+        transient does not disconnect the pack. At dt = 1 s a single
+        step below cutoff is within that window, so tripping on it
+        would be modelling the protection as faster than any real BMS.
+        UNDERVOLTAGE_TRIP_STEPS consecutive steps are required; the
+        counter resets on any step that recovers, since the latch is
+        meant for a pack that stays down, not one that dips.
+
+        Set LTAC_UV_TRIP_STEPS=1 to trip on the first step.
+        """
+        if status == "collapsed" or terminal_V < self.cutoff_voltage:
+            self._undervoltage_steps += 1
+            if self._undervoltage_steps >= UNDERVOLTAGE_TRIP_STEPS:
+                self.trip_bms(f"{source} load below cutoff for "
+                              f"{self._undervoltage_steps} steps")
+        else:
+            self._undervoltage_steps = 0
 
     def trip_bms(self, reason):
         """
@@ -727,10 +781,9 @@ class UGVSimulator:
         ) / 1000.0
 
         if HONEST_BATTERY:
-            current_A, terminal, ok = self.solve_load_current(
+            current_A, terminal, status = self.solve_load_current(
                 current_mA / 1000.0)
-            if not ok or terminal < self.cutoff_voltage:
-                self.trip_bms("idle load below cutoff")
+            self.note_undervoltage(terminal, status, "idle")
             current_mA = current_A * 1000.0
 
         used = current_mA * (self.dt / 3600.0)
@@ -752,11 +805,9 @@ class UGVSimulator:
         battery_power = self.compute_motor_power()
 
         if HONEST_BATTERY:
-            current_A, terminal_voltage, ok = self.solve_constant_power_current(
+            current_A, terminal_voltage, status = self.solve_constant_power_current(
                 battery_power)
-            if not ok or (current_A > 0.0
-                          and terminal_voltage < self.cutoff_voltage):
-                self.trip_bms("motion load below cutoff")
+            self.note_undervoltage(terminal_voltage, status, "motion")
             terminal_voltage = max(terminal_voltage, 1e-6)
         else:
             voltage = self.compute_open_circuit_voltage()
