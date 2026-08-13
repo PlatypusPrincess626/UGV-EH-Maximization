@@ -130,7 +130,7 @@ except ImportError:                         # older torch
 # is still near 0.027, the constraint is binding and c should go up. If
 # it overshoots well past 0.049, c is larger than needed and is costing
 # certified radius for nothing.
-SPECTRAL_C = float(os.environ.get("LTAC_SPECTRAL_C", "1.40"))
+SPECTRAL_C = float(os.environ.get("LTAC_SPECTRAL_C", "1.772"))
 if SPECTRAL_C < 1.0:
     raise ValueError("LTAC_SPECTRAL_C must be >= 1.0")
 

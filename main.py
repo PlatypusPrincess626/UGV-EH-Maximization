@@ -8,7 +8,6 @@ import torch.optim as optim
 from pvlib import solarposition
 from environment import sim_env, MIN_USABLE_ELEVATION
 from lyupnov_transformer import LyapunovTransformerActorCritic
-from cost_transformer import SPECTRAL_C as SPECTRAL_C_TAG
 from diagnostics import pre_update_diagnostics, DIAGNOSTIC_FIELDS
 import datetime
 import time
@@ -46,7 +45,7 @@ else:
 #                                                          both)
 #
 # See ablation_transformer.py for what each one gives up.
-COST_VARIANTS = ("cost", "cost_linear", "cost_plain")
+COST_VARIANTS = ("cost", "cost_linear", "cost_plain", "cost_lipschitz")
 IS_COST = TRANSFORMER_VARIANT in COST_VARIANTS
 
 
@@ -944,9 +943,7 @@ _dm_tag = ("" if not IS_COST or COST_DEATH_MULT == 1.0
 _tw_tag = ("" if not IS_COST or COST_TAIL_W == 0.50
            else f"_tw{COST_TAIL_W:g}")
 
-_sc_tag = ("" if not IS_COST or SPECTRAL_C_TAG == 1.40
-           else f"_c{SPECTRAL_C_TAG:g}")
-OUT=Path(f"rl_csv_{_variant_tag}_s{RUN_SEED}{_mw_tag}{_dm_tag}{_tw_tag}{_sc_tag}_{timestamp}"); OUT.mkdir(exist_ok=True)
+OUT=Path(f"rl_csv_{_variant_tag}_s{RUN_SEED}{_mw_tag}{_dm_tag}{_tw_tag}_{timestamp}"); OUT.mkdir(exist_ok=True)
 
 size = 2 * VIEW_DISTANCE + 1
 y, x = np.mgrid[-VIEW_DISTANCE:VIEW_DISTANCE+1,
@@ -2309,6 +2306,13 @@ def update(model,opt,rollouts,device, ep, metrics_writer=None, return_var_tracke
         if TRANSFORMER_VARIANT in COST_VARIANTS and last_v_cost is not None:
             avg["softplus_beta"] = model.adapt_beta(last_v_cost)
 
+        # Enforce the LayerNorm gain bound used by the cost_lipschitz
+        # certificate. Assumed constants are not constants -- if the
+        # bound says ||gamma||_inf <= G, something has to make it so.
+        # No-op in every other arm.
+        if hasattr(model, "clamp_layernorm"):
+            model.clamp_layernorm()
+
         # Slide alpha once per update, from the last minibatch's
         # feasible-alpha distribution. Applied AFTER the loop, so this
         # update's reported violation rates were all computed at one
@@ -2487,6 +2491,30 @@ def run():
                       f"beta0 = {COST_BETA_INIT}, "
                       f"gain target = {COST_BETA_GAIN_TARGET}"
                       + (" (fixed beta)" if COST_BETA_GAIN_TARGET is None else ""))
+            elif TRANSFORMER_VARIANT == "cost_lipschitz":
+                # Same reward, same critic head as `cost`. The ONE
+                # difference is the encoder: L2 self-attention with
+                # tied query/key projections and every component on
+                # the state -> latent path spectrally bounded, so the
+                # Lipschitz claim covers state space rather than only
+                # latent space.
+                #
+                # NOTE: unlike the ablation arms this one does NOT
+                # share the trunk. Different module, different
+                # parameter count, different RNG consumption -- a
+                # given seed no longer yields the same initial
+                # weights as `cost`. Task and certification
+                # comparisons hold; the seed-paired trunk does not.
+                from lipschitz_transformer import (
+                    LipschitzCostTransformerActorCritic, ENCODER_C)
+                model = LipschitzCostTransformerActorCritic(
+                    VIEW_DISTANCE, scalar_dim=SCALAR_DIM,
+                    sequence_length=SEQUENCE_LENGTH,
+                    softplus_beta=COST_BETA_INIT,
+                    beta_gain_target=COST_BETA_GAIN_TARGET).to(device)
+                print(f"[cost_lipschitz] encoder: L2 self-attention, tied qk, "
+                      f"spectral c = {ENCODER_C}. "
+                      f"encoder Lipschitz bound = {model.encoder_lipschitz():.3e}")
             else:
                 # Ablation arms. Same reward, same trunk, same RNG
                 # consumption order -- only the critic construction
