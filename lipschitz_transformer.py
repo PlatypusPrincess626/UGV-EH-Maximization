@@ -100,7 +100,46 @@ except ImportError:                         # older torch
 # relationship is brutal -- the bound is a product over ~10 layers, so
 # halving this divides the bound by ~1000 while halving every layer's
 # expressiveness.
-ENCODER_C = float(os.environ.get("LTAC_ENCODER_C", "6.0"))
+ENCODER_C = float(os.environ.get("LTAC_ENCODER_C", "2.0"))
+
+# SEPARATE budget for the tied query/key projection, and a divisor on
+# the L2 logits.
+#
+# WHY THIS IS NOT THE SAME KNOB
+#
+# spectral_norm FIXES sigma_max at exactly c -- it divides by the
+# measured sigma, so the result is c, not "at most c". At c = 6.0
+# every encoder layer therefore STARTS about 3x above its own Xavier
+# scale (1.74 for the input projection, 1.93 for qk) rather than being
+# capped near it. Sizing c from the trained softmax encoder's measured
+# sigma_max was the wrong reference: those were values training grew
+# INTO, not values to begin at.
+#
+# And the qk projection is worse than the rest, because the L2 logit
+# is QUADRATIC in it:
+#
+#     A_ij = softmax( -||W x_i - W x_j||^2 / sqrt(d_head) )
+#
+# so doubling sigma_max quadruples the logit magnitude. With
+# ||x|| ~ sqrt(d_model) ~ 11.3 after LayerNorm, the worst-case logit
+# is (2*c*11.3)^2 / sqrt(32):
+#
+#     c = 1.0 ->    90      c = 3.0 ->   815
+#     c = 2.0 ->   362      c = 6.0 ->  3258
+#
+# Every one of those saturates a softmax. The distance is exactly zero
+# at i = j, so a saturated L2 attention collapses to each token
+# attending only to itself: no temporal mixing, and no gradient
+# through the attention path. That is consistent with the observed
+# failure -- a run sitting at its episode-1 death rate 380 episodes
+# in, rather than converging slowly.
+#
+# The fix is a temperature, not a smaller c alone. Dividing the logits
+# by QK_TEMPERATURE * sqrt(d_head) rescales them into a usable range
+# without shrinking the projection's capacity, and it enters the
+# Lipschitz bound as a simple 1/T factor.
+ENCODER_QK_C = float(os.environ.get("LTAC_ENCODER_QK_C", "1.0"))
+QK_TEMPERATURE = float(os.environ.get("LTAC_QK_TEMP", "16.0"))
 
 # LayerNorm epsilon.
 #
@@ -119,17 +158,18 @@ LAYERNORM_EPS = float(os.environ.get("LTAC_LN_EPS", "1e-2"))
 LAYERNORM_GAMMA_MAX = float(os.environ.get("LTAC_LN_GAMMA_MAX", "2.0"))
 
 
-def _sn(layer):
-    """Spectral-normalise to sigma <= ENCODER_C."""
+def _sn(layer, scale=None):
+    """Spectral-normalise so sigma_max == scale (ENCODER_C by default)."""
+    scale = ENCODER_C if scale is None else scale
     spectral_norm(layer, n_power_iterations=5)
-    if ENCODER_C != 1.0:
+    if scale != 1.0:
         try:
             from torch.nn.utils import parametrize
         except ImportError as exc:                     # pragma: no cover
             raise RuntimeError(
                 "LTAC_ENCODER_C != 1.0 needs torch >= 2.0") from exc
         parametrize.register_parametrization(
-            layer, "weight", _Scale(ENCODER_C))
+            layer, "weight", _Scale(scale))
     return layer
 
 
@@ -175,7 +215,8 @@ class L2SelfAttention(nn.Module):
         # One matrix serving as both query and key. NOT two matrices
         # initialised identically -- they would diverge on the first
         # gradient step and the guarantee with them.
-        self.qk_proj = _sn(nn.Linear(d_model, d_model, bias=False))
+        self.qk_proj = _sn(nn.Linear(d_model, d_model, bias=False),
+                           scale=ENCODER_QK_C)
         self.v_proj = _sn(nn.Linear(d_model, d_model, bias=False))
         self.out_proj = _sn(nn.Linear(d_model, d_model, bias=False))
 
@@ -191,7 +232,7 @@ class L2SelfAttention(nn.Module):
         sq = (qk * qk).sum(-1)
         logits = -(sq.unsqueeze(-1) + sq.unsqueeze(-2)
                    - 2.0 * qk @ qk.transpose(-2, -1))
-        logits = logits / math.sqrt(dh)
+        logits = logits / (QK_TEMPERATURE * math.sqrt(dh))
 
         attn = torch.softmax(logits, dim=-1)
         out = (attn @ v).transpose(1, 2).reshape(b, n, self.d_model)
@@ -323,11 +364,11 @@ class LipschitzCostTransformerActorCritic(CostTransformerActorCritic):
         c = ENCODER_C
 
         # Placeholder for the sequence-length factor of Thm 3.2.
-        k_attn = math.sqrt(self.encoder.layers[0].attn.d_head)
+        k_attn = math.sqrt(self.encoder.layers[0].attn.d_head) / QK_TEMPERATURE
 
         total = c                                  # input projection
         for _ in self.encoder.layers:
-            attn_block = 1.0 + ln * k_attn * c * c * c
+            attn_block = 1.0 + ln * k_attn * ENCODER_QK_C * c * c
             ff_block = 1.0 + ln * c * c
             total *= attn_block * ff_block
         total *= ln                                # closing norm
