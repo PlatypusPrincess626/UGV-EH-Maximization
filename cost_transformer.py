@@ -86,50 +86,37 @@ except ImportError:                         # older torch
     from torch.nn.utils import spectral_norm
     _HAS_PARAMETRIZE = False
 
-# Per-layer Lipschitz budget for the critic body.
+# Per-layer spectral budget for the critic body: sigma_max <= c, so
+# the four-layer body has L <= c**4. The certificate needs a KNOWN
+# FINITE Lipschitz constant, not the value 1.
 #
-# spectral_norm forces every layer's largest singular value to exactly
-# 1, so the four-layer body composes to L <= 1. That bound is far
-# stricter than the certificate needs: the region argument requires a
-# KNOWN FINITE Lipschitz constant, not the value 1. Scaling each
-# normalised layer by c gives L <= c**4, still known and finite, with
-# the certified ball radius shrinking by the same factor.
+# 1.772 IS MEASURED, NOT CHOSEN. From the episode-400 checkpoints,
+# sigma_max per layer of the trained critic body:
 #
-# WHY RELAX IT
+#     layer          cost_plain (no spec norm)   cost (weight.original)
+#     critic_body.0            1.952                     1.953
+#     critic_body.2            1.952                     1.950
+#     critic_body.4            1.952                     1.934
+#     critic_body.6            1.326                     1.336
+#     product                  9.864                     9.834
 #
-# L <= 1 is measurably expensive and buys nothing this study measures:
+# So sigma=1 was contracting the body roughly 10x below the scale the
+# unconstrained arm actually uses -- and below its own Xavier
+# initialisation, since xavier_uniform on a 256x128 layer gives
+# sigma_max ~1.97. Nobody chose that contraction; it fell out of
+# normalising to exactly 1. c = 9.864**0.25 = 1.772 restores the
+# measured scale.
 #
-#   * off-distribution dynamic range (ood_range) is 0.027 for cost
-#     against 0.049 for cost_plain -- the constrained critic spans 1.8x
-#     less of the coordinate it certifies
-#   * late approx_kl is 0.0166 (cost), 0.0152 (cost_plain), 0.0102
-#     (normal); roughly 22% of this arm's excess policy churn tracks
-#     the spectral machinery
-#   * no computed metric depends on L. cert_alpha_q05 comes from the
-#     Bellman dV estimator; the Lipschitz constant appears in main.py
-#     only inside comments
+# CALIBRATE THE EXPECTATION. An earlier run at c = 1.40 predicted
+# ood_range would rise from 0.027 toward cost_plain's 0.049. It fell
+# to 0.021 instead. The likely reason is in the same checkpoints: the
+# two arms' critic bodies differ by only 1.6-4.4% in Frobenius norm
+# while their trunks differ by 46-81%, so the body barely trains and
+# relaxing a constraint on a near-static layer changes little. Treat
+# this as removing an unintended contraction, not as a performance
+# fix.
 #
-# CHOOSING c
-#
-# The constraint should be slack enough not to bind, and no slacker --
-# every factor of L costs certified radius. Anchoring on the measured
-# gap: matching cost_plain's range needs c**4 = 1.8, i.e. c = 1.16.
-# The default below doubles that for headroom.
-#
-#   c      L <= c**4    range vs L<=1     radius
-#   1.00      1.00          1.0x           1.00x
-#   1.16      1.81          1.8x           0.55x   (matches cost_plain)
-#   1.40      3.84          3.8x           0.26x   (default)
-#   1.50      5.06          5.1x           0.20x
-#   2.00     16.00         16.0x           0.06x
-#
-# VERIFYING IT AFTERWARDS
-#
-# ood_range in the diagnostics says whether the constraint still binds.
-# If it comes back near 0.049, matching cost_plain, c was enough. If it
-# is still near 0.027, the constraint is binding and c should go up. If
-# it overshoots well past 0.049, c is larger than needed and is costing
-# certified radius for nothing.
+# Set LTAC_SPECTRAL_C=1.0 to restore sigma_max = 1 exactly.
 SPECTRAL_C = float(os.environ.get("LTAC_SPECTRAL_C", "1.772"))
 if SPECTRAL_C < 1.0:
     raise ValueError("LTAC_SPECTRAL_C must be >= 1.0")
@@ -140,10 +127,10 @@ class _LipschitzScale(nn.Module):
     Multiplies an already spectral-normalised weight by a constant.
 
     Registered AFTER spectral_norm, so it sees a matrix with sigma_max
-    exactly 1 and returns one with sigma_max exactly c. Applied to the
-    weight only -- the bias is untouched, since a translation does not
-    affect a Lipschitz constant and scaling it would change the
-    initialisation the arms are matched on.
+    exactly 1 and returns one with sigma_max exactly c. Weight only --
+    a bias is a translation and does not affect a Lipschitz constant,
+    and scaling it would break the initialisation the arms are matched
+    on.
     """
 
     def __init__(self, scale):
@@ -152,6 +139,9 @@ class _LipschitzScale(nn.Module):
 
     def forward(self, weight):
         return weight * self.scale
+
+    def right_inverse(self, weight):
+        return weight / self.scale
 
 # Mirrors transformer.py and lyupnov_transformer.py.
 LOG_STD_MIN = -4.0
@@ -325,15 +315,11 @@ class CostTransformerActorCritic(nn.Module):
                     # layers and the iteration is one matvec each.
                     spectral_norm(layer, n_power_iterations=5)
 
-                    # Relax sigma_max from 1 to SPECTRAL_C. See the
-                    # constant's definition for why L <= 1 is stricter
-                    # than the certificate requires.
                     if SPECTRAL_C != 1.0:
                         if not _HAS_PARAMETRIZE:
                             raise RuntimeError(
                                 "LTAC_SPECTRAL_C != 1.0 needs torch >= 2.0 "
-                                "for parametrizations; got the legacy "
-                                "spectral_norm path.")
+                                "for parametrizations.")
                         _parametrize.register_parametrization(
                             layer, "weight", _LipschitzScale(SPECTRAL_C))
 

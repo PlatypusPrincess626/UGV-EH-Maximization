@@ -220,6 +220,39 @@ class LipschitzEncoderLayer(nn.Module):
             norm.weight.clamp_(-LAYERNORM_GAMMA_MAX, LAYERNORM_GAMMA_MAX)
 
 
+class LipschitzEncoder(nn.Module):
+    """
+    Stack of Lipschitz encoder layers plus the closing norm.
+
+    A real nn.Module assigned to `self.encoder`, NOT a bare list with
+    the parent's encoder set to None. main.py builds its optimizer
+    parameter groups from `model.encoder.parameters()` in three
+    places, so anything that is not a module there fails with
+    "NoneType has no attribute 'parameters'" before the first episode.
+    Keeping the attribute name and the callable interface means the
+    trunk/head learning-rate split works unchanged.
+    """
+
+    def __init__(self, d_model, nhead, num_layers, dim_feedforward):
+        super().__init__()
+        self.layers = nn.ModuleList([
+            LipschitzEncoderLayer(d_model, nhead, dim_feedforward)
+            for _ in range(num_layers)
+        ])
+        self.norm = nn.LayerNorm(d_model, eps=LAYERNORM_EPS)
+
+    def forward(self, x):
+        for layer in self.layers:
+            x = layer(x)
+        return self.norm(x)
+
+    @torch.no_grad()
+    def clamp_gamma(self):
+        for layer in self.layers:
+            layer.clamp_gamma()
+        self.norm.weight.clamp_(-LAYERNORM_GAMMA_MAX, LAYERNORM_GAMMA_MAX)
+
+
 class LipschitzCostTransformerActorCritic(CostTransformerActorCritic):
     """
     The cost arm with its softmax encoder replaced by a Lipschitz one.
@@ -236,15 +269,11 @@ class LipschitzCostTransformerActorCritic(CostTransformerActorCritic):
                          num_layers=num_layers,
                          dim_feedforward=dim_feedforward, **kwargs)
 
-        self.encoder_layers = nn.ModuleList([
-            LipschitzEncoderLayer(d_model, nhead, dim_feedforward)
-            for _ in range(num_layers)
-        ])
-        self.encoder_norm = nn.LayerNorm(d_model, eps=LAYERNORM_EPS)
-
-        # Replace the parent's nn.TransformerEncoder so its parameters
-        # neither train nor travel in the state_dict.
-        self.encoder = None
+        # Replaces the parent's nn.TransformerEncoder in-place, under
+        # the same attribute name, so its parameters neither train nor
+        # travel in the state_dict and every caller keeps working.
+        self.encoder = LipschitzEncoder(
+            d_model, nhead, num_layers, dim_feedforward)
 
         # The input projection and the pooling head are on the path
         # from state to latent, so they need bounding too.
@@ -255,9 +284,7 @@ class LipschitzCostTransformerActorCritic(CostTransformerActorCritic):
         sequence = sequence.float()
         x = self.input_projection(sequence)
         x = x + self.position_embedding[:, :x.size(1)]
-        for layer in self.encoder_layers:
-            x = layer(x)
-        x = self.encoder_norm(x)
+        x = self.encoder(x)
         scores = self.attention_pool(x)
         weights = torch.softmax(scores, dim=1)
         return (x * weights).sum(dim=1)
@@ -268,10 +295,7 @@ class LipschitzCostTransformerActorCritic(CostTransformerActorCritic):
         Call once per update. The gamma bound is part of the
         certificate, so it has to be enforced rather than assumed.
         """
-        for layer in self.encoder_layers:
-            layer.clamp_gamma()
-        self.encoder_norm.weight.clamp_(-LAYERNORM_GAMMA_MAX,
-                                        LAYERNORM_GAMMA_MAX)
+        self.encoder.clamp_gamma()
 
     @torch.no_grad()
     def encoder_lipschitz(self):
@@ -299,10 +323,10 @@ class LipschitzCostTransformerActorCritic(CostTransformerActorCritic):
         c = ENCODER_C
 
         # Placeholder for the sequence-length factor of Thm 3.2.
-        k_attn = math.sqrt(self.encoder_layers[0].attn.d_head)
+        k_attn = math.sqrt(self.encoder.layers[0].attn.d_head)
 
         total = c                                  # input projection
-        for _ in self.encoder_layers:
+        for _ in self.encoder.layers:
             attn_block = 1.0 + ln * k_attn * c * c * c
             ff_block = 1.0 + ln * c * c
             total *= attn_block * ff_block

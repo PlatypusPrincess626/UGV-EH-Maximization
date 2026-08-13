@@ -8,6 +8,7 @@ import torch.optim as optim
 from pvlib import solarposition
 from environment import sim_env, MIN_USABLE_ELEVATION
 from lyupnov_transformer import LyapunovTransformerActorCritic
+from cost_transformer import SPECTRAL_C as SPECTRAL_C_TAG
 from diagnostics import pre_update_diagnostics, DIAGNOSTIC_FIELDS
 import datetime
 import time
@@ -942,8 +943,10 @@ _dm_tag = ("" if not IS_COST or COST_DEATH_MULT == 1.0
            else f"_dm{COST_DEATH_MULT:g}")
 _tw_tag = ("" if not IS_COST or COST_TAIL_W == 0.50
            else f"_tw{COST_TAIL_W:g}")
+_sc_tag = ("" if not IS_COST or SPECTRAL_C_TAG == 1.772
+           else f"_c{SPECTRAL_C_TAG:g}")
 
-OUT=Path(f"rl_csv_{_variant_tag}_s{RUN_SEED}{_mw_tag}{_dm_tag}{_tw_tag}_{timestamp}"); OUT.mkdir(exist_ok=True)
+OUT=Path(f"rl_csv_{_variant_tag}_s{RUN_SEED}{_mw_tag}{_dm_tag}{_tw_tag}{_sc_tag}_{timestamp}"); OUT.mkdir(exist_ok=True)
 
 size = 2 * VIEW_DISTANCE + 1
 y, x = np.mgrid[-VIEW_DISTANCE:VIEW_DISTANCE+1,
