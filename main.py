@@ -2032,6 +2032,12 @@ def update(model,opt,rollouts,device, ep, metrics_writer=None, return_var_tracke
         avg = {k: v / max(accum_n.get(k, n_minibatches), 1)
                for k, v in accum.items()}
 
+        # The held-out diagnostics are measured once per update, not
+        # per minibatch, so they are merged in here rather than accumulated.
+        # Without this every consumer of `avg` -- including the printed
+        # line -- reads NaN for critic_ev.
+        avg.update(diag)
+
         # Slide alpha once per update, from the last minibatch's
         # feasible-alpha distribution. Applied AFTER the loop, so this
         # update's reported violation rates were all computed at one
@@ -2307,6 +2313,12 @@ def update(model,opt,rollouts,device, ep, metrics_writer=None, return_var_tracke
         avg = {k: v / max(accum_n.get(k, n_minibatches), 1)
                for k, v in accum.items()}
 
+        # The held-out diagnostics are measured once per update, not
+        # per minibatch, so they are merged in here rather than accumulated.
+        # Without this every consumer of `avg` -- including the printed
+        # line -- reads NaN for critic_ev.
+        avg.update(diag)
+
         # Slide beta once per update, using the last minibatch's
         # V_cost. No-op unless the model was built with
         # beta_gain_target. Logged either way so a run's head is
@@ -2335,6 +2347,9 @@ def update(model,opt,rollouts,device, ep, metrics_writer=None, return_var_tracke
             f"CF {avg.get('clip_fraction', 0):.4f} | "
             f"Std {avg.get('mean_std', 0):.4f} | "
             f"|a| {avg.get('mean_abs_action', 0):.4f} | "
+            # Held-out critic fit. The cost arms print from this block,
+            # not the one above, so it has to be added in both places.
+            f"EV {avg.get('critic_ev', float('nan')):+.3f} | "
             f"Alpha {avg.get('alpha', 0):.4f} | "
             f"MB {n_minibatches}/{PPO_EPOCHS * math.ceil(n / MINIBATCH_SIZE)}"
         )
