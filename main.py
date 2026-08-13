@@ -2057,6 +2057,11 @@ def update(model,opt,rollouts,device, ep, metrics_writer=None, return_var_tracke
             f"Std {_a('mean_std'):.4f} | "
             f"RawLogStd {_a('mean_raw_log_std'):.4f} | "
             f"|a| {_a('mean_abs_action'):.4f} | "
+            # Held-out critic fit, printed rather than CSV-only: it is
+            # the fastest read on whether an arm is learning at all,
+            # and waiting to grep a file costs hours on a run that has
+            # already failed.
+            f"EV {_a('critic_ev'):+.3f} | "
             f"Alpha {_a('alpha'):.4f} | "
             f"MB {n_minibatches}/{PPO_EPOCHS * math.ceil(n / MINIBATCH_SIZE)}"
         )
