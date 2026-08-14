@@ -138,7 +138,7 @@ ENCODER_C = float(os.environ.get("LTAC_ENCODER_C", "2.0"))
 # by QK_TEMPERATURE * sqrt(d_head) rescales them into a usable range
 # without shrinking the projection's capacity, and it enters the
 # Lipschitz bound as a simple 1/T factor.
-ENCODER_QK_C = float(os.environ.get("LTAC_ENCODER_QK_C", "1.0"))
+ENCODER_QK_C = float(os.environ.get("LTAC_ENCODER_QK_C", "4.0"))
 QK_TEMPERATURE = float(os.environ.get("LTAC_QK_TEMP", "4.0"))
 #
 # 16.0 was the first working value -- it cleared the saturation that
