@@ -237,6 +237,7 @@ def soc_sweep_probe(model, states, soc_index, soc_target,
 
 
 DIAGNOSTIC_FIELDS = [
+    "attn_entropy",
     "critic_ev", "critic_rmse_norm",
     "xv_true_corr", "xv_true_rank", "xv_true_flat_frac",
     "ood_v_min", "ood_v_mean", "ood_nonneg_frac",
@@ -269,8 +270,24 @@ def pre_update_diagnostics(model, states, returns, soc_all,
         k = min(probe_states, n)
         idx = _subsample(n, k, states.device)
 
-        values = model.value_only(states[idx])
+        # Entropy capture is off during rollout and training; switch it
+        # on for this one forward only.
+        records_entropy = hasattr(model, "set_entropy_recording")
+        if records_entropy:
+            model.set_entropy_recording(True)
+        try:
+            values = model.value_only(states[idx])
+        finally:
+            if records_entropy:
+                model.set_entropy_recording(False)
+
+        # Attention entropy, if the arm's encoder exposes it. Recorded
+        # here rather than inside training so it is measured on the
+        # same held-out forward as everything else -- and so the column
+        # exists (as NaN) in every arm, keeping the CSV schema uniform.
         out = {}
+        if hasattr(model, "attention_entropy"):
+            out["attn_entropy"] = model.attention_entropy()
         out.update(critic_explained_variance(values, returns[idx]))
         out.update(critic_agreement(values, soc_all[idx], soc_target))
         out.update(soc_sweep_probe(model, states, soc_index, soc_target,

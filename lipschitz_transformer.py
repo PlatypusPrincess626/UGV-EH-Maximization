@@ -100,7 +100,7 @@ except ImportError:                         # older torch
 # relationship is brutal -- the bound is a product over ~10 layers, so
 # halving this divides the bound by ~1000 while halving every layer's
 # expressiveness.
-ENCODER_C = float(os.environ.get("LTAC_ENCODER_C", "5.0"))
+ENCODER_C = float(os.environ.get("LTAC_ENCODER_C", "2.0"))
 
 # SEPARATE budget for the tied query/key projection, and a divisor on
 # the L2 logits.
@@ -139,7 +139,28 @@ ENCODER_C = float(os.environ.get("LTAC_ENCODER_C", "5.0"))
 # without shrinking the projection's capacity, and it enters the
 # Lipschitz bound as a simple 1/T factor.
 ENCODER_QK_C = float(os.environ.get("LTAC_ENCODER_QK_C", "1.0"))
-QK_TEMPERATURE = float(os.environ.get("LTAC_QK_TEMP", "16.0"))
+QK_TEMPERATURE = float(os.environ.get("LTAC_QK_TEMP", "4.0"))
+#
+# 16.0 was the first working value -- it cleared the saturation that
+# froze the run at its episode-1 death rate. But it went too far the
+# other way. At T = 16 with qk_c = 1.0 the typical logit spread is only
+# ~2.8, an attention weight ratio of ~17x across a 32-step window,
+# which is close to uniform. A near-uniform attention hands the policy
+# a smoothed average of the window: enough to predict value, which
+# depends on aggregate state, and too blunt to act on. That matches
+# what the c = 5.0 run showed -- EV climbing to 0.892 while |a| stayed
+# flat at 0.017-0.022 against cost's 0.046, with clip fraction and KL
+# both BELOW the other arms rather than above.
+#
+#     T      typical logit    weight ratio
+#     16.0        2.8              17x        near-uniform
+#      8.0        5.7             286x
+#      4.0       11.3          8.2e4x         selective
+#      2.0       22.6          6.7e9x
+#      1.0       45.3            saturated
+#
+# 4.0 is sharp enough to select and an order of magnitude short of the
+# saturation point. Watch attn_entropy to confirm rather than assume.
 
 # LayerNorm epsilon.
 #
@@ -215,6 +236,18 @@ class L2SelfAttention(nn.Module):
         # One matrix serving as both query and key. NOT two matrices
         # initialised identically -- they would diverge on the first
         # gradient step and the guarantee with them.
+        self.last_entropy = float("nan")
+        # OFF by default. The entropy itself is cheap -- an elementwise
+        # pass over the [batch, heads, N, N] attention matrix, about
+        # 1/32 the cost of the matmul that produced it -- but the
+        # float() conversion forces a GPU->CPU sync. Left unguarded
+        # that fires on every attention forward: every step of every
+        # rollout (720 per episode, since the rollout runs in eval
+        # mode) and every minibatch of every PPO epoch. Serialising
+        # the pipeline that often is a real slowdown for a number
+        # nobody reads. Enabled for exactly one forward per update by
+        # diagnostics.py.
+        self.record_entropy = False
         self.qk_proj = _sn(nn.Linear(d_model, d_model, bias=False),
                            scale=ENCODER_QK_C)
         self.v_proj = _sn(nn.Linear(d_model, d_model, bias=False))
@@ -235,6 +268,22 @@ class L2SelfAttention(nn.Module):
         logits = logits / (QK_TEMPERATURE * math.sqrt(dh))
 
         attn = torch.softmax(logits, dim=-1)
+
+        # Normalised attention entropy, for diagnosis rather than
+        # training. 1.0 means uniform over the window -- the encoder is
+        # averaging and the policy gets a smoothed state. 0.0 means
+        # collapsed to a single key; since the L2 distance is exactly
+        # zero at i = j, collapse here means each step attends only to
+        # itself and there is no temporal mixing at all. Both failures
+        # look identical in |a| and the death rate, which is why this
+        # is worth measuring directly.
+        if self.record_entropy:
+            with torch.no_grad():
+                p = attn.clamp_min(1e-9)
+                ent = -(p * p.log()).sum(-1).mean()
+                self.last_entropy = (
+                    float(ent / math.log(n)) if n > 1 else 1.0)
+
         out = (attn @ v).transpose(1, 2).reshape(b, n, self.d_model)
         return self.out_proj(out)
 
@@ -337,6 +386,26 @@ class LipschitzCostTransformerActorCritic(CostTransformerActorCritic):
         certificate, so it has to be enforced rather than assumed.
         """
         self.encoder.clamp_gamma()
+
+    def set_entropy_recording(self, enabled):
+        """Toggle entropy capture. See L2SelfAttention.record_entropy."""
+        for layer in self.encoder.layers:
+            layer.attn.record_entropy = bool(enabled)
+
+    @torch.no_grad()
+    def attention_entropy(self):
+        """
+        Mean normalised attention entropy across encoder layers, from
+        the most recent forward pass.
+
+        Read it off a forward on HELD-OUT states (diagnostics.py runs
+        one before every update), not off a training minibatch, so it
+        describes the encoder rather than whatever the last gradient
+        step happened to touch.
+        """
+        vals = [layer.attn.last_entropy for layer in self.encoder.layers]
+        vals = [v for v in vals if v == v]
+        return float(sum(vals) / len(vals)) if vals else float("nan")
 
     @torch.no_grad()
     def encoder_lipschitz(self):
