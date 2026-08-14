@@ -100,7 +100,7 @@ except ImportError:                         # older torch
 # relationship is brutal -- the bound is a product over ~10 layers, so
 # halving this divides the bound by ~1000 while halving every layer's
 # expressiveness.
-ENCODER_C = float(os.environ.get("LTAC_ENCODER_C", "2.0"))
+ENCODER_C = float(os.environ.get("LTAC_ENCODER_C", "5.0"))
 
 # SEPARATE budget for the tied query/key projection, and a divisor on
 # the L2 logits.
