@@ -19,8 +19,10 @@ ChebyshevLyapunovTransformerActorCritic = None
 PSOPolicy = None
 
 # ============================================================
-# Set POLICY_TYPE = "transformer" or "pso"
-POLICY_TYPE = "transformer"
+# Set POLICY_TYPE = "transformer", "pso" or "exact".
+# Overridable so the planner arms need no file edit:
+#   LTAC_POLICY_TYPE=exact python main.py
+POLICY_TYPE = os.environ.get("LTAC_POLICY_TYPE", "transformer")
 if POLICY_TYPE == "transformer":
     # Set TRANSFORMER_VARIANT = "normal" or "chaotic" or "lyapunov"
     #
@@ -46,6 +48,20 @@ else:
 #                                                          both)
 #
 # See ablation_transformer.py for what each one gives up.
+# Chaotic-initialisation arms are the base arm plus a "_chaotic"
+# suffix, so `cost_chaotic` is `cost` with its Linear weights drawn
+# from a Chen orbit instead of the torch RNG. Parsed as a suffix
+# rather than added as separate variants because the arms are
+# otherwise identical -- duplicating the dispatch would invite the two
+# copies to drift.
+#
+# LTAC_CHAOTIC_KIND selects chen (default) or chebyshev.
+CHAOTIC_SUFFIX = "_chaotic"
+USE_CHAOTIC_INIT = TRANSFORMER_VARIANT.endswith(CHAOTIC_SUFFIX)
+if USE_CHAOTIC_INIT:
+    TRANSFORMER_VARIANT = TRANSFORMER_VARIANT[:-len(CHAOTIC_SUFFIX)]
+CHAOTIC_KIND = os.environ.get("LTAC_CHAOTIC_KIND", "chen")
+
 COST_VARIANTS = ("cost", "cost_linear", "cost_plain", "cost_lipschitz")
 IS_COST = TRANSFORMER_VARIANT in COST_VARIANTS
 
@@ -945,8 +961,9 @@ _tw_tag = ("" if not IS_COST or COST_TAIL_W == 0.50
            else f"_tw{COST_TAIL_W:g}")
 _sc_tag = ("" if not IS_COST or SPECTRAL_C_TAG == 1.772
            else f"_c{SPECTRAL_C_TAG:g}")
+_ch_tag = f"_{CHAOTIC_KIND}" if USE_CHAOTIC_INIT else ""
 
-OUT=Path(f"rl_csv_{_variant_tag}_s{RUN_SEED}{_mw_tag}{_dm_tag}{_tw_tag}{_sc_tag}_{timestamp}"); OUT.mkdir(exist_ok=True)
+OUT=Path(f"rl_csv_{_variant_tag}_s{RUN_SEED}{_mw_tag}{_dm_tag}{_tw_tag}{_sc_tag}{_ch_tag}_{timestamp}"); OUT.mkdir(exist_ok=True)
 
 size = 2 * VIEW_DISTANCE + 1
 y, x = np.mgrid[-VIEW_DISTANCE:VIEW_DISTANCE+1,
@@ -2625,12 +2642,34 @@ def run():
             control_params = list(model.parameters())
             auxiliary_param_list = []
     else:
-        from pso_policy import PSOPolicy
-        # Assuming observation dimension is flattened patch size + scalars
-        # Calculate based on your obs function (e.g., 20x20 patch + 7 scalars)
+        # "pso" runs the swarm; "exact" runs exhaustive enumeration over
+        # the same fitness, model and horizon. Both are planners: no
+        # parameters, no gradient, no training phase.
+        from pso_policy import PSOPolicy, ExactPolicy
+        Planner = ExactPolicy if POLICY_TYPE == "exact" else PSOPolicy
         input_dim = (VIEW_DISTANCE * 2 + 1) ** 2 + SCALAR_DIM
-        model = PSOPolicy(input_dim=input_dim).to(device)
-        opt = None  # PSO does not use torch.optim
+        model = Planner(input_dim=input_dim,
+                          view_distance=VIEW_DISTANCE,
+                          scalar_dim=SCALAR_DIM).to(device)
+        opt = None  # planners do not use torch.optim
+        # The transformer branches set these inside their own
+        # scope; the training loop below reads them
+        # unconditionally, so the planner path needs them too.
+        control_params = []
+        auxiliary_param_list = []
+
+    # Chaotic initialisation, applied AFTER construction and after the
+    # optimizer is built.
+    #
+    # After construction so it inherits whatever scheme the arm used
+    # and can match it moment for moment -- the point is to vary the
+    # SEQUENCE of initial weights, not their scale. After the optimizer
+    # because AdamW holds references to the parameter tensors, not
+    # copies, so an in-place copy_ is seen by the optimizer and no
+    # parameter group needs rebuilding.
+    if USE_CHAOTIC_INIT:
+        from chaotic_init import apply_chaotic_init
+        apply_chaotic_init(model, CHAOTIC_KIND, RUN_SEED)
 
     ###############################################################
     # Timing instrumentation
@@ -2904,7 +2943,13 @@ def run():
             # of 8 produced ~300 samples and an "MB 8/8" update, the
             # degenerate batch the step budget exists to prevent.
             pending_steps = sum(len(r["rewards"]) for r in rollouts)
-            if pending_steps >= UPDATE_MIN_STEPS:
+            # The planner arms (pso, exact) have no parameters and
+            # no optimizer -- opt is None. update() reaches
+            # opt.zero_grad() on its first pass, so the CALL must
+            # not happen; there is nothing to skip inside it.
+            # Rollouts are still collected and logged, which is
+            # all these arms produce.
+            if opt is not None and pending_steps >= UPDATE_MIN_STEPS:
                 update_start = time.perf_counter()
                 (loss, diag_lyap, diag_barrier, diag_std,
                  diag_abs_action, diag_mean_V, diag_std_V,
