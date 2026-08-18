@@ -119,11 +119,13 @@ def critic_explained_variance(values, returns):
     Scale-free, so it is comparable between a cost MDP whose returns
     are O(1) and a reward MDP whose returns are O(100).
     """
+    blank = {"critic_ev": float("nan"), "critic_rmse_norm": float("nan"),
+             "returns_std": float("nan"), "returns_mean": float("nan")}
     if returns.numel() < 2:
-        return {"critic_ev": float("nan"), "critic_rmse_norm": float("nan")}
+        return blank
     var_y = returns.var(unbiased=False)
     if var_y < 1e-12:
-        return {"critic_ev": float("nan"), "critic_rmse_norm": float("nan")}
+        return blank
     resid = returns - values
     ev = 1.0 - (resid.var(unbiased=False) / var_y)
     # RMSE in units of the return standard deviation. Equal to
@@ -131,8 +133,30 @@ def critic_explained_variance(values, returns):
     # the critic has a constant offset, which is worth being able to
     # see separately.
     rmse_norm = resid.pow(2).mean().sqrt() / var_y.sqrt()
+
+    # Log the DENOMINATOR alongside the ratio.
+    #
+    # EV is 1 - Var(resid)/Var(returns), so it says nothing on its own
+    # when Var(returns) is small: an unchanged critic reads 0.99 at
+    # std(returns) = 3, 0.30 at 0.3, and -5.0 at 0.1. Batch-to-batch
+    # resampling at std(returns) = 0.3 alone moves EV over a 0.27-wide
+    # range. So an EV swinging between -0.5 and +0.5 update to update
+    # is the signature of a COLLAPSED RETURN SPREAD, not necessarily
+    # of a critic that cannot learn -- and the two demand opposite
+    # responses.
+    #
+    # Returns collapse when every episode ends the same way: uniform
+    # early deaths give near-identical discounted returns, the
+    # denominator goes to nothing, and both EV and value_loss (which
+    # divides by the running return variance) become unreadable.
+    #
+    # returns_std is the number that separates the cases. Compare it
+    # against a healthy run of the same arm before concluding anything
+    # from EV.
     return {"critic_ev": float(ev.item()),
-            "critic_rmse_norm": float(rmse_norm.item())}
+            "critic_rmse_norm": float(rmse_norm.item()),
+            "returns_std": float(var_y.sqrt().item()),
+            "returns_mean": float(returns.mean().item())}
 
 
 @torch.no_grad()
@@ -238,7 +262,7 @@ def soc_sweep_probe(model, states, soc_index, soc_target,
 
 DIAGNOSTIC_FIELDS = [
     "attn_entropy",
-    "critic_ev", "critic_rmse_norm",
+    "critic_ev", "critic_rmse_norm", "returns_std", "returns_mean",
     "xv_true_corr", "xv_true_rank", "xv_true_flat_frac",
     "ood_v_min", "ood_v_mean", "ood_nonneg_frac",
     "ood_monotone_frac", "ood_slope_corr", "ood_range",

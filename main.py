@@ -2387,6 +2387,9 @@ def update(model,opt,rollouts,device, ep, metrics_writer=None, return_var_tracke
             # Held-out critic fit. The cost arms print from this block,
             # not the one above, so it has to be added in both places.
             f"EV {avg.get('critic_ev', float('nan')):+.3f} | "
+            # EV's denominator. Without it an EV swing cannot be told
+            # apart from a return spread that has collapsed.
+            f"Rsd {avg.get('returns_std', float('nan')):.3f} | "
             # Attention entropy: 1.0 uniform, 0.0 collapsed. NaN in
             # every arm except cost_lipschitz.
             f"AE {avg.get('attn_entropy', float('nan')):.3f} | "
