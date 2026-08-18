@@ -120,6 +120,7 @@ def critic_explained_variance(values, returns):
     are O(1) and a reward MDP whose returns are O(100).
     """
     blank = {"critic_ev": float("nan"), "critic_rmse_norm": float("nan"),
+             "critic_rmse_abs": float("nan"),
              "returns_std": float("nan"), "returns_mean": float("nan")}
     if returns.numel() < 2:
         return blank
@@ -153,8 +154,19 @@ def critic_explained_variance(values, returns):
     # returns_std is the number that separates the cases. Compare it
     # against a healthy run of the same arm before concluding anything
     # from EV.
+    # ABSOLUTE residual RMSE, in return units. This is the only
+    # denominator-free read on critic quality here.
+    #
+    # critic_ev and critic_rmse_norm are the same ratio in different
+    # clothing -- critic_rmse_norm is sqrt(1 - critic_ev) for a
+    # zero-mean residual -- so BOTH move when the return spread moves,
+    # and neither can tell a worse critic from a narrower batch. With
+    # Rsd wandering between 0.144 and 0.400, a critic holding its
+    # error fixed at 0.099 would show EV swinging from +0.53 to +0.94
+    # on its own.
     return {"critic_ev": float(ev.item()),
             "critic_rmse_norm": float(rmse_norm.item()),
+            "critic_rmse_abs": float(resid.pow(2).mean().sqrt().item()),
             "returns_std": float(var_y.sqrt().item()),
             "returns_mean": float(returns.mean().item())}
 
@@ -262,7 +274,8 @@ def soc_sweep_probe(model, states, soc_index, soc_target,
 
 DIAGNOSTIC_FIELDS = [
     "attn_entropy",
-    "critic_ev", "critic_rmse_norm", "returns_std", "returns_mean",
+    "critic_ev", "critic_rmse_norm", "critic_rmse_abs",
+    "returns_std", "returns_mean",
     "xv_true_corr", "xv_true_rank", "xv_true_flat_frac",
     "ood_v_min", "ood_v_mean", "ood_nonneg_frac",
     "ood_monotone_frac", "ood_slope_corr", "ood_range",

@@ -2390,6 +2390,9 @@ def update(model,opt,rollouts,device, ep, metrics_writer=None, return_var_tracke
             # EV's denominator. Without it an EV swing cannot be told
             # apart from a return spread that has collapsed.
             f"Rsd {avg.get('returns_std', float('nan')):.3f} | "
+            # Absolute critic error. Unlike EV this does not move when
+            # the batch's return spread moves.
+            f"Res {avg.get('critic_rmse_abs', float('nan')):.3f} | "
             # Attention entropy: 1.0 uniform, 0.0 collapsed. NaN in
             # every arm except cost_lipschitz.
             f"AE {avg.get('attn_entropy', float('nan')):.3f} | "
