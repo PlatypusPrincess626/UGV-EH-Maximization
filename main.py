@@ -60,7 +60,8 @@ CHAOTIC_SUFFIX = "_chaotic"
 USE_CHAOTIC_INIT = TRANSFORMER_VARIANT.endswith(CHAOTIC_SUFFIX)
 if USE_CHAOTIC_INIT:
     TRANSFORMER_VARIANT = TRANSFORMER_VARIANT[:-len(CHAOTIC_SUFFIX)]
-CHAOTIC_KIND = os.environ.get("LTAC_CHAOTIC_KIND", "chen")
+from chaotic_init import CHAOTIC_KIND_DEFAULT
+CHAOTIC_KIND = os.environ.get("LTAC_CHAOTIC_KIND", CHAOTIC_KIND_DEFAULT)
 
 COST_VARIANTS = ("cost", "cost_linear", "cost_plain", "cost_lipschitz")
 KNOWN_VARIANTS = ("lyapunov", "normal") + COST_VARIANTS
