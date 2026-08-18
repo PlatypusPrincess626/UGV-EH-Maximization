@@ -183,6 +183,49 @@ class ChaoticStream:
         return chunk
 
 
+# What to hold fixed when swapping the RNG for a chaotic orbit.
+#
+#   "variance" (default) -- match the tensor's element mean and
+#       standard deviation. This is what Xavier's derivation controls:
+#       Var(y) = fan_in * Var(w) * Var(x), so matching element
+#       variance preserves activation scale in the mean.
+#
+#   "spectral" -- additionally rescale so the tensor's LARGEST
+#       SINGULAR VALUE matches the original's.
+#
+# WHY THE CHOICE EXISTS
+#
+# Matching moments does NOT match operator norm. Measured on a
+# 256x128 tensor with mean and standard deviation matched exactly:
+#
+#     xavier    sigma_max 1.967
+#     chaotic   sigma_max 2.556      +30%
+#
+# So on an UNCONSTRAINED layer -- everything in normal and lyapunov,
+# and everything outside the critic body in the cost arms -- the
+# chaotic orbit hands the layer 30% more gain than the initialiser it
+# replaced, compounding across layers. That is a scale change wearing
+# an initialisation costume, which is precisely what this module's
+# header says it must avoid, and it would confound the chaotic arms
+# the same way ENCODER_C = 6.0 confounded the Lipschitz arm.
+#
+# On a SPECTRALLY NORMALISED layer it is moot: the parametrisation
+# divides by sigma_max and multiplies by c, so the effective weight
+# has sigma_max = c whatever the underlying tensor looks like. The
+# Lipschitz bound is untouched by construction, and
+# encoder_lipschitz() is a function of the constants alone.
+#
+# What still differs there is the spectrum BELOW the top: after
+# normalising sigma_max to 1, the chaotic tensor's effective rank is
+# 51.5 against xavier's 70.2. Same bound, more concentrated. That is
+# a real difference in conditioning and arguably the mechanism by
+# which chaotic initialisation would help or hurt at all -- worth
+# reporting rather than treating as noise.
+CHAOTIC_MATCH = os.environ.get("LTAC_CHAOTIC_MATCH", "variance").strip().lower()
+if CHAOTIC_MATCH not in ("variance", "spectral"):
+    raise ValueError("LTAC_CHAOTIC_MATCH must be 'variance' or 'spectral'")
+
+
 def fill_matching_moments_(tensor, stream, mean, std):
     """
     Fill `tensor` with chaotic values rescaled to exactly `mean` and
@@ -201,7 +244,13 @@ def fill_matching_moments_(tensor, stream, mean, std):
         raise RuntimeError("degenerate chaotic chunk")
     chunk = (chunk - chunk.mean()) / c_std
     with torch.no_grad():
-        tensor.copy_((chunk * std + mean).to(tensor.dtype).view_as(tensor))
+        new = (chunk * std + mean).to(tensor.dtype).view_as(tensor)
+        if CHAOTIC_MATCH == "spectral" and new.dim() == 2:
+            before = torch.linalg.matrix_norm(tensor.detach().float(), 2)
+            after = torch.linalg.matrix_norm(new.float(), 2)
+            if after > 1e-9:
+                new = new * (before / after).to(new.dtype)
+        tensor.copy_(new)
     return tensor
 
 
@@ -248,7 +297,19 @@ def apply_chaotic_init(model, kind, seed, verbose=True):
 
     if verbose:
         total = sum(p.numel() for _, p in targets)
+        # Report the operator-norm change explicitly. On unconstrained
+        # layers it is the number that decides whether this was a
+        # sequence experiment or an accidental gain change; on
+        # spectrally normalised ones it should read ~1.00 because the
+        # parametrisation renormalises regardless.
+        ratios = []
+        for _, p in targets:
+            if p.dim() == 2:
+                ratios.append(float(torch.linalg.matrix_norm(p.float(), 2)))
         print(f"[chaotic-init] {stream.kind}: re-initialised "
               f"{len(targets)} weight tensors ({total} parameters), "
-              f"mean/variance preserved per tensor, seed {seed}")
+              f"match={CHAOTIC_MATCH}, seed {seed}")
+        if ratios:
+            print(f"[chaotic-init] sigma_max after: mean "
+                  f"{sum(ratios)/len(ratios):.3f}, max {max(ratios):.3f}")
     return model

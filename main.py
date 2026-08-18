@@ -63,6 +63,25 @@ if USE_CHAOTIC_INIT:
 CHAOTIC_KIND = os.environ.get("LTAC_CHAOTIC_KIND", "chen")
 
 COST_VARIANTS = ("cost", "cost_linear", "cost_plain", "cost_lipschitz")
+KNOWN_VARIANTS = ("lyapunov", "normal") + COST_VARIANTS
+if POLICY_TYPE == "transformer" and TRANSFORMER_VARIANT not in KNOWN_VARIANTS:
+    # Fail loudly. Every dispatch below is an if/elif chain ending in a
+    # bare `else` that builds a plain TransformerActorCritic, and the
+    # reward is chosen by `TRANSFORMER_VARIANT in COST_VARIANTS`. An
+    # unrecognised name therefore does not error -- it silently runs
+    # the NORMAL arm under the requested arm's name and log file, with
+    # the reward MDP's scale (~+126 at episode 1, ~-70 on an early
+    # death) instead of the cost MDP's (~-7 and ~-17).
+    #
+    # That is exactly what a one-character slip produces:
+    # cost_lipshitz vs cost_lipschitz. Cheap to typo, invisible
+    # afterwards, and the resulting numbers look like a real result
+    # from the wrong arm.
+    raise ValueError(
+        f"LTAC_VARIANT={TRANSFORMER_VARIANT!r} is not a known variant. "
+        f"Known: {', '.join(KNOWN_VARIANTS)}, each optionally with the "
+        f"'{CHAOTIC_SUFFIX}' suffix.")
+
 IS_COST = TRANSFORMER_VARIANT in COST_VARIANTS
 
 
