@@ -1,0 +1,4 @@
+Traceback (most recent call last):
+  File "/home/exx/Documents/UGV-EH-Maximization/main.py", line 81, in <module>
+    raise ValueError(
+ValueError: LTAC_VARIANT='pso' is not a known variant. Known: lyapunov, normal, cost, cost_linear, cost_plain, cost_lipschitz, each optionally with the '_chaotic' suffix.
