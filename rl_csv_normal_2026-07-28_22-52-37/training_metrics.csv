@@ -1,1 +1,0 @@
-episode,minibatches,minibatches_possible,first_mb_kl,policy_loss,value_loss,mean_V,std_V,std_barrier,lyap_violation_rate,lyap_in_ball_rate,lyap_mean_dV,lyap_worst_slack,lyap_v_rmse,lyap_penalty,dynamics_loss,barrier_loss,approx_kl,clip_fraction,mean_std,mean_raw_log_std,mean_abs_action,alpha

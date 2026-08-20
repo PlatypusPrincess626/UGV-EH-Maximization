@@ -1,1 +1,0 @@
-step,x_before,y_before,target_x,target_y,x_after,y_after,battery_before,battery_after,battery_delta,reward,directional_reward,battery_reward,movement_penalty,action_dx_norm,action_dy_norm,solar_w,exposure_score,idle_mAh,motion_mAh,path_m,turn_integral
