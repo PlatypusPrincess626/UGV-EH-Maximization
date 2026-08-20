@@ -23,6 +23,14 @@ PSOPolicy = None
 # Overridable so the planner arms need no file edit:
 #   LTAC_POLICY_TYPE=exact python main.py
 POLICY_TYPE = os.environ.get("LTAC_POLICY_TYPE", "transformer")
+KNOWN_POLICY_TYPES = ("transformer", "pso", "exact")
+if POLICY_TYPE not in KNOWN_POLICY_TYPES:
+    # Validated for the same reason LTAC_VARIANT is: the dispatch below
+    # is an if/else, so an unrecognised policy type would silently run
+    # the planner branch.
+    raise ValueError(
+        f"LTAC_POLICY_TYPE={POLICY_TYPE!r} is not known. "
+        f"Choose one of: {', '.join(KNOWN_POLICY_TYPES)}.")
 if POLICY_TYPE == "transformer":
     # Set TRANSFORMER_VARIANT = "normal" or "chaotic" or "lyapunov"
     #
@@ -78,10 +86,18 @@ if POLICY_TYPE == "transformer" and TRANSFORMER_VARIANT not in KNOWN_VARIANTS:
     # cost_lipshitz vs cost_lipschitz. Cheap to typo, invisible
     # afterwards, and the resulting numbers look like a real result
     # from the wrong arm.
+    # The commonest mistake is reaching for the wrong knob: pso and
+    # exact are POLICY TYPES, not transformer variants, and setting
+    # them here would otherwise just read as a typo.
+    hint = ""
+    if TRANSFORMER_VARIANT in KNOWN_POLICY_TYPES:
+        hint = (f" Did you mean LTAC_POLICY_TYPE={TRANSFORMER_VARIANT}? "
+                f"LTAC_VARIANT selects among the transformer arms; "
+                f"LTAC_POLICY_TYPE selects transformer vs planner.")
     raise ValueError(
         f"LTAC_VARIANT={TRANSFORMER_VARIANT!r} is not a known variant. "
         f"Known: {', '.join(KNOWN_VARIANTS)}, each optionally with the "
-        f"'{CHAOTIC_SUFFIX}' suffix.")
+        f"'{CHAOTIC_SUFFIX}' suffix.{hint}")
 
 IS_COST = TRANSFORMER_VARIANT in COST_VARIANTS
 
