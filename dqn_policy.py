@@ -79,7 +79,37 @@ from cost_transformer import CostTransformerActorCritic
 
 # Action set geometry.
 N_DIRECTIONS = int(os.environ.get("LTAC_DQN_DIRS", "8"))
-N_MAGNITUDES = int(os.environ.get("LTAC_DQN_MAGS", "3"))
+N_MAGNITUDES = int(os.environ.get("LTAC_DQN_MAGS", "5"))
+
+# Smallest non-STAY step, as a fraction of MAX_MOVE_PER_STEP.
+#
+# THE BUG THIS FIXES
+#
+# Magnitudes were originally linear, m/N for m = 1..N, giving
+# {0.333, 0.667, 1.000}. That is not a coarse version of the action
+# space -- it misses the operating range entirely. Measured on the
+# converged PPO policies:
+#
+#     arm            median |a|   p90 |a|   max |a|
+#     lyapunov_s1       0.0265     0.1205    0.2893
+#     cost_s1           0.0323     0.1303    0.3442
+#     cost_plain_s1     0.0271     0.1371    0.3600
+#
+# So a working policy commands about 0.03, and almost never exceeds
+# 0.36. The smallest move DQN could make was 0.333 -- roughly 27x the
+# median, and 6.7 cells in one step. Every non-STAY action was a leap.
+#
+# The consequence is not slow learning, it is immediate death: motion
+# energy scales with distance, so an agent that can only stand still
+# or leap drains the battery in every episode regardless of where it
+# leaps to. Under epsilon-greedy at eps = 1.0, 24 of 25 actions are
+# leaps, so the replay fills with nothing but ruined episodes.
+#
+# Magnitudes are now GEOMETRIC from MIN_MAGNITUDE to 1.0, so the set
+# covers three orders of magnitude with the density where the policy
+# actually operates instead of spacing evenly across a range it never
+# visits.
+MIN_MAGNITUDE = float(os.environ.get("LTAC_DQN_MIN_MAG", "0.015"))
 ACTION_MODE = os.environ.get("LTAC_DQN_ACTIONS", "polar").strip().lower()
 
 # Epsilon-greedy schedule, in environment steps.
@@ -111,8 +141,9 @@ def build_action_set(view_distance, max_move):
         return acts[order].astype(np.float32)
 
     acts = [(0.0, 0.0)]
-    for m in range(1, N_MAGNITUDES + 1):
-        r = m / N_MAGNITUDES
+    # Geometric, not linear: see MIN_MAGNITUDE.
+    mags = np.geomspace(MIN_MAGNITUDE, 1.0, N_MAGNITUDES)
+    for r in mags:
         for d in range(N_DIRECTIONS):
             th = 2.0 * math.pi * d / N_DIRECTIONS
             acts.append((r * math.cos(th), r * math.sin(th)))
