@@ -49,7 +49,7 @@ sweep_start=$(date +%s)
 for p in $POLICIES; do
   for s in $SEEDS; do
   
-    if "$p"= "transformer"; then
+    if [ "$p" = "transformer" ]; then
       for v in $VARIANTS; do
         n=$((n + 1))
         log="$LOGDIR/${v}_s${s}.out"
@@ -102,7 +102,7 @@ for p in $POLICIES; do
       echo "[$n/$n_total] START ${p} seed ${s} at $(date +%H:%M:%S) -> $log"
       t0=$(date +%s)
       
-      if "$p"="dqn"; then
+      if [ "$p" = "dqn" ]; then
         LTAC_POLICY_TYPE="$p" LTAC_SEED="$s" LTAC_EPISODES="$EPISODES" \
           python -u main.py > "$log" 2>&1
         rc=$?
