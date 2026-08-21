@@ -23,7 +23,7 @@ PSOPolicy = None
 # Overridable so the planner arms need no file edit:
 #   LTAC_POLICY_TYPE=exact python main.py
 POLICY_TYPE = os.environ.get("LTAC_POLICY_TYPE", "transformer")
-KNOWN_POLICY_TYPES = ("transformer", "pso", "exact")
+KNOWN_POLICY_TYPES = ("transformer", "pso", "exact", "dqn")
 if POLICY_TYPE not in KNOWN_POLICY_TYPES:
     # Validated for the same reason LTAC_VARIANT is: the dispatch below
     # is an if/else, so an unrecognised policy type would silently run
@@ -71,6 +71,11 @@ if USE_CHAOTIC_INIT:
 from chaotic_init import CHAOTIC_KIND_DEFAULT
 CHAOTIC_KIND = os.environ.get("LTAC_CHAOTIC_KIND", CHAOTIC_KIND_DEFAULT)
 
+# The DQN arm reuses the cost MDP: its Q head is Softplus-negated so
+# Q <= 0 and V_cost = -max_a Q >= 0 stays structural, which only makes
+# sense against non-positive returns.
+IS_DQN = POLICY_TYPE == "dqn"
+
 COST_VARIANTS = ("cost", "cost_linear", "cost_plain", "cost_lipschitz")
 KNOWN_VARIANTS = ("lyapunov", "normal") + COST_VARIANTS
 if POLICY_TYPE == "transformer" and TRANSFORMER_VARIANT not in KNOWN_VARIANTS:
@@ -99,7 +104,7 @@ if POLICY_TYPE == "transformer" and TRANSFORMER_VARIANT not in KNOWN_VARIANTS:
         f"Known: {', '.join(KNOWN_VARIANTS)}, each optionally with the "
         f"'{CHAOTIC_SUFFIX}' suffix.{hint}")
 
-IS_COST = TRANSFORMER_VARIANT in COST_VARIANTS
+IS_COST = (TRANSFORMER_VARIANT in COST_VARIANTS) or IS_DQN
 
 
 ###############################################################
@@ -292,6 +297,57 @@ GRAD_CLIP = 8.0
 LR_CLIP_COMPENSATION = 0.23
 
 LR=3e-4 * LR_CLIP_COMPENSATION; MAX_MOVE_PER_STEP=20.0; ENTROPY_COEF=.01; VALUE_COEF=.5
+
+# Learning rate for the CRITIC, separated from the policy's.
+#
+# WHY IT WAS WORTH SEPARATING
+#
+# LR_CLIP_COMPENSATION above exists for one reason: removing the
+# gradient clip tripled the effective step and would have projected
+# approx_kl past TARGET_KL, early-stopping most updates. That is a
+# POLICY argument end to end -- KL is a policy quantity and PPO's
+# clipping is a policy mechanism. The critic has no trust region, no
+# ratio and no clip, so it has no reason to inherit the brake.
+#
+# It inherited it anyway, because every optimizer group used `LR`:
+#
+#     trunk (encoder, input_proj, pool)   1e-3
+#     critic                              3e-4 * 0.23 = 6.9e-5
+#     ratio                               14.5x
+#
+# Before the compensation the ratio was 3.3x; the compensation
+# tripled it. The encoder therefore fits the value function long
+# before the critic body has moved, after which the critic's
+# gradients are small and it never catches up. That is consistent
+# with what the checkpoints show: critic-body kurtosis still sitting
+# at its initialisation value (1.78-1.90 uniform, 1.46-1.58 arcsine)
+# after 500 episodes, while the encoder's has drifted, and the two
+# arms' critic bodies differing by 1.6-4.4% in Frobenius norm against
+# 46-81% for their trunks.
+#
+# NOTE THIS IS NOT A BROKEN CRITIC. Held-out critic_ev reaches
+# 0.93 -- the VALUE FUNCTION learns fine. What does not train is the
+# critic BODY, which ends up close to a fixed random projection of a
+# learned latent with a trained output bias. That matters for the
+# thesis rather than for the task: the certified object's structure
+# comes from the Softplus and the spectral norm, not from learned
+# critic weights.
+#
+# Defaults to LR, so nothing changes unless asked. Raising it toward
+# 1e-3 matches the trunk:
+#
+#     LTAC_CRITIC_LR=3e-4 LTAC_VARIANT=cost LTAC_SEED=1 python main.py
+#
+# Not risk-free: a faster critic changes the advantages, which changes
+# the policy's dynamics, so treat it as an experiment rather than a
+# fix. Non-default values tag the run directory.
+CRITIC_LR = float(os.environ.get("LTAC_CRITIC_LR", LR))
+
+# Gradient steps per transition collected, for the DQN arm. 0.25 gives
+# one update per four environment steps -- the conventional ratio, and
+# it keeps the replay ratio independent of episode length, which varies
+# by 8x here between an early death and a full run.
+DQN_REPLAY_RATIO = float(os.environ.get("LTAC_DQN_RATIO", "0.25"))
 
 ###############################################################
 # Lyapunov Hyperparameters
@@ -998,8 +1054,9 @@ _tw_tag = ("" if not IS_COST or COST_TAIL_W == 0.50
 _sc_tag = ("" if not IS_COST or SPECTRAL_C_TAG == 1.772
            else f"_c{SPECTRAL_C_TAG:g}")
 _ch_tag = f"_{CHAOTIC_KIND}" if USE_CHAOTIC_INIT else ""
+_clr_tag = "" if CRITIC_LR == LR else f"_clr{CRITIC_LR:g}"
 
-OUT=Path(f"rl_csv_{_variant_tag}_s{RUN_SEED}{_mw_tag}{_dm_tag}{_tw_tag}{_sc_tag}{_ch_tag}_{timestamp}"); OUT.mkdir(exist_ok=True)
+OUT=Path(f"rl_csv_{_variant_tag}_s{RUN_SEED}{_mw_tag}{_dm_tag}{_tw_tag}{_sc_tag}{_ch_tag}{_clr_tag}_{timestamp}"); OUT.mkdir(exist_ok=True)
 
 size = 2 * VIEW_DISTANCE + 1
 y, x = np.mgrid[-VIEW_DISTANCE:VIEW_DISTANCE+1,
@@ -2255,7 +2312,7 @@ def update(model,opt,rollouts,device, ep, metrics_writer=None, return_var_tracke
                     last_alpha_feasible = (cert_alpha_feasible.detach(),
                                            cert_outside.detach())
 
-                if TRANSFORMER_VARIANT in COST_VARIANTS:
+                if IS_COST:
                     with torch.no_grad():
                         # V_cost = -value is the merged critic acting
                         # as the Lyapunov function. Evaluated on the
@@ -2341,7 +2398,7 @@ def update(model,opt,rollouts,device, ep, metrics_writer=None, return_var_tracke
                 # Both arms log the analytic certificate; only cost
                 # has a critic to certify.
                 batch_metrics.update(cert_metrics)
-                if TRANSFORMER_VARIANT in COST_VARIANTS:
+                if IS_COST:
                     batch_metrics.update(critic_metrics)
                 for k, v in batch_metrics.items():
                     if v != v:      # NaN
@@ -2435,7 +2492,7 @@ def update(model,opt,rollouts,device, ep, metrics_writer=None, return_var_tracke
             f" | a_used {avg.get('cert_alpha_used', float('nan')):.5f}"
             f" -> {avg.get('cert_alpha_next', float('nan')):.5f}"
         )
-        if TRANSFORMER_VARIANT in COST_VARIANTS:
+        if IS_COST:
             print(
                 f"  crit | n=1 | viol {avg.get('v_critic_violation', float('nan')):.3f}"
                 f" | V {avg.get('v_critic_mean', float('nan')):.4f}"
@@ -2536,7 +2593,7 @@ def run():
             # constant rate -- see LR_DECAY_FINAL.
             opt = optim.AdamW([{"params": transformer_params, "lr": 1e-3, "weight_decay":1e-5, "initial_lr": 1e-3},
                                {"params": actor_params,       "lr": LR, "weight_decay":1e-5, "initial_lr": LR},
-                               {"params": critic_params,      "lr": LR, "weight_decay":1e-5, "initial_lr": LR},
+                               {"params": critic_params,      "lr": CRITIC_LR, "weight_decay":1e-5, "initial_lr": CRITIC_LR},
                                {"params": auxiliary_params,   "lr": 2e-4, "weight_decay":1e-5},
                                # log_std_param is now a fixed, non-
                                # state-dependent parameter (see the
@@ -2564,7 +2621,7 @@ def run():
                                # problem is gone.
                                {"params": log_std_params,     "lr": LR, "weight_decay":1e-5, "initial_lr": LR},],
                               eps=1e-5,)
-        elif TRANSFORMER_VARIANT in COST_VARIANTS:
+        elif IS_COST:
             from cost_transformer import CostTransformerActorCritic
             if TRANSFORMER_VARIANT == "cost":
                 model = CostTransformerActorCritic(
@@ -2640,7 +2697,7 @@ def run():
                 # a bare critic, so it takes the same 1e-5 as every
                 # other unnormalized parameter group in every arm.
                 {"params": list(model.critic_body.parameters()),
-                 "lr": LR,
+                 "lr": CRITIC_LR,
                  "weight_decay": (1e-5 if TRANSFORMER_VARIANT == "cost_plain"
                                   else 0.0),
                  "initial_lr": LR},
@@ -2677,12 +2734,41 @@ def run():
                 {"params": list(model.actor.parameters()),
                  "lr": LR, "weight_decay": 1e-5, "initial_lr": LR},
                 {"params": list(model.critic.parameters()),
-                 "lr": LR, "weight_decay": 1e-5, "initial_lr": LR},
+                 "lr": CRITIC_LR, "weight_decay": 1e-5, "initial_lr": CRITIC_LR},
                 {"params": [model.log_std_param],
                  "lr": LR, "weight_decay": 1e-5, "initial_lr": LR},
             ])
             control_params = list(model.parameters())
             auxiliary_param_list = []
+    elif POLICY_TYPE == "dqn":
+        # Value-based arm. Shares the cost arm's trunk by subclassing,
+        # so a given seed produces a bit-identical encoder and the only
+        # difference from `cost` is the learning rule.
+        from dqn_policy import DQNPolicy, EpisodeReplay, DQNTrainer
+        model = DQNPolicy(
+            VIEW_DISTANCE, scalar_dim=SCALAR_DIM,
+            sequence_length=SEQUENCE_LENGTH,
+            softplus_beta=COST_BETA_INIT,
+            beta_gain_target=COST_BETA_GAIN_TARGET,
+            view_distance=VIEW_DISTANCE,
+            max_move=MAX_MOVE_PER_STEP).to(device)
+        opt = optim.AdamW([
+            {"params": (list(model.input_projection.parameters())
+                        + list(model.encoder.parameters())
+                        + list(model.attention_pool.parameters())
+                        + [model.position_embedding]),
+             "lr": 1e-3, "weight_decay": 1e-5, "initial_lr": 1e-3},
+            {"params": list(model.q_body.parameters()),
+             "lr": CRITIC_LR, "weight_decay": 1e-5, "initial_lr": CRITIC_LR},
+        ])
+        control_params = list(model.parameters())
+        auxiliary_param_list = []
+        dqn_replay = EpisodeReplay(seq_len=SEQUENCE_LENGTH)
+        dqn_trainer = DQNTrainer(model, opt, GAMMA, device)
+        print(f"[dqn] {model.n_actions} discrete actions, "
+              f"Softplus Q head (V_cost = -max_a Q >= 0), "
+              f"replay {len(dqn_replay)}/{dqn_replay.capacity}")
+
     else:
         # "pso" runs the swarm; "exact" runs exhaustive enumeration over
         # the same fitness, model and horizon. Both are planners: no
@@ -2849,6 +2935,22 @@ def run():
                         else:
                             smoothness = float(
                                 np.sum((current_action - previous_action) ** 2))
+            elif POLICY_TYPE == "dqn":
+                model.eval()
+                with torch.no_grad():
+                    # global_step drives the epsilon schedule; without
+                    # it epsilon would sit at EPS_START forever and the
+                    # arm would never stop exploring.
+                    a, a_idx, lp, v = model.act(s, step=total_inference_steps)
+                    lyapunov = None
+                    barrier = None
+                    current_action = a[0].detach().cpu().numpy()
+                    # Slot 2 is an ACTION INDEX here, not a pre-squash
+                    # z. Nothing downstream may treat it as continuous.
+                    stored_action = a_idx
+                    smoothness = (0.0 if previous_action is None else
+                                  float(np.sum((current_action
+                                                - previous_action) ** 2)))
             else:
                 # Set the current particle for the forward pass
                 model.current_particle = (ep - 1) % model.swarm_size
@@ -2904,7 +3006,7 @@ def run():
             ep_path_m += float(env.ch.step_path_m)
             ep_turn += float(env.ch.step_turn_integral)
 
-            if TRANSFORMER_VARIANT in COST_VARIANTS:
+            if IS_COST:
                 rew_total, rew_directional, rew_battery, rew_movement = reward_fn_cost(
                     after, tel, aft_batt / 100.0)
             else:
@@ -2924,7 +3026,7 @@ def run():
                 # tracking and the degradation guard; without this a
                 # run that learned to die early would read as its own
                 # best checkpoint.
-                if TRANSFORMER_VARIANT in COST_VARIANTS:
+                if IS_COST:
                     total -= death_cost_logged(step)
                 break
 
@@ -2960,6 +3062,53 @@ def run():
             r["bootstrap_value"] = bootstrap_value
 
         rollouts.append(r); loss=""
+
+        if POLICY_TYPE == "dqn":
+            # Push the whole episode as one observation stream and run
+            # gradient steps proportional to the experience collected.
+            #
+            # r["states"][t] is the [L, features] window at step t, so
+            # the stream is the first window followed by the LAST ROW of
+            # every subsequent window plus one final row from
+            # next_states -- that reconstructs obs[0 : T+L] exactly,
+            # which is what EpisodeReplay slices.
+            L = SEQUENCE_LENGTH
+            T = len(r["rewards"])
+            if T > 0:
+                stream = [np.asarray(r["states"][0], dtype=np.float32)]
+                for t in range(1, T):
+                    stream.append(np.asarray(r["states"][t],
+                                             dtype=np.float32)[-1:])
+                stream.append(np.asarray(r["next_states"][T - 1],
+                                         dtype=np.float32)[-1:])
+                obs_stream = np.concatenate(stream, axis=0)
+
+                dones = [0.0] * T
+                if len(r["rewards"]) < MAX_STEPS_PER_EPISODE:
+                    # Terminated early: the last transition is terminal,
+                    # so its TD target must not bootstrap. Truncation at
+                    # the step limit is NOT terminal and is left at 0.
+                    dones[-1] = 1.0
+
+                dqn_replay.push_episode(obs_stream, r["actions"],
+                                        r["rewards"], dones)
+
+                # One gradient step per DQN_UPDATES_PER_STEP transitions
+                # collected, so the replay ratio does not drift with
+                # episode length.
+                n_learn = max(1, int(T * DQN_REPLAY_RATIO))
+                dqn_metrics = None
+                for _ in range(n_learn):
+                    out = dqn_trainer.learn(dqn_replay)
+                    if out is not None:
+                        dqn_metrics = out
+                if dqn_metrics is not None:
+                    loss = dqn_metrics["dqn_loss"]
+                    print(f"DQN loss {dqn_metrics['dqn_loss']:.5f} | "
+                          f"Q {dqn_metrics['dqn_q_mean']:+.4f} | "
+                          f"tgt {dqn_metrics['dqn_target_mean']:+.4f} | "
+                          f"eps {model.epsilon(total_inference_steps):.3f} | "
+                          f"replay {len(dqn_replay)}")
         # Progress is measured in transitions, so every schedule keyed
         # to progress_frac() stretches with the actual pace of
         # experience rather than the episode counter.
@@ -3280,7 +3429,7 @@ def run():
                                         sol.apparent_zenith.iloc[0]).flatten()
             aft_batt = env.ch.get_battery()
 
-            if TRANSFORMER_VARIANT in COST_VARIANTS:
+            if IS_COST:
                 rew, rew_directional, rew_battery, rew_movement = reward_fn_cost(
                     aft, tel, aft_batt / 100.0)
             else:
@@ -3313,7 +3462,7 @@ def run():
 
             x,y,yaw=nx,ny,nyaw; h.append(obs(env,x,y,yaw,min(step+1,MAX_STEPS_PER_EPISODE-1)))
             if aft_batt<=0:
-                if TRANSFORMER_VARIANT in COST_VARIANTS:
+                if IS_COST:
                     val_total -= death_cost_logged(step)
                 break
 
