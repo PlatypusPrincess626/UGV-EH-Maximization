@@ -22,7 +22,17 @@ LOGDIR="${LOGDIR:-sweep_logs}"
 mkdir -p "$LOGDIR"
 
 n_total=0
-for s in $SEEDS; do for v in $VARIANTS; do n_total=$((n_total + 1)); done; done
+for p in POLICIES; do 
+  for s in $SEEDS; do 
+    if "$p"= "transformer"; then
+      for v in $VARIANTS; do
+        n_total=$((n_total + 1))
+      done
+    else
+      n_total=$((n_total + 1))
+    fi
+   done
+done
 
 echo "=============================================================="
 echo "paired sweep: $n_total runs"
