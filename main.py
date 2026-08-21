@@ -2952,12 +2952,21 @@ def run():
                                   float(np.sum((current_action
                                                 - previous_action) ** 2)))
             else:
-                # Set the current particle for the forward pass
-                model.current_particle = (ep - 1) % model.swarm_size
+                # Planner arms (pso, exact). No parameters, no swarm
+                # state, no episode-indexed particle -- they replan
+                # from the current observation every step, which is
+                # what makes them model-predictive rather than a
+                # policy. act() has the same 4-tuple signature as the
+                # learned arms so nothing downstream branches.
+                model.eval()
                 with torch.no_grad():
-                    a = model(s)
-                    lp, v = torch.tensor(0.0), torch.tensor(0.0)  # Dummy values
+                    a, stored_action, lp, v = model.act(s)
+                    lyapunov = None
+                    barrier = None
                     current_action = a[0].detach().cpu().numpy()
+                    smoothness = (0.0 if previous_action is None else
+                                  float(np.sum((current_action
+                                                - previous_action) ** 2)))
 
             if device.type == "cuda":
                 torch.cuda.synchronize()
@@ -3330,12 +3339,17 @@ def run():
                             torch.save(model.state_dict(), ckpt_dir / "converged.pt")
                             total_checkpoint_time += time.perf_counter() - ckpt_start
                             converged = True
+        elif POLICY_TYPE == "dqn":
+            # Already updated per episode where the replay is pushed;
+            # nothing to do at the episode boundary.
+            pass
         else:
-            # PSO Update: Evaluate current particle and update swarm
-            model.evaluate_particle(model.current_particle, total)
-            if ep % model.swarm_size == 0:
-                model.update_swarm()
-            loss = "N/A (PSO)"
+            # Planner arms have no parameters to update. The previous
+            # version called evaluate_particle()/update_swarm() here,
+            # which belonged to the earlier PSO-over-network-weights
+            # design -- the planner searches the ACTION space fresh at
+            # every step and carries no state between episodes.
+            loss = "N/A (planner)"
 
         if ep % CHECKPOINT_EVERY == 0:
             ckpt_start = time.perf_counter()
@@ -3404,11 +3418,13 @@ def run():
                     else:
                         a, _raw_a_b, lp, v = model.act(seq_tensor(h,device),True)
             else:
-                # Set the current particle for the forward pass
-                model.current_particle = (TOTAL_EPISODES - 1) % model.swarm_size
+                # Planner arms, deterministic by construction: the
+                # swarm is re-seeded per step and the exact solver
+                # enumerates, so there is no stochastic/greedy split to
+                # request the way there is for the learned arms.
+                model.eval()
                 with torch.no_grad():
-                    a = model(seq_tensor(h,device))
-                    lp, v = torch.tensor(0.0), torch.tensor(0.0)  # Dummy values
+                    a, _idx, lp, v = model.act(seq_tensor(h, device), True)
 
             elapsed = time.perf_counter() - start
             total_inference_time += elapsed
