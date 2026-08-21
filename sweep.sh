@@ -22,9 +22,9 @@ LOGDIR="${LOGDIR:-sweep_logs}"
 mkdir -p "$LOGDIR"
 
 n_total=0
-for p in POLICIES; do 
+for p in $POLICIES; do 
   for s in $SEEDS; do 
-    if "$p"= "transformer"; then
+    if [ "$p" = "transformer" ]; then
       for v in $VARIANTS; do
         n_total=$((n_total + 1))
       done
