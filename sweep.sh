@@ -22,8 +22,8 @@ LOGDIR="${LOGDIR:-sweep_logs}"
 mkdir -p "$LOGDIR"
 
 n_total=0
-for p in $POLICIES; do 
-  for s in $SEEDS; do 
+for s in $SEEDS; do
+  for p in $POLICIES; do
     if [ "$p" = "transformer" ]; then
       for v in $VARIANTS; do
         n_total=$((n_total + 1))
@@ -31,7 +31,7 @@ for p in $POLICIES; do
     else
       n_total=$((n_total + 1))
     fi
-   done
+  done
 done
 
 echo "=============================================================="
@@ -46,8 +46,8 @@ echo "=============================================================="
 
 n=0
 sweep_start=$(date +%s)
-for p in $POLICIES; do
-  for s in $SEEDS; do
+for s in $SEEDS; do
+  for p in $POLICIES; do
   
     if [ "$p" = "transformer" ]; then
       for v in $VARIANTS; do
