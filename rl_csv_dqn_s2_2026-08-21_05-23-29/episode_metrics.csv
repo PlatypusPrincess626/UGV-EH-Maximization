@@ -1,1 +1,0 @@
-episode,steps,final_battery,total_reward,total_directional_reward,total_battery_reward,total_movement_penalty,loss,episode_time,rollout_time,inference_time,env_time,update_time,peak_solar_w,mean_solar_w,start_battery,min_battery,idle_mAh,motion_mAh,path_m,turn_integral,net_displacement_m
