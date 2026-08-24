@@ -1,4 +1,126 @@
-Traceback (most recent call last):
-  File "/home/exx/Documents/UGV-EH-Maximization/main.py", line 81, in <module>
-    raise ValueError(
-ValueError: LTAC_VARIANT='pso' is not a known variant. Known: lyapunov, normal, cost, cost_linear, cost_plain, cost_lipschitz, each optionally with the '_chaotic' suffix.
+Placing Sensors
+Placing Sensors
+[Episode 1/30] Steps: 720 | Reward:  383.52 | Battery:  87.41% | Loss: N/A (planner)
+Placing Sensors
+[Episode 2/30] Steps: 720 | Reward:  363.29 | Battery:  86.89% | Loss: N/A (planner)
+Placing Sensors
+[Episode 3/30] Steps: 720 | Reward:  390.82 | Battery:  87.69% | Loss: N/A (planner)
+Placing Sensors
+[Episode 4/30] Steps: 720 | Reward:  417.96 | Battery:  89.05% | Loss: N/A (planner)
+Placing Sensors
+[Episode 5/30] Steps: 720 | Reward:  364.00 | Battery:  89.14% | Loss: N/A (planner)
+Placing Sensors
+[Episode 6/30] Steps: 720 | Reward:  347.02 | Battery:  85.02% | Loss: N/A (planner)
+Placing Sensors
+[Episode 7/30] Steps: 720 | Reward:  380.41 | Battery:  85.48% | Loss: N/A (planner)
+Placing Sensors
+[Episode 8/30] Steps: 720 | Reward:  414.89 | Battery:  87.93% | Loss: N/A (planner)
+Placing Sensors
+[Episode 9/30] Steps: 720 | Reward:  386.93 | Battery:  88.79% | Loss: N/A (planner)
+Placing Sensors
+[Episode 10/30] Steps: 720 | Reward:  349.00 | Battery:  75.84% | Loss: N/A (planner)
+Placing Sensors
+[Episode 11/30] Steps: 720 | Reward:  404.65 | Battery:  84.62% | Loss: N/A (planner)
+Placing Sensors
+[Episode 12/30] Steps: 720 | Reward:  344.02 | Battery:  85.10% | Loss: N/A (planner)
+Placing Sensors
+[Episode 13/30] Steps: 720 | Reward:  390.20 | Battery:  85.35% | Loss: N/A (planner)
+Placing Sensors
+[Episode 14/30] Steps: 720 | Reward:  360.04 | Battery:  81.92% | Loss: N/A (planner)
+Placing Sensors
+[Episode 15/30] Steps: 720 | Reward:  412.23 | Battery:  85.09% | Loss: N/A (planner)
+Placing Sensors
+[Episode 16/30] Steps: 720 | Reward:  369.79 | Battery:  85.11% | Loss: N/A (planner)
+Placing Sensors
+[Episode 17/30] Steps: 720 | Reward:  372.19 | Battery:  79.88% | Loss: N/A (planner)
+Placing Sensors
+[Episode 18/30] Steps: 720 | Reward:  358.72 | Battery:  86.17% | Loss: N/A (planner)
+Placing Sensors
+[Episode 19/30] Steps: 720 | Reward:  405.47 | Battery:  88.24% | Loss: N/A (planner)
+Placing Sensors
+[Episode 20/30] Steps: 720 | Reward:  372.39 | Battery:  79.44% | Loss: N/A (planner)
+Placing Sensors
+[Episode 21/30] Steps: 720 | Reward:  353.97 | Battery:  78.23% | Loss: N/A (planner)
+Placing Sensors
+[Episode 22/30] Steps: 720 | Reward:  374.73 | Battery:  85.68% | Loss: N/A (planner)
+Placing Sensors
+[Episode 23/30] Steps: 720 | Reward:  392.52 | Battery:  87.02% | Loss: N/A (planner)
+Placing Sensors
+[Episode 24/30] Steps: 720 | Reward:  399.59 | Battery:  89.11% | Loss: N/A (planner)
+Placing Sensors
+[Episode 25/30] Steps: 720 | Reward:  340.35 | Battery:  80.42% | Loss: N/A (planner)
+Placing Sensors
+[Episode 26/30] Steps: 720 | Reward:  408.42 | Battery:  86.22% | Loss: N/A (planner)
+Placing Sensors
+[Episode 27/30] Steps: 720 | Reward:  392.25 | Battery:  84.92% | Loss: N/A (planner)
+Placing Sensors
+[Episode 28/30] Steps: 720 | Reward:  431.72 | Battery:  87.84% | Loss: N/A (planner)
+Placing Sensors
+[Episode 29/30] Steps: 720 | Reward:  370.24 | Battery:  85.92% | Loss: N/A (planner)
+Placing Sensors
+[Episode 30/30] Steps: 720 | Reward:  369.52 | Battery:  83.68% | Loss: N/A (planner)
+[budget] 21600 transitions collected over 30 episodes -- step budget met, stopping.
+Placing Sensors
+  [validation 1/10] steps 720 | battery  39.4% ->  85.1% (min  32.1%) | reward   386.69 | |a| 0.011 | path      68 m
+Placing Sensors
+  [validation 2/10] steps 720 | battery  36.9% ->  89.3% (min  36.2%) | reward   432.44 | |a| 0.013 | path     112 m
+Placing Sensors
+  [validation 3/10] steps 720 | battery  36.0% ->  88.6% (min  36.1%) | reward   405.32 | |a| 0.010 | path      77 m
+Placing Sensors
+  [validation 4/10] steps 720 | battery  38.3% ->  87.9% (min  37.3%) | reward   376.87 | |a| 0.017 | path     147 m
+Placing Sensors
+  [validation 5/10] steps  92 | battery  37.3% ->   0.0% (min   0.0%) | reward   -73.89 | |a| 0.012 | path      19 m
+Placing Sensors
+  [validation 6/10] steps 720 | battery  37.9% ->  88.1% (min  35.3%) | reward   409.95 | |a| 0.011 | path     112 m
+Placing Sensors
+  [validation 7/10] steps 720 | battery  31.8% ->  75.6% (min  31.4%) | reward   362.92 | |a| 0.030 | path     121 m
+Placing Sensors
+  [validation 8/10] steps 720 | battery  30.5% ->  87.5% (min  17.0%) | reward   349.79 | |a| 0.054 | path     214 m
+Placing Sensors
+  [validation 9/10] steps 720 | battery  34.2% ->  78.9% (min  30.2%) | reward   339.90 | |a| 0.015 | path     133 m
+Placing Sensors
+  [validation 10/10] steps 720 | battery  36.3% ->  87.2% (min  35.5%) | reward   400.95 | |a| 0.013 | path     117 m
+
+==============================================================================
+VALIDATION COMPLETE -- 10 independent deterministic episodes
+==============================================================================
+metric                       mean        std        min        max
+reward                     339.09     147.90     -73.89     432.44
+final battery %             76.82      27.37       0.00      89.27
+min battery %               29.11      11.80       0.00      37.29
+steps                      657.20     198.59      92.00     720.00
+solar W                     28.28       9.94       0.41      32.69
+|action|                     0.02       0.01       0.01       0.05
+path m                     111.97      51.48      19.24     213.70
+tortuosity                   1.87       0.63       1.26       3.12
+motion mAh                  80.83      36.35      15.25     153.09
+idle mAh                 10573.56    3191.38    1490.74   11585.62
+
+survived full 720 steps : 9/10
+ended below 20% battery         : 1/10
+ended above 70% battery         : 9/10
+
+reward 95% CI: 339.09 +- 91.67  (247.42 to 430.77)
+
+total step rows written: 6572
+
+==============================================
+WALL CLOCK BREAKDOWN
+==============================================
+Total run time        :    1442.71 s
+  Rollout (training)  :    1098.82 s  ( 76.2%)
+    - policy inference:      35.80 s  (  2.5%)
+    - env + reward    :    1063.02 s  ( 73.7%)
+  PPO update()        :       0.00 s  (  0.0%)
+  Checkpoint saves    :       0.00 s  (  0.0%)
+  Final evaluation    :     335.94 s  ( 23.3%)
+  Other / logging     :       7.95 s  (  0.6%)
+
+==============================================
+PER-CALL AVERAGES
+==============================================
+Policy inference      :    28172 calls |    1.663 ms/step
+  final eval only     :     6572 calls |    1.681 ms/step
+Episode               :       30 eps   |   36.891 s/episode
+
+update() share of wall clock: 0.0%

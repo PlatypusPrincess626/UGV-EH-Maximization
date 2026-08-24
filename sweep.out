@@ -1,13 +1,48 @@
 nohup: ignoring input
 ==============================================================
-paired sweep: 4 runs
-  seeds     : 1
-  variants  : cost cost_plain normal lyapunov
+paired sweep: 56 runs
+  seeds     : 1 2 3 4 5 6 7 8
+  variants  : cost_lipschitz cost normal lyapunov
+  policies  : transformer pso exact dqn
   episodes  : 400
   logs      : sweep_logs/
-  started   : Fri Aug  7 05:27:41 PM UTC 2026
+  started   : Mon Aug 24 05:54:18 PM UTC 2026
 ==============================================================
-[1/4] START cost seed 1 at 17:27:41 -> sweep_logs/cost_s1.out
-[1/4] DONE  cost seed 1 in 285 min
-          elapsed 285 min, ~855 min remaining
-[2/4] START cost_plain seed 1 at 22:12:43 -> sweep_logs/cost_plain_s1.out
+[1/56] SKIP  cost_lipschitz seed 1 (already done)
+[2/56] SKIP  cost seed 1 (already done)
+[3/56] SKIP  normal seed 1 (already done)
+[4/56] SKIP  lyapunov seed 1 (already done)
+[5/56] SKIP  pso seed 1 (already done)
+[6/56] SKIP  exact seed 1 (already done)
+[7/56] SKIP  dqn seed 1 (already done)
+[8/56] SKIP  cost_lipschitz seed 2 (already done)
+[9/56] SKIP  cost seed 2 (already done)
+[10/56] SKIP  normal seed 2 (already done)
+[11/56] SKIP  lyapunov seed 2 (already done)
+[12/56] SKIP  pso seed 2 (already done)
+[13/56] SKIP  exact seed 2 (already done)
+[14/56] SKIP  dqn seed 2 (already done)
+[15/56] SKIP  cost_lipschitz seed 3 (already done)
+[16/56] SKIP  cost seed 3 (already done)
+[17/56] SKIP  normal seed 3 (already done)
+[18/56] SKIP  lyapunov seed 3 (already done)
+[19/56] SKIP  pso seed 3 (already done)
+[20/56] SKIP  exact seed 3 (already done)
+[21/56] SKIP  dqn seed 3 (already done)
+[22/56] SKIP  cost_lipschitz seed 4 (already done)
+[23/56] SKIP  cost seed 4 (already done)
+[24/56] SKIP  normal seed 4 (already done)
+[25/56] SKIP  lyapunov seed 4 (already done)
+[26/56] SKIP  pso seed 4 (already done)
+[27/56] SKIP  exact seed 4 (already done)
+[28/56] SKIP  dqn seed 4 (already done)
+[29/56] SKIP  cost_lipschitz seed 5 (already done)
+[30/56] SKIP  cost seed 5 (already done)
+[31/56] SKIP  normal seed 5 (already done)
+[32/56] SKIP  lyapunov seed 5 (already done)
+[33/56] SKIP  pso seed 5 (already done)
+[34/56] SKIP  exact seed 5 (already done)
+[35/56] SKIP  dqn seed 5 (already done)
+[36/56] SKIP  cost_lipschitz seed 6 (already done)
+[37/56] SKIP  cost seed 6 (already done)
+[38/56] START normal seed 6 at 17:54:18 -> sweep_logs/normal_s6.out

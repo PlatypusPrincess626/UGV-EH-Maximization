@@ -1,0 +1,126 @@
+Placing Sensors
+Placing Sensors
+[Episode 1/30] Steps: 720 | Reward:  364.09 | Battery:  80.64% | Loss: N/A (planner)
+Placing Sensors
+[Episode 2/30] Steps: 720 | Reward:  347.89 | Battery:  89.29% | Loss: N/A (planner)
+Placing Sensors
+[Episode 3/30] Steps: 720 | Reward:  397.19 | Battery:  85.15% | Loss: N/A (planner)
+Placing Sensors
+[Episode 4/30] Steps: 720 | Reward:  341.42 | Battery:  76.28% | Loss: N/A (planner)
+Placing Sensors
+[Episode 5/30] Steps: 720 | Reward:  358.11 | Battery:  85.24% | Loss: N/A (planner)
+Placing Sensors
+[Episode 6/30] Steps: 720 | Reward:  349.51 | Battery:  79.34% | Loss: N/A (planner)
+Placing Sensors
+[Episode 7/30] Steps: 720 | Reward:  347.73 | Battery:  86.91% | Loss: N/A (planner)
+Placing Sensors
+[Episode 8/30] Steps: 720 | Reward:  308.21 | Battery:  81.70% | Loss: N/A (planner)
+Placing Sensors
+[Episode 9/30] Steps: 720 | Reward:  379.01 | Battery:  87.83% | Loss: N/A (planner)
+Placing Sensors
+[Episode 10/30] Steps: 720 | Reward:  405.75 | Battery:  88.28% | Loss: N/A (planner)
+Placing Sensors
+[Episode 11/30] Steps: 720 | Reward:  328.17 | Battery:  81.64% | Loss: N/A (planner)
+Placing Sensors
+[Episode 12/30] Steps: 720 | Reward:  369.40 | Battery:  85.70% | Loss: N/A (planner)
+Placing Sensors
+[Episode 13/30] Steps: 720 | Reward:  365.70 | Battery:  87.48% | Loss: N/A (planner)
+Placing Sensors
+[Episode 14/30] Steps: 720 | Reward:  436.18 | Battery:  84.46% | Loss: N/A (planner)
+Placing Sensors
+[Episode 15/30] Steps: 720 | Reward:  355.85 | Battery:  84.63% | Loss: N/A (planner)
+Placing Sensors
+[Episode 16/30] Steps: 720 | Reward:  415.28 | Battery:  90.06% | Loss: N/A (planner)
+Placing Sensors
+[Episode 17/30] Steps: 720 | Reward:  405.67 | Battery:  87.80% | Loss: N/A (planner)
+Placing Sensors
+[Episode 18/30] Steps: 720 | Reward:  455.56 | Battery:  86.21% | Loss: N/A (planner)
+Placing Sensors
+[Episode 19/30] Steps: 720 | Reward:  375.95 | Battery:  87.80% | Loss: N/A (planner)
+Placing Sensors
+[Episode 20/30] Steps: 720 | Reward:  407.71 | Battery:  87.86% | Loss: N/A (planner)
+Placing Sensors
+[Episode 21/30] Steps: 720 | Reward:  417.68 | Battery:  88.36% | Loss: N/A (planner)
+Placing Sensors
+[Episode 22/30] Steps: 720 | Reward:  373.89 | Battery:  87.80% | Loss: N/A (planner)
+Placing Sensors
+[Episode 23/30] Steps: 720 | Reward:  380.21 | Battery:  82.47% | Loss: N/A (planner)
+Placing Sensors
+[Episode 24/30] Steps: 720 | Reward:  344.56 | Battery:  77.91% | Loss: N/A (planner)
+Placing Sensors
+[Episode 25/30] Steps: 720 | Reward:  440.17 | Battery:  87.95% | Loss: N/A (planner)
+Placing Sensors
+[Episode 26/30] Steps: 720 | Reward:  351.58 | Battery:  83.79% | Loss: N/A (planner)
+Placing Sensors
+[Episode 27/30] Steps: 720 | Reward:  386.29 | Battery:  87.68% | Loss: N/A (planner)
+Placing Sensors
+[Episode 28/30] Steps: 720 | Reward:  275.19 | Battery:  57.52% | Loss: N/A (planner)
+Placing Sensors
+[Episode 29/30] Steps: 720 | Reward:  361.97 | Battery:  86.68% | Loss: N/A (planner)
+Placing Sensors
+[Episode 30/30] Steps: 720 | Reward:  291.96 | Battery:  52.93% | Loss: N/A (planner)
+[budget] 21600 transitions collected over 30 episodes -- step budget met, stopping.
+Placing Sensors
+  [validation 1/10] steps 720 | battery  30.4% ->  85.1% (min  29.8%) | reward   387.34 | |a| 0.019 | path     176 m
+Placing Sensors
+  [validation 2/10] steps 720 | battery  32.9% ->  86.6% (min  32.1%) | reward   365.14 | |a| 0.017 | path     169 m
+Placing Sensors
+  [validation 3/10] steps 720 | battery  39.9% ->  87.9% (min  39.1%) | reward   388.61 | |a| 0.011 | path      94 m
+Placing Sensors
+  [validation 4/10] steps 720 | battery  37.8% ->  87.1% (min  37.4%) | reward   376.81 | |a| 0.012 | path     104 m
+Placing Sensors
+  [validation 5/10] steps 720 | battery  31.1% ->  53.5% (min  30.2%) | reward   257.93 | |a| 0.104 | path     203 m
+Placing Sensors
+  [validation 6/10] steps 720 | battery  30.2% ->  86.5% (min  29.9%) | reward   390.98 | |a| 0.014 | path     131 m
+Placing Sensors
+  [validation 7/10] steps 720 | battery  33.1% ->  81.4% (min  32.7%) | reward   375.68 | |a| 0.013 | path     115 m
+Placing Sensors
+  [validation 8/10] steps 720 | battery  30.3% ->  81.9% (min  28.7%) | reward   369.36 | |a| 0.018 | path     175 m
+Placing Sensors
+  [validation 9/10] steps 720 | battery  38.2% ->  87.0% (min  37.5%) | reward   400.80 | |a| 0.010 | path      86 m
+Placing Sensors
+  [validation 10/10] steps 720 | battery  33.9% ->  87.1% (min  32.9%) | reward   375.48 | |a| 0.017 | path     158 m
+
+==============================================================================
+VALIDATION COMPLETE -- 10 independent deterministic episodes
+==============================================================================
+metric                       mean        std        min        max
+reward                     368.81      40.44     257.93     400.80
+final battery %             82.41      10.39      53.52      87.89
+min battery %               33.03       3.73      28.66      39.12
+steps                      720.00       0.00     720.00     720.00
+solar W                     30.67       2.69      23.27      33.05
+|action|                     0.02       0.03       0.01       0.10
+path m                     141.17      40.38      85.99     203.30
+tortuosity                   1.61       0.25       1.33       1.99
+motion mAh                 101.21      27.72      61.29     141.03
+idle mAh                 11582.40       0.00   11582.40   11582.40
+
+survived full 720 steps : 10/10
+ended below 20% battery         : 0/10
+ended above 70% battery         : 9/10
+
+reward 95% CI: 368.81 +- 25.06  (343.75 to 393.87)
+
+total step rows written: 7200
+
+==============================================
+WALL CLOCK BREAKDOWN
+==============================================
+Total run time        :    1431.91 s
+  Rollout (training)  :    1059.00 s  ( 74.0%)
+    - policy inference:       4.55 s  (  0.3%)
+    - env + reward    :    1054.45 s  ( 73.6%)
+  PPO update()        :       0.00 s  (  0.0%)
+  Checkpoint saves    :       0.00 s  (  0.0%)
+  Final evaluation    :     364.96 s  ( 25.5%)
+  Other / logging     :       7.95 s  (  0.6%)
+
+==============================================
+PER-CALL AVERAGES
+==============================================
+Policy inference      :    28800 calls |    0.218 ms/step
+  final eval only     :     7200 calls |    0.240 ms/step
+Episode               :       30 eps   |   35.565 s/episode
+
+update() share of wall clock: 0.0%
