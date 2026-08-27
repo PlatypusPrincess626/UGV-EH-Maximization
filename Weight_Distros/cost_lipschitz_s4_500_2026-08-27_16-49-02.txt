@@ -1,0 +1,38 @@
+generated 2026-08-27T16:49:02
+source  rl_csv_cost_lipschitz_s4/checkpoints/episode_500.pt
+        model=cost_lipschitz seed=4 checkpoint=500 run=?
+
+=== rl_csv_cost_lipschitz_s4/checkpoints/episode_500.pt ===
+tensor                                                        shape       std     kurt  sig_max    vs xav eff_rank  eff_sig
+actor.0.weight                                           (128, 128)    0.0882     1.80    1.986     0.99x     54.6        -
+actor.2.weight                                             (2, 128)    0.0029     2.80    0.037     0.02x      1.8        -
+attention_pool.parametrizations.weight.original            (1, 128)    0.1364     1.93    1.546     1.01x      1.0    1.000
+critic_body.0.parametrizations.weight.original           (256, 128)    0.0725     1.80    2.090     1.06x     66.3    1.000
+critic_body.2.parametrizations.weight.original           (128, 256)    0.0724     1.80    2.217     1.12x     62.3    1.000
+critic_body.4.parametrizations.weight.original            (64, 128)    0.1024     1.80    1.999     1.01x     34.6    1.000
+critic_body.6.parametrizations.weight.original              (1, 64)    0.1705     2.00    1.365     0.86x      1.0    1.000
+ers.0.attn.out_proj.parametrizations.weight.original     (128, 128)    0.0577     2.17    1.946     0.97x     35.1    1.000
+yers.0.attn.qk_proj.parametrizations.weight.original     (128, 128)    0.0727     2.80    3.534     1.77x     22.5    1.000
+ayers.0.attn.v_proj.parametrizations.weight.original     (128, 128)    0.0576     2.27    2.026     1.01x     33.4    1.000
+er.layers.0.linear1.parametrizations.weight.original     (256, 128)    0.0557     2.25    3.063     1.55x     33.7    1.000
+er.layers.0.linear2.parametrizations.weight.original     (128, 256)    0.0429     2.66    2.840     1.44x     27.1    1.000
+ers.1.attn.out_proj.parametrizations.weight.original     (128, 128)    0.0553     2.16    2.680     1.34x     24.1    1.000
+yers.1.attn.qk_proj.parametrizations.weight.original     (128, 128)    0.0638     2.74    3.909     1.95x     17.9    1.000
+ayers.1.attn.v_proj.parametrizations.weight.original     (128, 128)    0.0560     2.13    2.767     1.38x     23.8    1.000
+er.layers.1.linear1.parametrizations.weight.original     (256, 128)    0.0556     2.13    3.310     1.68x     31.0    1.000
+er.layers.1.linear2.parametrizations.weight.original     (128, 256)    0.0415     2.42    3.000     1.52x     24.8    1.000
+input_projection.0.parametrizations.weight.original     (128, 1689)    0.0398     2.83    4.703     2.70x     42.1    1.000
+position_embedding                                     (1, 32, 128)    0.0755     6.11      nan      nanx      nan        -
+
+--- group summary: rl_csv_cost_lipschitz_s4/checkpoints/episode_500.pt ---
+group             n   mean std  mean kurt    sig/xav   rank/max
+actor             2     0.0455       2.30      0.508      0.664
+critic            4     0.1044       1.85      1.016      0.636
+encoder          10     0.0559       2.37      1.463      0.214
+input_proj        1     0.0398       2.83      2.704      0.329
+other             1     0.0755       6.11        nan        nan
+pool              1     0.1364       1.93      1.008      1.000
+
+reference values: uniform kurt ~1.80, gaussian ~3.00, arcsine ~1.50
+eff_sig should read 1.000 for every parametrised layer; anything else means the spectral normalisation is stale.
+(torch not importable -- parsed the checkpoint directly)

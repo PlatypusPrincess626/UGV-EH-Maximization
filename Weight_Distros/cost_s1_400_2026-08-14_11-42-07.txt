@@ -1,0 +1,36 @@
+generated 2026-08-27T17:02:22
+source  rl_csv_cost_s1_2026-08-14_11-42-07/checkpoints/episode_400.pt
+        model=cost seed=1 checkpoint=400 run=2026-08-14_11-42-07
+
+=== rl_csv_cost_s1_2026-08-14_11-42-07/checkpoints/episode_400.pt ===
+tensor                                                        shape       std     kurt  sig_max    vs xav eff_rank  eff_sig
+actor.0.weight                                           (128, 128)    0.0884     1.79    2.018     1.01x     53.7        -
+actor.2.weight                                             (2, 128)    0.0028     3.25    0.034     0.02x      1.9        -
+attention_pool.weight                                      (1, 128)    0.1425     1.93    1.614     1.05x      1.0        -
+critic_body.0.parametrizations.weight.original           (256, 128)    0.0719     1.82    2.131     1.08x     64.3    1.000
+critic_body.2.parametrizations.weight.original           (128, 256)    0.0724     1.81    2.154     1.09x     64.1    1.000
+critic_body.4.parametrizations.weight.original            (64, 128)    0.1031     1.79    2.055     1.04x     33.9    1.000
+critic_body.6.parametrizations.weight.original              (1, 64)    0.1666     2.03    1.337     0.85x      1.0    1.000
+encoder.layers.0.linear1.weight                          (256, 128)    0.0769     2.07    2.773     1.41x     52.4        -
+encoder.layers.0.linear2.weight                          (128, 256)    0.0756     2.03    2.538     1.29x     56.4        -
+encoder.layers.0.self_attn.in_proj_weight                (384, 128)    0.0814     2.73    5.249     2.72x     34.4        -
+encoder.layers.0.self_attn.out_proj.weight               (128, 128)    0.0941     2.03    2.714     1.36x     41.9        -
+encoder.layers.1.linear1.weight                          (256, 128)    0.0746     1.99    2.735     1.39x     51.8        -
+encoder.layers.1.linear2.weight                          (128, 256)    0.0736     1.95    2.296     1.16x     61.0        -
+encoder.layers.1.self_attn.in_proj_weight                (384, 128)    0.0745     2.51    5.267     2.73x     32.0        -
+encoder.layers.1.self_attn.out_proj.weight               (128, 128)    0.0900     1.90    2.463     1.23x     44.7        -
+input_projection.0.weight                               (128, 1689)    0.0400     2.67    3.753     2.16x     53.3        -
+position_embedding                                     (1, 32, 128)    0.0716     4.11      nan      nanx      nan        -
+
+--- group summary: rl_csv_cost_s1_2026-08-14_11-42-07/checkpoints/episode_400.pt ---
+group             n   mean std  mean kurt    sig/xav   rank/max
+actor             2     0.0456       2.52      0.515      0.682
+critic            4     0.1035       1.86      1.016      0.633
+encoder           8     0.0801       2.15      1.660      0.366
+input_proj        1     0.0400       2.67      2.158      0.416
+other             1     0.0716       4.11        nan        nan
+pool              1     0.1425       1.93      1.053      1.000
+
+reference values: uniform kurt ~1.80, gaussian ~3.00, arcsine ~1.50
+eff_sig should read 1.000 for every parametrised layer; anything else means the spectral normalisation is stale.
+(torch not importable -- parsed the checkpoint directly)
