@@ -1,4 +1,1548 @@
-Traceback (most recent call last):
-  File "/home/exx/Documents/UGV-EH-Maximization/main.py", line 5, in <module>
-    import torch
-ModuleNotFoundError: No module named 'torch'
+Placing Sensors
+Placing Sensors
+[Episode 1/400] Steps:  71 | Reward:  -56.93 | Battery:   0.00% | Loss: 
+Placing Sensors
+[Episode 2/400] Steps: 720 | Reward:  169.12 | Battery:  50.42% | Loss: 
+Placing Sensors
+Policy -0.0065 | Value 370.5638 | Lyap 0.0030 | Dynamics 1.5129 | Barrier 0.8248 | KL 0.00528 | CF 0.0575 | Std 0.1054 | RawLogStd 0.0002 | |a| 0.0127 | EV -0.002 | Alpha 0.9226 | MB 24/24
+  cert | viol 0.229 | dV -0.288597 | V 0.3888 | inball 0.335 | a*_q05 0.00017 | a*_q50 0.02286 | dV>=0 0.052 | n=150 | a_used 0.01000 -> 0.00950
+[Episode 3/400] Steps: 720 | Reward:  189.90 | Battery:  49.16% | Loss: 2.0673
+Placing Sensors
+[Episode 4/400] Steps:  75 | Reward:  -71.22 | Battery:   0.00% | Loss: 
+Placing Sensors
+[Episode 5/400] Steps:  82 | Reward:  -60.02 | Battery:   0.00% | Loss: 
+Placing Sensors
+[Episode 6/400] Steps:  70 | Reward:  -59.92 | Battery:   0.00% | Loss: 
+Placing Sensors
+[Episode 7/400] Steps:  86 | Reward:  -75.21 | Battery:   0.00% | Loss: 
+Placing Sensors
+[Episode 8/400] Steps:  72 | Reward:  -63.09 | Battery:   0.00% | Loss: 
+Placing Sensors
+[Episode 9/400] Steps:  92 | Reward:  -66.20 | Battery:   0.00% | Loss: 
+Placing Sensors
+[Episode 10/400] Steps: 720 | Reward:  163.21 | Battery:  51.76% | Loss: 
+Placing Sensors
+Policy -0.0017 | Value 244.9218 | Lyap 0.0051 | Dynamics 1.3286 | Barrier 1.2961 | KL 0.00479 | CF 0.0510 | Std 0.1055 | RawLogStd 0.0006 | |a| 0.0167 | EV +0.127 | Alpha 0.8330 | MB 32/32
+  cert | viol 0.570 | dV -0.170209 | V 0.3404 | inball 0.104 | a*_q05 -0.01159 | a*_q50 0.00690 | dV>=0 0.196 | n=150 | a_used 0.00950 -> 0.00903
+[Episode 11/400] Steps: 720 | Reward:  116.35 | Battery:  41.94% | Loss: 1.7353
+Placing Sensors
+[Episode 12/400] Steps: 720 | Reward:  195.88 | Battery:  61.17% | Loss: 
+Placing Sensors
+[Episode 13/400] Steps:  78 | Reward:  -68.47 | Battery:   0.00% | Loss: 
+Placing Sensors
+Policy -0.0011 | Value 222.7583 | Lyap 0.0037 | Dynamics 1.3171 | Barrier 1.7518 | KL 0.00551 | CF 0.0644 | Std 0.1056 | RawLogStd 0.0013 | |a| 0.0153 | EV +0.162 | Alpha 0.7683 | MB 24/24
+  cert | viol 0.208 | dV -0.188039 | V 0.2760 | inball 0.247 | a*_q05 -0.00064 | a*_q50 0.01542 | dV>=0 0.068 | n=150 | a_used 0.00903 -> 0.00857
+[Episode 14/400] Steps: 720 | Reward:  182.66 | Battery:  61.48% | Loss: 1.5776
+Placing Sensors
+[Episode 15/400] Steps: 720 | Reward:  131.61 | Battery:  34.65% | Loss: 
+Placing Sensors
+[Episode 16/400] Steps: 131 | Reward:  -66.92 | Battery:   0.00% | Loss: 
+Placing Sensors
+Policy -0.0076 | Value 219.4173 | Lyap 0.0033 | Dynamics 1.3727 | Barrier 1.6822 | KL 0.00400 | CF 0.0442 | Std 0.1058 | RawLogStd 0.0020 | |a| 0.0120 | EV +0.242 | Alpha 0.7066 | MB 28/28
+  cert | viol 0.405 | dV -0.211816 | V 0.3334 | inball 0.297 | a*_q05 0.00157 | a*_q50 0.01826 | dV>=0 0.024 | n=150 | a_used 0.00857 -> 0.00798
+[Episode 17/400] Steps: 720 | Reward:  221.46 | Battery:  72.95% | Loss: 1.4690
+Placing Sensors
+[Episode 18/400] Steps:  96 | Reward:  -52.01 | Battery:   0.00% | Loss: 
+Placing Sensors
+[Episode 19/400] Steps:  70 | Reward:  -60.58 | Battery:   0.00% | Loss: 
+Placing Sensors
+[Episode 20/400] Steps: 720 | Reward:  190.25 | Battery:  59.14% | Loss: 
+Placing Sensors
+Policy -0.0094 | Value 154.9140 | Lyap 0.0053 | Dynamics 1.4605 | Barrier 1.5063 | KL 0.00677 | CF 0.0872 | Std 0.1059 | RawLogStd 0.0029 | |a| 0.0161 | EV +0.326 | Alpha 0.6486 | MB 28/28
+  cert | viol 0.436 | dV -0.164828 | V 0.3286 | inball 0.192 | a*_q05 -0.00085 | a*_q50 0.01038 | dV>=0 0.103 | n=150 | a_used 0.00798 -> 0.00701
+[Episode 21/400] Steps: 720 | Reward:  194.20 | Battery:  65.82% | Loss: 1.1488
+Placing Sensors
+[Episode 22/400] Steps: 720 | Reward:  132.98 | Battery:  49.13% | Loss: 
+Placing Sensors
+[Episode 23/400] Steps: 118 | Reward:  -69.63 | Battery:   0.00% | Loss: 
+Placing Sensors
+[Episode 24/400] Steps:  84 | Reward:  -59.45 | Battery:   0.00% | Loss: 
+Placing Sensors
+Policy 0.0016 | Value 118.7702 | Lyap 0.0043 | Dynamics 1.4814 | Barrier 1.6472 | KL 0.00885 | CF 0.1122 | Std 0.1061 | RawLogStd 0.0039 | |a| 0.0154 | EV +0.523 | Alpha 0.5942 | MB 28/28
+  cert | viol 0.437 | dV -0.175578 | V 0.3927 | inball 0.099 | a*_q05 -0.00324 | a*_q50 0.00809 | dV>=0 0.241 | n=150 | a_used 0.00701 -> 0.00666
+[Episode 25/400] Steps: 720 | Reward:  209.39 | Battery:  74.39% | Loss: 1.1657
+Placing Sensors
+[Episode 26/400] Steps:  76 | Reward:  -60.99 | Battery:   0.00% | Loss: 
+Placing Sensors
+[Episode 27/400] Steps: 720 | Reward:  130.96 | Battery:  45.48% | Loss: 
+Placing Sensors
+[Episode 28/400] Steps:  85 | Reward:  -55.54 | Battery:   0.00% | Loss: 
+Placing Sensors
+[Episode 29/400] Steps: 157 | Reward:  -53.76 | Battery:   0.00% | Loss: 
+Placing Sensors
+[Episode 30/400] Steps: 163 | Reward:  -60.46 | Battery:   0.00% | Loss: 
+Placing Sensors
+Policy -0.0001 | Value 170.9205 | Lyap 0.0053 | Dynamics 1.5687 | Barrier 1.5003 | KL 0.01012 | CF 0.1224 | Std 0.1064 | RawLogStd 0.0052 | |a| 0.0177 | EV +0.505 | Alpha 0.5364 | MB 32/32
+  cert | viol 0.342 | dV -0.194330 | V 0.3010 | inball 0.156 | a*_q05 -0.00441 | a*_q50 0.01416 | dV>=0 0.098 | n=150 | a_used 0.00666 -> 0.00633
+[Episode 31/400] Steps: 720 | Reward:  187.94 | Battery:  53.88% | Loss: 0.8743
+Placing Sensors
+[Episode 32/400] Steps:  66 | Reward:  -57.76 | Battery:   0.00% | Loss: 
+Placing Sensors
+[Episode 33/400] Steps: 720 | Reward:  118.41 | Battery:  42.65% | Loss: 
+Placing Sensors
+Policy -0.0021 | Value 97.3677 | Lyap 0.0067 | Dynamics 1.6158 | Barrier 1.7013 | KL 0.00492 | CF 0.0562 | Std 0.1066 | RawLogStd 0.0064 | |a| 0.0156 | EV +0.666 | Alpha 0.4950 | MB 24/24
+  cert | viol 0.510 | dV -0.134368 | V 0.2882 | inball 0.165 | a*_q05 -0.01163 | a*_q50 0.00617 | dV>=0 0.151 | n=150 | a_used 0.00633 -> 0.00601
+[Episode 34/400] Steps: 720 | Reward:  183.20 | Battery:  57.79% | Loss: 0.8344
+Placing Sensors
+[Episode 35/400] Steps:  74 | Reward:  -70.19 | Battery:   0.00% | Loss: 
+Placing Sensors
+[Episode 36/400] Steps: 720 | Reward:  126.20 | Battery:  36.13% | Loss: 
+Placing Sensors
+[Episode 37/400] Steps: 133 | Reward:  -66.46 | Battery:   0.00% | Loss: 
+Placing Sensors
+Policy 0.0018 | Value 127.7611 | Lyap 0.0055 | Dynamics 1.6579 | Barrier 1.6077 | KL 0.00651 | CF 0.0843 | Std 0.1068 | RawLogStd 0.0077 | |a| 0.0132 | EV +0.618 | Alpha 0.4534 | MB 28/28
+  cert | viol 0.299 | dV -0.191592 | V 0.3104 | inball 0.171 | a*_q05 -0.02016 | a*_q50 0.01599 | dV>=0 0.148 | n=150 | a_used 0.00601 -> 0.00571
+[Episode 38/400] Steps: 720 | Reward:  182.46 | Battery:  57.01% | Loss: 0.8144
+Placing Sensors
+[Episode 39/400] Steps: 720 | Reward:  187.54 | Battery:  60.11% | Loss: 
+Placing Sensors
+Policy -0.0003 | Value 132.1650 | Lyap 0.0036 | Dynamics 1.1852 | Barrier 0.2889 | KL 0.00759 | CF 0.0978 | Std 0.1071 | RawLogStd 0.0089 | |a| 0.0175 | EV +0.631 | Alpha 0.4199 | MB 24/24
+  cert | viol 0.202 | dV -0.203655 | V 0.2976 | inball 0.293 | a*_q05 -0.01012 | a*_q50 0.01647 | dV>=0 0.125 | n=150 | a_used 0.00571 -> 0.00543
+[Episode 40/400] Steps: 720 | Reward:  200.95 | Battery:  59.09% | Loss: 0.7835
+Placing Sensors
+[Episode 41/400] Steps:  76 | Reward:  -68.95 | Battery:   0.00% | Loss: 
+Placing Sensors
+[Episode 42/400] Steps: 720 | Reward:  149.47 | Battery:  43.96% | Loss: 
+Placing Sensors
+Policy 0.0013 | Value 117.5148 | Lyap 0.0038 | Dynamics 0.4677 | Barrier 0.0678 | KL 0.00789 | CF 0.0965 | Std 0.1073 | RawLogStd 0.0100 | |a| 0.0196 | EV +0.606 | Alpha 0.3873 | MB 24/24
+  cert | viol 0.423 | dV -0.173510 | V 0.3401 | inball 0.106 | a*_q05 -0.01390 | a*_q50 0.00683 | dV>=0 0.229 | n=150 | a_used 0.00543 -> 0.00516
+[Episode 43/400] Steps: 720 | Reward:  198.83 | Battery:  64.96% | Loss: 0.7327
+Placing Sensors
+[Episode 44/400] Steps: 720 | Reward:  186.11 | Battery:  60.52% | Loss: 
+Placing Sensors
+[Episode 45/400] Steps:  78 | Reward:  -67.26 | Battery:   0.00% | Loss: 
+Placing Sensors
+Policy 0.0002 | Value 113.3612 | Lyap 0.0027 | Dynamics 0.2116 | Barrier 0.0467 | KL 0.00717 | CF 0.0900 | Std 0.1074 | RawLogStd 0.0109 | |a| 0.0163 | EV +0.667 | Alpha 0.3572 | MB 24/24
+  cert | viol 0.312 | dV -0.200442 | V 0.2845 | inball 0.228 | a*_q05 -0.01481 | a*_q50 0.01389 | dV>=0 0.182 | n=150 | a_used 0.00516 -> 0.00490
+[Episode 46/400] Steps: 720 | Reward:  167.75 | Battery:  44.95% | Loss: 0.6308
+Placing Sensors
+[Episode 47/400] Steps: 107 | Reward:  -65.35 | Battery:   0.00% | Loss: 
+Placing Sensors
+[Episode 48/400] Steps:  85 | Reward:  -63.53 | Battery:   0.00% | Loss: 
+Placing Sensors
+[Episode 49/400] Steps: 720 | Reward:  145.97 | Battery:  46.84% | Loss: 
+Placing Sensors
+Policy -0.0071 | Value 157.9086 | Lyap 0.0023 | Dynamics 0.1656 | Barrier 0.0772 | KL 0.00829 | CF 0.0998 | Std 0.1076 | RawLogStd 0.0119 | |a| 0.0207 | EV +0.618 | Alpha 0.3275 | MB 28/28
+  cert | viol 0.341 | dV -0.193423 | V 0.3842 | inball 0.170 | a*_q05 -0.00934 | a*_q50 0.00928 | dV>=0 0.185 | n=150 | a_used 0.00490 -> 0.00465
+[Episode 50/400] Steps: 720 | Reward:  153.00 | Battery:  45.07% | Loss: 0.5312
+Placing Sensors
+[Episode 51/400] Steps: 720 | Reward:  188.12 | Battery:  58.52% | Loss: 
+Placing Sensors
+Policy -0.0043 | Value 127.2347 | Lyap 0.0018 | Dynamics 0.0906 | Barrier 0.0464 | KL 0.00493 | CF 0.0604 | Std 0.1078 | RawLogStd 0.0128 | |a| 0.0150 | EV +0.610 | Alpha 0.3033 | MB 24/24
+  cert | viol 0.318 | dV -0.165496 | V 0.2941 | inball 0.236 | a*_q05 -0.00201 | a*_q50 0.00992 | dV>=0 0.088 | n=150 | a_used 0.00465 -> 0.00442
+[Episode 52/400] Steps: 720 | Reward:  133.39 | Battery:  38.98% | Loss: 0.6124
+Placing Sensors
+[Episode 53/400] Steps:  96 | Reward:  -67.69 | Battery:   0.00% | Loss: 
+Placing Sensors
+[Episode 54/400] Steps: 720 | Reward:  222.46 | Battery:  63.63% | Loss: 
+Placing Sensors
+Policy 0.0014 | Value 99.4428 | Lyap 0.0021 | Dynamics 0.0707 | Barrier 0.0613 | KL 0.00645 | CF 0.0850 | Std 0.1080 | RawLogStd 0.0137 | |a| 0.0149 | EV +0.682 | Alpha 0.2794 | MB 24/24
+  cert | viol 0.117 | dV -0.259919 | V 0.3385 | inball 0.360 | a*_q05 0.00195 | a*_q50 0.02410 | dV>=0 0.027 | n=150 | a_used 0.00442 -> 0.00429
+[Episode 55/400] Steps: 720 | Reward:  237.20 | Battery:  69.62% | Loss: 0.4539
+Placing Sensors
+[Episode 56/400] Steps:  95 | Reward:  -56.30 | Battery:   0.00% | Loss: 
+Placing Sensors
+[Episode 57/400] Steps: 100 | Reward:  -55.25 | Battery:   0.00% | Loss: 
+Placing Sensors
+[Episode 58/400] Steps: 720 | Reward:  258.20 | Battery:  63.88% | Loss: 
+Placing Sensors
+[Episode 59/400] Steps:  82 | Reward:  -55.58 | Battery:   0.00% | Loss: 
+Placing Sensors
+[Episode 60/400] Steps: 135 | Reward:  -64.82 | Battery:   0.00% | Loss: 
+Placing Sensors
+Policy 0.0052 | Value 165.6093 | Lyap 0.0027 | Dynamics 0.0575 | Barrier 0.0565 | KL 0.00555 | CF 0.0679 | Std 0.1081 | RawLogStd 0.0146 | |a| 0.0167 | EV +0.657 | Alpha 0.2532 | MB 32/32
+  cert | viol 0.207 | dV -0.222064 | V 0.3212 | inball 0.292 | a*_q05 -0.01470 | a*_q50 0.02259 | dV>=0 0.138 | n=150 | a_used 0.00429 -> 0.00407
+[Episode 61/400] Steps: 720 | Reward:  140.82 | Battery:  39.78% | Loss: 0.5320
+Placing Sensors
+[Episode 62/400] Steps: 100 | Reward:  -75.16 | Battery:   0.00% | Loss: 
+Placing Sensors
+[Episode 63/400] Steps: 120 | Reward:  -56.91 | Battery:   0.00% | Loss: 
+Placing Sensors
+[Episode 64/400] Steps: 720 | Reward:  224.72 | Battery:  64.81% | Loss: 
+Placing Sensors
+[Episode 65/400] Steps: 142 | Reward:  -58.35 | Battery:   0.00% | Loss: 
+Placing Sensors
+[Episode 66/400] Steps: 158 | Reward:  -55.40 | Battery:   0.00% | Loss: 
+Placing Sensors
+Policy 0.0009 | Value 142.1168 | Lyap 0.0026 | Dynamics 0.0573 | Barrier 0.0564 | KL 0.00732 | CF 0.0981 | Std 0.1083 | RawLogStd 0.0154 | |a| 0.0158 | EV +0.626 | Alpha 0.2281 | MB 32/32
+  cert | viol 0.065 | dV -0.242408 | V 0.3205 | inball 0.324 | a*_q05 0.00373 | a*_q50 0.02760 | dV>=0 0.009 | n=150 | a_used 0.00407 -> 0.00410
+[Episode 67/400] Steps: 720 | Reward:  267.19 | Battery:  77.77% | Loss: 0.4505
+Placing Sensors
+[Episode 68/400] Steps: 720 | Reward:  231.55 | Battery:  64.52% | Loss: 
+Placing Sensors
+Policy -0.0018 | Value 121.6810 | Lyap 0.0031 | Dynamics 0.0635 | Barrier 0.0767 | KL 0.00787 | CF 0.1032 | Std 0.1084 | RawLogStd 0.0161 | |a| 0.0150 | EV +0.677 | Alpha 0.2112 | MB 24/24
+  cert | viol 0.135 | dV -0.265092 | V 0.3630 | inball 0.423 | a*_q05 0.00141 | a*_q50 0.02621 | dV>=0 0.035 | n=150 | a_used 0.00410 -> 0.00403
+[Episode 69/400] Steps: 720 | Reward:  201.66 | Battery:  61.31% | Loss: 0.4234
+Placing Sensors
+[Episode 70/400] Steps:  93 | Reward:  -70.59 | Battery:   0.00% | Loss: 
+Placing Sensors
+[Episode 71/400] Steps:  95 | Reward:  -58.35 | Battery:   0.00% | Loss: 
+Placing Sensors
+[Episode 72/400] Steps: 103 | Reward:  -64.30 | Battery:   0.00% | Loss: 
+Placing Sensors
+[Episode 73/400] Steps: 720 | Reward:  202.68 | Battery:  65.03% | Loss: 
+Placing Sensors
+[Episode 74/400] Steps: 111 | Reward:  -59.52 | Battery:   0.00% | Loss: 
+Placing Sensors
+Policy 0.0059 | Value 153.1900 | Lyap 0.0028 | Dynamics 0.0616 | Barrier 0.0679 | KL 0.00755 | CF 0.0974 | Std 0.1085 | RawLogStd 0.0167 | |a| 0.0203 | EV +0.732 | Alpha 0.1915 | MB 32/32
+  cert | viol 0.196 | dV -0.252025 | V 0.3918 | inball 0.311 | a*_q05 0.00033 | a*_q50 0.02455 | dV>=0 0.052 | n=150 | a_used 0.00403 -> 0.00383
+[Episode 75/400] Steps: 720 | Reward:  222.46 | Battery:  58.75% | Loss: 0.5742
+Placing Sensors
+[Episode 76/400] Steps:  72 | Reward:  -62.89 | Battery:   0.00% | Loss: 
+Placing Sensors
+[Episode 77/400] Steps:  64 | Reward:  -59.52 | Battery:   0.00% | Loss: 
+Placing Sensors
+[Episode 78/400] Steps: 720 | Reward:  167.13 | Battery:  53.65% | Loss: 
+Placing Sensors
+Policy 0.0065 | Value 97.1245 | Lyap 0.0024 | Dynamics 0.0364 | Barrier 0.0406 | KL 0.00776 | CF 0.0949 | Std 0.1087 | RawLogStd 0.0174 | |a| 0.0172 | EV +0.723 | Alpha 0.1760 | MB 28/28
+  cert | viol 0.361 | dV -0.140118 | V 0.2160 | inball 0.164 | a*_q05 -0.01719 | a*_q50 0.00965 | dV>=0 0.198 | n=150 | a_used 0.00383 -> 0.00363
+[Episode 79/400] Steps: 720 | Reward:  210.86 | Battery:  59.42% | Loss: 0.5634
+Placing Sensors
+[Episode 80/400] Steps: 720 | Reward:  138.55 | Battery:  38.92% | Loss: 
+Placing Sensors
+[Episode 81/400] Steps:  79 | Reward:  -59.06 | Battery:   0.00% | Loss: 
+Placing Sensors
+[Episode 82/400] Steps: 204 | Reward:  -58.77 | Battery:   0.00% | Loss: 
+Placing Sensors
+Policy 0.0004 | Value 105.6684 | Lyap 0.0024 | Dynamics 0.0537 | Barrier 0.0526 | KL 0.00682 | CF 0.0903 | Std 0.1088 | RawLogStd 0.0181 | |a| 0.0239 | EV +0.736 | Alpha 0.1606 | MB 28/28
+  cert | viol 0.232 | dV -0.203652 | V 0.3391 | inball 0.180 | a*_q05 -0.00893 | a*_q50 0.01185 | dV>=0 0.133 | n=150 | a_used 0.00363 -> 0.00345
+[Episode 83/400] Steps: 720 | Reward:  188.50 | Battery:  62.51% | Loss: 0.2198
+Placing Sensors
+[Episode 84/400] Steps: 720 | Reward:  140.70 | Battery:  47.61% | Loss: 
+Placing Sensors
+Policy -0.0058 | Value 93.7998 | Lyap 0.0036 | Dynamics 0.0475 | Barrier 0.0588 | KL 0.00637 | CF 0.0806 | Std 0.1089 | RawLogStd 0.0187 | |a| 0.0221 | EV +0.566 | Alpha 0.1487 | MB 24/24
+  cert | viol 0.351 | dV -0.170697 | V 0.3202 | inball 0.223 | a*_q05 -0.01706 | a*_q50 0.00880 | dV>=0 0.200 | n=150 | a_used 0.00345 -> 0.00328
+[Episode 85/400] Steps: 720 | Reward:  238.01 | Battery:  75.96% | Loss: 0.1700
+Placing Sensors
+[Episode 86/400] Steps: 720 | Reward:  216.65 | Battery:  59.74% | Loss: 
+Placing Sensors
+Policy 0.0008 | Value 78.3404 | Lyap 0.0037 | Dynamics 0.0327 | Barrier 0.0610 | KL 0.00653 | CF 0.0761 | Std 0.1090 | RawLogStd 0.0192 | |a| 0.0230 | EV +0.734 | Alpha 0.1377 | MB 24/24
+  cert | viol 0.112 | dV -0.229152 | V 0.3193 | inball 0.354 | a*_q05 0.00201 | a*_q50 0.02190 | dV>=0 0.009 | n=150 | a_used 0.00328 -> 0.00315
+[Episode 87/400] Steps: 720 | Reward:  201.86 | Battery:  61.38% | Loss: 0.2134
+Placing Sensors
+[Episode 88/400] Steps: 720 | Reward:  242.93 | Battery:  75.65% | Loss: 
+Placing Sensors
+[Episode 89/400] Steps:  81 | Reward:  -60.82 | Battery:   0.00% | Loss: 
+Placing Sensors
+[Episode 90/400] Steps:  70 | Reward:  -59.19 | Battery:   0.00% | Loss: 
+Placing Sensors
+[Episode 91/400] Steps: 121 | Reward:  -66.06 | Battery:   0.00% | Loss: 
+Placing Sensors
+Policy -0.0035 | Value 77.6457 | Lyap 0.0030 | Dynamics 0.0422 | Barrier 0.0393 | KL 0.00646 | CF 0.0847 | Std 0.1091 | RawLogStd 0.0197 | |a| 0.0273 | EV +0.653 | Alpha 0.1257 | MB 28/28
+  cert | viol 0.068 | dV -0.133499 | V 0.1892 | inball 0.304 | a*_q05 -0.00851 | a*_q50 0.01900 | dV>=0 0.068 | n=150 | a_used 0.00315 -> 0.00300
+[Episode 92/400] Steps: 720 | Reward:  151.55 | Battery:  45.63% | Loss: 0.1864
+Placing Sensors
+[Episode 93/400] Steps: 720 | Reward:  123.00 | Battery:  36.07% | Loss: 
+Placing Sensors
+Policy 0.0029 | Value 122.8155 | Lyap 0.0024 | Dynamics 0.0411 | Barrier 0.0420 | KL 0.00688 | CF 0.0836 | Std 0.1092 | RawLogStd 0.0202 | |a| 0.0258 | EV +0.609 | Alpha 0.1164 | MB 24/24
+  cert | viol 0.117 | dV -0.220072 | V 0.3529 | inball 0.294 | a*_q05 -0.00127 | a*_q50 0.01894 | dV>=0 0.081 | n=150 | a_used 0.00300 -> 0.00285
+[Episode 94/400] Steps: 720 | Reward:  232.04 | Battery:  69.73% | Loss: 0.1529
+Placing Sensors
+[Episode 95/400] Steps: 183 | Reward:  -57.01 | Battery:   0.00% | Loss: 
+Placing Sensors
+[Episode 96/400] Steps: 156 | Reward:  -55.72 | Battery:   0.00% | Loss: 
+Placing Sensors
+[Episode 97/400] Steps: 720 | Reward:  171.80 | Battery:  54.70% | Loss: 
+Placing Sensors
+[Episode 98/400] Steps:  85 | Reward:  -64.73 | Battery:   0.00% | Loss: 
+Placing Sensors
+[Episode 99/400] Steps:  92 | Reward:  -69.08 | Battery:   0.00% | Loss: 
+Placing Sensors
+[Episode 100/400] Steps:  86 | Reward:  -70.32 | Battery:   0.00% | Loss: 
+Placing Sensors
+Policy 0.0065 | Value 128.7401 | Lyap 0.0041 | Dynamics 0.0656 | Barrier 0.0916 | KL 0.01494 | CF 0.1874 | Std 0.1093 | RawLogStd 0.0207 | |a| 0.0271 | EV +0.704 | Alpha 0.1044 | MB 32/32
+  cert | viol 0.154 | dV -0.259363 | V 0.4075 | inball 0.277 | a*_q05 -0.00083 | a*_q50 0.02373 | dV>=0 0.113 | n=150 | a_used 0.00285 -> 0.00270
+[Episode 101/400] Steps: 720 | Reward:  246.64 | Battery:  67.63% | Loss: 0.1056
+Placing Sensors
+[Episode 102/400] Steps: 720 | Reward:  201.11 | Battery:  65.76% | Loss: 
+Placing Sensors
+[Episode 103/400] Steps:  71 | Reward:  -57.29 | Battery:   0.00% | Loss: 
+Placing Sensors
+[Episode 104/400] Steps: 138 | Reward:  -50.71 | Battery:   0.00% | Loss: 
+Placing Sensors
+[Episode 105/400] Steps:  96 | Reward:  -51.75 | Battery:   0.00% | Loss: 
+Placing Sensors
+[Episode 106/400] Steps:  85 | Reward:  -56.31 | Battery:   0.00% | Loss: 
+Placing Sensors
+[Episode 107/400] Steps: 153 | Reward:  -47.79 | Battery:   0.00% | Loss: 
+Placing Sensors
+Policy 0.0006 | Value 108.8875 | Lyap 0.0033 | Dynamics 0.0427 | Barrier 0.0758 | KL 0.00628 | CF 0.0796 | Std 0.1094 | RawLogStd 0.0212 | |a| 0.0212 | EV +0.744 | Alpha 0.0939 | MB 32/32
+  cert | viol 0.106 | dV -0.232012 | V 0.3796 | inball 0.199 | a*_q05 0.00117 | a*_q50 0.01331 | dV>=0 0.030 | n=150 | a_used 0.00270 -> 0.00256
+[Episode 108/400] Steps: 720 | Reward:  230.95 | Battery:  73.05% | Loss: 0.0888
+Placing Sensors
+[Episode 109/400] Steps: 720 | Reward:  256.88 | Battery:  72.14% | Loss: 
+Placing Sensors
+Policy -0.0053 | Value 85.1126 | Lyap 0.0024 | Dynamics 0.0611 | Barrier 0.0486 | KL 0.00759 | CF 0.0961 | Std 0.1095 | RawLogStd 0.0216 | |a| 0.0172 | EV +0.647 | Alpha 0.0870 | MB 24/24
+  cert | viol 0.133 | dV -0.195383 | V 0.2903 | inball 0.332 | a*_q05 0.00005 | a*_q50 0.01438 | dV>=0 0.042 | n=150 | a_used 0.00256 -> 0.00244
+[Episode 110/400] Steps: 720 | Reward:  184.52 | Battery:  65.00% | Loss: 0.1231
+Placing Sensors
+[Episode 111/400] Steps: 720 | Reward:  161.64 | Battery:  53.57% | Loss: 
+Placing Sensors
+Policy -0.0049 | Value 100.6824 | Lyap 0.0036 | Dynamics 0.0486 | Barrier 0.0466 | KL 0.01000 | CF 0.1275 | Std 0.1095 | RawLogStd 0.0219 | |a| 0.0212 | EV +0.682 | Alpha 0.0806 | MB 24/24
+  cert | viol 0.047 | dV -0.208256 | V 0.2821 | inball 0.295 | a*_q05 0.00221 | a*_q50 0.01806 | dV>=0 0.021 | n=150 | a_used 0.00244 -> 0.00251
+[Episode 112/400] Steps: 720 | Reward:  191.87 | Battery:  56.44% | Loss: 0.1578
+Placing Sensors
+[Episode 113/400] Steps:  68 | Reward:  -60.12 | Battery:   0.00% | Loss: 
+Placing Sensors
+[Episode 114/400] Steps: 167 | Reward:  -58.42 | Battery:   0.00% | Loss: 
+Placing Sensors
+[Episode 115/400] Steps:  75 | Reward:  -58.77 | Battery:   0.00% | Loss: 
+Placing Sensors
+[Episode 116/400] Steps:  72 | Reward:  -62.96 | Battery:   0.00% | Loss: 
+Placing Sensors
+[Episode 117/400] Steps:  76 | Reward:  -60.10 | Battery:   0.00% | Loss: 
+Placing Sensors
+[Episode 118/400] Steps: 720 | Reward:  233.61 | Battery:  67.73% | Loss: 
+Placing Sensors
+Policy -0.0068 | Value 110.2845 | Lyap 0.0049 | Dynamics 0.0501 | Barrier 0.0623 | KL 0.00827 | CF 0.0976 | Std 0.1096 | RawLogStd 0.0222 | |a| 0.0257 | EV +0.771 | Alpha 0.0728 | MB 32/32
+  cert | viol 0.095 | dV -0.229173 | V 0.3761 | inball 0.258 | a*_q05 0.00005 | a*_q50 0.01742 | dV>=0 0.057 | n=150 | a_used 0.00251 -> 0.00251
+[Episode 119/400] Steps: 720 | Reward:  202.19 | Battery:  68.06% | Loss: 0.0781
+Placing Sensors
+[Episode 120/400] Steps: 102 | Reward:  -76.53 | Battery:   0.00% | Loss: 
+Placing Sensors
+[Episode 121/400] Steps:  65 | Reward:  -58.39 | Battery:   0.00% | Loss: 
+Placing Sensors
+[Episode 122/400] Steps:  92 | Reward:  -72.20 | Battery:   0.00% | Loss: 
+Placing Sensors
+[Episode 123/400] Steps: 720 | Reward:  248.44 | Battery:  71.24% | Loss: 
+Placing Sensors
+Policy -0.0072 | Value 124.6947 | Lyap 0.0055 | Dynamics 0.0506 | Barrier 0.0548 | KL 0.01151 | CF 0.1365 | Std 0.1096 | RawLogStd 0.0224 | |a| 0.0295 | EV +0.736 | Alpha 0.0665 | MB 28/28
+  cert | viol 0.171 | dV -0.229060 | V 0.3471 | inball 0.291 | a*_q05 -0.00569 | a*_q50 0.01611 | dV>=0 0.069 | n=150 | a_used 0.00251 -> 0.00226
+[Episode 124/400] Steps: 720 | Reward:  187.25 | Battery:  59.91% | Loss: 0.1571
+Placing Sensors
+[Episode 125/400] Steps: 720 | Reward:  255.57 | Battery:  75.99% | Loss: 
+Placing Sensors
+Policy -0.0025 | Value 117.5182 | Lyap 0.0050 | Dynamics 0.0471 | Barrier 0.0496 | KL 0.00656 | CF 0.0853 | Std 0.1097 | RawLogStd 0.0228 | |a| 0.0202 | EV +0.722 | Alpha 0.0616 | MB 24/24
+  cert | viol 0.069 | dV -0.264186 | V 0.3326 | inball 0.543 | a*_q05 0.00202 | a*_q50 0.02973 | dV>=0 0.010 | n=150 | a_used 0.00226 -> 0.00217
+[Episode 126/400] Steps: 720 | Reward:  265.70 | Battery:  79.76% | Loss: 0.2258
+Placing Sensors
+[Episode 127/400] Steps:  97 | Reward:  -64.86 | Battery:   0.00% | Loss: 
+Placing Sensors
+[Episode 128/400] Steps:  86 | Reward:  -68.63 | Battery:   0.00% | Loss: 
+Placing Sensors
+[Episode 129/400] Steps:  78 | Reward:  -65.37 | Battery:   0.00% | Loss: 
+Placing Sensors
+[Episode 130/400] Steps: 162 | Reward:  -61.97 | Battery:   0.00% | Loss: 
+Placing Sensors
+[Episode 131/400] Steps: 720 | Reward:  156.42 | Battery:  47.51% | Loss: 
+Placing Sensors
+[Episode 132/400] Steps:  93 | Reward:  -56.05 | Battery:   0.00% | Loss: 
+Placing Sensors
+Policy 0.0007 | Value 167.6176 | Lyap 0.0044 | Dynamics 0.0519 | Barrier 0.0609 | KL 0.01421 | CF 0.1710 | Std 0.1097 | RawLogStd 0.0230 | |a| 0.0337 | EV +0.801 | Alpha 0.0555 | MB 32/32
+  cert | viol 0.075 | dV -0.233629 | V 0.3711 | inball 0.218 | a*_q05 0.00056 | a*_q50 0.01664 | dV>=0 0.049 | n=150 | a_used 0.00217 -> 0.00190
+[Episode 133/400] Steps: 720 | Reward:  206.73 | Battery:  68.45% | Loss: 0.1308
+Placing Sensors
+[Episode 134/400] Steps: 720 | Reward:  181.42 | Battery:  52.40% | Loss: 
+Placing Sensors
+Policy -0.0042 | Value 126.7808 | Lyap 0.0033 | Dynamics 0.0446 | Barrier 0.0321 | KL 0.01498 | CF 0.1588 | Std 0.1098 | RawLogStd 0.0233 | |a| 0.0215 | EV +0.722 | Alpha 0.0514 | MB 24/24
+  cert | viol 0.009 | dV -0.213194 | V 0.2634 | inball 0.454 | a*_q05 0.00492 | a*_q50 0.02854 | dV>=0 0.000 | n=150 | a_used 0.00190 -> 0.00199
+[Episode 135/400] Steps: 720 | Reward:  215.90 | Battery:  69.62% | Loss: 0.1702
+Placing Sensors
+[Episode 136/400] Steps: 720 | Reward:  233.55 | Battery:  71.25% | Loss: 
+Placing Sensors
+Policy -0.0024 | Value 107.7346 | Lyap 0.0029 | Dynamics 0.0441 | Barrier 0.0424 | KL 0.01368 | CF 0.1615 | Std 0.1098 | RawLogStd 0.0236 | |a| 0.0229 | EV +0.773 | Alpha 0.0476 | MB 24/24
+  cert | viol 0.070 | dV -0.225360 | V 0.3234 | inball 0.378 | a*_q05 0.00146 | a*_q50 0.02196 | dV>=0 0.031 | n=150 | a_used 0.00199 -> 0.00192
+[Episode 137/400] Steps: 720 | Reward:  203.22 | Battery:  69.78% | Loss: 0.1022
+Placing Sensors
+[Episode 138/400] Steps: 720 | Reward:  167.31 | Battery:  54.91% | Loss: 
+Placing Sensors
+Policy -0.0090 | Value 160.1147 | Lyap 0.0035 | Dynamics 0.0399 | Barrier 0.0585 | KL 0.00869 | CF 0.1095 | Std 0.1099 | RawLogStd 0.0240 | |a| 0.0236 | EV +0.763 | Alpha 0.0441 | MB 24/24
+  cert | viol 0.140 | dV -0.274306 | V 0.4005 | inball 0.413 | a*_q05 -0.00216 | a*_q50 0.02815 | dV>=0 0.105 | n=150 | a_used 0.00192 -> 0.00182
+[Episode 139/400] Steps: 720 | Reward:  210.55 | Battery:  66.39% | Loss: 0.0342
+Placing Sensors
+[Episode 140/400] Steps: 720 | Reward:  165.56 | Battery:  56.25% | Loss: 
+Placing Sensors
+Policy -0.0051 | Value 100.6950 | Lyap 0.0049 | Dynamics 0.0314 | Barrier 0.0619 | KL 0.00840 | CF 0.1172 | Std 0.1099 | RawLogStd 0.0241 | |a| 0.0237 | EV +0.792 | Alpha 0.0408 | MB 24/24
+  cert | viol 0.069 | dV -0.189460 | V 0.2866 | inball 0.263 | a*_q05 0.00084 | a*_q50 0.01387 | dV>=0 0.042 | n=150 | a_used 0.00182 -> 0.00173
+[Episode 141/400] Steps: 720 | Reward:  207.43 | Battery:  56.68% | Loss: 0.1183
+Placing Sensors
+[Episode 142/400] Steps: 720 | Reward:  224.85 | Battery:  67.92% | Loss: 
+Placing Sensors
+Policy 0.0018 | Value 88.3184 | Lyap 0.0043 | Dynamics 0.0255 | Barrier 0.0602 | KL 0.00642 | CF 0.0807 | Std 0.1100 | RawLogStd 0.0242 | |a| 0.0209 | EV +0.834 | Alpha 0.0378 | MB 24/24
+  cert | viol 0.032 | dV -0.253949 | V 0.3346 | inball 0.411 | a*_q05 0.00266 | a*_q50 0.02553 | dV>=0 0.003 | n=150 | a_used 0.00173 -> 0.00171
+[Episode 143/400] Steps: 720 | Reward:  220.29 | Battery:  61.15% | Loss: 0.2458
+Placing Sensors
+[Episode 144/400] Steps:  66 | Reward:  -58.51 | Battery:   0.00% | Loss: 
+Placing Sensors
+[Episode 145/400] Steps: 720 | Reward:  257.57 | Battery:  72.93% | Loss: 
+Placing Sensors
+Policy -0.0054 | Value 114.3646 | Lyap 0.0046 | Dynamics 0.0246 | Barrier 0.0611 | KL 0.00911 | CF 0.1134 | Std 0.1100 | RawLogStd 0.0243 | |a| 0.0284 | EV +0.785 | Alpha 0.0349 | MB 24/24
+  cert | viol 0.100 | dV -0.212513 | V 0.3587 | inball 0.334 | a*_q05 0.00041 | a*_q50 0.01851 | dV>=0 0.046 | n=150 | a_used 0.00171 -> 0.00163
+[Episode 146/400] Steps: 720 | Reward:  230.74 | Battery:  71.55% | Loss: 0.1176
+Placing Sensors
+[Episode 147/400] Steps: 720 | Reward:  264.97 | Battery:  84.55% | Loss: 
+Placing Sensors
+Policy -0.0013 | Value 83.7218 | Lyap 0.0044 | Dynamics 0.0254 | Barrier 0.0616 | KL 0.01426 | CF 0.1826 | Std 0.1100 | RawLogStd 0.0243 | |a| 0.0227 | EV +0.848 | Alpha 0.0323 | MB 24/24
+  cert | viol 0.023 | dV -0.232235 | V 0.2976 | inball 0.467 | a*_q05 0.00351 | a*_q50 0.02333 | dV>=0 0.003 | n=150 | a_used 0.00163 -> 0.00167
+[Episode 148/400] Steps: 720 | Reward:  214.41 | Battery:  66.99% | Loss: 0.2615
+Placing Sensors
+[Episode 149/400] Steps:  93 | Reward:  -61.98 | Battery:   0.00% | Loss: 
+Placing Sensors
+[Episode 150/400] Steps:  68 | Reward:  -58.92 | Battery:   0.00% | Loss: 
+Placing Sensors
+[Episode 151/400] Steps: 720 | Reward:  219.51 | Battery:  62.19% | Loss: 
+Placing Sensors
+Policy -0.0072 | Value 117.5407 | Lyap 0.0049 | Dynamics 0.0301 | Barrier 0.0871 | KL 0.01417 | CF 0.1589 | Std 0.1100 | RawLogStd 0.0242 | |a| 0.0301 | EV +0.822 | Alpha 0.0297 | MB 28/28
+  cert | viol 0.047 | dV -0.250870 | V 0.3490 | inball 0.287 | a*_q05 0.00249 | a*_q50 0.02370 | dV>=0 0.017 | n=150 | a_used 0.00167 -> 0.00176
+[Episode 152/400] Steps: 720 | Reward:  183.88 | Battery:  57.34% | Loss: 0.0550
+Placing Sensors
+[Episode 153/400] Steps:  98 | Reward:  -76.52 | Battery:   0.00% | Loss: 
+Placing Sensors
+[Episode 154/400] Steps: 720 | Reward:  182.79 | Battery:  56.91% | Loss: 
+Placing Sensors
+Policy -0.0044 | Value 152.2591 | Lyap 0.0073 | Dynamics 0.0210 | Barrier 0.0853 | KL 0.01175 | CF 0.1377 | Std 0.1100 | RawLogStd 0.0243 | |a| 0.0257 | EV +0.726 | Alpha 0.0273 | MB 28/28
+  cert | viol 0.143 | dV -0.170975 | V 0.2779 | inball 0.234 | a*_q05 -0.01499 | a*_q50 0.01425 | dV>=0 0.137 | n=150 | a_used 0.00176 -> 0.00176
+[Episode 155/400] Steps: 720 | Reward:   83.66 | Battery:  20.09% | Loss: 0.8489
+Placing Sensors
+[Episode 156/400] Steps:  97 | Reward:  -62.61 | Battery:   0.00% | Loss: 
+Placing Sensors
+[Episode 157/400] Steps: 720 | Reward:  214.83 | Battery:  65.49% | Loss: 
+Placing Sensors
+Policy -0.0023 | Value 141.2222 | Lyap 0.0056 | Dynamics 0.0280 | Barrier 0.0530 | KL 0.00889 | CF 0.1095 | Std 0.1100 | RawLogStd 0.0244 | |a| 0.0315 | EV +0.836 | Alpha 0.0252 | MB 24/28
+  cert | viol 0.014 | dV -0.227153 | V 0.2749 | inball 0.400 | a*_q05 0.00575 | a*_q50 0.02931 | dV>=0 0.014 | n=150 | a_used 0.00176 -> 0.00187
+[Episode 158/400] Steps: 720 | Reward:  195.62 | Battery:  56.13% | Loss: 0.1227
+Placing Sensors
+[Episode 159/400] Steps:  75 | Reward:  -69.69 | Battery:   0.00% | Loss: 
+Placing Sensors
+[Episode 160/400] Steps: 720 | Reward:  252.31 | Battery:  77.55% | Loss: 
+Placing Sensors
+[Episode 161/400] Steps:  92 | Reward:  -57.32 | Battery:   0.00% | Loss: 
+Placing Sensors
+Policy 0.0053 | Value 124.2000 | Lyap 0.0043 | Dynamics 0.0262 | Barrier 0.0738 | KL 0.00968 | CF 0.1130 | Std 0.1100 | RawLogStd 0.0243 | |a| 0.0271 | EV +0.743 | Alpha 0.0231 | MB 28/28
+  cert | viol 0.026 | dV -0.280687 | V 0.3390 | inball 0.466 | a*_q05 0.00486 | a*_q50 0.03161 | dV>=0 0.026 | n=150 | a_used 0.00187 -> 0.00177
+[Episode 162/400] Steps: 720 | Reward:  262.39 | Battery:  75.12% | Loss: 0.2324
+Placing Sensors
+[Episode 163/400] Steps: 720 | Reward:  216.62 | Battery:  69.54% | Loss: 
+Placing Sensors
+[Episode 164/400] Steps:  79 | Reward:  -56.75 | Battery:   0.00% | Loss: 
+Placing Sensors
+Policy -0.0017 | Value 142.3328 | Lyap 0.0086 | Dynamics 0.0387 | Barrier 0.0412 | KL 0.00933 | CF 0.1148 | Std 0.1100 | RawLogStd 0.0243 | |a| 0.0229 | EV +0.791 | Alpha 0.0213 | MB 24/24
+  cert | viol 0.062 | dV -0.274757 | V 0.3538 | inball 0.343 | a*_q05 -0.00021 | a*_q50 0.02480 | dV>=0 0.048 | n=150 | a_used 0.00177 -> 0.00168
+[Episode 165/400] Steps: 720 | Reward:  232.64 | Battery:  72.50% | Loss: 0.1504
+Placing Sensors
+[Episode 166/400] Steps: 720 | Reward:  207.95 | Battery:  60.54% | Loss: 
+Placing Sensors
+[Episode 167/400] Steps: 101 | Reward:  -69.54 | Battery:   0.00% | Loss: 
+Placing Sensors
+[Episode 168/400] Steps:  92 | Reward:  -59.09 | Battery:   0.00% | Loss: 
+Placing Sensors
+[Episode 169/400] Steps: 104 | Reward:  -55.56 | Battery:   0.00% | Loss: 
+Placing Sensors
+Policy -0.0084 | Value 97.3920 | Lyap 0.0089 | Dynamics 0.0221 | Barrier 0.0654 | KL 0.00892 | CF 0.1058 | Std 0.1100 | RawLogStd 0.0243 | |a| 0.0209 | EV +0.588 | Alpha 0.0194 | MB 28/28
+  cert | viol 0.026 | dV -0.283308 | V 0.3547 | inball 0.368 | a*_q05 0.00333 | a*_q50 0.02706 | dV>=0 0.013 | n=150 | a_used 0.00168 -> 0.00168
+[Episode 170/400] Steps: 720 | Reward:  237.47 | Battery:  72.05% | Loss: -0.0064
+Placing Sensors
+[Episode 171/400] Steps: 720 | Reward:  205.27 | Battery:  63.41% | Loss: 
+Placing Sensors
+[Episode 172/400] Steps: 106 | Reward:  -61.21 | Battery:   0.00% | Loss: 
+Placing Sensors
+[Episode 173/400] Steps:  70 | Reward:  -60.85 | Battery:   0.00% | Loss: 
+Placing Sensors
+[Episode 174/400] Steps:  82 | Reward:  -58.56 | Battery:   0.00% | Loss: 
+Placing Sensors
+Policy -0.0063 | Value 109.6803 | Lyap 0.0093 | Dynamics 0.0360 | Barrier 0.0506 | KL 0.00914 | CF 0.1113 | Std 0.1100 | RawLogStd 0.0244 | |a| 0.0267 | EV +0.857 | Alpha 0.0178 | MB 28/28
+  cert | viol 0.077 | dV -0.296028 | V 0.3935 | inball 0.407 | a*_q05 0.00104 | a*_q50 0.02790 | dV>=0 0.024 | n=150 | a_used 0.00168 -> 0.00164
+[Episode 175/400] Steps: 720 | Reward:  292.55 | Battery:  79.14% | Loss: -0.0184
+Placing Sensors
+[Episode 176/400] Steps: 720 | Reward:  265.22 | Battery:  71.44% | Loss: 
+Placing Sensors
+Policy -0.0034 | Value 134.3967 | Lyap 0.0074 | Dynamics 0.0356 | Barrier 0.0242 | KL 0.01313 | CF 0.1469 | Std 0.1100 | RawLogStd 0.0245 | |a| 0.0260 | EV +0.786 | Alpha 0.0164 | MB 24/24
+  cert | viol 0.014 | dV -0.319572 | V 0.3663 | inball 0.514 | a*_q05 0.00578 | a*_q50 0.03151 | dV>=0 0.000 | n=150 | a_used 0.00164 -> 0.00176
+[Episode 177/400] Steps: 720 | Reward:  241.18 | Battery:  68.58% | Loss: -0.0618
+Placing Sensors
+[Episode 178/400] Steps: 720 | Reward:  141.27 | Battery:  37.57% | Loss: 
+Placing Sensors
+Policy -0.0057 | Value 115.8967 | Lyap 0.0103 | Dynamics 0.0320 | Barrier 0.0388 | KL 0.01120 | CF 0.1401 | Std 0.1100 | RawLogStd 0.0244 | |a| 0.0228 | EV +0.813 | Alpha 0.0152 | MB 24/24
+  cert | viol 0.041 | dV -0.291594 | V 0.3662 | inball 0.421 | a*_q05 0.00298 | a*_q50 0.03022 | dV>=0 0.021 | n=150 | a_used 0.00176 -> 0.00175
+[Episode 179/400] Steps: 720 | Reward:  228.14 | Battery:  60.96% | Loss: 0.0255
+Placing Sensors
+[Episode 180/400] Steps: 720 | Reward:  268.56 | Battery:  65.11% | Loss: 
+Placing Sensors
+[Episode 181/400] Steps:  68 | Reward:  -58.03 | Battery:   0.00% | Loss: 
+Placing Sensors
+Policy -0.0045 | Value 100.0391 | Lyap 0.0086 | Dynamics 0.0258 | Barrier 0.0677 | KL 0.00536 | CF 0.0652 | Std 0.1100 | RawLogStd 0.0244 | |a| 0.0209 | EV +0.883 | Alpha 0.0141 | MB 24/24
+  cert | viol 0.067 | dV -0.300387 | V 0.3868 | inball 0.450 | a*_q05 0.00140 | a*_q50 0.03406 | dV>=0 0.035 | n=150 | a_used 0.00175 -> 0.00168
+[Episode 182/400] Steps: 720 | Reward:  156.76 | Battery:  44.08% | Loss: 0.0166
+Placing Sensors
+[Episode 183/400] Steps: 101 | Reward:  -60.84 | Battery:   0.00% | Loss: 
+Placing Sensors
+[Episode 184/400] Steps: 720 | Reward:  150.88 | Battery:  54.31% | Loss: 
+Placing Sensors
+Policy -0.0810 | Value 183.0914 | Lyap 0.0099 | Dynamics 0.0228 | Barrier 0.0503 | KL 0.00899 | CF 0.1128 | Std 0.1100 | RawLogStd 0.0243 | |a| 0.0209 | EV +0.843 | Alpha 0.0129 | MB 28/28
+  cert | viol 0.152 | dV -0.166437 | V 0.2301 | inball 0.275 | a*_q05 -0.01040 | a*_q50 0.00933 | dV>=0 0.141 | n=150 | a_used 0.00168 -> 0.00177
+[Episode 185/400] Steps: 720 | Reward:  295.83 | Battery:  76.18% | Loss: -0.9356
+Placing Sensors
+[Episode 186/400] Steps: 105 | Reward:  -59.69 | Battery:   0.00% | Loss: 
+Placing Sensors
+[Episode 187/400] Steps: 720 | Reward:  229.49 | Battery:  70.48% | Loss: 
+Placing Sensors
+[Episode 188/400] Steps:  87 | Reward:  -59.49 | Battery:   0.00% | Loss: 
+Placing Sensors
+Policy -0.0032 | Value 92.6341 | Lyap 0.0104 | Dynamics 0.0281 | Barrier 0.0606 | KL 0.01044 | CF 0.1390 | Std 0.1100 | RawLogStd 0.0243 | |a| 0.0231 | EV +0.787 | Alpha 0.0119 | MB 28/28
+  cert | viol 0.092 | dV -0.288630 | V 0.3994 | inball 0.423 | a*_q05 -0.00049 | a*_q50 0.02820 | dV>=0 0.068 | n=150 | a_used 0.00177 -> 0.00163
+[Episode 189/400] Steps: 720 | Reward:  263.91 | Battery:  65.88% | Loss: -0.0824
+Placing Sensors
+[Episode 190/400] Steps: 720 | Reward:  226.59 | Battery:  66.44% | Loss: 
+Placing Sensors
+[Episode 191/400] Steps:  65 | Reward:  -58.40 | Battery:   0.00% | Loss: 
+Placing Sensors
+Policy -0.0035 | Value 120.0254 | Lyap 0.0107 | Dynamics 0.0291 | Barrier 0.0396 | KL 0.00863 | CF 0.1067 | Std 0.1100 | RawLogStd 0.0242 | |a| 0.0249 | EV +0.875 | Alpha 0.0110 | MB 24/24
+  cert | viol 0.045 | dV -0.294861 | V 0.4127 | inball 0.425 | a*_q05 0.00200 | a*_q50 0.02335 | dV>=0 0.033 | n=150 | a_used 0.00163 -> 0.00167
+[Episode 192/400] Steps: 720 | Reward:  250.47 | Battery:  84.11% | Loss: 0.1119
+Placing Sensors
+[Episode 193/400] Steps: 720 | Reward:  258.13 | Battery:  70.58% | Loss: 
+Placing Sensors
+[Episode 194/400] Steps: 129 | Reward:  -63.21 | Battery:   0.00% | Loss: 
+Placing Sensors
+Policy -0.0155 | Value 79.0924 | Lyap 0.0116 | Dynamics 0.0284 | Barrier 0.0435 | KL 0.01140 | CF 0.1398 | Std 0.1099 | RawLogStd 0.0241 | |a| 0.0235 | EV +0.862 | Alpha 0.0101 | MB 28/28
+  cert | viol 0.032 | dV -0.269602 | V 0.3599 | inball 0.442 | a*_q05 0.00294 | a*_q50 0.02841 | dV>=0 0.000 | n=150 | a_used 0.00167 -> 0.00179
+[Episode 195/400] Steps: 720 | Reward:  242.78 | Battery:  73.11% | Loss: -0.0511
+Placing Sensors
+[Episode 196/400] Steps: 720 | Reward:  218.25 | Battery:  71.67% | Loss: 
+Placing Sensors
+Policy -0.0040 | Value 96.0696 | Lyap 0.0073 | Dynamics 0.0279 | Barrier 0.0266 | KL 0.01998 | CF 0.2001 | Std 0.1099 | RawLogStd 0.0240 | |a| 0.0246 | EV +0.905 | Alpha 0.0100 | MB 24/24
+  cert | viol 0.000 | dV -0.217004 | V 0.2637 | inball 0.452 | a*_q05 0.00512 | a*_q50 0.02772 | dV>=0 0.000 | n=150 | a_used 0.00179 -> 0.00191
+[Episode 197/400] Steps: 720 | Reward:  210.10 | Battery:  59.15% | Loss: -0.0366
+Placing Sensors
+[Episode 198/400] Steps: 720 | Reward:  289.09 | Battery:  80.27% | Loss: 
+Placing Sensors
+[Episode 199/400] Steps:  78 | Reward:  -56.53 | Battery:   0.00% | Loss: 
+Placing Sensors
+Policy -0.0037 | Value 127.9105 | Lyap 0.0066 | Dynamics 0.0264 | Barrier 0.0695 | KL 0.01028 | CF 0.1178 | Std 0.1099 | RawLogStd 0.0239 | |a| 0.0282 | EV +0.741 | Alpha 0.0100 | MB 24/24
+  cert | viol 0.000 | dV -0.207103 | V 0.2233 | inball 0.624 | a*_q05 0.01074 | a*_q50 0.03783 | dV>=0 0.000 | n=150 | a_used 0.00191 -> 0.00208
+[Episode 200/400] Steps: 720 | Reward:  330.88 | Battery:  85.59% | Loss: 0.0212
+Placing Sensors
+[Episode 201/400] Steps:  80 | Reward:  -64.92 | Battery:   0.00% | Loss: 
+Placing Sensors
+[Episode 202/400] Steps:  85 | Reward:  -62.91 | Battery:   0.00% | Loss: 
+Placing Sensors
+[Episode 203/400] Steps:  69 | Reward:  -58.90 | Battery:   0.00% | Loss: 
+Placing Sensors
+[Episode 204/400] Steps: 103 | Reward:  -55.48 | Battery:   0.00% | Loss: 
+Placing Sensors
+[Episode 205/400] Steps: 720 | Reward:  262.42 | Battery:  72.38% | Loss: 
+Placing Sensors
+Policy -0.0019 | Value 75.5300 | Lyap 0.0076 | Dynamics 0.0373 | Barrier 0.0361 | KL 0.01478 | CF 0.1607 | Std 0.1099 | RawLogStd 0.0238 | |a| 0.0249 | EV +0.897 | Alpha 0.0100 | MB 28/28
+  cert | viol 0.026 | dV -0.282464 | V 0.3500 | inball 0.427 | a*_q05 0.00416 | a*_q50 0.02845 | dV>=0 0.000 | n=150 | a_used 0.00208 -> 0.00214
+[Episode 206/400] Steps: 720 | Reward:  270.64 | Battery:  74.43% | Loss: -0.0294
+Placing Sensors
+[Episode 207/400] Steps: 720 | Reward:  280.10 | Battery:  74.86% | Loss: 
+Placing Sensors
+Policy -0.0061 | Value 70.6125 | Lyap 0.0106 | Dynamics 0.0349 | Barrier 0.0331 | KL 0.01102 | CF 0.1204 | Std 0.1099 | RawLogStd 0.0238 | |a| 0.0258 | EV +0.904 | Alpha 0.0100 | MB 24/24
+  cert | viol 0.150 | dV -0.182880 | V 0.2523 | inball 0.371 | a*_q05 -0.01593 | a*_q50 0.02235 | dV>=0 0.116 | n=150 | a_used 0.00214 -> 0.00203
+[Episode 208/400] Steps: 720 | Reward:  178.66 | Battery:  56.56% | Loss: 0.0089
+Placing Sensors
+[Episode 209/400] Steps: 101 | Reward:  -74.24 | Battery:   0.00% | Loss: 
+Placing Sensors
+[Episode 210/400] Steps: 720 | Reward:  304.26 | Battery:  77.35% | Loss: 
+Placing Sensors
+Policy 0.0007 | Value 157.4464 | Lyap 0.0058 | Dynamics 0.0281 | Barrier 0.0352 | KL 0.01092 | CF 0.1119 | Std 0.1099 | RawLogStd 0.0237 | |a| 0.0260 | EV +0.873 | Alpha 0.0100 | MB 28/28
+  cert | viol 0.000 | dV -0.263561 | V 0.2824 | inball 0.552 | a*_q05 0.01162 | a*_q50 0.03774 | dV>=0 0.000 | n=150 | a_used 0.00203 -> 0.00220
+[Episode 211/400] Steps: 720 | Reward:  226.65 | Battery:  58.61% | Loss: -0.2062
+Placing Sensors
+[Episode 212/400] Steps: 134 | Reward:  -54.03 | Battery:   0.00% | Loss: 
+Placing Sensors
+[Episode 213/400] Steps: 720 | Reward:  278.56 | Battery:  78.53% | Loss: 
+Placing Sensors
+[Episode 214/400] Steps:  99 | Reward:  -53.12 | Battery:   0.00% | Loss: 
+Placing Sensors
+Policy 0.0066 | Value 214.2615 | Lyap 0.0074 | Dynamics 0.0426 | Barrier 0.1103 | KL 0.02079 | CF 0.1869 | Std 0.1098 | RawLogStd 0.0236 | |a| 0.0301 | EV +0.599 | Alpha 0.0100 | MB 21/28
+  cert | viol 0.000 | dV -0.316760 | V 0.3730 | inball 0.466 | a*_q05 0.00490 | a*_q50 0.03288 | dV>=0 0.000 | n=150 | a_used 0.00220 -> 0.00227
+[Episode 215/400] Steps: 720 | Reward:  283.34 | Battery:  77.93% | Loss: 0.0125
+Placing Sensors
+[Episode 216/400] Steps: 720 | Reward:  253.21 | Battery:  75.94% | Loss: 
+Placing Sensors
+Policy -0.0092 | Value 94.8695 | Lyap 0.0085 | Dynamics 0.0396 | Barrier 0.0808 | KL 0.01370 | CF 0.1432 | Std 0.1098 | RawLogStd 0.0234 | |a| 0.0357 | EV +0.841 | Alpha 0.0100 | MB 24/24
+  cert | viol 0.017 | dV -0.262171 | V 0.3001 | inball 0.506 | a*_q05 0.00604 | a*_q50 0.03337 | dV>=0 0.000 | n=150 | a_used 0.00227 -> 0.00237
+[Episode 217/400] Steps: 720 | Reward:  228.77 | Battery:  56.58% | Loss: 0.0612
+Placing Sensors
+[Episode 218/400] Steps: 720 | Reward:  306.20 | Battery:  81.07% | Loss: 
+Placing Sensors
+Policy -0.0031 | Value 63.1751 | Lyap 0.0104 | Dynamics 0.0260 | Barrier 0.0392 | KL 0.01358 | CF 0.1598 | Std 0.1098 | RawLogStd 0.0232 | |a| 0.0280 | EV +0.830 | Alpha 0.0100 | MB 24/24
+  cert | viol 0.000 | dV -0.281991 | V 0.3128 | inball 0.541 | a*_q05 0.00840 | a*_q50 0.03459 | dV>=0 0.000 | n=150 | a_used 0.00237 -> 0.00251
+[Episode 219/400] Steps: 720 | Reward:  249.49 | Battery:  71.20% | Loss: 0.0730
+Placing Sensors
+[Episode 220/400] Steps: 720 | Reward:  318.62 | Battery:  83.44% | Loss: 
+Placing Sensors
+Policy 0.0096 | Value 93.0035 | Lyap 0.0145 | Dynamics 0.0438 | Barrier 0.0960 | KL 0.02548 | CF 0.2185 | Std 0.1097 | RawLogStd 0.0231 | |a| 0.0285 | EV +0.865 | Alpha 0.0100 | MB 12/24
+  cert | viol 0.042 | dV -0.254408 | V 0.3098 | inball 0.573 | a*_q05 0.00428 | a*_q50 0.03222 | dV>=0 0.008 | n=150 | a_used 0.00251 -> 0.00269
+[Episode 221/400] Steps: 720 | Reward:  240.99 | Battery:  69.83% | Loss: 0.1142
+Placing Sensors
+[Episode 222/400] Steps: 720 | Reward:  206.46 | Battery:  64.98% | Loss: 
+Placing Sensors
+Policy -0.0054 | Value 75.4658 | Lyap 0.0099 | Dynamics 0.0417 | Barrier 0.0404 | KL 0.01741 | CF 0.1683 | Std 0.1097 | RawLogStd 0.0231 | |a| 0.0319 | EV +0.877 | Alpha 0.0100 | MB 24/24
+  cert | viol 0.112 | dV -0.255856 | V 0.3639 | inball 0.412 | a*_q05 0.00139 | a*_q50 0.02545 | dV>=0 0.022 | n=150 | a_used 0.00269 -> 0.00262
+[Episode 223/400] Steps: 720 | Reward:  230.83 | Battery:  67.16% | Loss: 0.0408
+Placing Sensors
+[Episode 224/400] Steps: 720 | Reward:  243.93 | Battery:  69.92% | Loss: 
+Placing Sensors
+Policy -0.0005 | Value 87.8428 | Lyap 0.0085 | Dynamics 0.0340 | Barrier 0.0421 | KL 0.02283 | CF 0.2161 | Std 0.1097 | RawLogStd 0.0230 | |a| 0.0276 | EV +0.867 | Alpha 0.0100 | MB 24/24
+  cert | viol 0.062 | dV -0.254829 | V 0.3327 | inball 0.442 | a*_q05 0.00269 | a*_q50 0.02496 | dV>=0 0.000 | n=150 | a_used 0.00262 -> 0.00260
+[Episode 225/400] Steps: 720 | Reward:  278.17 | Battery:  80.65% | Loss: 0.0643
+Placing Sensors
+[Episode 226/400] Steps: 720 | Reward:  286.47 | Battery:  79.76% | Loss: 
+Placing Sensors
+Policy -0.0016 | Value 59.7306 | Lyap 0.0121 | Dynamics 0.0257 | Barrier 0.0766 | KL 0.01015 | CF 0.1148 | Std 0.1097 | RawLogStd 0.0229 | |a| 0.0235 | EV +0.853 | Alpha 0.0100 | MB 24/24
+  cert | viol 0.045 | dV -0.282731 | V 0.3463 | inball 0.546 | a*_q05 0.00314 | a*_q50 0.02948 | dV>=0 0.000 | n=150 | a_used 0.00260 -> 0.00262
+[Episode 227/400] Steps: 720 | Reward:  272.83 | Battery:  78.25% | Loss: -0.1597
+Placing Sensors
+[Episode 228/400] Steps: 720 | Reward:  236.10 | Battery:  69.12% | Loss: 
+Placing Sensors
+Policy -0.0078 | Value 75.5785 | Lyap 0.0086 | Dynamics 0.0272 | Barrier 0.0736 | KL 0.00767 | CF 0.0915 | Std 0.1097 | RawLogStd 0.0227 | |a| 0.0244 | EV +0.895 | Alpha 0.0100 | MB 24/24
+  cert | viol 0.108 | dV -0.320002 | V 0.4364 | inball 0.449 | a*_q05 0.00093 | a*_q50 0.02954 | dV>=0 0.035 | n=150 | a_used 0.00262 -> 0.00264
+[Episode 229/400] Steps: 720 | Reward:  262.78 | Battery:  77.71% | Loss: -0.1080
+Placing Sensors
+[Episode 230/400] Steps:  80 | Reward:  -56.43 | Battery:   0.00% | Loss: 
+Placing Sensors
+[Episode 231/400] Steps: 720 | Reward:  203.54 | Battery:  65.15% | Loss: 
+Placing Sensors
+Policy -0.0028 | Value 74.8647 | Lyap 0.0098 | Dynamics 0.0199 | Barrier 0.0611 | KL 0.01456 | CF 0.1893 | Std 0.1097 | RawLogStd 0.0227 | |a| 0.0266 | EV +0.808 | Alpha 0.0100 | MB 24/24
+  cert | viol 0.085 | dV -0.232196 | V 0.3212 | inball 0.462 | a*_q05 0.00191 | a*_q50 0.02784 | dV>=0 0.015 | n=150 | a_used 0.00264 -> 0.00267
+[Episode 232/400] Steps: 720 | Reward:  295.68 | Battery:  78.32% | Loss: -0.0202
+Placing Sensors
+[Episode 233/400] Steps:  77 | Reward:  -57.90 | Battery:   0.00% | Loss: 
+Placing Sensors
+[Episode 234/400] Steps: 720 | Reward:  212.46 | Battery:  64.49% | Loss: 
+Placing Sensors
+Policy -0.0077 | Value 65.9229 | Lyap 0.0107 | Dynamics 0.0251 | Barrier 0.0561 | KL 0.00727 | CF 0.0872 | Std 0.1096 | RawLogStd 0.0226 | |a| 0.0226 | EV +0.901 | Alpha 0.0100 | MB 24/24
+  cert | viol 0.070 | dV -0.246387 | V 0.3404 | inball 0.350 | a*_q05 0.00216 | a*_q50 0.02268 | dV>=0 0.000 | n=150 | a_used 0.00267 -> 0.00265
+[Episode 235/400] Steps: 720 | Reward:  243.50 | Battery:  70.22% | Loss: 0.0871
+Placing Sensors
+[Episode 236/400] Steps: 720 | Reward:  189.29 | Battery:  64.04% | Loss: 
+Placing Sensors
+[Episode 237/400] Steps:  80 | Reward:  -60.97 | Battery:   0.00% | Loss: 
+Placing Sensors
+Policy -0.0049 | Value 85.4321 | Lyap 0.0107 | Dynamics 0.0187 | Barrier 0.0712 | KL 0.00956 | CF 0.1150 | Std 0.1096 | RawLogStd 0.0225 | |a| 0.0190 | EV +0.916 | Alpha 0.0100 | MB 24/24
+  cert | viol 0.093 | dV -0.269517 | V 0.3788 | inball 0.414 | a*_q05 0.00215 | a*_q50 0.02315 | dV>=0 0.000 | n=150 | a_used 0.00265 -> 0.00264
+[Episode 238/400] Steps: 720 | Reward:  311.41 | Battery:  85.97% | Loss: 0.0614
+Placing Sensors
+[Episode 239/400] Steps:  70 | Reward:  -57.19 | Battery:   0.00% | Loss: 
+Placing Sensors
+[Episode 240/400] Steps: 720 | Reward:  214.40 | Battery:  62.00% | Loss: 
+Placing Sensors
+Policy -0.0109 | Value 79.4023 | Lyap 0.0097 | Dynamics 0.0223 | Barrier 0.0587 | KL 0.01324 | CF 0.1565 | Std 0.1096 | RawLogStd 0.0223 | |a| 0.0292 | EV +0.888 | Alpha 0.0100 | MB 24/24
+  cert | viol 0.000 | dV -0.242922 | V 0.2762 | inball 0.515 | a*_q05 0.00655 | a*_q50 0.03478 | dV>=0 0.000 | n=150 | a_used 0.00264 -> 0.00275
+[Episode 241/400] Steps: 720 | Reward:  264.15 | Battery:  69.00% | Loss: -0.0736
+Placing Sensors
+[Episode 242/400] Steps: 720 | Reward:  193.83 | Battery:  54.78% | Loss: 
+Placing Sensors
+Policy -0.0114 | Value 77.3237 | Lyap 0.0089 | Dynamics 0.0219 | Barrier 0.0435 | KL 0.00785 | CF 0.0981 | Std 0.1096 | RawLogStd 0.0222 | |a| 0.0217 | EV +0.916 | Alpha 0.0100 | MB 24/24
+  cert | viol 0.113 | dV -0.247508 | V 0.3506 | inball 0.395 | a*_q05 0.00144 | a*_q50 0.02382 | dV>=0 0.020 | n=150 | a_used 0.00275 -> 0.00267
+[Episode 243/400] Steps: 720 | Reward:  235.90 | Battery:  72.90% | Loss: 0.0280
+Placing Sensors
+[Episode 244/400] Steps: 720 | Reward:  267.30 | Battery:  79.56% | Loss: 
+Placing Sensors
+Policy -0.0037 | Value 97.1048 | Lyap 0.0082 | Dynamics 0.0239 | Barrier 0.0279 | KL 0.01015 | CF 0.1243 | Std 0.1096 | RawLogStd 0.0221 | |a| 0.0191 | EV +0.913 | Alpha 0.0100 | MB 24/24
+  cert | viol 0.080 | dV -0.244071 | V 0.3213 | inball 0.547 | a*_q05 0.00153 | a*_q50 0.02764 | dV>=0 0.022 | n=150 | a_used 0.00267 -> 0.00271
+[Episode 245/400] Steps: 720 | Reward:  309.71 | Battery:  84.35% | Loss: 0.0351
+Placing Sensors
+[Episode 246/400] Steps: 720 | Reward:  237.41 | Battery:  71.84% | Loss: 
+Placing Sensors
+Policy -0.0055 | Value 46.8528 | Lyap 0.0088 | Dynamics 0.0233 | Barrier 0.0644 | KL 0.00617 | CF 0.0706 | Std 0.1095 | RawLogStd 0.0219 | |a| 0.0285 | EV +0.900 | Alpha 0.0100 | MB 24/24
+  cert | viol 0.211 | dV -0.149257 | V 0.2148 | inball 0.238 | a*_q05 -0.01524 | a*_q50 0.00958 | dV>=0 0.195 | n=150 | a_used 0.00271 -> 0.00258
+[Episode 247/400] Steps: 720 | Reward:  188.70 | Battery:  57.12% | Loss: 0.0596
+Placing Sensors
+[Episode 248/400] Steps: 720 | Reward:  252.72 | Battery:  72.62% | Loss: 
+Placing Sensors
+[Episode 249/400] Steps:  79 | Reward:  -72.33 | Battery:   0.00% | Loss: 
+Placing Sensors
+Policy -0.0081 | Value 86.0823 | Lyap 0.0076 | Dynamics 0.0271 | Barrier 0.0613 | KL 0.00700 | CF 0.0780 | Std 0.1095 | RawLogStd 0.0218 | |a| 0.0261 | EV +0.876 | Alpha 0.0100 | MB 24/24
+  cert | viol 0.060 | dV -0.259560 | V 0.3323 | inball 0.478 | a*_q05 0.00260 | a*_q50 0.02859 | dV>=0 0.004 | n=150 | a_used 0.00258 -> 0.00260
+[Episode 250/400] Steps: 720 | Reward:  265.84 | Battery:  71.62% | Loss: 0.0693
+Placing Sensors
+[Episode 251/400] Steps:  82 | Reward:  -56.97 | Battery:   0.00% | Loss: 
+Placing Sensors
+[Episode 252/400] Steps: 720 | Reward:  229.99 | Battery:  64.25% | Loss: 
+Placing Sensors
+Policy -0.0116 | Value 78.8604 | Lyap 0.0095 | Dynamics 0.0315 | Barrier 0.0525 | KL 0.01170 | CF 0.1468 | Std 0.1095 | RawLogStd 0.0219 | |a| 0.0248 | EV +0.888 | Alpha 0.0100 | MB 24/24
+  cert | viol 0.017 | dV -0.256776 | V 0.3210 | inball 0.431 | a*_q05 0.00457 | a*_q50 0.02776 | dV>=0 0.000 | n=150 | a_used 0.00260 -> 0.00263
+[Episode 253/400] Steps: 720 | Reward:  234.26 | Battery:  66.05% | Loss: 0.1513
+Placing Sensors
+[Episode 254/400] Steps: 720 | Reward:  277.44 | Battery:  75.34% | Loss: 
+Placing Sensors
+Policy -0.0098 | Value 62.0090 | Lyap 0.0126 | Dynamics 0.0350 | Barrier 0.0328 | KL 0.01044 | CF 0.1223 | Std 0.1095 | RawLogStd 0.0220 | |a| 0.0236 | EV +0.876 | Alpha 0.0100 | MB 24/24
+  cert | viol 0.050 | dV -0.252798 | V 0.3242 | inball 0.502 | a*_q05 0.00303 | a*_q50 0.02760 | dV>=0 0.000 | n=150 | a_used 0.00263 -> 0.00267
+[Episode 255/400] Steps: 720 | Reward:  274.72 | Battery:  80.08% | Loss: -0.0727
+Placing Sensors
+[Episode 256/400] Steps:  79 | Reward:  -63.65 | Battery:   0.00% | Loss: 
+Placing Sensors
+[Episode 257/400] Steps: 720 | Reward:  265.74 | Battery:  77.26% | Loss: 
+Placing Sensors
+Policy -0.0037 | Value 77.8723 | Lyap 0.0073 | Dynamics 0.0434 | Barrier 0.0511 | KL 0.01066 | CF 0.1163 | Std 0.1095 | RawLogStd 0.0219 | |a| 0.0312 | EV +0.862 | Alpha 0.0100 | MB 24/24
+  cert | viol 0.025 | dV -0.214099 | V 0.2518 | inball 0.555 | a*_q05 0.00543 | a*_q50 0.03109 | dV>=0 0.000 | n=150 | a_used 0.00267 -> 0.00272
+[Episode 258/400] Steps: 720 | Reward:  283.07 | Battery:  82.02% | Loss: -0.0480
+Placing Sensors
+[Episode 259/400] Steps: 720 | Reward:  237.06 | Battery:  73.16% | Loss: 
+Placing Sensors
+Policy -0.0035 | Value 71.2601 | Lyap 0.0108 | Dynamics 0.0329 | Barrier 0.0708 | KL 0.01791 | CF 0.1598 | Std 0.1095 | RawLogStd 0.0218 | |a| 0.0334 | EV +0.848 | Alpha 0.0100 | MB 24/24
+  cert | viol 0.218 | dV -0.178894 | V 0.3439 | inball 0.448 | a*_q05 -0.00209 | a*_q50 0.02032 | dV>=0 0.129 | n=150 | a_used 0.00272 -> 0.00258
+[Episode 260/400] Steps: 720 | Reward:  276.05 | Battery:  79.69% | Loss: 0.2426
+Placing Sensors
+[Episode 261/400] Steps: 720 | Reward:  274.22 | Battery:  76.35% | Loss: 
+Placing Sensors
+Policy -0.0007 | Value 92.9498 | Lyap 0.0102 | Dynamics 0.0322 | Barrier 0.0488 | KL 0.01243 | CF 0.1294 | Std 0.1095 | RawLogStd 0.0217 | |a| 0.0271 | EV +0.821 | Alpha 0.0100 | MB 24/24
+  cert | viol 0.094 | dV -0.293903 | V 0.3941 | inball 0.550 | a*_q05 0.00146 | a*_q50 0.02888 | dV>=0 0.018 | n=150 | a_used 0.00258 -> 0.00248
+[Episode 262/400] Steps: 720 | Reward:  326.79 | Battery:  87.49% | Loss: 0.0902
+Placing Sensors
+[Episode 263/400] Steps: 720 | Reward:  264.57 | Battery:  63.38% | Loss: 
+Placing Sensors
+Policy -0.0062 | Value 45.7714 | Lyap 0.0074 | Dynamics 0.0348 | Barrier 0.0377 | KL 0.01431 | CF 0.1591 | Std 0.1095 | RawLogStd 0.0217 | |a| 0.0286 | EV +0.943 | Alpha 0.0100 | MB 24/24
+  cert | viol 0.000 | dV -0.236366 | V 0.2645 | inball 0.536 | a*_q05 0.00724 | a*_q50 0.03805 | dV>=0 0.000 | n=150 | a_used 0.00248 -> 0.00263
+[Episode 264/400] Steps: 720 | Reward:  232.31 | Battery:  61.31% | Loss: -0.0784
+Placing Sensors
+[Episode 265/400] Steps: 720 | Reward:  218.50 | Battery:  68.23% | Loss: 
+Placing Sensors
+Policy -0.0122 | Value 68.1694 | Lyap 0.0082 | Dynamics 0.0393 | Barrier 0.0381 | KL 0.01254 | CF 0.1309 | Std 0.1095 | RawLogStd 0.0217 | |a| 0.0355 | EV +0.909 | Alpha 0.0100 | MB 24/24
+  cert | viol 0.052 | dV -0.234690 | V 0.3244 | inball 0.433 | a*_q05 0.00261 | a*_q50 0.02407 | dV>=0 0.009 | n=150 | a_used 0.00263 -> 0.00263
+[Episode 266/400] Steps: 720 | Reward:  232.67 | Battery:  67.61% | Loss: -0.0888
+Placing Sensors
+[Episode 267/400] Steps: 720 | Reward:  289.23 | Battery:  74.19% | Loss: 
+Placing Sensors
+Policy -0.0085 | Value 103.4641 | Lyap 0.0090 | Dynamics 0.0378 | Barrier 0.0573 | KL 0.01255 | CF 0.1424 | Std 0.1095 | RawLogStd 0.0217 | |a| 0.0316 | EV +0.876 | Alpha 0.0100 | MB 24/24
+  cert | viol 0.000 | dV -0.309571 | V 0.3570 | inball 0.488 | a*_q05 0.00633 | a*_q50 0.03042 | dV>=0 0.000 | n=150 | a_used 0.00263 -> 0.00275
+[Episode 268/400] Steps: 720 | Reward:  204.42 | Battery:  58.16% | Loss: 0.0948
+Placing Sensors
+[Episode 269/400] Steps: 720 | Reward:  267.43 | Battery:  75.62% | Loss: 
+Placing Sensors
+Policy -0.0030 | Value 101.1428 | Lyap 0.0094 | Dynamics 0.0246 | Barrier 0.0779 | KL 0.00804 | CF 0.1036 | Std 0.1095 | RawLogStd 0.0217 | |a| 0.0333 | EV +0.915 | Alpha 0.0100 | MB 24/24
+  cert | viol 0.006 | dV -0.258908 | V 0.2874 | inball 0.581 | a*_q05 0.00784 | a*_q50 0.03588 | dV>=0 0.000 | n=150 | a_used 0.00275 -> 0.00294
+[Episode 270/400] Steps: 720 | Reward:  277.63 | Battery:  73.87% | Loss: 0.0170
+Placing Sensors
+[Episode 271/400] Steps:  68 | Reward:  -59.17 | Battery:   0.00% | Loss: 
+Placing Sensors
+[Episode 272/400] Steps: 107 | Reward:  -59.55 | Battery:   0.00% | Loss: 
+Placing Sensors
+[Episode 273/400] Steps: 720 | Reward:  272.34 | Battery:  83.37% | Loss: 
+Placing Sensors
+Policy -0.0065 | Value 117.6518 | Lyap 0.0098 | Dynamics 0.0452 | Barrier 0.0355 | KL 0.01536 | CF 0.1681 | Std 0.1095 | RawLogStd 0.0217 | |a| 0.0482 | EV +0.805 | Alpha 0.0100 | MB 28/28
+  cert | viol 0.122 | dV -0.144218 | V 0.2069 | inball 0.347 | a*_q05 -0.00586 | a*_q50 0.01801 | dV>=0 0.068 | n=150 | a_used 0.00294 -> 0.00279
+[Episode 274/400] Steps: 720 | Reward:  190.16 | Battery:  63.02% | Loss: 0.0457
+Placing Sensors
+[Episode 275/400] Steps: 720 | Reward:  187.52 | Battery:  59.34% | Loss: 
+Placing Sensors
+Policy -0.0049 | Value 79.9491 | Lyap 0.0133 | Dynamics 0.0361 | Barrier 0.0665 | KL 0.01071 | CF 0.1240 | Std 0.1095 | RawLogStd 0.0216 | |a| 0.0324 | EV +0.831 | Alpha 0.0100 | MB 24/24
+  cert | viol 0.050 | dV -0.235847 | V 0.3211 | inball 0.411 | a*_q05 0.00289 | a*_q50 0.02230 | dV>=0 0.001 | n=150 | a_used 0.00279 -> 0.00277
+[Episode 276/400] Steps: 720 | Reward:  292.13 | Battery:  84.34% | Loss: 0.0074
+Placing Sensors
+[Episode 277/400] Steps: 720 | Reward:  298.74 | Battery:  86.32% | Loss: 
+Placing Sensors
+Policy -0.0065 | Value 67.6620 | Lyap 0.0117 | Dynamics 0.0356 | Barrier 0.0561 | KL 0.01180 | CF 0.1273 | Std 0.1094 | RawLogStd 0.0215 | |a| 0.0415 | EV +0.884 | Alpha 0.0100 | MB 24/24
+  cert | viol 0.141 | dV -0.226282 | V 0.3272 | inball 0.482 | a*_q05 0.00075 | a*_q50 0.02388 | dV>=0 0.017 | n=150 | a_used 0.00277 -> 0.00259
+[Episode 278/400] Steps: 720 | Reward:  244.94 | Battery:  73.30% | Loss: 0.0172
+Placing Sensors
+[Episode 279/400] Steps: 720 | Reward:  266.27 | Battery:  76.13% | Loss: 
+Placing Sensors
+Policy -0.0047 | Value 69.0729 | Lyap 0.0101 | Dynamics 0.0344 | Barrier 0.0285 | KL 0.01157 | CF 0.1259 | Std 0.1094 | RawLogStd 0.0213 | |a| 0.0329 | EV +0.907 | Alpha 0.0100 | MB 24/24
+  cert | viol 0.026 | dV -0.321216 | V 0.3740 | inball 0.571 | a*_q05 0.00555 | a*_q50 0.03301 | dV>=0 0.000 | n=150 | a_used 0.00259 -> 0.00270
+[Episode 280/400] Steps: 720 | Reward:  298.33 | Battery:  82.30% | Loss: -0.1370
+Placing Sensors
+[Episode 281/400] Steps: 720 | Reward:  229.97 | Battery:  57.04% | Loss: 
+Placing Sensors
+Policy -0.0112 | Value 46.3567 | Lyap 0.0125 | Dynamics 0.0404 | Barrier 0.0380 | KL 0.01099 | CF 0.1304 | Std 0.1094 | RawLogStd 0.0212 | |a| 0.0357 | EV +0.929 | Alpha 0.0100 | MB 24/24
+  cert | viol 0.000 | dV -0.247592 | V 0.2806 | inball 0.557 | a*_q05 0.00617 | a*_q50 0.03513 | dV>=0 0.000 | n=150 | a_used 0.00270 -> 0.00279
+[Episode 282/400] Steps: 720 | Reward:  278.25 | Battery:  78.16% | Loss: 0.0247
+Placing Sensors
+[Episode 283/400] Steps: 720 | Reward:  226.88 | Battery:  70.67% | Loss: 
+Placing Sensors
+Policy -0.0080 | Value 52.8104 | Lyap 0.0096 | Dynamics 0.0323 | Barrier 0.0319 | KL 0.01208 | CF 0.1459 | Std 0.1094 | RawLogStd 0.0213 | |a| 0.0370 | EV +0.903 | Alpha 0.0100 | MB 24/24
+  cert | viol 0.012 | dV -0.271739 | V 0.3394 | inball 0.460 | a*_q05 0.00456 | a*_q50 0.02628 | dV>=0 0.000 | n=150 | a_used 0.00279 -> 0.00289
+[Episode 284/400] Steps: 720 | Reward:  277.99 | Battery:  78.27% | Loss: 0.0105
+Placing Sensors
+[Episode 285/400] Steps: 720 | Reward:  263.67 | Battery:  78.70% | Loss: 
+Placing Sensors
+Policy -0.0006 | Value 77.4635 | Lyap 0.0101 | Dynamics 0.0405 | Barrier 0.0494 | KL 0.01381 | CF 0.1544 | Std 0.1094 | RawLogStd 0.0214 | |a| 0.0401 | EV +0.892 | Alpha 0.0100 | MB 24/24
+  cert | viol 0.139 | dV -0.159570 | V 0.2092 | inball 0.419 | a*_q05 -0.01700 | a*_q50 0.02703 | dV>=0 0.139 | n=150 | a_used 0.00289 -> 0.00274
+[Episode 286/400] Steps: 720 | Reward:  183.53 | Battery:  47.69% | Loss: 0.0169
+Placing Sensors
+[Episode 287/400] Steps: 720 | Reward:  264.03 | Battery:  71.53% | Loss: 
+Placing Sensors
+Policy -0.0055 | Value 64.1035 | Lyap 0.0099 | Dynamics 0.0440 | Barrier 0.0563 | KL 0.02143 | CF 0.1999 | Std 0.1094 | RawLogStd 0.0213 | |a| 0.0383 | EV +0.924 | Alpha 0.0100 | MB 24/24
+  cert | viol 0.006 | dV -0.271977 | V 0.3405 | inball 0.459 | a*_q05 0.00471 | a*_q50 0.02470 | dV>=0 0.000 | n=150 | a_used 0.00274 -> 0.00284
+[Episode 288/400] Steps: 720 | Reward:  245.88 | Battery:  74.61% | Loss: -0.0276
+Placing Sensors
+[Episode 289/400] Steps: 720 | Reward:  308.75 | Battery:  78.90% | Loss: 
+Placing Sensors
+Policy 0.0033 | Value 63.8838 | Lyap 0.0088 | Dynamics 0.0358 | Barrier 0.0797 | KL 0.02874 | CF 0.2517 | Std 0.1094 | RawLogStd 0.0214 | |a| 0.0335 | EV +0.920 | Alpha 0.0100 | MB 18/24
+  cert | viol 0.107 | dV -0.235176 | V 0.3311 | inball 0.527 | a*_q05 0.00090 | a*_q50 0.03067 | dV>=0 0.039 | n=150 | a_used 0.00284 -> 0.00280
+[Episode 290/400] Steps: 720 | Reward:  227.96 | Battery:  68.16% | Loss: 0.0160
+Placing Sensors
+[Episode 291/400] Steps: 720 | Reward:  245.84 | Battery:  75.84% | Loss: 
+Placing Sensors
+Policy -0.0023 | Value 62.7303 | Lyap 0.0120 | Dynamics 0.0383 | Barrier 0.0355 | KL 0.01677 | CF 0.1635 | Std 0.1094 | RawLogStd 0.0215 | |a| 0.0350 | EV +0.916 | Alpha 0.0100 | MB 24/24
+  cert | viol 0.104 | dV -0.300259 | V 0.4195 | inball 0.471 | a*_q05 0.00094 | a*_q50 0.02591 | dV>=0 0.042 | n=150 | a_used 0.00280 -> 0.00266
+[Episode 292/400] Steps: 720 | Reward:  243.46 | Battery:  70.25% | Loss: 0.0549
+Placing Sensors
+[Episode 293/400] Steps: 720 | Reward:  214.36 | Battery:  54.14% | Loss: 
+Placing Sensors
+[Episode 294/400] Steps: 154 | Reward:  -56.45 | Battery:   0.00% | Loss: 
+Placing Sensors
+Policy -0.0148 | Value 141.1351 | Lyap 0.0114 | Dynamics 0.0455 | Barrier 0.0447 | KL 0.01869 | CF 0.1941 | Std 0.1095 | RawLogStd 0.0217 | |a| 0.0406 | EV +0.719 | Alpha 0.0100 | MB 28/28
+  cert | viol 0.000 | dV -0.264957 | V 0.2971 | inball 0.430 | a*_q05 0.00909 | a*_q50 0.03431 | dV>=0 0.000 | n=150 | a_used 0.00266 -> 0.00283
+[Episode 295/400] Steps: 720 | Reward:  265.08 | Battery:  75.77% | Loss: 0.0499
+Placing Sensors
+[Episode 296/400] Steps: 720 | Reward:  290.43 | Battery:  85.89% | Loss: 
+Placing Sensors
+Policy -0.0098 | Value 54.8734 | Lyap 0.0102 | Dynamics 0.0457 | Barrier 0.0507 | KL 0.01749 | CF 0.1694 | Std 0.1095 | RawLogStd 0.0219 | |a| 0.0468 | EV +0.927 | Alpha 0.0100 | MB 24/24
+  cert | viol 0.071 | dV -0.295991 | V 0.3914 | inball 0.528 | a*_q05 0.00219 | a*_q50 0.02727 | dV>=0 0.005 | n=150 | a_used 0.00283 -> 0.00282
+[Episode 297/400] Steps: 720 | Reward:  274.50 | Battery:  80.02% | Loss: 0.1292
+Placing Sensors
+[Episode 298/400] Steps: 720 | Reward:  240.47 | Battery:  75.01% | Loss: 
+Placing Sensors
+Policy -0.0003 | Value 45.8262 | Lyap 0.0121 | Dynamics 0.0369 | Barrier 0.0556 | KL 0.01385 | CF 0.1702 | Std 0.1095 | RawLogStd 0.0221 | |a| 0.0370 | EV +0.915 | Alpha 0.0100 | MB 24/24
+  cert | viol 0.067 | dV -0.254684 | V 0.3311 | inball 0.464 | a*_q05 0.00260 | a*_q50 0.02869 | dV>=0 0.000 | n=150 | a_used 0.00282 -> 0.00282
+[Episode 299/400] Steps: 720 | Reward:  262.12 | Battery:  74.20% | Loss: 0.0742
+Placing Sensors
+[Episode 300/400] Steps: 720 | Reward:  205.88 | Battery:  66.56% | Loss: 
+Placing Sensors
+Policy -0.0034 | Value 57.8001 | Lyap 0.0101 | Dynamics 0.0448 | Barrier 0.0476 | KL 0.01422 | CF 0.1472 | Std 0.1095 | RawLogStd 0.0220 | |a| 0.0603 | EV +0.897 | Alpha 0.0100 | MB 24/24
+  cert | viol 0.073 | dV -0.223833 | V 0.3018 | inball 0.413 | a*_q05 0.00210 | a*_q50 0.02506 | dV>=0 0.007 | n=150 | a_used 0.00282 -> 0.00275
+[Convergence check] ep 301 | avg_reward(last 50) 229.90 (best 229.90, above_threshold=True) | avg_lyap(last 20) 0.0103 (V=0.252+-0.219, viol=45.2%, dV=-0.001089, inball=48%, collapsed=False) | avg_barrier(last 20) 0.0503 | avg_std(last 20) 0.1095 | avg|a|(last 20) 0.0374 (cleared=True) | stable=False | trend +185.43/window t=+5.88 (plateau_streak=0/10) | checks_since_best=0
+[Episode 301/400] Steps: 720 | Reward:  268.06 | Battery:  81.64% | Loss: 0.0872
+Placing Sensors
+[Episode 302/400] Steps: 139 | Reward:  -43.32 | Battery:   0.00% | Loss: 
+Placing Sensors
+[Episode 303/400] Steps: 720 | Reward:  225.43 | Battery:  64.12% | Loss: 
+Placing Sensors
+[Episode 304/400] Steps: 116 | Reward:  -53.51 | Battery:   0.00% | Loss: 
+Placing Sensors
+Policy -0.0018 | Value 140.4967 | Lyap 0.0133 | Dynamics 0.0524 | Barrier 0.0315 | KL 0.02311 | CF 0.1674 | Std 0.1095 | RawLogStd 0.0218 | |a| 0.0462 | EV +0.802 | Alpha 0.0100 | MB 28/28
+  cert | viol 0.045 | dV -0.246799 | V 0.3081 | inball 0.362 | a*_q05 0.00383 | a*_q50 0.02626 | dV>=0 0.011 | n=150 | a_used 0.00275 -> 0.00284
+[Convergence check] ep 305 | avg_reward(last 50) 216.34 (best 229.90, above_threshold=True) | avg_lyap(last 20) 0.0104 (V=0.254+-0.223, viol=45.8%, dV=-0.001030, inball=47%, collapsed=False) | avg_barrier(last 20) 0.0484 | avg_std(last 20) 0.1095 | avg|a|(last 20) 0.0381 (cleared=True) | stable=False | trend +159.58/window t=+4.98 (plateau_streak=0/10) | checks_since_best=1
+[Episode 305/400] Steps: 720 | Reward:  209.88 | Battery:  58.76% | Loss: 0.0416
+Placing Sensors
+[Episode 306/400] Steps: 720 | Reward:  297.33 | Battery:  81.58% | Loss: 
+Placing Sensors
+Policy -0.0064 | Value 88.8758 | Lyap 0.0123 | Dynamics 0.0335 | Barrier 0.0240 | KL 0.01262 | CF 0.1196 | Std 0.1095 | RawLogStd 0.0219 | |a| 0.0626 | EV +0.860 | Alpha 0.0100 | MB 24/24
+  cert | viol 0.019 | dV -0.298059 | V 0.3457 | inball 0.562 | a*_q05 0.00524 | a*_q50 0.03342 | dV>=0 0.000 | n=150 | a_used 0.00284 -> 0.00291
+[Convergence check] ep 307 | avg_reward(last 50) 223.68 (best 229.90, above_threshold=True) | avg_lyap(last 20) 0.0106 (V=0.252+-0.224, viol=46.0%, dV=-0.001030, inball=48%, collapsed=False) | avg_barrier(last 20) 0.0471 | avg_std(last 20) 0.1095 | avg|a|(last 20) 0.0398 (cleared=True) | stable=False | trend +154.47/window t=+4.84 (plateau_streak=0/10) | checks_since_best=2
+[Episode 307/400] Steps: 720 | Reward:  271.74 | Battery:  81.05% | Loss: -0.0573
+Placing Sensors
+[Episode 308/400] Steps: 720 | Reward:  268.06 | Battery:  82.93% | Loss: 
+Placing Sensors
+Policy -0.0107 | Value 50.1423 | Lyap 0.0091 | Dynamics 0.0393 | Barrier 0.0190 | KL 0.01132 | CF 0.1407 | Std 0.1095 | RawLogStd 0.0218 | |a| 0.0397 | EV +0.916 | Alpha 0.0100 | MB 24/24
+  cert | viol 0.050 | dV -0.247549 | V 0.3173 | inball 0.513 | a*_q05 0.00314 | a*_q50 0.02883 | dV>=0 0.000 | n=150 | a_used 0.00291 -> 0.00298
+[Convergence check] ep 309 | avg_reward(last 50) 223.78 (best 229.90, above_threshold=True) | avg_lyap(last 20) 0.0106 (V=0.255+-0.228, viol=45.8%, dV=-0.001048, inball=47%, collapsed=False) | avg_barrier(last 20) 0.0462 | avg_std(last 20) 0.1095 | avg|a|(last 20) 0.0404 (cleared=True) | stable=False | trend +165.52/window t=+5.23 (plateau_streak=0/10) | checks_since_best=3
+[Episode 309/400] Steps: 720 | Reward:  257.31 | Battery:  71.12% | Loss: 0.0641
+Placing Sensors
+[Episode 310/400] Steps:  64 | Reward:  -62.53 | Battery:   0.00% | Loss: 
+Placing Sensors
+[Episode 311/400] Steps: 720 | Reward:  226.69 | Battery:  64.64% | Loss: 
+Placing Sensors
+Policy -0.0100 | Value 54.3286 | Lyap 0.0092 | Dynamics 0.0350 | Barrier 0.0461 | KL 0.01785 | CF 0.1833 | Std 0.1095 | RawLogStd 0.0218 | |a| 0.0354 | EV +0.927 | Alpha 0.0100 | MB 24/24
+  cert | viol 0.028 | dV -0.246535 | V 0.2899 | inball 0.494 | a*_q05 0.00523 | a*_q50 0.02985 | dV>=0 0.000 | n=150 | a_used 0.00298 -> 0.00304
+[Convergence check] ep 312 | avg_reward(last 50) 214.89 (best 229.90, above_threshold=True) | avg_lyap(last 20) 0.0107 (V=0.255+-0.231, viol=45.8%, dV=-0.001031, inball=48%, collapsed=False) | avg_barrier(last 20) 0.0466 | avg_std(last 20) 0.1095 | avg|a|(last 20) 0.0404 (cleared=True) | stable=False | trend +165.83/window t=+5.19 (plateau_streak=0/10) | checks_since_best=4
+[Episode 312/400] Steps: 720 | Reward:  268.44 | Battery:  79.05% | Loss: -0.0311
+Placing Sensors
+[Episode 313/400] Steps: 720 | Reward:  267.74 | Battery:  78.93% | Loss: 
+Placing Sensors
+Policy -0.0055 | Value 48.3707 | Lyap 0.0105 | Dynamics 0.0388 | Barrier 0.0605 | KL 0.01839 | CF 0.1682 | Std 0.1095 | RawLogStd 0.0217 | |a| 0.0363 | EV +0.910 | Alpha 0.0100 | MB 24/24
+  cert | viol 0.076 | dV -0.271853 | V 0.3598 | inball 0.501 | a*_q05 0.00199 | a*_q50 0.02666 | dV>=0 0.029 | n=150 | a_used 0.00304 -> 0.00289
+[Convergence check] ep 314 | avg_reward(last 50) 215.54 (best 229.90, above_threshold=True) | avg_lyap(last 20) 0.0108 (V=0.255+-0.232, viol=45.9%, dV=-0.001047, inball=48%, collapsed=False) | avg_barrier(last 20) 0.0468 | avg_std(last 20) 0.1095 | avg|a|(last 20) 0.0406 (cleared=True) | stable=False | trend +158.75/window t=+5.00 (plateau_streak=0/10) | checks_since_best=5
+[Episode 314/400] Steps: 720 | Reward:  261.55 | Battery:  73.31% | Loss: 0.0691
+Placing Sensors
+[Episode 315/400] Steps: 720 | Reward:  286.49 | Battery:  77.73% | Loss: 
+Placing Sensors
+Policy -0.0034 | Value 60.9293 | Lyap 0.0092 | Dynamics 0.0357 | Barrier 0.0330 | KL 0.01852 | CF 0.1797 | Std 0.1095 | RawLogStd 0.0216 | |a| 0.0321 | EV +0.893 | Alpha 0.0100 | MB 24/24
+  cert | viol 0.062 | dV -0.226513 | V 0.2801 | inball 0.571 | a*_q05 0.00295 | a*_q50 0.03516 | dV>=0 0.000 | n=150 | a_used 0.00289 -> 0.00297
+[Convergence check] ep 316 | avg_reward(last 50) 217.52 (best 229.90, above_threshold=True) | avg_lyap(last 20) 0.0108 (V=0.257+-0.232, viol=46.0%, dV=-0.001047, inball=48%, collapsed=False) | avg_barrier(last 20) 0.0445 | avg_std(last 20) 0.1095 | avg|a|(last 20) 0.0406 (cleared=True) | stable=False | trend +151.80/window t=+4.81 (plateau_streak=0/10) | checks_since_best=6
+[Episode 316/400] Steps: 720 | Reward:  263.36 | Battery:  70.65% | Loss: -0.0138
+Placing Sensors
+[Episode 317/400] Steps: 720 | Reward:  250.81 | Battery:  77.47% | Loss: 
+Placing Sensors
+Policy -0.0100 | Value 49.3463 | Lyap 0.0077 | Dynamics 0.0319 | Barrier 0.0178 | KL 0.00775 | CF 0.0982 | Std 0.1094 | RawLogStd 0.0215 | |a| 0.0325 | EV +0.929 | Alpha 0.0100 | MB 24/24
+  cert | viol 0.099 | dV -0.229102 | V 0.3102 | inball 0.536 | a*_q05 0.00165 | a*_q50 0.02750 | dV>=0 0.023 | n=150 | a_used 0.00297 -> 0.00290
+[Convergence check] ep 318 | avg_reward(last 50) 218.51 (best 229.90, above_threshold=True) | avg_lyap(last 20) 0.0107 (V=0.254+-0.234, viol=45.5%, dV=-0.001117, inball=49%, collapsed=False) | avg_barrier(last 20) 0.0436 | avg_std(last 20) 0.1095 | avg|a|(last 20) 0.0398 (cleared=True) | stable=False | trend +153.13/window t=+4.88 (plateau_streak=0/10) | checks_since_best=7
+[Episode 318/400] Steps: 720 | Reward:  292.77 | Battery:  76.64% | Loss: -0.0868
+Placing Sensors
+[Episode 319/400] Steps: 720 | Reward:  273.03 | Battery:  81.43% | Loss: 
+Placing Sensors
+Policy -0.0039 | Value 40.6598 | Lyap 0.0090 | Dynamics 0.0335 | Barrier 0.0410 | KL 0.01109 | CF 0.1432 | Std 0.1094 | RawLogStd 0.0215 | |a| 0.0404 | EV +0.924 | Alpha 0.0100 | MB 24/24
+  cert | viol 0.017 | dV -0.275328 | V 0.3090 | inball 0.581 | a*_q05 0.00691 | a*_q50 0.03691 | dV>=0 0.000 | n=150 | a_used 0.00290 -> 0.00301
+[Convergence check] ep 320 | avg_reward(last 50) 218.38 (best 229.90, above_threshold=True) | avg_lyap(last 20) 0.0104 (V=0.249+-0.236, viol=45.1%, dV=-0.001137, inball=50%, collapsed=False) | avg_barrier(last 20) 0.0423 | avg_std(last 20) 0.1095 | avg|a|(last 20) 0.0402 (cleared=True) | stable=False | trend +152.72/window t=+4.90 (plateau_streak=0/10) | checks_since_best=8
+[Episode 320/400] Steps: 720 | Reward:  265.25 | Battery:  59.11% | Loss: 0.0980
+Placing Sensors
+[Episode 321/400] Steps: 720 | Reward:  283.67 | Battery:  74.41% | Loss: 
+Placing Sensors
+Policy -0.0077 | Value 42.6676 | Lyap 0.0058 | Dynamics 0.0385 | Barrier 0.0177 | KL 0.00963 | CF 0.1094 | Std 0.1094 | RawLogStd 0.0215 | |a| 0.0377 | EV +0.942 | Alpha 0.0100 | MB 24/24
+  cert | viol 0.111 | dV -0.242398 | V 0.3456 | inball 0.474 | a*_q05 0.00118 | a*_q50 0.02598 | dV>=0 0.031 | n=150 | a_used 0.00301 -> 0.00284
+[Convergence check] ep 322 | avg_reward(last 50) 231.38 (best 231.38, above_threshold=True) | avg_lyap(last 20) 0.0101 (V=0.249+-0.240, viol=44.9%, dV=-0.001132, inball=49%, collapsed=False) | avg_barrier(last 20) 0.0404 | avg_std(last 20) 0.1095 | avg|a|(last 20) 0.0400 (cleared=True) | stable=False | trend +144.09/window t=+4.66 (plateau_streak=0/10) | checks_since_best=0
+[Episode 322/400] Steps: 720 | Reward:  247.75 | Battery:  74.78% | Loss: 0.0671
+Placing Sensors
+[Episode 323/400] Steps: 720 | Reward:  284.10 | Battery:  80.73% | Loss: 
+Placing Sensors
+Policy -0.0122 | Value 59.0877 | Lyap 0.0088 | Dynamics 0.0410 | Barrier 0.0219 | KL 0.01715 | CF 0.1452 | Std 0.1094 | RawLogStd 0.0215 | |a| 0.0331 | EV +0.924 | Alpha 0.0100 | MB 24/24
+  cert | viol 0.018 | dV -0.286700 | V 0.3541 | inball 0.480 | a*_q05 0.00417 | a*_q50 0.02929 | dV>=0 0.000 | n=150 | a_used 0.00284 -> 0.00288
+[Convergence check] ep 324 | avg_reward(last 50) 232.87 (best 232.87, above_threshold=True) | avg_lyap(last 20) 0.0101 (V=0.250+-0.243, viol=45.1%, dV=-0.001110, inball=49%, collapsed=False) | avg_barrier(last 20) 0.0401 | avg_std(last 20) 0.1095 | avg|a|(last 20) 0.0400 (cleared=True) | stable=False | trend +152.30/window t=+4.95 (plateau_streak=0/10) | checks_since_best=0
+[Episode 324/400] Steps: 720 | Reward:  252.62 | Battery:  68.53% | Loss: -0.0671
+Placing Sensors
+[Episode 325/400] Steps: 720 | Reward:  331.10 | Battery:  83.96% | Loss: 
+Placing Sensors
+Policy 0.0011 | Value 35.9693 | Lyap 0.0086 | Dynamics 0.0555 | Barrier 0.0615 | KL 0.02193 | CF 0.1389 | Std 0.1094 | RawLogStd 0.0215 | |a| 0.0376 | EV +0.952 | Alpha 0.0100 | MB 18/24
+  cert | viol 0.017 | dV -0.252448 | V 0.2927 | inball 0.592 | a*_q05 0.00590 | a*_q50 0.03382 | dV>=0 0.000 | n=150 | a_used 0.00288 -> 0.00296
+[Convergence check] ep 326 | avg_reward(last 50) 235.15 (best 235.15, above_threshold=True) | avg_lyap(last 20) 0.0099 (V=0.250+-0.245, viol=44.5%, dV=-0.001140, inball=49%, collapsed=False) | avg_barrier(last 20) 0.0413 | avg_std(last 20) 0.1095 | avg|a|(last 20) 0.0401 (cleared=True) | stable=False | trend +164.70/window t=+5.39 (plateau_streak=0/10) | checks_since_best=0
+[Episode 326/400] Steps: 720 | Reward:  263.00 | Battery:  78.49% | Loss: 0.1091
+Placing Sensors
+[Episode 327/400] Steps: 720 | Reward:  300.79 | Battery:  75.31% | Loss: 
+Placing Sensors
+Policy -0.0031 | Value 39.6368 | Lyap 0.0070 | Dynamics 0.0286 | Barrier 0.0343 | KL 0.01839 | CF 0.1887 | Std 0.1094 | RawLogStd 0.0214 | |a| 0.0350 | EV +0.950 | Alpha 0.0100 | MB 24/24
+  cert | viol 0.000 | dV -0.219370 | V 0.2320 | inball 0.611 | a*_q05 0.01173 | a*_q50 0.03835 | dV>=0 0.000 | n=150 | a_used 0.00296 -> 0.00315
+[Convergence check] ep 328 | avg_reward(last 50) 235.75 (best 235.75, above_threshold=True) | avg_lyap(last 20) 0.0098 (V=0.246+-0.245, viol=43.9%, dV=-0.001158, inball=50%, collapsed=False) | avg_barrier(last 20) 0.0414 | avg_std(last 20) 0.1095 | avg|a|(last 20) 0.0400 (cleared=True) | stable=False | trend +156.73/window t=+5.17 (plateau_streak=0/10) | checks_since_best=0
+[Episode 328/400] Steps: 720 | Reward:  272.76 | Battery:  70.95% | Loss: 0.0225
+Placing Sensors
+[Episode 329/400] Steps: 720 | Reward:  269.05 | Battery:  79.31% | Loss: 
+Placing Sensors
+Policy -0.0104 | Value 46.3585 | Lyap 0.0072 | Dynamics 0.0257 | Barrier 0.0871 | KL 0.01057 | CF 0.1326 | Std 0.1094 | RawLogStd 0.0213 | |a| 0.0392 | EV +0.965 | Alpha 0.0100 | MB 24/24
+  cert | viol 0.061 | dV -0.243567 | V 0.3002 | inball 0.576 | a*_q05 0.00289 | a*_q50 0.03316 | dV>=0 0.021 | n=150 | a_used 0.00315 -> 0.00319
+[Convergence check] ep 330 | avg_reward(last 50) 235.54 (best 235.75, above_threshold=True) | avg_lyap(last 20) 0.0096 (V=0.246+-0.247, viol=43.3%, dV=-0.001196, inball=51%, collapsed=False) | avg_barrier(last 20) 0.0433 | avg_std(last 20) 0.1095 | avg|a|(last 20) 0.0400 (cleared=True) | stable=False | trend +147.95/window t=+4.93 (plateau_streak=0/10) | checks_since_best=1
+[Episode 330/400] Steps: 720 | Reward:  284.93 | Battery:  77.27% | Loss: -0.0101
+Placing Sensors
+[Episode 331/400] Steps: 720 | Reward:  296.17 | Battery:  76.30% | Loss: 
+Placing Sensors
+Policy 0.0032 | Value 65.1251 | Lyap 0.0086 | Dynamics 0.0359 | Barrier 0.0177 | KL 0.01936 | CF 0.1315 | Std 0.1094 | RawLogStd 0.0212 | |a| 0.0349 | EV +0.912 | Alpha 0.0100 | MB 18/24
+  cert | viol 0.071 | dV -0.257571 | V 0.3306 | inball 0.465 | a*_q05 0.00285 | a*_q50 0.02942 | dV>=0 0.007 | n=150 | a_used 0.00319 -> 0.00321
+[Convergence check] ep 332 | avg_reward(last 50) 236.08 (best 236.08, above_threshold=True) | avg_lyap(last 20) 0.0096 (V=0.245+-0.249, viol=43.1%, dV=-0.001201, inball=51%, collapsed=False) | avg_barrier(last 20) 0.0413 | avg_std(last 20) 0.1095 | avg|a|(last 20) 0.0398 (cleared=True) | stable=False | trend +145.09/window t=+4.86 (plateau_streak=0/10) | checks_since_best=0
+[Episode 332/400] Steps: 720 | Reward:  239.02 | Battery:  71.15% | Loss: 0.0012
+Placing Sensors
+[Episode 333/400] Steps: 720 | Reward:  262.49 | Battery:  68.85% | Loss: 
+Placing Sensors
+[Episode 334/400] Steps:  82 | Reward:  -70.02 | Battery:   0.00% | Loss: 
+Placing Sensors
+Policy -0.0048 | Value 59.9565 | Lyap 0.0086 | Dynamics 0.0413 | Barrier 0.0476 | KL 0.01041 | CF 0.1304 | Std 0.1094 | RawLogStd 0.0212 | |a| 0.0416 | EV +0.899 | Alpha 0.0100 | MB 24/24
+  cert | viol 0.008 | dV -0.244597 | V 0.2812 | inball 0.487 | a*_q05 0.00634 | a*_q50 0.03369 | dV>=0 0.000 | n=150 | a_used 0.00321 -> 0.00330
+[Convergence check] ep 335 | avg_reward(last 50) 229.41 (best 236.08, above_threshold=True) | avg_lyap(last 20) 0.0095 (V=0.243+-0.249, viol=43.5%, dV=-0.001161, inball=51%, collapsed=False) | avg_barrier(last 20) 0.0397 | avg_std(last 20) 0.1095 | avg|a|(last 20) 0.0402 (cleared=True) | stable=False | trend +143.20/window t=+4.73 (plateau_streak=0/10) | checks_since_best=1
+[Episode 335/400] Steps: 720 | Reward:  242.60 | Battery:  68.36% | Loss: 0.0342
+Placing Sensors
+[Episode 336/400] Steps: 720 | Reward:  297.42 | Battery:  83.52% | Loss: 
+Placing Sensors
+Policy -0.0016 | Value 36.9709 | Lyap 0.0072 | Dynamics 0.0339 | Barrier 0.0263 | KL 0.01594 | CF 0.0978 | Std 0.1094 | RawLogStd 0.0211 | |a| 0.0350 | EV +0.943 | Alpha 0.0100 | MB 24/24
+  cert | viol 0.100 | dV -0.283883 | V 0.3721 | inball 0.576 | a*_q05 0.00155 | a*_q50 0.03018 | dV>=0 0.010 | n=150 | a_used 0.00330 -> 0.00318
+[Convergence check] ep 337 | avg_reward(last 50) 232.56 (best 236.08, above_threshold=True) | avg_lyap(last 20) 0.0093 (V=0.241+-0.250, viol=43.3%, dV=-0.001201, inball=51%, collapsed=False) | avg_barrier(last 20) 0.0393 | avg_std(last 20) 0.1095 | avg|a|(last 20) 0.0402 (cleared=True) | stable=False | trend +152.37/window t=+5.05 (plateau_streak=0/10) | checks_since_best=2
+[Episode 337/400] Steps: 720 | Reward:  307.49 | Battery:  85.52% | Loss: -0.1198
+Placing Sensors
+[Episode 338/400] Steps: 720 | Reward:  307.75 | Battery:  81.64% | Loss: 
+Placing Sensors
+Policy -0.0066 | Value 53.1957 | Lyap 0.0059 | Dynamics 0.0274 | Barrier 0.0333 | KL 0.00796 | CF 0.0973 | Std 0.1093 | RawLogStd 0.0209 | |a| 0.0321 | EV +0.940 | Alpha 0.0100 | MB 24/24
+  cert | viol 0.000 | dV -0.245613 | V 0.2628 | inball 0.636 | a*_q05 0.01046 | a*_q50 0.03940 | dV>=0 0.000 | n=150 | a_used 0.00318 -> 0.00336
+[Convergence check] ep 339 | avg_reward(last 50) 233.36 (best 236.08, above_threshold=True) | avg_lyap(last 20) 0.0090 (V=0.235+-0.248, viol=42.5%, dV=-0.001274, inball=52%, collapsed=False) | avg_barrier(last 20) 0.0387 | avg_std(last 20) 0.1095 | avg|a|(last 20) 0.0398 (cleared=True) | stable=False | trend +159.34/window t=+5.29 (plateau_streak=0/10) | checks_since_best=3
+[Episode 339/400] Steps: 720 | Reward:  287.00 | Battery:  78.88% | Loss: 0.1460
+Placing Sensors
+[Episode 340/400] Steps: 720 | Reward:  209.84 | Battery:  54.78% | Loss: 
+Placing Sensors
+Policy -0.0031 | Value 44.3001 | Lyap 0.0087 | Dynamics 0.0346 | Barrier 0.0368 | KL 0.01133 | CF 0.1115 | Std 0.1093 | RawLogStd 0.0208 | |a| 0.0399 | EV +0.931 | Alpha 0.0100 | MB 24/24
+  cert | viol 0.059 | dV -0.320830 | V 0.3862 | inball 0.506 | a*_q05 0.00322 | a*_q50 0.03321 | dV>=0 0.021 | n=150 | a_used 0.00336 -> 0.00328
+[Convergence check] ep 341 | avg_reward(last 50) 234.26 (best 236.08, above_threshold=True) | avg_lyap(last 20) 0.0090 (V=0.233+-0.247, viol=43.0%, dV=-0.001250, inball=52%, collapsed=False) | avg_barrier(last 20) 0.0380 | avg_std(last 20) 0.1094 | avg|a|(last 20) 0.0394 (cleared=True) | stable=False | trend +163.82/window t=+5.45 (plateau_streak=0/10) | checks_since_best=4
+[Episode 341/400] Steps: 720 | Reward:  309.08 | Battery:  85.22% | Loss: 0.0425
+Placing Sensors
+[Episode 342/400] Steps: 720 | Reward:  314.23 | Battery:  82.98% | Loss: 
+Placing Sensors
+Policy -0.0067 | Value 58.7878 | Lyap 0.0097 | Dynamics 0.0318 | Barrier 0.0245 | KL 0.01041 | CF 0.1139 | Std 0.1093 | RawLogStd 0.0208 | |a| 0.0359 | EV +0.936 | Alpha 0.0100 | MB 24/24
+  cert | viol 0.074 | dV -0.280170 | V 0.3460 | inball 0.483 | a*_q05 0.00292 | a*_q50 0.03086 | dV>=0 0.000 | n=150 | a_used 0.00328 -> 0.00319
+[Convergence check] ep 343 | avg_reward(last 50) 235.27 (best 236.08, above_threshold=True) | avg_lyap(last 20) 0.0088 (V=0.233+-0.249, viol=43.2%, dV=-0.001246, inball=52%, collapsed=False) | avg_barrier(last 20) 0.0365 | avg_std(last 20) 0.1094 | avg|a|(last 20) 0.0394 (cleared=True) | stable=False | trend +170.04/window t=+5.67 (plateau_streak=0/10) | checks_since_best=5
+[Episode 343/400] Steps: 720 | Reward:  193.84 | Battery:  52.58% | Loss: -0.0155
+Placing Sensors
+[Episode 344/400] Steps: 720 | Reward:  237.62 | Battery:  53.84% | Loss: 
+Placing Sensors
+Policy -0.0040 | Value 53.2802 | Lyap 0.0063 | Dynamics 0.0292 | Barrier 0.0448 | KL 0.01564 | CF 0.1432 | Std 0.1093 | RawLogStd 0.0207 | |a| 0.0451 | EV +0.944 | Alpha 0.0100 | MB 24/24
+  cert | viol 0.022 | dV -0.298890 | V 0.3318 | inball 0.528 | a*_q05 0.00573 | a*_q50 0.03780 | dV>=0 0.000 | n=150 | a_used 0.00319 -> 0.00326
+[Convergence check] ep 345 | avg_reward(last 50) 240.75 (best 240.75, above_threshold=True) | avg_lyap(last 20) 0.0086 (V=0.230+-0.249, viol=43.5%, dV=-0.001245, inball=53%, collapsed=False) | avg_barrier(last 20) 0.0363 | avg_std(last 20) 0.1094 | avg|a|(last 20) 0.0386 (cleared=True) | stable=False | trend +168.03/window t=+5.65 (plateau_streak=0/10) | checks_since_best=0
+[Episode 345/400] Steps: 720 | Reward:  245.39 | Battery:  71.68% | Loss: 0.0612
+Placing Sensors
+[Episode 346/400] Steps: 720 | Reward:  281.44 | Battery:  76.24% | Loss: 
+Placing Sensors
+Policy -0.0102 | Value 37.1483 | Lyap 0.0066 | Dynamics 0.0308 | Barrier 0.0303 | KL 0.01121 | CF 0.1157 | Std 0.1092 | RawLogStd 0.0205 | |a| 0.0368 | EV +0.951 | Alpha 0.0100 | MB 24/24
+  cert | viol 0.014 | dV -0.255862 | V 0.2886 | inball 0.623 | a*_q05 0.00618 | a*_q50 0.03779 | dV>=0 0.000 | n=150 | a_used 0.00326 -> 0.00342
+[Convergence check] ep 347 | avg_reward(last 50) 241.15 (best 241.15, above_threshold=True) | avg_lyap(last 20) 0.0083 (V=0.224+-0.249, viol=42.8%, dV=-0.001340, inball=54%, collapsed=False) | avg_barrier(last 20) 0.0363 | avg_std(last 20) 0.1094 | avg|a|(last 20) 0.0381 (cleared=True) | stable=False | trend +177.85/window t=+6.02 (plateau_streak=0/10) | checks_since_best=0
+[Episode 347/400] Steps: 720 | Reward:  303.49 | Battery:  84.68% | Loss: 0.0476
+Placing Sensors
+[Episode 348/400] Steps: 720 | Reward:  246.02 | Battery:  70.51% | Loss: 
+Placing Sensors
+Policy -0.0064 | Value 68.3096 | Lyap 0.0080 | Dynamics 0.0379 | Barrier 0.0228 | KL 0.00917 | CF 0.1099 | Std 0.1092 | RawLogStd 0.0204 | |a| 0.0425 | EV +0.860 | Alpha 0.0100 | MB 24/24
+  cert | viol 0.170 | dV -0.228208 | V 0.3690 | inball 0.419 | a*_q05 -0.00243 | a*_q50 0.02277 | dV>=0 0.110 | n=150 | a_used 0.00342 -> 0.00325
+[Convergence check] ep 349 | avg_reward(last 50) 241.31 (best 241.31, above_threshold=True) | avg_lyap(last 20) 0.0081 (V=0.226+-0.252, viol=43.1%, dV=-0.001309, inball=53%, collapsed=False) | avg_barrier(last 20) 0.0362 | avg_std(last 20) 0.1094 | avg|a|(last 20) 0.0371 (cleared=True) | stable=False | trend +175.11/window t=+5.97 (plateau_streak=0/10) | checks_since_best=0
+[Episode 349/400] Steps: 720 | Reward:  264.29 | Battery:  81.61% | Loss: 0.0398
+Placing Sensors
+[Episode 350/400] Steps: 720 | Reward:  249.00 | Battery:  74.43% | Loss: 
+Placing Sensors
+Policy -0.0068 | Value 36.0398 | Lyap 0.0091 | Dynamics 0.0248 | Barrier 0.0113 | KL 0.00711 | CF 0.0767 | Std 0.1093 | RawLogStd 0.0205 | |a| 0.0333 | EV +0.956 | Alpha 0.0100 | MB 24/24
+  cert | viol 0.060 | dV -0.236564 | V 0.3040 | inball 0.479 | a*_q05 0.00302 | a*_q50 0.02426 | dV>=0 0.003 | n=150 | a_used 0.00325 -> 0.00323
+[Convergence check] ep 351 | avg_reward(last 50) 241.51 (best 241.51, above_threshold=True) | avg_lyap(last 20) 0.0081 (V=0.225+-0.252, viol=42.9%, dV=-0.001294, inball=53%, collapsed=False) | avg_barrier(last 20) 0.0358 | avg_std(last 20) 0.1094 | avg|a|(last 20) 0.0368 (cleared=True) | stable=False | trend +171.54/window t=+5.89 (plateau_streak=0/10) | checks_since_best=0
+[Episode 351/400] Steps: 720 | Reward:  234.90 | Battery:  70.84% | Loss: 0.0580
+Placing Sensors
+[Episode 352/400] Steps: 720 | Reward:  331.88 | Battery:  87.66% | Loss: 
+Placing Sensors
+Policy -0.0102 | Value 30.8402 | Lyap 0.0095 | Dynamics 0.0288 | Barrier 0.0204 | KL 0.00607 | CF 0.0591 | Std 0.1092 | RawLogStd 0.0205 | |a| 0.0324 | EV +0.941 | Alpha 0.0100 | MB 24/24
+  cert | viol 0.017 | dV -0.265222 | V 0.3034 | inball 0.620 | a*_q05 0.00688 | a*_q50 0.03469 | dV>=0 0.000 | n=150 | a_used 0.00323 -> 0.00339
+[Convergence check] ep 353 | avg_reward(last 50) 250.79 (best 250.79, above_threshold=True) | avg_lyap(last 20) 0.0081 (V=0.224+-0.252, viol=42.2%, dV=-0.001372, inball=54%, collapsed=False) | avg_barrier(last 20) 0.0345 | avg_std(last 20) 0.1094 | avg|a|(last 20) 0.0367 (cleared=True) | stable=False | trend +171.04/window t=+5.91 (plateau_streak=0/10) | checks_since_best=0
+[Episode 353/400] Steps: 720 | Reward:  314.25 | Battery:  82.79% | Loss: -0.0226
+Placing Sensors
+[Episode 354/400] Steps: 720 | Reward:  277.82 | Battery:  77.86% | Loss: 
+Placing Sensors
+Policy -0.0077 | Value 31.6243 | Lyap 0.0060 | Dynamics 0.0226 | Barrier 0.0715 | KL 0.00797 | CF 0.0807 | Std 0.1092 | RawLogStd 0.0204 | |a| 0.0292 | EV +0.972 | Alpha 0.0100 | MB 24/24
+  cert | viol 0.108 | dV -0.253778 | V 0.3379 | inball 0.513 | a*_q05 0.00191 | a*_q50 0.02802 | dV>=0 0.006 | n=150 | a_used 0.00339 -> 0.00325
+[Convergence check] ep 355 | avg_reward(last 50) 258.12 (best 258.12, above_threshold=True) | avg_lyap(last 20) 0.0079 (V=0.223+-0.253, viol=42.0%, dV=-0.001368, inball=54%, collapsed=False) | avg_barrier(last 20) 0.0351 | avg_std(last 20) 0.1094 | avg|a|(last 20) 0.0363 (cleared=True) | stable=False | trend +171.35/window t=+5.92 (plateau_streak=0/10) | checks_since_best=0
+[Episode 355/400] Steps: 720 | Reward:  245.26 | Battery:  70.52% | Loss: -0.0920
+Placing Sensors
+[Episode 356/400] Steps: 720 | Reward:  237.61 | Battery:  67.17% | Loss: 
+Placing Sensors
+Policy -0.0042 | Value 42.5757 | Lyap 0.0048 | Dynamics 0.0282 | Barrier 0.0211 | KL 0.00672 | CF 0.0792 | Std 0.1092 | RawLogStd 0.0202 | |a| 0.0325 | EV +0.958 | Alpha 0.0100 | MB 24/24
+  cert | viol 0.000 | dV -0.307118 | V 0.3343 | inball 0.551 | a*_q05 0.00976 | a*_q50 0.03693 | dV>=0 0.000 | n=150 | a_used 0.00325 -> 0.00338
+[Convergence check] ep 357 | avg_reward(last 50) 257.46 (best 258.12, above_threshold=True) | avg_lyap(last 20) 0.0077 (V=0.223+-0.256, viol=42.2%, dV=-0.001363, inball=54%, collapsed=False) | avg_barrier(last 20) 0.0345 | avg_std(last 20) 0.1093 | avg|a|(last 20) 0.0363 (cleared=True) | stable=False | trend +168.41/window t=+5.86 (plateau_streak=0/10) | checks_since_best=1
+[Episode 357/400] Steps: 720 | Reward:  298.42 | Battery:  80.21% | Loss: -0.0216
+Placing Sensors
+[Episode 358/400] Steps: 720 | Reward:  324.67 | Battery:  88.26% | Loss: 
+Placing Sensors
+Policy -0.0112 | Value 37.3924 | Lyap 0.0067 | Dynamics 0.0351 | Barrier 0.0141 | KL 0.00957 | CF 0.1022 | Std 0.1091 | RawLogStd 0.0199 | |a| 0.0334 | EV +0.950 | Alpha 0.0100 | MB 24/24
+  cert | viol 0.000 | dV -0.265487 | V 0.2787 | inball 0.668 | a*_q05 0.01198 | a*_q50 0.03960 | dV>=0 0.000 | n=150 | a_used 0.00338 -> 0.00357
+[Convergence check] ep 359 | avg_reward(last 50) 259.20 (best 259.20, above_threshold=True) | avg_lyap(last 20) 0.0076 (V=0.219+-0.256, viol=41.8%, dV=-0.001402, inball=54%, collapsed=False) | avg_barrier(last 20) 0.0343 | avg_std(last 20) 0.1093 | avg|a|(last 20) 0.0364 (cleared=True) | stable=False | trend +166.76/window t=+5.85 (plateau_streak=0/10) | checks_since_best=0
+[Episode 359/400] Steps: 720 | Reward:  287.67 | Battery:  80.67% | Loss: 0.0392
+Placing Sensors
+[Episode 360/400] Steps: 720 | Reward:  275.86 | Battery:  78.47% | Loss: 
+Placing Sensors
+Policy -0.0081 | Value 39.7218 | Lyap 0.0060 | Dynamics 0.0525 | Barrier 0.0130 | KL 0.01658 | CF 0.1495 | Std 0.1091 | RawLogStd 0.0198 | |a| 0.0388 | EV +0.953 | Alpha 0.0100 | MB 24/24
+  cert | viol 0.000 | dV -0.304067 | V 0.3376 | inball 0.527 | a*_q05 0.00829 | a*_q50 0.03824 | dV>=0 0.000 | n=150 | a_used 0.00357 -> 0.00374
+[Convergence check] ep 361 | avg_reward(last 50) 266.31 (best 266.31, above_threshold=True) | avg_lyap(last 20) 0.0075 (V=0.220+-0.257, viol=41.9%, dV=-0.001396, inball=54%, collapsed=False) | avg_barrier(last 20) 0.0329 | avg_std(last 20) 0.1093 | avg|a|(last 20) 0.0363 (cleared=True) | stable=False | trend +164.17/window t=+5.81 (plateau_streak=0/10) | checks_since_best=0
+[Episode 361/400] Steps: 720 | Reward:  243.56 | Battery:  59.60% | Loss: -0.0448
+Placing Sensors
+[Episode 362/400] Steps: 720 | Reward:  325.24 | Battery:  84.75% | Loss: 
+Placing Sensors
+[Episode 363/400] Steps:  91 | Reward:  -59.66 | Battery:   0.00% | Loss: 
+Placing Sensors
+Policy -0.0064 | Value 93.8645 | Lyap 0.0048 | Dynamics 0.0299 | Barrier 0.0180 | KL 0.01044 | CF 0.1151 | Std 0.1091 | RawLogStd 0.0199 | |a| 0.0312 | EV +0.855 | Alpha 0.0100 | MB 24/24
+  cert | viol 0.000 | dV -0.257422 | V 0.2802 | inball 0.590 | a*_q05 0.01008 | a*_q50 0.03676 | dV>=0 0.000 | n=150 | a_used 0.00374 -> 0.00393
+[Convergence check] ep 364 | avg_reward(last 50) 261.96 (best 266.31, above_threshold=True) | avg_lyap(last 20) 0.0074 (V=0.218+-0.257, viol=41.7%, dV=-0.001401, inball=55%, collapsed=False) | avg_barrier(last 20) 0.0329 | avg_std(last 20) 0.1093 | avg|a|(last 20) 0.0360 (cleared=True) | stable=False | trend +158.04/window t=+5.53 (plateau_streak=0/10) | checks_since_best=1
+[Episode 364/400] Steps: 720 | Reward:  314.66 | Battery:  82.12% | Loss: -0.0666
+Placing Sensors
+[Episode 365/400] Steps: 720 | Reward:  260.56 | Battery:  75.60% | Loss: 
+Placing Sensors
+Policy -0.0089 | Value 26.0172 | Lyap 0.0053 | Dynamics 0.0461 | Barrier 0.0061 | KL 0.01183 | CF 0.1115 | Std 0.1091 | RawLogStd 0.0199 | |a| 0.0361 | EV +0.977 | Alpha 0.0100 | MB 24/24
+  cert | viol 0.000 | dV -0.196914 | V 0.2158 | inball 0.630 | a*_q05 0.00809 | a*_q50 0.03473 | dV>=0 0.000 | n=150 | a_used 0.00393 -> 0.00405
+[Convergence check] ep 366 | avg_reward(last 50) 262.52 (best 266.31, above_threshold=True) | avg_lyap(last 20) 0.0072 (V=0.214+-0.254, viol=41.2%, dV=-0.001427, inball=55%, collapsed=False) | avg_barrier(last 20) 0.0321 | avg_std(last 20) 0.1093 | avg|a|(last 20) 0.0361 (cleared=True) | stable=False | trend +164.27/window t=+5.77 (plateau_streak=0/10) | checks_since_best=2
+[Episode 366/400] Steps: 720 | Reward:  317.61 | Battery:  81.05% | Loss: 0.0920
+Placing Sensors
+[Episode 367/400] Steps: 720 | Reward:  308.55 | Battery:  88.34% | Loss: 
+Placing Sensors
+Policy 0.0038 | Value 27.9976 | Lyap 0.0086 | Dynamics 0.0332 | Barrier 0.0249 | KL 0.01639 | CF 0.2041 | Std 0.1091 | RawLogStd 0.0198 | |a| 0.0329 | EV +0.972 | Alpha 0.0100 | MB 24/24
+  cert | viol 0.013 | dV -0.228970 | V 0.2624 | inball 0.607 | a*_q05 0.00671 | a*_q50 0.03306 | dV>=0 0.000 | n=150 | a_used 0.00405 -> 0.00417
+[Convergence check] ep 368 | avg_reward(last 50) 263.45 (best 266.31, above_threshold=True) | avg_lyap(last 20) 0.0072 (V=0.213+-0.251, viol=41.1%, dV=-0.001425, inball=55%, collapsed=False) | avg_barrier(last 20) 0.0303 | avg_std(last 20) 0.1093 | avg|a|(last 20) 0.0359 (cleared=True) | stable=False | trend +153.59/window t=+5.46 (plateau_streak=0/10) | checks_since_best=3
+[Episode 368/400] Steps: 720 | Reward:  281.32 | Battery:  75.26% | Loss: -0.0213
+Placing Sensors
+[Episode 369/400] Steps: 720 | Reward:  325.88 | Battery:  83.20% | Loss: 
+Placing Sensors
+[Episode 370/400] Steps:  93 | Reward:  -53.66 | Battery:   0.00% | Loss: 
+Placing Sensors
+Policy 0.0012 | Value 91.8483 | Lyap 0.0075 | Dynamics 0.0367 | Barrier 0.0258 | KL 0.01218 | CF 0.1321 | Std 0.1091 | RawLogStd 0.0198 | |a| 0.0346 | EV +0.862 | Alpha 0.0100 | MB 24/24
+  cert | viol 0.022 | dV -0.266582 | V 0.3021 | inball 0.549 | a*_q05 0.00716 | a*_q50 0.03403 | dV>=0 0.000 | n=150 | a_used 0.00417 -> 0.00427
+[Convergence check] ep 371 | avg_reward(last 50) 257.82 (best 266.31, above_threshold=True) | avg_lyap(last 20) 0.0073 (V=0.217+-0.255, viol=41.7%, dV=-0.001400, inball=55%, collapsed=False) | avg_barrier(last 20) 0.0299 | avg_std(last 20) 0.1092 | avg|a|(last 20) 0.0359 (cleared=True) | stable=False | trend +144.13/window t=+5.07 (plateau_streak=0/10) | checks_since_best=4
+[Episode 371/400] Steps: 720 | Reward:  268.43 | Battery:  75.28% | Loss: 0.0440
+Placing Sensors
+[Episode 372/400] Steps: 720 | Reward:  308.20 | Battery:  86.02% | Loss: 
+Placing Sensors
+Policy -0.0050 | Value 51.1002 | Lyap 0.0087 | Dynamics 0.0200 | Barrier 0.0611 | KL 0.01405 | CF 0.1096 | Std 0.1091 | RawLogStd 0.0199 | |a| 0.0294 | EV +0.909 | Alpha 0.0100 | MB 24/24
+  cert | viol 0.010 | dV -0.236631 | V 0.2700 | inball 0.562 | a*_q05 0.00685 | a*_q50 0.03147 | dV>=0 0.000 | n=150 | a_used 0.00427 -> 0.00441
+[Convergence check] ep 373 | avg_reward(last 50) 258.39 (best 266.31, above_threshold=True) | avg_lyap(last 20) 0.0073 (V=0.216+-0.254, viol=41.8%, dV=-0.001401, inball=55%, collapsed=False) | avg_barrier(last 20) 0.0286 | avg_std(last 20) 0.1092 | avg|a|(last 20) 0.0354 (cleared=True) | stable=False | trend +132.25/window t=+4.72 (plateau_streak=0/10) | checks_since_best=5
+[Episode 373/400] Steps: 720 | Reward:  252.09 | Battery:  71.61% | Loss: 0.0815
+Placing Sensors
+[Episode 374/400] Steps: 720 | Reward:  308.41 | Battery:  78.15% | Loss: 
+Placing Sensors
+Policy -0.0112 | Value 36.8423 | Lyap 0.0061 | Dynamics 0.0234 | Barrier 0.0418 | KL 0.00706 | CF 0.0808 | Std 0.1092 | RawLogStd 0.0200 | |a| 0.0310 | EV +0.969 | Alpha 0.0100 | MB 24/24
+  cert | viol 0.073 | dV -0.182831 | V 0.2274 | inball 0.540 | a*_q05 0.00364 | a*_q50 0.02884 | dV>=0 0.000 | n=150 | a_used 0.00441 -> 0.00415
+[Convergence check] ep 375 | avg_reward(last 50) 257.04 (best 266.31, above_threshold=True) | avg_lyap(last 20) 0.0072 (V=0.214+-0.252, viol=41.4%, dV=-0.001398, inball=55%, collapsed=False) | avg_barrier(last 20) 0.0298 | avg_std(last 20) 0.1092 | avg|a|(last 20) 0.0352 (cleared=True) | stable=False | trend +129.33/window t=+4.67 (plateau_streak=0/10) | checks_since_best=6
+[Episode 375/400] Steps: 720 | Reward:  207.77 | Battery:  63.26% | Loss: -0.0143
+Placing Sensors
+[Episode 376/400] Steps: 720 | Reward:  269.11 | Battery:  78.65% | Loss: 
+Placing Sensors
+Policy -0.0038 | Value 38.7413 | Lyap 0.0048 | Dynamics 0.0391 | Barrier 0.0359 | KL 0.01064 | CF 0.1238 | Std 0.1092 | RawLogStd 0.0201 | |a| 0.0325 | EV +0.949 | Alpha 0.0100 | MB 24/24
+  cert | viol 0.009 | dV -0.269407 | V 0.2902 | inball 0.641 | a*_q05 0.00898 | a*_q50 0.03832 | dV>=0 0.000 | n=150 | a_used 0.00415 -> 0.00427
+[Convergence check] ep 377 | avg_reward(last 50) 257.77 (best 266.31, above_threshold=True) | avg_lyap(last 20) 0.0070 (V=0.211+-0.251, viol=40.7%, dV=-0.001470, inball=56%, collapsed=False) | avg_barrier(last 20) 0.0292 | avg_std(last 20) 0.1092 | avg|a|(last 20) 0.0347 (cleared=True) | stable=False | trend +137.02/window t=+4.96 (plateau_streak=0/10) | checks_since_best=7
+[Episode 377/400] Steps: 720 | Reward:  331.14 | Battery:  85.42% | Loss: -0.0085
+Placing Sensors
+[Episode 378/400] Steps: 720 | Reward:  294.36 | Battery:  77.07% | Loss: 
+Placing Sensors
+Policy -0.0048 | Value 30.7996 | Lyap 0.0089 | Dynamics 0.0324 | Barrier 0.0644 | KL 0.00911 | CF 0.0905 | Std 0.1092 | RawLogStd 0.0201 | |a| 0.0289 | EV +0.962 | Alpha 0.0100 | MB 24/24
+  cert | viol 0.000 | dV -0.191134 | V 0.2131 | inball 0.600 | a*_q05 0.00836 | a*_q50 0.03371 | dV>=0 0.000 | n=150 | a_used 0.00427 -> 0.00441
+[Convergence check] ep 379 | avg_reward(last 50) 258.21 (best 266.31, above_threshold=True) | avg_lyap(last 20) 0.0071 (V=0.207+-0.248, viol=40.4%, dV=-0.001453, inball=56%, collapsed=False) | avg_barrier(last 20) 0.0311 | avg_std(last 20) 0.1092 | avg|a|(last 20) 0.0344 (cleared=True) | stable=False | trend +139.43/window t=+5.06 (plateau_streak=0/10) | checks_since_best=8
+[Episode 379/400] Steps: 720 | Reward:  269.69 | Battery:  78.10% | Loss: 0.0188
+Placing Sensors
+[Episode 380/400] Steps: 720 | Reward:  282.45 | Battery:  77.79% | Loss: 
+Placing Sensors
+Policy -0.0107 | Value 32.4538 | Lyap 0.0043 | Dynamics 0.0382 | Barrier 0.0262 | KL 0.00782 | CF 0.0793 | Std 0.1092 | RawLogStd 0.0200 | |a| 0.0415 | EV +0.962 | Alpha 0.0100 | MB 24/24
+  cert | viol 0.002 | dV -0.274177 | V 0.3022 | inball 0.564 | a*_q05 0.00777 | a*_q50 0.03807 | dV>=0 0.000 | n=150 | a_used 0.00441 -> 0.00451
+[Convergence check] ep 381 | avg_reward(last 50) 257.76 (best 266.31, above_threshold=True) | avg_lyap(last 20) 0.0070 (V=0.208+-0.249, viol=40.6%, dV=-0.001428, inball=56%, collapsed=False) | avg_barrier(last 20) 0.0307 | avg_std(last 20) 0.1092 | avg|a|(last 20) 0.0349 (cleared=True) | stable=False | trend +136.82/window t=+5.02 (plateau_streak=0/10) | checks_since_best=9
+[Episode 381/400] Steps: 720 | Reward:  275.96 | Battery:  70.59% | Loss: -0.0499
+Placing Sensors
+[Episode 382/400] Steps: 720 | Reward:  236.36 | Battery:  59.00% | Loss: 
+Placing Sensors
+Policy -0.0046 | Value 41.7121 | Lyap 0.0058 | Dynamics 0.0360 | Barrier 0.0134 | KL 0.01322 | CF 0.1467 | Std 0.1091 | RawLogStd 0.0198 | |a| 0.0383 | EV +0.973 | Alpha 0.0100 | MB 24/24
+  cert | viol 0.043 | dV -0.309452 | V 0.3438 | inball 0.576 | a*_q05 0.00649 | a*_q50 0.03753 | dV>=0 0.000 | n=150 | a_used 0.00451 -> 0.00467
+[Convergence check] ep 383 | avg_reward(last 50) 258.71 (best 266.31, above_threshold=True) | avg_lyap(last 20) 0.0069 (V=0.207+-0.249, viol=40.3%, dV=-0.001437, inball=56%, collapsed=False) | avg_barrier(last 20) 0.0296 | avg_std(last 20) 0.1092 | avg|a|(last 20) 0.0348 (cleared=True) | stable=False | trend +130.28/window t=+4.82 (plateau_streak=0/10) | checks_since_best=10
+[Episode 383/400] Steps: 720 | Reward:  312.87 | Battery:  85.69% | Loss: -0.0736
+Placing Sensors
+[Episode 384/400] Steps: 720 | Reward:  190.08 | Battery:  44.42% | Loss: 
+Placing Sensors
+Policy -0.0079 | Value 38.1947 | Lyap 0.0054 | Dynamics 0.0546 | Barrier 0.0112 | KL 0.01367 | CF 0.1676 | Std 0.1091 | RawLogStd 0.0196 | |a| 0.0428 | EV +0.973 | Alpha 0.0100 | MB 24/24
+  cert | viol 0.000 | dV -0.249714 | V 0.2692 | inball 0.543 | a*_q05 0.01015 | a*_q50 0.03753 | dV>=0 0.000 | n=150 | a_used 0.00467 -> 0.00485
+[Convergence check] ep 385 | avg_reward(last 50) 264.74 (best 266.31, above_threshold=True) | avg_lyap(last 20) 0.0067 (V=0.203+-0.248, viol=40.1%, dV=-0.001427, inball=57%, collapsed=False) | avg_barrier(last 20) 0.0289 | avg_std(last 20) 0.1092 | avg|a|(last 20) 0.0352 (cleared=True) | stable=False | trend +131.77/window t=+4.89 (plateau_streak=0/10) | checks_since_best=11
+[Episode 385/400] Steps: 720 | Reward:  283.90 | Battery:  71.52% | Loss: 0.0164
+Placing Sensors
+[Episode 386/400] Steps: 720 | Reward:  263.79 | Battery:  77.61% | Loss: 
+Placing Sensors
+Policy -0.0128 | Value 29.6320 | Lyap 0.0057 | Dynamics 0.0463 | Barrier 0.0484 | KL 0.01114 | CF 0.1107 | Std 0.1091 | RawLogStd 0.0195 | |a| 0.0375 | EV +0.973 | Alpha 0.0100 | MB 24/24
+  cert | viol 0.016 | dV -0.271438 | V 0.2987 | inball 0.596 | a*_q05 0.00802 | a*_q50 0.03649 | dV>=0 0.000 | n=150 | a_used 0.00485 -> 0.00487
+[Convergence check] ep 387 | avg_reward(last 50) 263.78 (best 266.31, above_threshold=True) | avg_lyap(last 20) 0.0066 (V=0.202+-0.248, viol=39.5%, dV=-0.001461, inball=57%, collapsed=False) | avg_barrier(last 20) 0.0291 | avg_std(last 20) 0.1092 | avg|a|(last 20) 0.0348 (cleared=True) | stable=False | trend +127.31/window t=+4.77 (plateau_streak=0/10) | checks_since_best=12
+[Episode 387/400] Steps: 720 | Reward:  292.92 | Battery:  79.36% | Loss: 0.0429
+Placing Sensors
+[Episode 388/400] Steps: 720 | Reward:  257.80 | Battery:  65.91% | Loss: 
+Placing Sensors
+Policy 0.0031 | Value 37.3163 | Lyap 0.0074 | Dynamics 0.0359 | Barrier 0.0223 | KL 0.02102 | CF 0.1471 | Std 0.1090 | RawLogStd 0.0194 | |a| 0.0332 | EV +0.965 | Alpha 0.0100 | MB 24/24
+  cert | viol 0.000 | dV -0.224027 | V 0.2447 | inball 0.597 | a*_q05 0.00927 | a*_q50 0.03700 | dV>=0 0.000 | n=150 | a_used 0.00487 -> 0.00504
+[Convergence check] ep 389 | avg_reward(last 50) 262.53 (best 266.31, above_threshold=True) | avg_lyap(last 20) 0.0067 (V=0.202+-0.247, viol=39.2%, dV=-0.001437, inball=57%, collapsed=False) | avg_barrier(last 20) 0.0287 | avg_std(last 20) 0.1091 | avg|a|(last 20) 0.0346 (cleared=True) | stable=False | trend +122.93/window t=+4.66 (plateau_streak=0/10) | checks_since_best=13
+[Episode 389/400] Steps: 720 | Reward:  274.47 | Battery:  79.68% | Loss: 0.0203
+Placing Sensors
+[Episode 390/400] Steps: 720 | Reward:  293.03 | Battery:  76.95% | Loss: 
+Placing Sensors
+Policy -0.0048 | Value 17.3892 | Lyap 0.0050 | Dynamics 0.0410 | Barrier 0.0374 | KL 0.01444 | CF 0.1214 | Std 0.1090 | RawLogStd 0.0194 | |a| 0.0318 | EV +0.986 | Alpha 0.0100 | MB 24/24
+  cert | viol 0.000 | dV -0.209926 | V 0.2174 | inball 0.647 | a*_q05 0.01488 | a*_q50 0.03993 | dV>=0 0.000 | n=150 | a_used 0.00504 -> 0.00522
+[Convergence check] ep 391 | avg_reward(last 50) 263.82 (best 266.31, above_threshold=True) | avg_lyap(last 20) 0.0065 (V=0.194+-0.243, viol=38.4%, dV=-0.001468, inball=58%, collapsed=False) | avg_barrier(last 20) 0.0294 | avg_std(last 20) 0.1091 | avg|a|(last 20) 0.0341 (cleared=True) | stable=False | trend +118.87/window t=+4.56 (plateau_streak=0/10) | checks_since_best=14
+[Episode 391/400] Steps: 720 | Reward:  290.61 | Battery:  73.63% | Loss: -0.0232
+Placing Sensors
+[Episode 392/400] Steps: 720 | Reward:  265.73 | Battery:  75.09% | Loss: 
+Placing Sensors
+Policy -0.0086 | Value 20.6140 | Lyap 0.0085 | Dynamics 0.0339 | Barrier 0.0299 | KL 0.01140 | CF 0.0885 | Std 0.1090 | RawLogStd 0.0193 | |a| 0.0348 | EV +0.978 | Alpha 0.0100 | MB 24/24
+  cert | viol 0.036 | dV -0.252298 | V 0.2861 | inball 0.589 | a*_q05 0.00626 | a*_q50 0.03598 | dV>=0 0.000 | n=150 | a_used 0.00522 -> 0.00524
+[Convergence check] ep 393 | avg_reward(last 50) 264.79 (best 266.31, above_threshold=True) | avg_lyap(last 20) 0.0065 (V=0.191+-0.241, viol=38.5%, dV=-0.001487, inball=59%, collapsed=False) | avg_barrier(last 20) 0.0304 | avg_std(last 20) 0.1091 | avg|a|(last 20) 0.0341 (cleared=True) | stable=False | trend +123.98/window t=+4.78 (plateau_streak=0/10) | checks_since_best=15
+[Episode 393/400] Steps: 720 | Reward:  290.46 | Battery:  77.64% | Loss: -0.0273
+Placing Sensors
+[Episode 394/400] Steps: 720 | Reward:  262.86 | Battery:  75.29% | Loss: 
+Placing Sensors
+Policy 0.0023 | Value 55.8633 | Lyap 0.0074 | Dynamics 0.0482 | Barrier 0.0108 | KL 0.04207 | CF 0.1044 | Std 0.1090 | RawLogStd 0.0192 | |a| 0.0374 | EV +0.955 | Alpha 0.0100 | MB 12/24
+  cert | viol 0.032 | dV -0.276366 | V 0.3094 | inball 0.596 | a*_q05 0.00674 | a*_q50 0.03624 | dV>=0 0.000 | n=150 | a_used 0.00524 -> 0.00533
+[Convergence check] ep 395 | avg_reward(last 50) 266.38 (best 266.38, above_threshold=True) | avg_lyap(last 20) 0.0064 (V=0.191+-0.240, viol=38.8%, dV=-0.001465, inball=58%, collapsed=False) | avg_barrier(last 20) 0.0299 | avg_std(last 20) 0.1091 | avg|a|(last 20) 0.0344 (cleared=True) | stable=False | trend +119.28/window t=+4.65 (plateau_streak=0/10) | checks_since_best=0
+[Episode 395/400] Steps: 720 | Reward:  299.87 | Battery:  75.25% | Loss: -0.0054
+Placing Sensors
+[Episode 396/400] Steps: 720 | Reward:  274.95 | Battery:  70.54% | Loss: 
+Placing Sensors
+Policy -0.0063 | Value 40.6204 | Lyap 0.0055 | Dynamics 0.0492 | Barrier 0.0461 | KL 0.02083 | CF 0.1321 | Std 0.1090 | RawLogStd 0.0191 | |a| 0.0524 | EV +0.961 | Alpha 0.0100 | MB 24/24
+  cert | viol 0.053 | dV -0.291365 | V 0.3392 | inball 0.561 | a*_q05 0.00555 | a*_q50 0.03359 | dV>=0 0.000 | n=150 | a_used 0.00533 -> 0.00527
+[Convergence check] ep 397 | avg_reward(last 50) 266.04 (best 266.38, above_threshold=True) | avg_lyap(last 20) 0.0064 (V=0.189+-0.240, viol=38.8%, dV=-0.001480, inball=59%, collapsed=False) | avg_barrier(last 20) 0.0286 | avg_std(last 20) 0.1091 | avg|a|(last 20) 0.0356 (cleared=True) | stable=False | trend +122.05/window t=+4.77 (plateau_streak=0/10) | checks_since_best=1
+[Episode 397/400] Steps: 720 | Reward:  292.88 | Battery:  80.04% | Loss: 0.1109
+Placing Sensors
+[Episode 398/400] Steps: 720 | Reward:  297.89 | Battery:  80.05% | Loss: 
+Placing Sensors
+Policy -0.0016 | Value 23.9964 | Lyap 0.0068 | Dynamics 0.0530 | Barrier 0.0101 | KL 0.01565 | CF 0.1509 | Std 0.1090 | RawLogStd 0.0191 | |a| 0.0382 | EV +0.970 | Alpha 0.0100 | MB 24/24
+  cert | viol 0.000 | dV -0.240445 | V 0.2510 | inball 0.658 | a*_q05 0.01278 | a*_q50 0.04001 | dV>=0 0.000 | n=150 | a_used 0.00527 -> 0.00544
+[Convergence check] ep 399 | avg_reward(last 50) 267.74 (best 267.74, above_threshold=True) | avg_lyap(last 20) 0.0065 (V=0.187+-0.239, viol=38.2%, dV=-0.001514, inball=59%, collapsed=False) | avg_barrier(last 20) 0.0280 | avg_std(last 20) 0.1091 | avg|a|(last 20) 0.0358 (cleared=True) | stable=False | trend +119.71/window t=+4.75 (plateau_streak=0/10) | checks_since_best=0
+[Episode 399/400] Steps: 720 | Reward:  297.75 | Battery:  79.16% | Loss: -0.1521
+Placing Sensors
+[Episode 400/400] Steps: 720 | Reward:  359.32 | Battery:  88.73% | Loss: 
+Placing Sensors
+Policy -0.0168 | Value 31.2425 | Lyap 0.0076 | Dynamics 0.0338 | Barrier 0.0121 | KL 0.00813 | CF 0.0851 | Std 0.1090 | RawLogStd 0.0190 | |a| 0.0308 | EV +0.950 | Alpha 0.0100 | MB 24/24
+  cert | viol 0.011 | dV -0.219782 | V 0.2396 | inball 0.641 | a*_q05 0.00843 | a*_q50 0.03845 | dV>=0 0.000 | n=150 | a_used 0.00544 -> 0.00560
+[Convergence check] ep 401 | avg_reward(last 50) 270.98 (best 270.98, above_threshold=True) | avg_lyap(last 20) 0.0065 (V=0.187+-0.237, viol=38.1%, dV=-0.001510, inball=59%, collapsed=False) | avg_barrier(last 20) 0.0279 | avg_std(last 20) 0.1091 | avg|a|(last 20) 0.0357 (cleared=True) | stable=False | trend +119.63/window t=+4.83 (plateau_streak=0/10) | checks_since_best=0
+[Episode 401/400] Steps: 720 | Reward:  286.41 | Battery:  79.09% | Loss: 0.0233
+Placing Sensors
+[Episode 402/400] Steps: 720 | Reward:  337.33 | Battery:  84.47% | Loss: 
+Placing Sensors
+[Episode 403/400] Steps:  69 | Reward:  -61.95 | Battery:   0.00% | Loss: 
+Placing Sensors
+Policy -0.0075 | Value 83.3462 | Lyap 0.0062 | Dynamics 0.0378 | Barrier 0.0145 | KL 0.01046 | CF 0.1381 | Std 0.1090 | RawLogStd 0.0189 | |a| 0.0379 | EV +0.888 | Alpha 0.0100 | MB 24/24
+  cert | viol 0.000 | dV -0.292771 | V 0.3053 | inball 0.628 | a*_q05 0.01369 | a*_q50 0.04132 | dV>=0 0.000 | n=150 | a_used 0.00560 -> 0.00577
+[Convergence check] ep 404 | avg_reward(last 50) 264.37 (best 270.98, above_threshold=True) | avg_lyap(last 20) 0.0065 (V=0.186+-0.236, viol=37.9%, dV=-0.001522, inball=60%, collapsed=False) | avg_barrier(last 20) 0.0280 | avg_std(last 20) 0.1091 | avg|a|(last 20) 0.0357 (cleared=True) | stable=False | trend +90.53/window t=+3.70 (plateau_streak=0/10) | checks_since_best=1
+[Episode 404/400] Steps: 720 | Reward:  318.23 | Battery:  79.47% | Loss: -0.0128
+Placing Sensors
+[Episode 405/400] Steps: 720 | Reward:  304.96 | Battery:  80.07% | Loss: 
+Placing Sensors
+Policy -0.0140 | Value 25.8832 | Lyap 0.0056 | Dynamics 0.0346 | Barrier 0.0225 | KL 0.00923 | CF 0.1068 | Std 0.1089 | RawLogStd 0.0188 | |a| 0.0329 | EV +0.967 | Alpha 0.0100 | MB 24/24
+  cert | viol 0.000 | dV -0.191497 | V 0.1960 | inball 0.678 | a*_q05 0.01780 | a*_q50 0.03835 | dV>=0 0.000 | n=150 | a_used 0.00577 -> 0.00593
+[Convergence check] ep 406 | avg_reward(last 50) 267.60 (best 270.98, above_threshold=True) | avg_lyap(last 20) 0.0066 (V=0.182+-0.233, viol=37.2%, dV=-0.001566, inball=60%, collapsed=False) | avg_barrier(last 20) 0.0282 | avg_std(last 20) 0.1091 | avg|a|(last 20) 0.0357 (cleared=True) | stable=False | trend +97.72/window t=+4.00 (plateau_streak=0/10) | checks_since_best=2
+[Episode 406/400] Steps: 720 | Reward:  338.99 | Battery:  86.52% | Loss: -0.1200
+Placing Sensors
+[Episode 407/400] Steps: 720 | Reward:  298.02 | Battery:  76.33% | Loss: 
+Placing Sensors
+Policy -0.0146 | Value 37.5247 | Lyap 0.0073 | Dynamics 0.0370 | Barrier 0.0535 | KL 0.01595 | CF 0.0981 | Std 0.1089 | RawLogStd 0.0187 | |a| 0.0371 | EV +0.952 | Alpha 0.0100 | MB 24/24
+  cert | viol 0.193 | dV -0.224890 | V 0.3065 | inball 0.367 | a*_q05 -0.00390 | a*_q50 0.01840 | dV>=0 0.080 | n=150 | a_used 0.00593 -> 0.00536
+[Convergence check] ep 408 | avg_reward(last 50) 264.13 (best 270.98, above_threshold=True) | avg_lyap(last 20) 0.0067 (V=0.186+-0.234, viol=38.1%, dV=-0.001512, inball=59%, collapsed=False) | avg_barrier(last 20) 0.0306 | avg_std(last 20) 0.1091 | avg|a|(last 20) 0.0358 (cleared=True) | stable=False | trend +96.85/window t=+3.96 (plateau_streak=0/10) | checks_since_best=3
+[Episode 408/400] Steps: 720 | Reward:  151.55 | Battery:  51.76% | Loss: -0.0217
+Placing Sensors
+[Episode 409/400] Steps: 720 | Reward:  281.73 | Battery:  77.53% | Loss: 
+Placing Sensors
+Policy -0.0004 | Value 49.6741 | Lyap 0.0070 | Dynamics 0.0625 | Barrier 0.0458 | KL 0.03533 | CF 0.0960 | Std 0.1089 | RawLogStd 0.0187 | |a| 0.0463 | EV +0.960 | Alpha 0.0100 | MB 10/24
+  cert | viol 0.000 | dV -0.239043 | V 0.2682 | inball 0.521 | a*_q05 0.00814 | a*_q50 0.03038 | dV>=0 0.000 | n=150 | a_used 0.00536 -> 0.00552
+[Convergence check] ep 410 | avg_reward(last 50) 263.31 (best 270.98, above_threshold=True) | avg_lyap(last 20) 0.0066 (V=0.188+-0.239, viol=38.2%, dV=-0.001485, inball=58%, collapsed=False) | avg_barrier(last 20) 0.0317 | avg_std(last 20) 0.1090 | avg|a|(last 20) 0.0365 (cleared=True) | stable=False | trend +91.19/window t=+3.80 (plateau_streak=0/10) | checks_since_best=4
+[Episode 410/400] Steps: 720 | Reward:  240.82 | Battery:  66.93% | Loss: -0.0290
+Placing Sensors
+[Episode 411/400] Steps: 720 | Reward:  252.66 | Battery:  70.97% | Loss: 
+Placing Sensors
+Policy -0.0110 | Value 54.9644 | Lyap 0.0061 | Dynamics 0.0474 | Barrier 0.0237 | KL 0.01498 | CF 0.1376 | Std 0.1089 | RawLogStd 0.0187 | |a| 0.0394 | EV +0.944 | Alpha 0.0100 | MB 24/24
+  cert | viol 0.085 | dV -0.282422 | V 0.3319 | inball 0.517 | a*_q05 0.00449 | a*_q50 0.03571 | dV>=0 0.000 | n=150 | a_used 0.00552 -> 0.00542
+[Convergence check] ep 412 | avg_reward(last 50) 261.90 (best 270.98, above_threshold=True) | avg_lyap(last 20) 0.0065 (V=0.187+-0.238, viol=38.4%, dV=-0.001489, inball=58%, collapsed=False) | avg_barrier(last 20) 0.0316 | avg_std(last 20) 0.1090 | avg|a|(last 20) 0.0367 (cleared=True) | stable=False | trend +83.02/window t=+3.52 (plateau_streak=0/10) | checks_since_best=5
+[Episode 412/400] Steps: 720 | Reward:  245.75 | Battery:  63.79% | Loss: 0.0387
+Placing Sensors
+[Episode 413/400] Steps: 720 | Reward:  227.13 | Battery:  59.02% | Loss: 
+Placing Sensors
+Policy -0.0137 | Value 41.2493 | Lyap 0.0090 | Dynamics 0.0490 | Barrier 0.0128 | KL 0.01376 | CF 0.1178 | Std 0.1089 | RawLogStd 0.0185 | |a| 0.0465 | EV +0.947 | Alpha 0.0100 | MB 24/24
+  cert | viol 0.034 | dV -0.206719 | V 0.2396 | inball 0.523 | a*_q05 0.00646 | a*_q50 0.03424 | dV>=0 0.000 | n=150 | a_used 0.00542 -> 0.00541
+[Convergence check] ep 414 | avg_reward(last 50) 266.18 (best 270.98, above_threshold=True) | avg_lyap(last 20) 0.0065 (V=0.187+-0.238, viol=38.5%, dV=-0.001453, inball=58%, collapsed=False) | avg_barrier(last 20) 0.0291 | avg_std(last 20) 0.1090 | avg|a|(last 20) 0.0376 (cleared=True) | stable=False | trend +75.38/window t=+3.25 (plateau_streak=0/10) | checks_since_best=6
+[Episode 414/400] Steps: 720 | Reward:  241.91 | Battery:  67.66% | Loss: -0.0907
+Placing Sensors
+[Episode 415/400] Steps: 720 | Reward:  310.02 | Battery:  84.88% | Loss: 
+Placing Sensors
+Policy -0.0060 | Value 32.8429 | Lyap 0.0062 | Dynamics 0.0474 | Barrier 0.0275 | KL 0.02399 | CF 0.1089 | Std 0.1088 | RawLogStd 0.0183 | |a| 0.0376 | EV +0.958 | Alpha 0.0100 | MB 24/24
+  cert | viol 0.070 | dV -0.259039 | V 0.3200 | inball 0.529 | a*_q05 0.00490 | a*_q50 0.02923 | dV>=0 0.000 | n=150 | a_used 0.00541 -> 0.00549
+[Convergence check] ep 416 | avg_reward(last 50) 265.92 (best 270.98, above_threshold=True) | avg_lyap(last 20) 0.0065 (V=0.188+-0.240, viol=38.4%, dV=-0.001474, inball=58%, collapsed=False) | avg_barrier(last 20) 0.0284 | avg_std(last 20) 0.1090 | avg|a|(last 20) 0.0379 (cleared=True) | stable=False | trend +79.77/window t=+3.45 (plateau_streak=0/10) | checks_since_best=7
+[Episode 416/400] Steps: 720 | Reward:  255.11 | Battery:  75.36% | Loss: 0.0089
+Placing Sensors
+[Episode 417/400] Steps: 720 | Reward:  290.28 | Battery:  80.76% | Loss: 
+Placing Sensors
+Policy -0.0070 | Value 26.8914 | Lyap 0.0056 | Dynamics 0.0398 | Barrier 0.0352 | KL 0.01250 | CF 0.0897 | Std 0.1088 | RawLogStd 0.0182 | |a| 0.0401 | EV +0.972 | Alpha 0.0100 | MB 24/24
+  cert | viol 0.026 | dV -0.225638 | V 0.2589 | inball 0.547 | a*_q05 0.00734 | a*_q50 0.03057 | dV>=0 0.000 | n=150 | a_used 0.00549 -> 0.00553
+[Convergence check] ep 418 | avg_reward(last 50) 265.03 (best 270.98, above_threshold=True) | avg_lyap(last 20) 0.0066 (V=0.189+-0.240, viol=38.6%, dV=-0.001452, inball=57%, collapsed=False) | avg_barrier(last 20) 0.0284 | avg_std(last 20) 0.1090 | avg|a|(last 20) 0.0383 (cleared=True) | stable=False | trend +83.49/window t=+3.62 (plateau_streak=0/10) | checks_since_best=8
+[Episode 418/400] Steps: 720 | Reward:  255.14 | Battery:  78.08% | Loss: -0.0844
+Placing Sensors
+[Episode 419/400] Steps: 720 | Reward:  293.18 | Battery:  80.61% | Loss: 
+Placing Sensors
+Policy -0.0087 | Value 48.9356 | Lyap 0.0069 | Dynamics 0.0492 | Barrier 0.0381 | KL 0.01053 | CF 0.0865 | Std 0.1088 | RawLogStd 0.0180 | |a| 0.0396 | EV +0.952 | Alpha 0.0100 | MB 24/24
+  cert | viol 0.043 | dV -0.266166 | V 0.3165 | inball 0.541 | a*_q05 0.00614 | a*_q50 0.03240 | dV>=0 0.000 | n=150 | a_used 0.00553 -> 0.00557
+[Convergence check] ep 420 | avg_reward(last 50) 270.11 (best 270.98, above_threshold=True) | avg_lyap(last 20) 0.0065 (V=0.191+-0.243, viol=38.9%, dV=-0.001437, inball=57%, collapsed=False) | avg_barrier(last 20) 0.0271 | avg_std(last 20) 0.1090 | avg|a|(last 20) 0.0388 (cleared=True) | stable=False | trend +87.64/window t=+3.82 (plateau_streak=0/10) | checks_since_best=9
+[Episode 420/400] Steps: 720 | Reward:  233.14 | Battery:  65.04% | Loss: 0.1056
+Placing Sensors
+[Episode 421/400] Steps: 720 | Reward:  262.76 | Battery:  78.99% | Loss: 
+Placing Sensors
+Policy -0.0094 | Value 46.9822 | Lyap 0.0065 | Dynamics 0.0443 | Barrier 0.0348 | KL 0.01235 | CF 0.0783 | Std 0.1087 | RawLogStd 0.0178 | |a| 0.0447 | EV +0.954 | Alpha 0.0100 | MB 24/24
+  cert | viol 0.079 | dV -0.281679 | V 0.3279 | inball 0.517 | a*_q05 0.00471 | a*_q50 0.03104 | dV>=0 0.000 | n=150 | a_used 0.00557 -> 0.00547
+[Convergence check] ep 422 | avg_reward(last 50) 269.30 (best 270.98, above_threshold=True) | avg_lyap(last 20) 0.0066 (V=0.193+-0.243, viol=39.0%, dV=-0.001434, inball=57%, collapsed=False) | avg_barrier(last 20) 0.0275 | avg_std(last 20) 0.1089 | avg|a|(last 20) 0.0390 (cleared=True) | stable=False | trend +88.50/window t=+3.86 (plateau_streak=0/10) | checks_since_best=10
+[Episode 422/400] Steps: 720 | Reward:  273.42 | Battery:  69.60% | Loss: 0.0285
+Placing Sensors
+[Episode 423/400] Steps: 720 | Reward:  318.89 | Battery:  80.85% | Loss: 
+Placing Sensors
+Policy -0.0119 | Value 27.5723 | Lyap 0.0064 | Dynamics 0.0374 | Barrier 0.0193 | KL 0.01105 | CF 0.1088 | Std 0.1087 | RawLogStd 0.0177 | |a| 0.0380 | EV +0.967 | Alpha 0.0100 | MB 24/24
+  cert | viol 0.005 | dV -0.277006 | V 0.3025 | inball 0.632 | a*_q05 0.00905 | a*_q50 0.03902 | dV>=0 0.000 | n=150 | a_used 0.00547 -> 0.00560
+[Convergence check] ep 424 | avg_reward(last 50) 270.52 (best 270.98, above_threshold=True) | avg_lyap(last 20) 0.0066 (V=0.192+-0.243, viol=38.7%, dV=-0.001466, inball=57%, collapsed=False) | avg_barrier(last 20) 0.0278 | avg_std(last 20) 0.1089 | avg|a|(last 20) 0.0390 (cleared=True) | stable=False | trend +92.63/window t=+4.04 (plateau_streak=0/10) | checks_since_best=11
+[Episode 424/400] Steps: 720 | Reward:  302.33 | Battery:  81.49% | Loss: -0.0892
+Placing Sensors
+[Episode 425/400] Steps: 720 | Reward:  254.85 | Battery:  72.22% | Loss: 
+Placing Sensors
+Policy -0.0113 | Value 45.4437 | Lyap 0.0079 | Dynamics 0.0481 | Barrier 0.0653 | KL 0.01261 | CF 0.0963 | Std 0.1087 | RawLogStd 0.0177 | |a| 0.0443 | EV +0.928 | Alpha 0.0100 | MB 24/24
+  cert | viol 0.112 | dV -0.242203 | V 0.3096 | inball 0.486 | a*_q05 0.00362 | a*_q50 0.02680 | dV>=0 0.000 | n=150 | a_used 0.00560 -> 0.00545
+[Convergence check] ep 426 | avg_reward(last 50) 271.52 (best 271.52, above_threshold=True) | avg_lyap(last 20) 0.0067 (V=0.194+-0.244, viol=38.6%, dV=-0.001481, inball=57%, collapsed=False) | avg_barrier(last 20) 0.0305 | avg_std(last 20) 0.1089 | avg|a|(last 20) 0.0390 (cleared=True) | stable=False | trend +96.60/window t=+4.23 (plateau_streak=0/10) | checks_since_best=0
+[Episode 426/400] Steps: 720 | Reward:  272.25 | Battery:  72.61% | Loss: 0.0242
+Placing Sensors
+[Episode 427/400] Steps: 720 | Reward:  280.17 | Battery:  85.88% | Loss: 
+Placing Sensors
+Policy -0.0043 | Value 26.2705 | Lyap 0.0067 | Dynamics 0.0359 | Barrier 0.0370 | KL 0.00765 | CF 0.0773 | Std 0.1087 | RawLogStd 0.0177 | |a| 0.0351 | EV +0.943 | Alpha 0.0100 | MB 24/24
+  cert | viol 0.080 | dV -0.196133 | V 0.2289 | inball 0.598 | a*_q05 0.00458 | a*_q50 0.03435 | dV>=0 0.000 | n=150 | a_used 0.00545 -> 0.00548
+[Convergence check] ep 428 | avg_reward(last 50) 270.46 (best 271.52, above_threshold=True) | avg_lyap(last 20) 0.0068 (V=0.194+-0.243, viol=38.6%, dV=-0.001480, inball=57%, collapsed=False) | avg_barrier(last 20) 0.0299 | avg_std(last 20) 0.1089 | avg|a|(last 20) 0.0389 (cleared=True) | stable=False | trend +100.27/window t=+4.40 (plateau_streak=0/10) | checks_since_best=1
+[Episode 428/400] Steps: 720 | Reward:  292.36 | Battery:  75.19% | Loss: 0.0791
+Placing Sensors
+[Episode 429/400] Steps: 720 | Reward:  340.47 | Battery:  87.13% | Loss: 
+Placing Sensors
+Policy -0.0050 | Value 32.5547 | Lyap 0.0039 | Dynamics 0.0411 | Barrier 0.0258 | KL 0.01347 | CF 0.1271 | Std 0.1087 | RawLogStd 0.0176 | |a| 0.0453 | EV +0.961 | Alpha 0.0100 | MB 24/24
+  cert | viol 0.140 | dV -0.194564 | V 0.2157 | inball 0.538 | a*_q05 -0.01116 | a*_q50 0.03605 | dV>=0 0.140 | n=150 | a_used 0.00548 -> 0.00520
+[Convergence check] ep 430 | avg_reward(last 50) 270.53 (best 271.52, above_threshold=True) | avg_lyap(last 20) 0.0066 (V=0.193+-0.241, viol=39.1%, dV=-0.001472, inball=57%, collapsed=False) | avg_barrier(last 20) 0.0301 | avg_std(last 20) 0.1089 | avg|a|(last 20) 0.0395 (cleared=True) | stable=False | trend +94.29/window t=+4.21 (plateau_streak=0/10) | checks_since_best=2
+[Episode 430/400] Steps: 720 | Reward:  215.09 | Battery:  60.10% | Loss: 0.0336
+Placing Sensors
+[Episode 431/400] Steps: 720 | Reward:  276.39 | Battery:  79.81% | Loss: 
+Placing Sensors
+Policy -0.0099 | Value 26.6163 | Lyap 0.0047 | Dynamics 0.0433 | Barrier 0.0659 | KL 0.01188 | CF 0.0961 | Std 0.1087 | RawLogStd 0.0175 | |a| 0.0358 | EV +0.971 | Alpha 0.0100 | MB 24/24
+  cert | viol 0.000 | dV -0.213608 | V 0.2284 | inball 0.636 | a*_q05 0.01135 | a*_q50 0.03737 | dV>=0 0.000 | n=150 | a_used 0.00520 -> 0.00538
+[Convergence check] ep 432 | avg_reward(last 50) 272.05 (best 272.05, above_threshold=True) | avg_lyap(last 20) 0.0066 (V=0.194+-0.241, viol=38.9%, dV=-0.001480, inball=57%, collapsed=False) | avg_barrier(last 20) 0.0315 | avg_std(last 20) 0.1089 | avg|a|(last 20) 0.0397 (cleared=True) | stable=False | trend +97.87/window t=+4.39 (plateau_streak=0/10) | checks_since_best=0
+[Episode 432/400] Steps: 720 | Reward:  311.91 | Battery:  82.96% | Loss: -0.0727
+Placing Sensors
+[Episode 433/400] Steps: 720 | Reward:  275.85 | Battery:  73.33% | Loss: 
+Placing Sensors
+Policy -0.0091 | Value 23.5403 | Lyap 0.0046 | Dynamics 0.0423 | Barrier 0.0406 | KL 0.01007 | CF 0.0787 | Std 0.1087 | RawLogStd 0.0174 | |a| 0.0381 | EV +0.978 | Alpha 0.0100 | MB 24/24
+  cert | viol 0.009 | dV -0.210631 | V 0.2286 | inball 0.551 | a*_q05 0.00933 | a*_q50 0.03737 | dV>=0 0.000 | n=150 | a_used 0.00538 -> 0.00555
+[Convergence check] ep 434 | avg_reward(last 50) 271.64 (best 272.05, above_threshold=True) | avg_lyap(last 20) 0.0064 (V=0.193+-0.240, viol=39.2%, dV=-0.001458, inball=56%, collapsed=False) | avg_barrier(last 20) 0.0321 | avg_std(last 20) 0.1088 | avg|a|(last 20) 0.0399 (cleared=True) | stable=False | trend +87.83/window t=+4.01 (plateau_streak=0/10) | checks_since_best=1
+[Episode 434/400] Steps: 720 | Reward:  206.70 | Battery:  60.50% | Loss: -0.0116
+Placing Sensors
+[Episode 435/400] Steps: 720 | Reward:  266.61 | Battery:  72.82% | Loss: 
+Placing Sensors
+Policy -0.0079 | Value 35.9572 | Lyap 0.0064 | Dynamics 0.0351 | Barrier 0.0476 | KL 0.00655 | CF 0.0764 | Std 0.1086 | RawLogStd 0.0173 | |a| 0.0484 | EV +0.959 | Alpha 0.0100 | MB 24/24
+  cert | viol 0.000 | dV -0.242781 | V 0.2609 | inball 0.636 | a*_q05 0.00987 | a*_q50 0.03815 | dV>=0 0.000 | n=150 | a_used 0.00555 -> 0.00571
+[Convergence check] ep 436 | avg_reward(last 50) 272.48 (best 272.48, above_threshold=True) | avg_lyap(last 20) 0.0063 (V=0.192+-0.240, viol=38.8%, dV=-0.001470, inball=57%, collapsed=False) | avg_barrier(last 20) 0.0339 | avg_std(last 20) 0.1088 | avg|a|(last 20) 0.0404 (cleared=True) | stable=False | trend +89.22/window t=+4.07 (plateau_streak=0/10) | checks_since_best=0
+[Episode 436/400] Steps: 720 | Reward:  322.96 | Battery:  84.40% | Loss: 0.0422
+Placing Sensors
+[Episode 437/400] Steps: 720 | Reward:  278.08 | Battery:  76.59% | Loss: 
+Placing Sensors
+Policy -0.0119 | Value 21.7010 | Lyap 0.0044 | Dynamics 0.0532 | Barrier 0.0928 | KL 0.01562 | CF 0.1325 | Std 0.1086 | RawLogStd 0.0173 | |a| 0.0411 | EV +0.971 | Alpha 0.0100 | MB 24/24
+  cert | viol 0.132 | dV -0.288474 | V 0.3709 | inball 0.569 | a*_q05 0.00292 | a*_q50 0.03402 | dV>=0 0.016 | n=150 | a_used 0.00571 -> 0.00544
+[Convergence check] ep 438 | avg_reward(last 50) 272.85 (best 272.85, above_threshold=True) | avg_lyap(last 20) 0.0063 (V=0.193+-0.240, viol=38.7%, dV=-0.001470, inball=57%, collapsed=False) | avg_barrier(last 20) 0.0362 | avg_std(last 20) 0.1088 | avg|a|(last 20) 0.0399 (cleared=True) | stable=False | trend +84.34/window t=+3.95 (plateau_streak=0/10) | checks_since_best=0
+[Episode 438/400] Steps: 720 | Reward:  290.97 | Battery:  83.45% | Loss: 0.0012
+Placing Sensors
+[Episode 439/400] Steps: 720 | Reward:  242.31 | Battery:  70.21% | Loss: 
+Placing Sensors
+Policy -0.0043 | Value 49.1904 | Lyap 0.0072 | Dynamics 0.0373 | Barrier 0.0622 | KL 0.00971 | CF 0.1097 | Std 0.1086 | RawLogStd 0.0173 | |a| 0.0419 | EV +0.951 | Alpha 0.0100 | MB 24/24
+  cert | viol 0.124 | dV -0.203185 | V 0.2523 | inball 0.506 | a*_q05 0.00496 | a*_q50 0.02994 | dV>=0 0.000 | n=150 | a_used 0.00544 -> 0.00545
+[Convergence check] ep 440 | avg_reward(last 50) 271.36 (best 272.85, above_threshold=True) | avg_lyap(last 20) 0.0063 (V=0.195+-0.241, viol=39.3%, dV=-0.001422, inball=56%, collapsed=False) | avg_barrier(last 20) 0.0388 | avg_std(last 20) 0.1088 | avg|a|(last 20) 0.0400 (cleared=True) | stable=False | trend +74.24/window t=+3.55 (plateau_streak=0/10) | checks_since_best=1
+[Episode 440/400] Steps: 720 | Reward:  251.06 | Battery:  70.77% | Loss: 0.0658
+Placing Sensors
+[Episode 441/400] Steps: 720 | Reward:  299.49 | Battery:  78.28% | Loss: 
+Placing Sensors
+Policy -0.0015 | Value 21.9836 | Lyap 0.0049 | Dynamics 0.0564 | Barrier 0.0459 | KL 0.01908 | CF 0.2192 | Std 0.1086 | RawLogStd 0.0173 | |a| 0.0418 | EV +0.980 | Alpha 0.0100 | MB 24/24
+  cert | viol 0.015 | dV -0.212938 | V 0.2354 | inball 0.617 | a*_q05 0.00834 | a*_q50 0.03847 | dV>=0 0.000 | n=150 | a_used 0.00545 -> 0.00555
+[Convergence check] ep 442 | avg_reward(last 50) 271.67 (best 272.85, above_threshold=True) | avg_lyap(last 20) 0.0062 (V=0.195+-0.241, viol=39.5%, dV=-0.001395, inball=56%, collapsed=False) | avg_barrier(last 20) 0.0405 | avg_std(last 20) 0.1088 | avg|a|(last 20) 0.0406 (cleared=True) | stable=False | trend +75.36/window t=+3.61 (plateau_streak=0/10) | checks_since_best=2
+[Episode 442/400] Steps: 720 | Reward:  272.37 | Battery:  74.53% | Loss: 0.0572
+Placing Sensors
+[Episode 443/400] Steps: 720 | Reward:  263.22 | Battery:  65.78% | Loss: 
+Placing Sensors
+Policy -0.0139 | Value 29.1616 | Lyap 0.0067 | Dynamics 0.0702 | Barrier 0.0217 | KL 0.01437 | CF 0.1083 | Std 0.1086 | RawLogStd 0.0173 | |a| 0.0510 | EV +0.973 | Alpha 0.0100 | MB 24/24
+  cert | viol 0.042 | dV -0.277110 | V 0.3215 | inball 0.506 | a*_q05 0.00628 | a*_q50 0.03075 | dV>=0 0.000 | n=150 | a_used 0.00555 -> 0.00559
+[Convergence check] ep 444 | avg_reward(last 50) 271.01 (best 272.85, above_threshold=True) | avg_lyap(last 20) 0.0062 (V=0.196+-0.241, viol=39.8%, dV=-0.001380, inball=55%, collapsed=False) | avg_barrier(last 20) 0.0409 | avg_std(last 20) 0.1088 | avg|a|(last 20) 0.0412 (cleared=True) | stable=False | trend +76.25/window t=+3.66 (plateau_streak=0/10) | checks_since_best=3
+[Episode 444/400] Steps: 720 | Reward:  256.83 | Battery:  71.85% | Loss: 0.0447
+Placing Sensors
+[Episode 445/400] Steps: 720 | Reward:  231.07 | Battery:  67.58% | Loss: 
+Placing Sensors
+Policy -0.0101 | Value 40.3504 | Lyap 0.0065 | Dynamics 0.0561 | Barrier 0.0419 | KL 0.01455 | CF 0.1239 | Std 0.1087 | RawLogStd 0.0174 | |a| 0.0468 | EV +0.970 | Alpha 0.0100 | MB 24/24
+  cert | viol 0.000 | dV -0.229785 | V 0.2389 | inball 0.606 | a*_q05 0.01362 | a*_q50 0.04169 | dV>=0 0.000 | n=150 | a_used 0.00559 -> 0.00576
+[Convergence check] ep 446 | avg_reward(last 50) 270.67 (best 272.85, above_threshold=True) | avg_lyap(last 20) 0.0062 (V=0.197+-0.241, viol=40.3%, dV=-0.001346, inball=55%, collapsed=False) | avg_barrier(last 20) 0.0419 | avg_std(last 20) 0.1087 | avg|a|(last 20) 0.0419 (cleared=True) | stable=False | trend +79.60/window t=+3.83 (plateau_streak=0/10) | checks_since_best=4
+[Episode 446/400] Steps: 720 | Reward:  327.04 | Battery:  82.13% | Loss: -0.0732
+Placing Sensors
+[Episode 447/400] Steps: 720 | Reward:  271.15 | Battery:  64.38% | Loss: 
+Placing Sensors
+Policy -0.0109 | Value 28.8822 | Lyap 0.0043 | Dynamics 0.0364 | Barrier 0.0346 | KL 0.01222 | CF 0.1068 | Std 0.1087 | RawLogStd 0.0174 | |a| 0.0466 | EV +0.972 | Alpha 0.0100 | MB 24/24
+  cert | viol 0.000 | dV -0.252842 | V 0.2660 | inball 0.631 | a*_q05 0.01151 | a*_q50 0.03969 | dV>=0 0.000 | n=150 | a_used 0.00576 -> 0.00592
+[Convergence check] ep 448 | avg_reward(last 50) 271.08 (best 272.85, above_threshold=True) | avg_lyap(last 20) 0.0061 (V=0.194+-0.240, viol=39.8%, dV=-0.001402, inball=56%, collapsed=False) | avg_barrier(last 20) 0.0409 | avg_std(last 20) 0.1087 | avg|a|(last 20) 0.0424 (cleared=True) | stable=False | trend +81.30/window t=+3.91 (plateau_streak=0/10) | checks_since_best=5
+[Episode 448/400] Steps: 720 | Reward:  339.99 | Battery:  86.32% | Loss: -0.0526
+Placing Sensors
+[Episode 449/400] Steps: 720 | Reward:  283.87 | Battery:  77.34% | Loss: 
+Placing Sensors
+Policy -0.0076 | Value 17.7659 | Lyap 0.0054 | Dynamics 0.0412 | Barrier 0.0164 | KL 0.00805 | CF 0.0626 | Std 0.1086 | RawLogStd 0.0173 | |a| 0.0381 | EV +0.985 | Alpha 0.0100 | MB 24/24
+  cert | viol 0.055 | dV -0.238494 | V 0.2758 | inball 0.566 | a*_q05 0.00593 | a*_q50 0.03432 | dV>=0 0.000 | n=150 | a_used 0.00592 -> 0.00587
+[Convergence check] ep 450 | avg_reward(last 50) 268.53 (best 272.85, above_threshold=True) | avg_lyap(last 20) 0.0060 (V=0.192+-0.237, viol=40.1%, dV=-0.001407, inball=56%, collapsed=False) | avg_barrier(last 20) 0.0394 | avg_std(last 20) 0.1087 | avg|a|(last 20) 0.0420 (cleared=True) | stable=False | trend +72.96/window t=+3.61 (plateau_streak=0/10) | checks_since_best=6
+[Episode 450/400] Steps: 720 | Reward:  245.78 | Battery:  67.47% | Loss: 0.0910
+Placing Sensors
+[Episode 451/400] Steps: 720 | Reward:  261.22 | Battery:  83.80% | Loss: 
+Placing Sensors
+Policy -0.0068 | Value 40.7191 | Lyap 0.0072 | Dynamics 0.0463 | Barrier 0.0157 | KL 0.01243 | CF 0.1320 | Std 0.1086 | RawLogStd 0.0173 | |a| 0.0514 | EV +0.951 | Alpha 0.0100 | MB 24/24
+  cert | viol 0.204 | dV -0.238391 | V 0.3634 | inball 0.451 | a*_q05 0.00004 | a*_q50 0.02196 | dV>=0 0.061 | n=150 | a_used 0.00587 -> 0.00557
+[Convergence check] ep 452 | avg_reward(last 50) 266.46 (best 272.85, above_threshold=True) | avg_lyap(last 20) 0.0061 (V=0.196+-0.239, viol=39.9%, dV=-0.001415, inball=56%, collapsed=False) | avg_barrier(last 20) 0.0390 | avg_std(last 20) 0.1087 | avg|a|(last 20) 0.0426 (cleared=True) | stable=False | trend +63.53/window t=+3.23 (plateau_streak=0/10) | checks_since_best=7
+[Episode 452/400] Steps: 720 | Reward:  258.81 | Battery:  80.47% | Loss: 0.0844
+Placing Sensors
+[Episode 453/400] Steps: 720 | Reward:  290.88 | Battery:  74.75% | Loss: 
+Placing Sensors
+Policy -0.0059 | Value 23.7006 | Lyap 0.0055 | Dynamics 0.0414 | Barrier 0.0361 | KL 0.00872 | CF 0.1090 | Std 0.1086 | RawLogStd 0.0173 | |a| 0.0403 | EV +0.974 | Alpha 0.0100 | MB 24/24
+  cert | viol 0.000 | dV -0.237131 | V 0.2499 | inball 0.657 | a*_q05 0.01203 | a*_q50 0.04066 | dV>=0 0.000 | n=150 | a_used 0.00557 -> 0.00574
+[Convergence check] ep 454 | avg_reward(last 50) 273.70 (best 273.70, above_threshold=True) | avg_lyap(last 20) 0.0059 (V=0.193+-0.238, viol=39.5%, dV=-0.001472, inball=57%, collapsed=False) | avg_barrier(last 20) 0.0402 | avg_std(last 20) 0.1087 | avg|a|(last 20) 0.0423 (cleared=True) | stable=False | trend +67.05/window t=+3.41 (plateau_streak=0/10) | checks_since_best=0
+[Episode 454/400] Steps: 720 | Reward:  327.58 | Battery:  82.29% | Loss: -0.0296
+Placing Sensors
+[Episode 455/400] Steps: 720 | Reward:  232.08 | Battery:  69.35% | Loss: 
+Placing Sensors
+Policy -0.0049 | Value 36.4592 | Lyap 0.0071 | Dynamics 0.0464 | Barrier 0.0420 | KL 0.01365 | CF 0.1692 | Std 0.1086 | RawLogStd 0.0172 | |a| 0.0590 | EV +0.959 | Alpha 0.0100 | MB 24/24
+  cert | viol 0.044 | dV -0.244855 | V 0.2812 | inball 0.573 | a*_q05 0.00638 | a*_q50 0.03687 | dV>=0 0.000 | n=150 | a_used 0.00574 -> 0.00584
+[Convergence check] ep 456 | avg_reward(last 50) 271.55 (best 273.70, above_threshold=True) | avg_lyap(last 20) 0.0059 (V=0.192+-0.238, viol=39.6%, dV=-0.001469, inball=57%, collapsed=False) | avg_barrier(last 20) 0.0409 | avg_std(last 20) 0.1087 | avg|a|(last 20) 0.0434 (cleared=True) | stable=False | trend +59.08/window t=+3.11 (plateau_streak=0/10) | checks_since_best=1
+[Episode 456/400] Steps: 720 | Reward:  304.17 | Battery:  82.33% | Loss: 0.0157
+Placing Sensors
+[Episode 457/400] Steps: 720 | Reward:  269.31 | Battery:  76.10% | Loss: 
+Placing Sensors
+Policy -0.0083 | Value 26.0011 | Lyap 0.0083 | Dynamics 0.0330 | Barrier 0.0827 | KL 0.01289 | CF 0.1215 | Std 0.1086 | RawLogStd 0.0171 | |a| 0.0368 | EV +0.977 | Alpha 0.0100 | MB 24/24
+  cert | viol 0.019 | dV -0.217005 | V 0.2499 | inball 0.589 | a*_q05 0.00827 | a*_q50 0.03179 | dV>=0 0.000 | n=150 | a_used 0.00584 -> 0.00596
+[Convergence check] ep 458 | avg_reward(last 50) 274.58 (best 274.58, above_threshold=True) | avg_lyap(last 20) 0.0061 (V=0.192+-0.237, viol=39.5%, dV=-0.001482, inball=57%, collapsed=False) | avg_barrier(last 20) 0.0433 | avg_std(last 20) 0.1087 | avg|a|(last 20) 0.0432 (cleared=True) | stable=False | trend +62.97/window t=+3.32 (plateau_streak=0/10) | checks_since_best=0
+[Episode 458/400] Steps: 720 | Reward:  332.03 | Battery:  82.66% | Loss: 0.0374
+Placing Sensors
+[Episode 459/400] Steps: 720 | Reward:  257.27 | Battery:  64.92% | Loss: 
+Placing Sensors
+Policy -0.0053 | Value 32.7322 | Lyap 0.0061 | Dynamics 0.0522 | Barrier 0.0196 | KL 0.01461 | CF 0.1189 | Std 0.1086 | RawLogStd 0.0171 | |a| 0.0433 | EV +0.975 | Alpha 0.0100 | MB 24/24
+  cert | viol 0.000 | dV -0.211461 | V 0.2203 | inball 0.605 | a*_q05 0.01453 | a*_q50 0.04022 | dV>=0 0.000 | n=150 | a_used 0.00596 -> 0.00612
+[Convergence check] ep 460 | avg_reward(last 50) 274.70 (best 274.70, above_threshold=True) | avg_lyap(last 20) 0.0060 (V=0.188+-0.234, viol=39.6%, dV=-0.001480, inball=57%, collapsed=False) | avg_barrier(last 20) 0.0424 | avg_std(last 20) 0.1087 | avg|a|(last 20) 0.0434 (cleared=True) | stable=False | trend +63.58/window t=+3.35 (plateau_streak=0/10) | checks_since_best=0
+[Episode 460/400] Steps: 720 | Reward:  271.14 | Battery:  72.58% | Loss: 0.1180
+Placing Sensors
+[Episode 461/400] Steps: 720 | Reward:  242.24 | Battery:  73.16% | Loss: 
+Placing Sensors
+Policy 0.0119 | Value 47.8825 | Lyap 0.0044 | Dynamics 0.0434 | Barrier 0.0830 | KL 0.02770 | CF 0.1301 | Std 0.1086 | RawLogStd 0.0172 | |a| 0.0497 | EV +0.943 | Alpha 0.0100 | MB 12/24
+  cert | viol 0.159 | dV -0.257013 | V 0.3380 | inball 0.389 | a*_q05 0.00367 | a*_q50 0.02606 | dV>=0 0.000 | n=150 | a_used 0.00612 -> 0.00597
+[Convergence check] ep 462 | avg_reward(last 50) 273.96 (best 274.70, above_threshold=True) | avg_lyap(last 20) 0.0059 (V=0.188+-0.233, viol=39.7%, dV=-0.001462, inball=57%, collapsed=False) | avg_barrier(last 20) 0.0448 | avg_std(last 20) 0.1087 | avg|a|(last 20) 0.0436 (cleared=True) | stable=False | trend +64.84/window t=+3.43 (plateau_streak=0/10) | checks_since_best=1
+[Episode 462/400] Steps: 720 | Reward:  218.98 | Battery:  60.11% | Loss: -0.0370
+Placing Sensors
+[Episode 463/400] Steps: 720 | Reward:  287.46 | Battery:  78.27% | Loss: 
+Placing Sensors
+Policy -0.0080 | Value 34.5072 | Lyap 0.0051 | Dynamics 0.0552 | Barrier 0.0253 | KL 0.01306 | CF 0.1217 | Std 0.1086 | RawLogStd 0.0171 | |a| 0.0474 | EV +0.951 | Alpha 0.0100 | MB 24/24
+  cert | viol 0.043 | dV -0.279776 | V 0.3052 | inball 0.552 | a*_q05 0.00775 | a*_q50 0.03978 | dV>=0 0.000 | n=150 | a_used 0.00597 -> 0.00602
+[Convergence check] ep 464 | avg_reward(last 50) 274.85 (best 274.85, above_threshold=True) | avg_lyap(last 20) 0.0059 (V=0.188+-0.232, viol=40.3%, dV=-0.001420, inball=56%, collapsed=False) | avg_barrier(last 20) 0.0451 | avg_std(last 20) 0.1086 | avg|a|(last 20) 0.0441 (cleared=True) | stable=False | trend +64.61/window t=+3.41 (plateau_streak=0/10) | checks_since_best=0
+[Episode 464/400] Steps: 720 | Reward:  226.20 | Battery:  63.45% | Loss: -0.0614
+Placing Sensors
+[Episode 465/400] Steps: 720 | Reward:  294.13 | Battery:  84.60% | Loss: 
+Placing Sensors
+Policy -0.0137 | Value 25.9913 | Lyap 0.0049 | Dynamics 0.0469 | Barrier 0.0392 | KL 0.01480 | CF 0.1388 | Std 0.1086 | RawLogStd 0.0171 | |a| 0.0432 | EV +0.974 | Alpha 0.0100 | MB 24/24
+  cert | viol 0.015 | dV -0.280170 | V 0.3029 | inball 0.656 | a*_q05 0.00923 | a*_q50 0.03876 | dV>=0 0.000 | n=150 | a_used 0.00602 -> 0.00617
+[Convergence check] ep 466 | avg_reward(last 50) 275.39 (best 275.39, above_threshold=True) | avg_lyap(last 20) 0.0057 (V=0.186+-0.231, viol=39.7%, dV=-0.001476, inball=57%, collapsed=False) | avg_barrier(last 20) 0.0438 | avg_std(last 20) 0.1086 | avg|a|(last 20) 0.0440 (cleared=True) | stable=False | trend +65.30/window t=+3.45 (plateau_streak=0/10) | checks_since_best=0
+[Episode 466/400] Steps: 720 | Reward:  297.99 | Battery:  82.66% | Loss: 0.0228
+Placing Sensors
+[Episode 467/400] Steps: 720 | Reward:  310.47 | Battery:  80.30% | Loss: 
+Placing Sensors
+Policy -0.0055 | Value 43.0064 | Lyap 0.0052 | Dynamics 0.0765 | Barrier 0.0195 | KL 0.01400 | CF 0.1392 | Std 0.1086 | RawLogStd 0.0171 | |a| 0.0497 | EV +0.935 | Alpha 0.0100 | MB 24/24
+  cert | viol 0.000 | dV -0.261358 | V 0.2739 | inball 0.651 | a*_q05 0.01191 | a*_q50 0.04078 | dV>=0 0.000 | n=150 | a_used 0.00617 -> 0.00632
+[Convergence check] ep 468 | avg_reward(last 50) 275.98 (best 275.98, above_threshold=True) | avg_lyap(last 20) 0.0056 (V=0.185+-0.232, viol=39.6%, dV=-0.001486, inball=57%, collapsed=False) | avg_barrier(last 20) 0.0429 | avg_std(last 20) 0.1086 | avg|a|(last 20) 0.0448 (cleared=True) | stable=False | trend +66.69/window t=+3.53 (plateau_streak=0/10) | checks_since_best=0
+[Episode 468/400] Steps: 720 | Reward:  264.36 | Battery:  72.14% | Loss: -0.0284
+Placing Sensors
+[Episode 469/400] Steps: 720 | Reward:  262.81 | Battery:  77.37% | Loss: 
+Placing Sensors
+[Episode 470/400] Steps:  99 | Reward:  -53.58 | Battery:   0.00% | Loss: 
+Placing Sensors
+Policy -0.0268 | Value 65.2932 | Lyap 0.0073 | Dynamics 0.0577 | Barrier 0.0289 | KL 0.01807 | CF 0.1212 | Std 0.1086 | RawLogStd 0.0171 | |a| 0.0573 | EV +0.879 | Alpha 0.0100 | MB 28/28
+  cert | viol 0.000 | dV -0.289831 | V 0.3086 | inball 0.552 | a*_q05 0.01249 | a*_q50 0.03728 | dV>=0 0.000 | n=150 | a_used 0.00632 -> 0.00647
+[Convergence check] ep 471 | avg_reward(last 50) 269.85 (best 275.98, above_threshold=True) | avg_lyap(last 20) 0.0058 (V=0.188+-0.236, viol=39.6%, dV=-0.001474, inball=57%, collapsed=False) | avg_barrier(last 20) 0.0431 | avg_std(last 20) 0.1086 | avg|a|(last 20) 0.0454 (cleared=True) | stable=False | trend +49.90/window t=+2.61 (plateau_streak=0/10) | checks_since_best=1
+[Episode 471/400] Steps: 720 | Reward:  273.53 | Battery:  77.40% | Loss: -0.3381
+Placing Sensors
+[Episode 472/400] Steps: 720 | Reward:  309.22 | Battery:  84.48% | Loss: 
+Placing Sensors
+Policy -0.0020 | Value 29.1848 | Lyap 0.0064 | Dynamics 0.0448 | Barrier 0.0356 | KL 0.01015 | CF 0.1054 | Std 0.1086 | RawLogStd 0.0171 | |a| 0.0391 | EV +0.936 | Alpha 0.0100 | MB 24/24
+  cert | viol 0.000 | dV -0.210077 | V 0.2228 | inball 0.671 | a*_q05 0.01132 | a*_q50 0.03919 | dV>=0 0.000 | n=150 | a_used 0.00647 -> 0.00660
+[Convergence check] ep 473 | avg_reward(last 50) 269.80 (best 275.98, above_threshold=True) | avg_lyap(last 20) 0.0059 (V=0.187+-0.237, viol=39.4%, dV=-0.001487, inball=58%, collapsed=False) | avg_barrier(last 20) 0.0416 | avg_std(last 20) 0.1086 | avg|a|(last 20) 0.0455 (cleared=True) | stable=False | trend +43.16/window t=+2.34 (plateau_streak=0/10) | checks_since_best=2
+[Episode 473/400] Steps: 720 | Reward:  280.48 | Battery:  83.97% | Loss: 0.0940
+Placing Sensors
+[Episode 474/400] Steps: 720 | Reward:  259.74 | Battery:  72.20% | Loss: 
+Placing Sensors
+Policy -0.0044 | Value 20.1366 | Lyap 0.0047 | Dynamics 0.0491 | Barrier 0.0369 | KL 0.01460 | CF 0.1558 | Std 0.1086 | RawLogStd 0.0170 | |a| 0.0475 | EV +0.982 | Alpha 0.0100 | MB 24/24
+  cert | viol 0.029 | dV -0.265943 | V 0.2946 | inball 0.548 | a*_q05 0.00880 | a*_q50 0.03763 | dV>=0 0.000 | n=150 | a_used 0.00660 -> 0.00671
+[Convergence check] ep 475 | avg_reward(last 50) 268.43 (best 275.98, above_threshold=True) | avg_lyap(last 20) 0.0059 (V=0.188+-0.238, viol=39.3%, dV=-0.001489, inball=58%, collapsed=False) | avg_barrier(last 20) 0.0414 | avg_std(last 20) 0.1086 | avg|a|(last 20) 0.0460 (cleared=True) | stable=False | trend +38.22/window t=+2.07 (plateau_streak=0/10) | checks_since_best=3
+[Episode 475/400] Steps: 720 | Reward:  228.80 | Battery:  58.80% | Loss: -0.0141
+Placing Sensors
+[Episode 476/400] Steps: 720 | Reward:  338.80 | Battery:  88.10% | Loss: 
+Placing Sensors
+Policy -0.0071 | Value 26.1039 | Lyap 0.0059 | Dynamics 0.0418 | Barrier 0.0255 | KL 0.00826 | CF 0.0846 | Std 0.1086 | RawLogStd 0.0170 | |a| 0.0381 | EV +0.967 | Alpha 0.0100 | MB 24/24
+  cert | viol 0.042 | dV -0.243964 | V 0.2733 | inball 0.603 | a*_q05 0.00743 | a*_q50 0.03604 | dV>=0 0.000 | n=150 | a_used 0.00671 -> 0.00671
+[Convergence check] ep 477 | avg_reward(last 50) 269.30 (best 275.98, above_threshold=True) | avg_lyap(last 20) 0.0059 (V=0.190+-0.239, viol=39.5%, dV=-0.001482, inball=57%, collapsed=False) | avg_barrier(last 20) 0.0403 | avg_std(last 20) 0.1086 | avg|a|(last 20) 0.0455 (cleared=True) | stable=False | trend +42.81/window t=+2.33 (plateau_streak=0/10) | checks_since_best=4
+[Episode 477/400] Steps: 720 | Reward:  257.28 | Battery:  75.40% | Loss: 0.0163
+Placing Sensors
+[Episode 478/400] Steps: 720 | Reward:  315.16 | Battery:  86.53% | Loss: 
+Placing Sensors
+Policy -0.0046 | Value 23.0329 | Lyap 0.0068 | Dynamics 0.0428 | Barrier 0.0752 | KL 0.00540 | CF 0.0602 | Std 0.1086 | RawLogStd 0.0170 | |a| 0.0415 | EV +0.958 | Alpha 0.0100 | MB 24/24
+  cert | viol 0.056 | dV -0.251754 | V 0.2905 | inball 0.606 | a*_q05 0.00687 | a*_q50 0.03413 | dV>=0 0.000 | n=150 | a_used 0.00671 -> 0.00676
+[Convergence check] ep 479 | avg_reward(last 50) 269.20 (best 275.98, above_threshold=True) | avg_lyap(last 20) 0.0060 (V=0.189+-0.238, viol=38.9%, dV=-0.001501, inball=58%, collapsed=False) | avg_barrier(last 20) 0.0394 | avg_std(last 20) 0.1086 | avg|a|(last 20) 0.0455 (cleared=True) | stable=False | trend +45.94/window t=+2.49 (plateau_streak=0/10) | checks_since_best=5
+[Episode 479/400] Steps: 720 | Reward:  312.58 | Battery:  88.72% | Loss: 0.0520
+Placing Sensors
+[Episode 480/400] Steps: 720 | Reward:  330.89 | Battery:  87.06% | Loss: 
+Placing Sensors
+Policy -0.0089 | Value 17.7346 | Lyap 0.0063 | Dynamics 0.0397 | Barrier 0.0373 | KL 0.00735 | CF 0.0962 | Std 0.1086 | RawLogStd 0.0169 | |a| 0.0359 | EV +0.982 | Alpha 0.0100 | MB 24/24
+  cert | viol 0.000 | dV -0.196591 | V 0.2035 | inball 0.679 | a*_q05 0.01446 | a*_q50 0.04118 | dV>=0 0.000 | n=150 | a_used 0.00676 -> 0.00689
+[Convergence check] ep 481 | avg_reward(last 50) 271.80 (best 275.98, above_threshold=True) | avg_lyap(last 20) 0.0059 (V=0.186+-0.236, viol=38.2%, dV=-0.001554, inball=59%, collapsed=False) | avg_barrier(last 20) 0.0381 | avg_std(last 20) 0.1086 | avg|a|(last 20) 0.0452 (cleared=True) | stable=False | trend +49.34/window t=+2.68 (plateau_streak=0/10) | checks_since_best=6
+[Episode 481/400] Steps: 720 | Reward:  290.58 | Battery:  76.50% | Loss: 0.0078
+Placing Sensors
+[Episode 482/400] Steps: 720 | Reward:  316.83 | Battery:  82.67% | Loss: 
+Placing Sensors
+Policy -0.0097 | Value 45.2400 | Lyap 0.0052 | Dynamics 0.0519 | Barrier 0.0606 | KL 0.02084 | CF 0.1650 | Std 0.1086 | RawLogStd 0.0169 | |a| 0.0623 | EV +0.949 | Alpha 0.0100 | MB 24/24
+  cert | viol 0.258 | dV -0.243074 | V 0.3367 | inball 0.469 | a*_q05 0.00177 | a*_q50 0.02715 | dV>=0 0.000 | n=150 | a_used 0.00689 -> 0.00646
+[Convergence check] ep 483 | avg_reward(last 50) 269.98 (best 275.98, above_threshold=True) | avg_lyap(last 20) 0.0060 (V=0.190+-0.239, viol=38.9%, dV=-0.001526, inball=58%, collapsed=False) | avg_barrier(last 20) 0.0389 | avg_std(last 20) 0.1086 | avg|a|(last 20) 0.0462 (cleared=True) | stable=False | trend +48.28/window t=+2.61 (plateau_streak=0/10) | checks_since_best=7
+[Episode 483/400] Steps: 720 | Reward:  180.02 | Battery:  52.46% | Loss: 0.0501
+Placing Sensors
+[Episode 484/400] Steps: 720 | Reward:  253.08 | Battery:  75.96% | Loss: 
+Placing Sensors
+Policy -0.0093 | Value 24.7133 | Lyap 0.0065 | Dynamics 0.0449 | Barrier 0.0230 | KL 0.00734 | CF 0.0809 | Std 0.1086 | RawLogStd 0.0169 | |a| 0.0402 | EV +0.980 | Alpha 0.0100 | MB 24/24
+  cert | viol 0.079 | dV -0.215266 | V 0.2538 | inball 0.546 | a*_q05 0.00558 | a*_q50 0.03020 | dV>=0 0.000 | n=150 | a_used 0.00646 -> 0.00648
+[Convergence check] ep 485 | avg_reward(last 50) 271.22 (best 275.98, above_threshold=True) | avg_lyap(last 20) 0.0060 (V=0.190+-0.238, viol=38.4%, dV=-0.001538, inball=58%, collapsed=False) | avg_barrier(last 20) 0.0389 | avg_std(last 20) 0.1086 | avg|a|(last 20) 0.0457 (cleared=True) | stable=False | trend +49.50/window t=+2.68 (plateau_streak=0/10) | checks_since_best=8
+[Episode 485/400] Steps: 720 | Reward:  282.38 | Battery:  75.99% | Loss: 0.0010
+Placing Sensors
+[Episode 486/400] Steps: 720 | Reward:  349.93 | Battery:  87.98% | Loss: 
+Placing Sensors
+Policy -0.0026 | Value 24.5481 | Lyap 0.0051 | Dynamics 0.0435 | Barrier 0.0400 | KL 0.02648 | CF 0.0906 | Std 0.1086 | RawLogStd 0.0169 | |a| 0.0365 | EV +0.969 | Alpha 0.0100 | MB 12/24
+  cert | viol 0.061 | dV -0.183264 | V 0.2119 | inball 0.643 | a*_q05 0.00637 | a*_q50 0.03528 | dV>=0 0.000 | n=150 | a_used 0.00648 -> 0.00649
+[Convergence check] ep 487 | avg_reward(last 50) 272.03 (best 275.98, above_threshold=True) | avg_lyap(last 20) 0.0059 (V=0.190+-0.238, viol=37.8%, dV=-0.001559, inball=58%, collapsed=False) | avg_barrier(last 20) 0.0388 | avg_std(last 20) 0.1086 | avg|a|(last 20) 0.0452 (cleared=True) | stable=False | trend +50.98/window t=+2.76 (plateau_streak=0/10) | checks_since_best=9
+[Episode 487/400] Steps: 720 | Reward:  291.63 | Battery:  79.10% | Loss: 0.0797
+Placing Sensors
+[Episode 488/400] Steps: 720 | Reward:  247.66 | Battery:  66.76% | Loss: 
+Placing Sensors
+Policy -0.0091 | Value 21.1796 | Lyap 0.0050 | Dynamics 0.0457 | Barrier 0.0207 | KL 0.00965 | CF 0.0976 | Std 0.1085 | RawLogStd 0.0168 | |a| 0.0511 | EV +0.984 | Alpha 0.0100 | MB 24/24
+  cert | viol 0.044 | dV -0.235320 | V 0.2730 | inball 0.575 | a*_q05 0.00770 | a*_q50 0.03177 | dV>=0 0.000 | n=150 | a_used 0.00649 -> 0.00651
+[Convergence check] ep 489 | avg_reward(last 50) 272.37 (best 275.98, above_threshold=True) | avg_lyap(last 20) 0.0059 (V=0.191+-0.239, viol=37.6%, dV=-0.001543, inball=58%, collapsed=False) | avg_barrier(last 20) 0.0381 | avg_std(last 20) 0.1086 | avg|a|(last 20) 0.0454 (cleared=True) | stable=False | trend +52.90/window t=+2.87 (plateau_streak=0/10) | checks_since_best=10
+[Episode 489/400] Steps: 720 | Reward:  302.42 | Battery:  86.53% | Loss: 0.0389
+Placing Sensors
+[Episode 490/400] Steps:  98 | Reward:  -60.84 | Battery:   0.00% | Loss: 
+Placing Sensors
+[Episode 491/400] Steps: 720 | Reward:  258.92 | Battery:  63.77% | Loss: 
+Placing Sensors
+[Episode 492/400] Steps:  89 | Reward:  -63.87 | Battery:   0.00% | Loss: 
+Placing Sensors
+Policy -0.0025 | Value 144.9262 | Lyap 0.0050 | Dynamics 0.0575 | Barrier 0.0535 | KL 0.01648 | CF 0.1560 | Std 0.1085 | RawLogStd 0.0168 | |a| 0.0647 | EV +0.803 | Alpha 0.0100 | MB 28/28
+  cert | viol 0.169 | dV -0.210117 | V 0.2640 | inball 0.441 | a*_q05 0.00410 | a*_q50 0.03172 | dV>=0 0.000 | n=150 | a_used 0.00651 -> 0.00638
+[Convergence check] ep 493 | avg_reward(last 50) 257.56 (best 275.98, above_threshold=True) | avg_lyap(last 20) 0.0059 (V=0.195+-0.241, viol=38.3%, dV=-0.001471, inball=57%, collapsed=False) | avg_barrier(last 20) 0.0400 | avg_std(last 20) 0.1086 | avg|a|(last 20) 0.0467 (cleared=True) | stable=False | trend +29.34/window t=+1.45 (plateau_streak=1/10) | checks_since_best=11
+[Episode 493/400] Steps: 720 | Reward:  211.32 | Battery:  64.19% | Loss: 0.0276
+Placing Sensors
+[Episode 494/400] Steps: 720 | Reward:  260.49 | Battery:  71.38% | Loss: 
+Placing Sensors
+Policy -0.0058 | Value 40.4468 | Lyap 0.0050 | Dynamics 0.0516 | Barrier 0.0285 | KL 0.01233 | CF 0.0548 | Std 0.1085 | RawLogStd 0.0167 | |a| 0.0454 | EV +0.965 | Alpha 0.0100 | MB 24/24
+  cert | viol 0.063 | dV -0.205384 | V 0.2463 | inball 0.568 | a*_q05 0.00626 | a*_q50 0.03001 | dV>=0 0.000 | n=150 | a_used 0.00638 -> 0.00634
+[Convergence check] ep 495 | avg_reward(last 50) 259.10 (best 275.98, above_threshold=True) | avg_lyap(last 20) 0.0058 (V=0.189+-0.238, viol=37.5%, dV=-0.001487, inball=58%, collapsed=False) | avg_barrier(last 20) 0.0406 | avg_std(last 20) 0.1086 | avg|a|(last 20) 0.0464 (cleared=True) | stable=False | trend +21.57/window t=+1.10 (plateau_streak=2/10) | checks_since_best=12
+[Episode 495/400] Steps: 720 | Reward:  304.41 | Battery:  80.52% | Loss: 0.1110
+Placing Sensors
+[Episode 496/400] Steps: 720 | Reward:  290.89 | Battery:  80.41% | Loss: 
+Placing Sensors
+Policy -0.0044 | Value 25.5960 | Lyap 0.0066 | Dynamics 0.0444 | Barrier 0.0328 | KL 0.00918 | CF 0.1126 | Std 0.1085 | RawLogStd 0.0165 | |a| 0.0384 | EV +0.969 | Alpha 0.0100 | MB 24/24
+  cert | viol 0.035 | dV -0.234460 | V 0.2587 | inball 0.623 | a*_q05 0.00829 | a*_q50 0.03762 | dV>=0 0.000 | n=150 | a_used 0.00634 -> 0.00648
+[Convergence check] ep 497 | avg_reward(last 50) 258.66 (best 275.98, above_threshold=True) | avg_lyap(last 20) 0.0058 (V=0.190+-0.238, viol=37.5%, dV=-0.001478, inball=58%, collapsed=False) | avg_barrier(last 20) 0.0405 | avg_std(last 20) 0.1086 | avg|a|(last 20) 0.0463 (cleared=True) | stable=False | trend +24.71/window t=+1.26 (plateau_streak=3/10) | checks_since_best=13
+[Episode 497/400] Steps: 720 | Reward:  285.41 | Battery:  79.94% | Loss: 0.0743
+Placing Sensors
+[Episode 498/400] Steps: 720 | Reward:  323.96 | Battery:  87.02% | Loss: 
+Placing Sensors
+[Episode 499/400] Steps:  92 | Reward:  -54.37 | Battery:   0.00% | Loss: 
+Placing Sensors
+Policy -0.0075 | Value 88.8668 | Lyap 0.0057 | Dynamics 0.0428 | Barrier 0.0122 | KL 0.00721 | CF 0.0658 | Std 0.1085 | RawLogStd 0.0164 | |a| 0.0423 | EV +0.876 | Alpha 0.0100 | MB 24/24
+  cert | viol 0.066 | dV -0.212594 | V 0.2408 | inball 0.621 | a*_q05 0.00641 | a*_q50 0.03808 | dV>=0 0.000 | n=150 | a_used 0.00648 -> 0.00650
+[Convergence check] ep 500 | avg_reward(last 50) 253.00 (best 275.98, above_threshold=True) | avg_lyap(last 20) 0.0058 (V=0.191+-0.239, viol=37.6%, dV=-0.001472, inball=58%, collapsed=False) | avg_barrier(last 20) 0.0390 | avg_std(last 20) 0.1086 | avg|a|(last 20) 0.0455 (cleared=True) | stable=False | trend +17.05/window t=+0.84 (plateau_streak=4/10) | checks_since_best=14
+[Episode 500/400] Steps: 720 | Reward:  317.35 | Battery:  83.61% | Loss: 0.0949
+Placing Sensors
+[Episode 501/400] Steps: 720 | Reward:  288.46 | Battery:  77.46% | Loss: 
+[budget] 288359 transitions collected over 501 episodes -- step budget met, stopping.
+Placing Sensors
+  [validation 1/10] steps 720 | battery  36.4% ->  82.0% (min  30.4%) | reward   396.36 | |a| 0.031 | path     206 m
+Placing Sensors
+  [validation 2/10] steps 720 | battery  39.6% ->  80.9% (min  30.9%) | reward   411.80 | |a| 0.032 | path     214 m
+Placing Sensors
+  [validation 3/10] steps 720 | battery  39.2% ->  77.5% (min  34.9%) | reward   345.41 | |a| 0.093 | path     149 m
+Placing Sensors
+  [validation 4/10] steps 720 | battery  30.6% ->  87.1% (min  24.6%) | reward   403.78 | |a| 0.031 | path     205 m
+Placing Sensors
+  [validation 5/10] steps 720 | battery  39.6% ->  84.2% (min  38.0%) | reward   433.60 | |a| 0.031 | path     202 m
+Placing Sensors
+  [validation 6/10] steps 720 | battery  32.6% ->  81.9% (min  30.9%) | reward   427.59 | |a| 0.026 | path     133 m
+Placing Sensors
+  [validation 7/10] steps  91 | battery  34.5% ->   0.0% (min   0.0%) | reward   -66.61 | |a| 0.116 | path     133 m
+Placing Sensors
+  [validation 8/10] steps 720 | battery  33.7% ->  82.4% (min  32.1%) | reward   432.39 | |a| 0.031 | path     216 m
+Placing Sensors
+  [validation 9/10] steps 720 | battery  34.4% ->  79.7% (min  28.2%) | reward   420.41 | |a| 0.028 | path     160 m
+Placing Sensors
+  [validation 10/10] steps 720 | battery  39.5% ->  78.7% (min  34.9%) | reward   400.38 | |a| 0.031 | path     223 m
+
+==============================================================================
+VALIDATION COMPLETE -- 10 independent deterministic episodes
+==============================================================================
+metric                       mean        std        min        max
+reward                     360.51     152.26     -66.61     433.60
+final battery %             73.43      25.95       0.00      87.11
+min battery %               28.50      10.69       0.00      38.04
+steps                      657.10     198.91      91.00     720.00
+solar W                     28.13       9.58       1.22      33.10
+|action|                     0.05       0.03       0.03       0.12
+path m                     184.19      36.13     132.84     223.18
+tortuosity                   2.06       2.39       1.14       8.86
+motion mAh                 135.94      25.90     100.80     159.11
+idle mAh                 10572.14    3194.72    1479.82   11582.40
+
+survived full 720 steps : 9/10
+ended below 20% battery         : 1/10
+ended above 70% battery         : 9/10
+
+reward 95% CI: 360.51 +- 94.37  (266.14 to 454.88)
+
+total step rows written: 6571
+
+==============================================
+WALL CLOCK BREAKDOWN
+==============================================
+Total run time        :   17697.09 s
+  Rollout (training)  :   17166.53 s  ( 97.0%)
+    - policy inference:     261.54 s  (  1.5%)
+    - env + reward    :   16904.99 s  ( 95.5%)
+  PPO update()        :      65.13 s  (  0.4%)
+  Checkpoint saves    :       0.95 s  (  0.0%)
+  Final evaluation    :     334.01 s  (  1.9%)
+  Other / logging     :     130.46 s  (  0.7%)
+
+==============================================
+PER-CALL AVERAGES
+==============================================
+Policy inference      :   294930 calls |    0.899 ms/step
+  final eval only     :     6571 calls |    0.562 ms/step
+PPO update()          :      192 calls |  339.213 ms/update
+Episode               :      400 eps   |   43.407 s/episode
+
+update() share of wall clock: 0.4%
