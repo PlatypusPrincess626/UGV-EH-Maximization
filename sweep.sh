@@ -16,6 +16,7 @@
 SEEDS="${SEEDS:-1 2 3 4 5 6 7 8}"
 EPISODES="${EPISODES:-400}"
 VARIANTS="${VARIANTS:-lyapunov normal cost}"
+CONV_STOP="${CONV_STOP: 0}"
 POLICIES="${POLICIES:-transformer}"
 LOGDIR="${LOGDIR:-sweep_logs}"
 
@@ -40,6 +41,7 @@ echo "  seeds     : $SEEDS"
 echo "  variants  : $VARIANTS"
 echo "  policies  : $POLICIES"
 echo "  episodes  : $EPISODES"
+echo "  conv_stop : $CONV_STOP"
 echo "  logs      : $LOGDIR/"
 echo "  started   : $(date)"
 echo "=============================================================="
@@ -64,7 +66,7 @@ for s in $SEEDS; do
         echo "[$n/$n_total] START ${v} seed ${s} at $(date +%H:%M:%S) -> $log"
         t0=$(date +%s)
 
-        LTAC_VARIANT="$v" LTAC_SEED="$s" LTAC_EPISODES="$EPISODES" \
+        LTAC_CONV_STOP="$CONV_STOP" LTAC_VARIANT="$v" LTAC_SEED="$s" LTAC_EPISODES="$EPISODES" \
           python -u main.py > "$log" 2>&1
         rc=$?
 
