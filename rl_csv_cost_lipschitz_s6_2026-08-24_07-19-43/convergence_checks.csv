@@ -1,1 +1,0 @@
-episode,avg_reward,best_avg_reward,reward_above_threshold,avg_lyap,avg_barrier,avg_std,avg_abs_action,avg_mean_V,avg_std_V,avg_std_barrier,avg_lyap_violation,avg_lyap_mean_dV,avg_lyap_in_ball,lyap_stable,lyap_collapsed,barrier_collapsed,exploration_cleared,reward_trend_per_window,reward_trend_t,plateau_streak,plateaued,stable,checks_since_best

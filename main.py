@@ -468,6 +468,51 @@ BARRIER_COLLAPSE_STD = 0.02
 CHECKPOINT_EVERY = 100          # periodic safety-net checkpoint, regardless of performance
 VALIDATION_EPISODES = 10
 
+# ---------------------------------------------------------------
+# Arm-agnostic convergence test, used to choose the checkpoint the
+# certification probe measures.
+#
+# WHY A SEPARATE TEST
+#
+# The existing convergence logic keys off Lyapunov and barrier
+# statistics, which only the lyapunov arm produces; on the cost arms
+# those terms are absent and the test cannot fire. What the
+# certification probe needs is different anyway: not "has the
+# auxiliary head stabilised" but "is this policy the one the paper
+# reports", i.e. has task performance stopped moving.
+#
+# Two conditions over a trailing window, both required:
+#
+#   deaths      the death rate over the window is at or below
+#               CONVERGE_MAX_DEATH; and
+#   plateau     survivor reward has improved by less than
+#               CONVERGE_MAX_IMPROVE between the window's first and
+#               second halves.
+#
+# The second condition is what distinguishes "converged" from "not
+# yet failing much". A run can sit at a low death rate while its
+# reward is still climbing steeply, and a checkpoint taken there
+# measures a controller still in motion.
+#
+# CALIBRATION. Evaluated against six completed cost_lipschitz seeds at
+# W = 100:
+#
+#   D <= 0.10, R < 0.25 fires at episodes 520, 544, --, --, 431, 533
+#
+# Seeds 3 and 4 never fire: their death rates over their final 100
+# episodes were 15% and 18%, so they had not converged when the runs
+# ended. A test that fired for them would be measuring the wrong
+# thing.
+CONVERGE_WINDOW = int(os.environ.get("LTAC_CONV_WINDOW", "100"))
+CONVERGE_MAX_DEATH = float(os.environ.get("LTAC_CONV_DEATH", "0.10"))
+CONVERGE_MAX_IMPROVE = float(os.environ.get("LTAC_CONV_IMPROVE", "0.25"))
+# Consecutive episodes the criterion must hold before firing, so a
+# single fortunate window does not end a run.
+CONVERGE_SUSTAIN = int(os.environ.get("LTAC_CONV_SUSTAIN", "25"))
+# Stop the run when it fires. Off by default: firing always writes
+# probe_converged.pt, and stopping is a separate decision.
+CONVERGE_STOP = os.environ.get("LTAC_CONV_STOP", "0") == "1"
+
 AUTO_STOP_ON_CONVERGENCE = False # set True to re-enable early stopping once the criteria are recalibrated for how fast training now converges
 # Reward readings are not trustworthy evidence of a real plateau while
 # Std is still pinned near the exploration ceiling (LOG_STD_MAX=0.5 ->
@@ -1056,7 +1101,7 @@ _sc_tag = ("" if not IS_COST or SPECTRAL_C_TAG == 1.772
 _ch_tag = f"_{CHAOTIC_KIND}" if USE_CHAOTIC_INIT else ""
 _clr_tag = "" if CRITIC_LR == LR else f"_clr{CRITIC_LR:g}"
 
-OUT=Path(f"rl_csv_{_variant_tag}_s{RUN_SEED}{_mw_tag}{_dm_tag}{_tw_tag}{_sc_tag}{_ch_tag}{_clr_tag}_{timestamp}"); OUT.mkdir(exist_ok=True)
+OUT=Path(f"rl_csv_{_variant_tag}_s{RUN_SEED}{_mw_tag}{_dm_tag}{_tw_tag}{_sc_tag}{_ch_tag}{_clr_tag}"); OUT.mkdir(exist_ok=True)
 
 size = 2 * VIEW_DISTANCE + 1
 y, x = np.mgrid[-VIEW_DISTANCE:VIEW_DISTANCE+1,
@@ -2880,6 +2925,10 @@ def run():
     best_avg_reward = -float("inf")
     checks_since_best = 0
     converged = False
+    # (episode, died, survivor_reward) for the convergence test.
+    conv_hist = []
+    conv_streak = 0
+    conv_fired_at = None
 
     for ep in range(1, MAX_EPISODES_CAP + 1):
         if PROGRESS["steps"] >= TOTAL_STEP_BUDGET:
@@ -3071,6 +3120,40 @@ def run():
             r["bootstrap_value"] = bootstrap_value
 
         rollouts.append(r); loss=""
+
+        # ---- convergence test for the certification checkpoint ----
+        _died = 1 if len(r["rewards"]) < MAX_STEPS_PER_EPISODE else 0
+        conv_hist.append((ep, _died, float(total) if not _died else float("nan")))
+        if len(conv_hist) > 4 * CONVERGE_WINDOW:
+            del conv_hist[:-2 * CONVERGE_WINDOW]
+
+        if conv_fired_at is None and len(conv_hist) >= CONVERGE_WINDOW:
+            _w = conv_hist[-CONVERGE_WINDOW:]
+            _death_rate = sum(x[1] for x in _w) / float(len(_w))
+            _half = CONVERGE_WINDOW // 2
+            _r1 = [x[2] for x in _w[:_half] if x[2] == x[2]]
+            _r2 = [x[2] for x in _w[_half:] if x[2] == x[2]]
+            _ok = False
+            if _death_rate <= CONVERGE_MAX_DEATH and _r1 and _r2:
+                # Improvement between the halves. Reward is negative in
+                # the cost MDP, so improvement is an INCREASE.
+                _improve = (sum(_r2) / len(_r2)) - (sum(_r1) / len(_r1))
+                _ok = _improve < CONVERGE_MAX_IMPROVE
+            conv_streak = conv_streak + 1 if _ok else 0
+
+            if conv_streak >= CONVERGE_SUSTAIN:
+                conv_fired_at = ep
+                ckpt_start = time.perf_counter()
+                torch.save(model.state_dict(), ckpt_dir / "probe_converged.pt")
+                total_checkpoint_time += time.perf_counter() - ckpt_start
+                print(f"\n[CONVERGED] episode {ep}: deaths "
+                      f"{100*_death_rate:.0f}% over the last "
+                      f"{CONVERGE_WINDOW}, survivor reward flat for "
+                      f"{conv_streak} consecutive episodes. "
+                      f"Wrote probe_converged.pt.")
+                if CONVERGE_STOP:
+                    print("[CONVERGED] LTAC_CONV_STOP=1, ending training.")
+                    break
 
         if POLICY_TYPE == "dqn":
             # Push the whole episode as one observation stream and run
