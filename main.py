@@ -513,6 +513,121 @@ CONVERGE_SUSTAIN = int(os.environ.get("LTAC_CONV_SUSTAIN", "25"))
 # probe_converged.pt, and stopping is a separate decision.
 CONVERGE_STOP = os.environ.get("LTAC_CONV_STOP", "0") == "1"
 
+# ---------------------------------------------------------------
+# Full checkpointing and resume.
+#
+# WHAT A MODEL-ONLY CHECKPOINT LOSES
+#
+# Earlier checkpoints held model.state_dict() alone. Reloading from
+# one and continuing is NOT the same run: AdamW restarts with zero
+# first and second moments, so the first updates take badly scaled
+# steps until the moments re-accumulate; the running return-variance
+# tracker restarts at var = 1.0, which rescales value_loss; and
+# PROGRESS["steps"] restarts at zero, which resets the cosine LR
+# schedule to its warmup. Each of those puts a visible discontinuity
+# in the training curve at exactly the point a convergence claim is
+# being made.
+#
+# Two things do survive a model-only load, by luck rather than design:
+# the adaptive softplus beta and the spectral-norm u/v vectors are
+# registered buffers and ride inside state_dict().
+#
+# WHAT THIS SAVES
+#
+#   model, optimizer          weights and AdamW moments
+#   PROGRESS["steps"]         drives progress_frac(), hence the LR
+#                             schedule and the auxiliary curriculum
+#   episode                   where to resume counting
+#   return-variance tracker   mean/var/count
+#   convergence state         so the test is not restarted mid-window
+#   RNG state                 torch and numpy, so a resumed run is
+#                             reproducible from the resume point
+#
+# The RNG state does NOT make a resumed run bit-identical to an
+# uninterrupted one -- the environment carries its own generators --
+# but it removes the script's own randomness as a source of drift.
+CHECKPOINT_FORMAT = 2
+
+
+def save_full_checkpoint(path, model, opt, ep, return_var_tracker,
+                         conv_state, extra=None):
+    """Everything needed to continue a run, not merely to evaluate it."""
+    import numpy as _np
+    blob = {
+        "format": CHECKPOINT_FORMAT,
+        "episode": int(ep),
+        "model": model.state_dict(),
+        "optimizer": opt.state_dict() if opt is not None else None,
+        "progress_steps": int(PROGRESS.get("steps", 0)),
+        "variant": TRANSFORMER_VARIANT,
+        "policy_type": POLICY_TYPE,
+        "seed": RUN_SEED,
+        "rng_torch": torch.get_rng_state(),
+        "rng_numpy": _np.random.get_state(),
+        "conv_state": conv_state,
+    }
+    if return_var_tracker is not None:
+        blob["return_var"] = {
+            "mean": float(return_var_tracker.mean),
+            "var": float(return_var_tracker.var),
+            "count": float(return_var_tracker.count),
+        }
+    if extra:
+        blob.update(extra)
+    torch.save(blob, path)
+
+
+def load_full_checkpoint(path, model, opt, return_var_tracker):
+    """
+    Restore a run. Returns (start_episode, conv_state).
+
+    Accepts a format-2 blob or a bare state_dict from an older run. In
+    the latter case only the weights are restored and the caller is
+    told, because continuing from weights alone is a materially
+    different thing from resuming and should not be silent.
+    """
+    import numpy as _np
+    blob = torch.load(path, map_location="cpu")
+
+    if not (isinstance(blob, dict) and blob.get("format") == CHECKPOINT_FORMAT):
+        model.load_state_dict(blob if not hasattr(blob, "state_dict")
+                              else blob.state_dict(), strict=False)
+        print(f"[resume] {path} is a model-only checkpoint. Weights "
+              f"restored; optimizer moments, LR schedule position and "
+              f"the return-variance tracker are NOT recoverable and "
+              f"restart from scratch.")
+        return 0, None
+
+    if blob.get("variant") != TRANSFORMER_VARIANT:
+        raise SystemExit(
+            f"checkpoint variant {blob.get('variant')!r} != "
+            f"LTAC_VARIANT {TRANSFORMER_VARIANT!r}")
+
+    model.load_state_dict(blob["model"])
+    if opt is not None and blob.get("optimizer") is not None:
+        opt.load_state_dict(blob["optimizer"])
+    PROGRESS["steps"] = blob.get("progress_steps", 0)
+    if return_var_tracker is not None and "return_var" in blob:
+        rv = blob["return_var"]
+        return_var_tracker.mean = rv["mean"]
+        return_var_tracker.var = rv["var"]
+        return_var_tracker.count = rv["count"]
+    try:
+        torch.set_rng_state(blob["rng_torch"])
+        _np.random.set_state(blob["rng_numpy"])
+    except Exception as exc:                                # pragma: no cover
+        print(f"[resume] RNG state not restored ({exc})")
+
+    ep = int(blob.get("episode", 0))
+    print(f"[resume] {path}: continuing {blob.get('variant')} seed "
+          f"{blob.get('seed')} from episode {ep + 1} "
+          f"(progress_steps={PROGRESS['steps']}).")
+    return ep, blob.get("conv_state")
+
+
+# Path to resume from. Empty means start fresh.
+RESUME_FROM = os.environ.get("LTAC_RESUME", "").strip()
+
 AUTO_STOP_ON_CONVERGENCE = False # set True to re-enable early stopping once the criteria are recalibrated for how fast training now converges
 # Reward readings are not trustworthy evidence of a real plateau while
 # Std is still pinned near the exploration ceiling (LOG_STD_MAX=0.5 ->
@@ -1101,7 +1216,7 @@ _sc_tag = ("" if not IS_COST or SPECTRAL_C_TAG == 1.772
 _ch_tag = f"_{CHAOTIC_KIND}" if USE_CHAOTIC_INIT else ""
 _clr_tag = "" if CRITIC_LR == LR else f"_clr{CRITIC_LR:g}"
 
-OUT=Path(f"rl_csv_{_variant_tag}_s{RUN_SEED}{_mw_tag}{_dm_tag}{_tw_tag}{_sc_tag}{_ch_tag}{_clr_tag}"); OUT.mkdir(exist_ok=True)
+OUT=Path(f"rl_csv_{_variant_tag}_s{RUN_SEED}{_mw_tag}{_dm_tag}{_tw_tag}{_sc_tag}{_ch_tag}{_clr_tag}_{timestamp}"); OUT.mkdir(exist_ok=True)
 
 size = 2 * VIEW_DISTANCE + 1
 y, x = np.mgrid[-VIEW_DISTANCE:VIEW_DISTANCE+1,
@@ -2922,6 +3037,15 @@ def run():
     plateau_streak = 0
     degrade_streak = 0
     return_var_tracker = RunningVariance() if POLICY_TYPE == "transformer" else None
+
+    # Resume before the episode loop, so the restored episode counter
+    # and PROGRESS["steps"] are in place when the LR schedule and the
+    # auxiliary curriculum are first evaluated.
+    start_episode = 0
+    resumed_conv = None
+    if RESUME_FROM:
+        start_episode, resumed_conv = load_full_checkpoint(
+            RESUME_FROM, model, opt, return_var_tracker)
     best_avg_reward = -float("inf")
     checks_since_best = 0
     converged = False
@@ -2929,8 +3053,15 @@ def run():
     conv_hist = []
     conv_streak = 0
     conv_fired_at = None
+    if resumed_conv:
+        # Carry the window across the resume, otherwise the test
+        # restarts its trailing window and cannot fire for another
+        # CONVERGE_WINDOW episodes for no reason related to the policy.
+        conv_hist = [tuple(x) for x in resumed_conv.get("hist", [])]
+        conv_streak = int(resumed_conv.get("streak", 0))
+        conv_fired_at = resumed_conv.get("fired_at")
 
-    for ep in range(1, MAX_EPISODES_CAP + 1):
+    for ep in range(start_episode + 1, MAX_EPISODES_CAP + 1):
         if PROGRESS["steps"] >= TOTAL_STEP_BUDGET:
             print(f"[budget] {PROGRESS['steps']} transitions collected over "
                   f"{ep-1} episodes -- step budget met, stopping.")
@@ -3144,7 +3275,11 @@ def run():
             if conv_streak >= CONVERGE_SUSTAIN:
                 conv_fired_at = ep
                 ckpt_start = time.perf_counter()
-                torch.save(model.state_dict(), ckpt_dir / "probe_converged.pt")
+                save_full_checkpoint(
+                    ckpt_dir / "probe_converged.pt", model, opt, ep,
+                    return_var_tracker,
+                    {"hist": conv_hist[-CONVERGE_WINDOW:],
+                     "streak": conv_streak, "fired_at": ep})
                 total_checkpoint_time += time.perf_counter() - ckpt_start
                 print(f"\n[CONVERGED] episode {ep}: deaths "
                       f"{100*_death_rate:.0f}% over the last "
@@ -3436,7 +3571,11 @@ def run():
 
         if ep % CHECKPOINT_EVERY == 0:
             ckpt_start = time.perf_counter()
-            torch.save(model.state_dict(), ckpt_dir / f"episode_{ep}.pt")
+            save_full_checkpoint(
+                ckpt_dir / f"episode_{ep}.pt", model, opt, ep,
+                return_var_tracker,
+                {"hist": conv_hist[-CONVERGE_WINDOW:],
+                 "streak": conv_streak, "fired_at": conv_fired_at})
             total_checkpoint_time += time.perf_counter() - ckpt_start
 
         ep_elapsed = time.perf_counter() - ep_start

@@ -92,7 +92,15 @@ def build_model(ckpt_path, device):
                   sequence_length=M.SEQUENCE_LENGTH)
 
     state = torch.load(ckpt_path, map_location="cpu")
-    if hasattr(state, "state_dict"):
+    # Format-2 checkpoints are a dict of run state with the weights
+    # under "model"; older ones are a bare state_dict. Accept both, so
+    # the probe works on checkpoints written before full checkpointing
+    # existed.
+    if isinstance(state, dict) and "model" in state and "format" in state:
+        print(f"[probe] full checkpoint, saved at episode "
+              f"{state.get('episode', '?')}")
+        state = state["model"]
+    elif hasattr(state, "state_dict"):
         state = state.state_dict()
     missing, unexpected = model.load_state_dict(state, strict=False)
     if missing or unexpected:
