@@ -1,48 +1,166 @@
 nohup: ignoring input
 ==============================================================
-paired sweep: 56 runs
+paired sweep: 8 runs
   seeds     : 1 2 3 4 5 6 7 8
-  variants  : cost_lipschitz cost normal lyapunov
-  policies  : transformer pso exact dqn
-  episodes  : 400
+  variants  : cost_lipschitz
+  policies  : transformer
+  episodes  : 900
+  conv_stop : 1
   logs      : sweep_logs/
-  started   : Mon Aug 24 05:54:18 PM UTC 2026
+  started   : Thu Aug 27 06:50:08 PM UTC 2026
 ==============================================================
-[1/56] SKIP  cost_lipschitz seed 1 (already done)
-[2/56] SKIP  cost seed 1 (already done)
-[3/56] SKIP  normal seed 1 (already done)
-[4/56] SKIP  lyapunov seed 1 (already done)
-[5/56] SKIP  pso seed 1 (already done)
-[6/56] SKIP  exact seed 1 (already done)
-[7/56] SKIP  dqn seed 1 (already done)
-[8/56] SKIP  cost_lipschitz seed 2 (already done)
-[9/56] SKIP  cost seed 2 (already done)
-[10/56] SKIP  normal seed 2 (already done)
-[11/56] SKIP  lyapunov seed 2 (already done)
-[12/56] SKIP  pso seed 2 (already done)
-[13/56] SKIP  exact seed 2 (already done)
-[14/56] SKIP  dqn seed 2 (already done)
-[15/56] SKIP  cost_lipschitz seed 3 (already done)
-[16/56] SKIP  cost seed 3 (already done)
-[17/56] SKIP  normal seed 3 (already done)
-[18/56] SKIP  lyapunov seed 3 (already done)
-[19/56] SKIP  pso seed 3 (already done)
-[20/56] SKIP  exact seed 3 (already done)
-[21/56] SKIP  dqn seed 3 (already done)
-[22/56] SKIP  cost_lipschitz seed 4 (already done)
-[23/56] SKIP  cost seed 4 (already done)
-[24/56] SKIP  normal seed 4 (already done)
-[25/56] SKIP  lyapunov seed 4 (already done)
-[26/56] SKIP  pso seed 4 (already done)
-[27/56] SKIP  exact seed 4 (already done)
-[28/56] SKIP  dqn seed 4 (already done)
-[29/56] SKIP  cost_lipschitz seed 5 (already done)
-[30/56] SKIP  cost seed 5 (already done)
-[31/56] SKIP  normal seed 5 (already done)
-[32/56] SKIP  lyapunov seed 5 (already done)
-[33/56] SKIP  pso seed 5 (already done)
-[34/56] SKIP  exact seed 5 (already done)
-[35/56] SKIP  dqn seed 5 (already done)
-[36/56] SKIP  cost_lipschitz seed 6 (already done)
-[37/56] SKIP  cost seed 6 (already done)
-[38/56] START normal seed 6 at 17:54:18 -> sweep_logs/normal_s6.out
+[1/8] START cost_lipschitz seed 1 at 18:50:08 -> sweep_logs/cost_lipschitz_s1.out
+[1/8] DONE  cost_lipschitz seed 1 in 331 min
+          elapsed 331 min, ~2317 min remaining
+[2/8] START cost_lipschitz seed 2 at 00:21:30 -> sweep_logs/cost_lipschitz_s2.out
+[2/8] DONE  cost_lipschitz seed 2 in 253 min
+          elapsed 585 min, ~1755 min remaining
+[3/8] START cost_lipschitz seed 3 at 04:35:20 -> sweep_logs/cost_lipschitz_s3.out
+[3/8] DONE  cost_lipschitz seed 3 in 301 min
+          elapsed 886 min, ~1476 min remaining
+[4/8] START cost_lipschitz seed 4 at 09:36:56 -> sweep_logs/cost_lipschitz_s4.out
+[4/8] DONE  cost_lipschitz seed 4 in 263 min
+          elapsed 1150 min, ~1150 min remaining
+[5/8] START cost_lipschitz seed 5 at 14:00:17 -> sweep_logs/cost_lipschitz_s5.out
+[5/8] DONE  cost_lipschitz seed 5 in 316 min
+          elapsed 1466 min, ~879 min remaining
+[6/8] START cost_lipschitz seed 6 at 19:16:26 -> sweep_logs/cost_lipschitz_s6.out
+[6/8] DONE  cost_lipschitz seed 6 in 221 min
+          elapsed 1687 min, ~562 min remaining
+[7/8] START cost_lipschitz seed 7 at 22:57:49 -> sweep_logs/cost_lipschitz_s7.out
+[7/8] DONE  cost_lipschitz seed 7 in 312 min
+          elapsed 2000 min, ~285 min remaining
+[8/8] START cost_lipschitz seed 8 at 04:10:23 -> sweep_logs/cost_lipschitz_s8.out
+[8/8] DONE  cost_lipschitz seed 8 in 359 min
+==============================================================
+sweep finished at Sat Aug 29 10:09:23 AM UTC 2026, total 2359 min
+  rl_csv_cost_linear_s1_2026-08-14_16-35-40/
+  rl_csv_cost_linear_s2_2026-08-15_17-22-12/
+  rl_csv_cost_linear_s3_2026-08-16_23-00-45/
+  rl_csv_cost_lipschitz_chaotic_s1_2026-08-18_00-32-21/
+  rl_csv_cost_lipschitz_s1_2026-08-13_19-27-58/
+  rl_csv_cost_lipschitz_s1_2026-08-13_23-41-18/
+  rl_csv_cost_lipschitz_s1_2026-08-13_23-45-40/
+  rl_csv_cost_lipschitz_s1_2026-08-13_23-58-09/
+  rl_csv_cost_lipschitz_s1_2026-08-17_19-24-27/
+  rl_csv_cost_lipschitz_s1_2026-08-17_19-24-30/
+  rl_csv_cost_lipschitz_s1_2026-08-27_18-50-10/
+  rl_csv_cost_lipschitz_s1_chebyshev_2026-08-18_07-18-52/
+  rl_csv_cost_lipschitz_s2_2026-08-28_00-21-31/
+  rl_csv_cost_lipschitz_s2_chebyshev_2026-08-18_21-59-32/
+  rl_csv_cost_lipschitz_s3_2026-08-28_04-35-21/
+  rl_csv_cost_lipschitz_s3_chebyshev_2026-08-19_12-42-29/
+  rl_csv_cost_lipschitz_s4_2026-08-28_09-36-58/
+  rl_csv_cost_lipschitz_s4_chebyshev_2026-08-20_03-48-28/
+  rl_csv_cost_lipschitz_s5_2026-08-28_14-00-18/
+  rl_csv_cost_lipschitz_s5_chebyshev_2026-08-21_04-22-21/
+  rl_csv_cost_lipschitz_s5_chebyshev_2026-08-21_05-46-34/
+  rl_csv_cost_lipschitz_s6_2026-08-28_19-16-27/
+  rl_csv_cost_lipschitz_s6_chebyshev_2026-08-23_20-30-05/
+  rl_csv_cost_lipschitz_s6_chebyshev_2026-08-24_01-56-26/
+  rl_csv_cost_lipschitz_s7_2026-08-28_22-57-50/
+  rl_csv_cost_lipschitz_s8_2026-08-29_04-10-25/
+  rl_csv_cost_plain_s1_2026-08-08_05-27-34/
+  rl_csv_cost_plain_s1_2026-08-08_05-38-51/
+  rl_csv_cost_plain_s1_2026-08-11_00-29-02/
+  rl_csv_cost_plain_s1_2026-08-13_03-35-14/
+  rl_csv_cost_plain_s2_2026-08-15_12-31-41/
+  rl_csv_cost_plain_s3_2026-08-16_18-06-43/
+  rl_csv_cost_s1_2026-08-08_05-27-31/
+  rl_csv_cost_s1_2026-08-08_05-38-47/
+  rl_csv_cost_s1_2026-08-08_05-39-32/
+  rl_csv_cost_s1_2026-08-12_05-29-25/
+  rl_csv_cost_s1_2026-08-12_05-44-43/
+  rl_csv_cost_s1_2026-08-12_06-25-30/
+  rl_csv_cost_s1_2026-08-12_06-36-49/
+  rl_csv_cost_s1_2026-08-13_19-28-00/
+  rl_csv_cost_s1_2026-08-14_11-42-07/
+  rl_csv_cost_s1_chebyshev_2026-08-18_12-20-28/
+  rl_csv_cost_s2_2026-08-12_22-03-57/
+  rl_csv_cost_s2_2026-08-15_07-40-26/
+  rl_csv_cost_s2_chebyshev_2026-08-19_02-58-38/
+  rl_csv_cost_s3_2026-08-16_13-10-30/
+  rl_csv_cost_s3_chebyshev_2026-08-19_17-52-42/
+  rl_csv_cost_s4_2026-08-20_13-46-39/
+  rl_csv_cost_s5_2026-08-23_00-02-46/
+  rl_csv_cost_s6_2026-08-24_12-21-15/
+  rl_csv_cost_s7_2026-08-25_13-57-56/
+  rl_csv_cost_s8_2026-08-26_15-27-29/
+  rl_csv_dqn_s1_2026-08-21_05-23-18/
+  rl_csv_dqn_s1_2026-08-21_05-28-37/
+  rl_csv_dqn_s1_2026-08-21_17-32-04/
+  rl_csv_dqn_s1_2026-08-21_20-28-42/
+  rl_csv_dqn_s2_2026-08-21_05-23-29/
+  rl_csv_dqn_s2_2026-08-21_05-28-51/
+  rl_csv_dqn_s2_2026-08-21_20-23-15/
+  rl_csv_dqn_s2_2026-08-21_20-27-25/
+  rl_csv_dqn_s2_2026-08-22_00-44-47/
+  rl_csv_dqn_s3_2026-08-21_05-23-41/
+  rl_csv_dqn_s3_2026-08-21_05-29-02/
+  rl_csv_dqn_s3_2026-08-22_04-57-09/
+  rl_csv_dqn_s4_2026-08-21_05-23-51/
+  rl_csv_dqn_s4_2026-08-21_05-29-12/
+  rl_csv_dqn_s4_2026-08-22_09-14-01/
+  rl_csv_dqn_s5_2026-08-23_21-29-38/
+  rl_csv_dqn_s6_2026-08-25_04-31-45/
+  rl_csv_dqn_s7_2026-08-26_05-30-17/
+  rl_csv_dqn_s8_2026-08-27_07-05-10/
+  rl_csv_exact_s1_2026-08-21_05-23-08/
+  rl_csv_exact_s1_2026-08-21_05-28-27/
+  rl_csv_exact_s1_2026-08-21_15-56-40/
+  rl_csv_exact_s2_2026-08-21_05-23-11/
+  rl_csv_exact_s2_2026-08-21_05-28-30/
+  rl_csv_exact_s2_2026-08-21_16-20-36/
+  rl_csv_exact_s3_2026-08-21_05-23-13/
+  rl_csv_exact_s3_2026-08-21_05-28-32/
+  rl_csv_exact_s3_2026-08-21_16-44-04/
+  rl_csv_exact_s4_2026-08-21_05-23-16/
+  rl_csv_exact_s4_2026-08-21_05-28-35/
+  rl_csv_exact_s4_2026-08-21_17-08-22/
+  rl_csv_exact_s5_2026-08-23_21-05-43/
+  rl_csv_exact_s6_2026-08-25_04-07-19/
+  rl_csv_exact_s7_2026-08-26_05-06-24/
+  rl_csv_exact_s8_2026-08-27_06-41-35/
+  rl_csv_lyapunov_s1_2026-08-08_05-27-40/
+  rl_csv_lyapunov_s1_2026-08-08_05-38-57/
+  rl_csv_lyapunov_s1_2026-08-12_21-48-28/
+  rl_csv_lyapunov_s1_2026-08-14_21-43-59/
+  rl_csv_lyapunov_s2_2026-08-16_03-11-05/
+  rl_csv_lyapunov_s3_2026-08-17_08-49-31/
+  rl_csv_lyapunov_s4_2026-08-20_23-29-28/
+  rl_csv_lyapunov_s5_2026-08-23_09-52-37/
+  rl_csv_lyapunov_s6_2026-08-24_22-46-00/
+  rl_csv_lyapunov_s7_2026-08-25_23-47-10/
+  rl_csv_lyapunov_s8_2026-08-27_01-16-50/
+  rl_csv_normal_s1_2026-08-08_05-27-37/
+  rl_csv_normal_s1_2026-08-08_05-38-54/
+  rl_csv_normal_s1_2026-08-13_13-22-08/
+  rl_csv_normal_s1_chebyshev_2026-08-18_17-11-01/
+  rl_csv_normal_s2_2026-08-15_22-16-12/
+  rl_csv_normal_s2_chebyshev_2026-08-19_07-48-57/
+  rl_csv_normal_s3_2026-08-17_03-56-43/
+  rl_csv_normal_s3_chebyshev_2026-08-19_22-46-00/
+  rl_csv_normal_s4_2026-08-20_18-39-09/
+  rl_csv_normal_s5_2026-08-23_05-00-23/
+  rl_csv_normal_s6_2026-08-24_17-13-19/
+  rl_csv_normal_s6_2026-08-24_17-54-19/
+  rl_csv_normal_s7_2026-08-25_18-55-16/
+  rl_csv_normal_s8_2026-08-26_20-21-53/
+  rl_csv_pso_s1_2026-08-21_05-22-58/
+  rl_csv_pso_s1_2026-08-21_05-28-17/
+  rl_csv_pso_s1_2026-08-21_14-20-11/
+  rl_csv_pso_s2_2026-08-21_05-23-01/
+  rl_csv_pso_s2_2026-08-21_05-28-19/
+  rl_csv_pso_s2_2026-08-21_14-44-16/
+  rl_csv_pso_s3_2026-08-21_05-23-03/
+  rl_csv_pso_s3_2026-08-21_05-28-22/
+  rl_csv_pso_s3_2026-08-21_15-08-00/
+  rl_csv_pso_s4_2026-08-21_05-23-06/
+  rl_csv_pso_s4_2026-08-21_05-28-25/
+  rl_csv_pso_s4_2026-08-21_15-32-46/
+  rl_csv_pso_s5_2026-08-23_20-26-28/
+  rl_csv_pso_s5_2026-08-23_20-32-56/
+  rl_csv_pso_s6_2026-08-25_03-37-06/
+  rl_csv_pso_s7_2026-08-26_04-42-10/
+  rl_csv_pso_s8_2026-08-27_06-13-05/
+==============================================================
