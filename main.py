@@ -76,7 +76,17 @@ CHAOTIC_KIND = os.environ.get("LTAC_CHAOTIC_KIND", CHAOTIC_KIND_DEFAULT)
 # sense against non-positive returns.
 IS_DQN = POLICY_TYPE == "dqn"
 
-COST_VARIANTS = ("cost", "cost_linear", "cost_plain", "cost_lipschitz")
+# cost_softplus completes the 2x2 on (sign constraint x spectral norm):
+#
+#                     no spectral      spectral
+#   unconstrained     cost_plain       cost_linear
+#   softplus          cost_softplus    cost
+#
+# Without the fourth cell the observed interaction -- the sign
+# constraint mattering only when the spectral norm is present -- is
+# indistinguishable from two main effects.
+COST_VARIANTS = ("cost", "cost_linear", "cost_plain", "cost_lipschitz",
+                 "cost_softplus")
 KNOWN_VARIANTS = ("lyapunov", "normal") + COST_VARIANTS
 if POLICY_TYPE == "transformer" and TRANSFORMER_VARIANT not in KNOWN_VARIANTS:
     # Fail loudly. Every dispatch below is an if/elif chain ending in a
@@ -2793,6 +2803,20 @@ def run():
                       f"beta0 = {COST_BETA_INIT}, "
                       f"gain target = {COST_BETA_GAIN_TARGET}"
                       + (" (fixed beta)" if COST_BETA_GAIN_TARGET is None else ""))
+            elif TRANSFORMER_VARIANT == "cost_softplus":
+                # The softplus head WITHOUT the spectral norm. Same
+                # class as `cost`, so the head and the trunk are
+                # bit-identical for a given seed and the only
+                # difference from `cost` is the constraint.
+                model = CostTransformerActorCritic(
+                    VIEW_DISTANCE, scalar_dim=SCALAR_DIM,
+                    sequence_length=SEQUENCE_LENGTH,
+                    softplus_beta=COST_BETA_INIT,
+                    beta_gain_target=COST_BETA_GAIN_TARGET,
+                    spectral_critic=False).to(device)
+                print("[cost_softplus] critic head: beta*softplus, "
+                      "NO spectral norm (sign constraint only)")
+
             elif TRANSFORMER_VARIANT == "cost_lipschitz":
                 # Same reward, same critic head as `cost`. The ONE
                 # difference is the encoder: L2 self-attention with
