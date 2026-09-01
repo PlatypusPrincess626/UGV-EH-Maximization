@@ -597,7 +597,7 @@ def load_full_checkpoint(path, model, opt, return_var_tracker):
     different thing from resuming and should not be silent.
     """
     import numpy as _np
-    blob = torch.load(path, map_location="cpu")
+    blob = torch.load(path, map_location="cpu", weights_only=False)
 
     if not (isinstance(blob, dict) and blob.get("format") == CHECKPOINT_FORMAT):
         model.load_state_dict(blob if not hasattr(blob, "state_dict")
