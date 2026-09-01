@@ -514,7 +514,7 @@ VALIDATION_EPISODES = 10
 # ended. A test that fired for them would be measuring the wrong
 # thing.
 CONVERGE_WINDOW = int(os.environ.get("LTAC_CONV_WINDOW", "100"))
-CONVERGE_MAX_DEATH = float(os.environ.get("LTAC_CONV_DEATH", "0.05"))
+CONVERGE_MAX_DEATH = float(os.environ.get("LTAC_CONV_DEATH", "0.10"))
 CONVERGE_MAX_IMPROVE = float(os.environ.get("LTAC_CONV_IMPROVE", "0.25"))
 # Consecutive episodes the criterion must hold before firing, so a
 # single fortunate window does not end a run.
