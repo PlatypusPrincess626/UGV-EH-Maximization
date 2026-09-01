@@ -514,7 +514,7 @@ VALIDATION_EPISODES = 10
 # ended. A test that fired for them would be measuring the wrong
 # thing.
 CONVERGE_WINDOW = int(os.environ.get("LTAC_CONV_WINDOW", "100"))
-CONVERGE_MAX_DEATH = float(os.environ.get("LTAC_CONV_DEATH", "0.10"))
+CONVERGE_MAX_DEATH = float(os.environ.get("LTAC_CONV_DEATH", "0.05"))
 CONVERGE_MAX_IMPROVE = float(os.environ.get("LTAC_CONV_IMPROVE", "0.25"))
 # Consecutive episodes the criterion must hold before firing, so a
 # single fortunate window does not end a run.
@@ -3077,6 +3077,17 @@ def run():
     conv_hist = []
     conv_streak = 0
     conv_fired_at = None
+    # A checkpoint written at a firing point carries fired_at, and the
+    # test is guarded by `conv_fired_at is None` -- so a plain resume
+    # from probe_converged.pt would never fire again. Set
+    # LTAC_CONV_RESET=1 when resuming to re-arm the test, which is what
+    # you want after changing the criterion itself.
+    if resumed_conv and os.environ.get("LTAC_CONV_RESET", "0") == "1":
+        resumed_conv = dict(resumed_conv)
+        resumed_conv["fired_at"] = None
+        resumed_conv["streak"] = 0
+        print("[resume] LTAC_CONV_RESET=1: convergence test re-armed.")
+
     if resumed_conv:
         # Carry the window across the resume, otherwise the test
         # restarts its trailing window and cannot fire for another
@@ -3292,8 +3303,18 @@ def run():
             if _death_rate <= CONVERGE_MAX_DEATH and _r1 and _r2:
                 # Improvement between the halves. Reward is negative in
                 # the cost MDP, so improvement is an INCREASE.
+                #
+                # The test is TWO-SIDED. An earlier version accepted
+                # `_improve < CONVERGE_MAX_IMPROVE`, which a DEGRADING
+                # policy satisfies trivially -- a decline is certainly
+                # "less than" the threshold. Four of eight seeds fired
+                # while their second half was worse than their first,
+                # one of them at -0.47, and that seed went on to die in
+                # deterministic evaluation. Stopping a run mid-decline
+                # and calling it converged is the opposite of what the
+                # test is for.
                 _improve = (sum(_r2) / len(_r2)) - (sum(_r1) / len(_r1))
-                _ok = _improve < CONVERGE_MAX_IMPROVE
+                _ok = abs(_improve) < CONVERGE_MAX_IMPROVE
             conv_streak = conv_streak + 1 if _ok else 0
 
             if conv_streak >= CONVERGE_SUSTAIN:
