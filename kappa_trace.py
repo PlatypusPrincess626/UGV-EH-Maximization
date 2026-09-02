@@ -108,6 +108,8 @@ def main():
                     help="per-bin quantile for the lower envelope; 0 is "
                          "the minimum (as certify_probe uses), 0.05 is "
                          "the 5th percentile and converges far faster")
+    ap.add_argument("--boot", type=int, default=200,
+                    help="bootstrap resamples over episodes for the CI")
     ap.add_argument("--step", type=int, default=5,
                     help="episode increment between trace points")
     args = ap.parse_args()
@@ -125,6 +127,36 @@ def main():
         print("\n=== %s ===" % name)
         print(t.to_string(index=False,
                           formatters={"kappa1": lambda v: "%8.4f" % v}))
+
+        # Bootstrap over EPISODES, which is the unit of independence:
+        # terrain is redrawn per episode, states within one are highly
+        # correlated. This answers the question the trace only gestures
+        # at -- how precisely is kappa_1 known -- without relying on a
+        # comparison between nested subsets, which share most of their
+        # data and so cannot separate drift from ordering.
+        d_all = pd.read_csv(p)
+        eps_all = sorted(d_all.episode.unique())
+        dm = float(d_all.d[d_all.d > 0].max())
+        rng = np.random.default_rng(0)
+        boot = []
+        for _ in range(args.boot):
+            pick = rng.choice(eps_all, size=len(eps_all), replace=True)
+            sub = pd.concat([d_all[d_all.episode == e] for e in pick])
+            b, _ = envelope_slope(sub.d.values, sub.V.values,
+                                  q=args.quantile, d_max=dm)
+            if b == b:
+                boot.append(b)
+        if boot:
+            boot = np.array(boot)
+            lo, hi = np.percentile(boot, [2.5, 97.5])
+            point = t.kappa1.dropna().values[-1]
+            print("  bootstrap over %d episodes (%d resamples):"
+                  % (len(eps_all), len(boot)))
+            print("    kappa_1 = %.4f, 95%% CI [%.4f, %.4f], "
+                  "half-width %.1f%% of the point estimate"
+                  % (point, lo, hi, 100 * 0.5 * (hi - lo) / point))
+            print("    -> a trace drift smaller than this is sampling "
+                  "noise, not a trend.")
 
         k = t.kappa1.dropna().values
         if len(k) >= 4:
