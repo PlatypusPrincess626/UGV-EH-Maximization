@@ -91,7 +91,7 @@ def build_model(ckpt_path, device):
         model = C(M.VIEW_DISTANCE, scalar_dim=M.SCALAR_DIM,
                   sequence_length=M.SEQUENCE_LENGTH)
 
-    state = torch.load(ckpt_path, map_location="cpu", weights_onlu=False)
+    state = torch.load(ckpt_path, map_location="cpu", weights_only=False)
     # Format-2 checkpoints are a dict of run state with the weights
     # under "model"; older ones are a bare state_dict. Accept both, so
     # the probe works on checkpoints written before full checkpointing
