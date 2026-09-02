@@ -45,6 +45,7 @@ import argparse
 import csv
 import json
 import os
+import re
 import sys
 from collections import deque
 
@@ -53,6 +54,110 @@ import torch
 from pvlib import solarposition
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+
+# ---------------------------------------------------------------------
+# Resolve the checkpoint and restore its architecture BEFORE importing
+# main.
+#
+# A state_dict carries tensors and no structure, so the network has to
+# be constructed before the weights can be loaded -- and main.py, along
+# with the transformer modules, reads LTAC_ENCODER_C and the rest at
+# IMPORT time. Anything decided after the import arrives too late.
+#
+# Checkpoints written by save_full_checkpoint record the architecture
+# settings the run used, so they are applied here. That removes the
+# mismatch entirely: the network is rebuilt from what the run actually
+# used rather than from whatever happens to be set in this shell.
+# ---------------------------------------------------------------------
+
+_RUN_RE = re.compile(
+    r"^rl_csv_(?P<model>.+?)_s(?P<seed>\d+)"
+    r"(?P<tags>.*?)"
+    r"(?P<ts>_\d{4}-\d{2}-\d{2}_\d{2}-\d{2}-\d{2})?$")
+
+_CKPT_PREFERENCE = ["probe_converged.pt", "converged.pt", "best.pt"]
+
+
+def resolve_checkpoint(path):
+    """Accept a file, a run directory, or a checkpoints directory."""
+    if os.path.isfile(path):
+        return path
+    cand = path
+    if os.path.isdir(os.path.join(path, "checkpoints")):
+        cand = os.path.join(path, "checkpoints")
+    if not os.path.isdir(cand):
+        raise SystemExit("no such checkpoint or directory: %s" % path)
+    for name in _CKPT_PREFERENCE:
+        full = os.path.join(cand, name)
+        if os.path.isfile(full):
+            return full
+    eps = []
+    for f in os.listdir(cand):
+        m = re.match(r"episode_(\d+)\.pt$", f)
+        if m:
+            eps.append((int(m.group(1)), os.path.join(cand, f)))
+    if not eps:
+        raise SystemExit("no checkpoints found in %s" % cand)
+    ep, full = max(eps)
+    print("[warn] no probe_converged/converged/best in %s; using "
+          "episode_%d.pt -- this run may not have converged." % (cand, ep))
+    return full
+
+
+def infer_variant(ckpt_path):
+    """(model, seed) from the run directory name, or (None, None)."""
+    for part in reversed(os.path.abspath(ckpt_path).split(os.sep)):
+        m = _RUN_RE.match(part)
+        if m:
+            return m.group("model"), m.group("seed")
+    return None, None
+
+
+def arch_env_from_checkpoint(path):
+    """The LTAC_* settings the checkpoint was written with, or {}."""
+    try:
+        import torch as _t
+        try:
+            blob = _t.load(path, map_location="cpu", weights_only=False)
+        except TypeError:
+            blob = _t.load(path, map_location="cpu")
+    except Exception:
+        return {}
+    return blob.get("arch_env", {}) if isinstance(blob, dict) else {}
+
+
+_pre = argparse.ArgumentParser(add_help=False)
+_pre.add_argument("checkpoint", nargs="?")
+_pre.add_argument("--variant", default=None)
+_known, _ = _pre.parse_known_args()
+
+_CKPT = None
+if _known.checkpoint:
+    _CKPT = resolve_checkpoint(_known.checkpoint)
+
+    _arch = arch_env_from_checkpoint(_CKPT)
+    for _k, _v in _arch.items():
+        os.environ[_k] = str(_v)
+    if _arch:
+        print("[probe] architecture restored from checkpoint: "
+              + ", ".join("%s=%s" % (k, v) for k, v in sorted(_arch.items())))
+    else:
+        print("[probe] checkpoint records no architecture; using the "
+              "environment. Set LTAC_* to match the run.")
+
+    _variant, _seed = infer_variant(_CKPT)
+    _variant = _known.variant or _variant
+    if _variant and "LTAC_VARIANT" not in _arch:
+        for _arm in ("cost_lipschitz", "cost_linear", "cost_plain",
+                     "cost_softplus", "cost", "lyapunov", "normal"):
+            if _variant.startswith(_arm):
+                _variant = _arm
+                break
+        os.environ["LTAC_VARIANT"] = _variant
+    if _seed:
+        os.environ.setdefault("LTAC_SEED", _seed)
+    print("[probe] checkpoint : %s" % _CKPT)
+    print("[probe] variant    : %s" % os.environ.get("LTAC_VARIANT", "(default)"))
 
 # main.py guards its training entry point with __main__, so importing
 # it gives the constants, the observation builder and the model
@@ -76,7 +181,7 @@ def _torch_load(path, map_location="cpu"):
         return torch.load(path, map_location=map_location)
 
 
-def build_model(ckpt_path, device):
+def build_model(ckpt_path, device, allow_missing=False):
     """
     Reconstruct the architecture the checkpoint was saved from.
 
@@ -118,10 +223,27 @@ def build_model(ckpt_path, device):
     elif hasattr(state, "state_dict"):
         state = state.state_dict()
     missing, unexpected = model.load_state_dict(state, strict=False)
+    if (missing or unexpected) and not allow_missing:
+        # FATAL rather than a warning. strict=False leaves unmatched
+        # layers at their random initialisation, so the probe would run
+        # a partly untrained network and report the result as though it
+        # described the checkpoint -- invisible in the output, since it
+        # looks like a policy that merely performs badly. That is
+        # exactly what a mismatched LTAC_VARIANT or encoder setting
+        # produces.
+        raise SystemExit(
+            "state_dict mismatch: %d missing, %d unexpected keys.\n"
+            "  first missing   : %s\n"
+            "  first unexpected: %s\n"
+            "  variant in use  : %s\n"
+            "Set LTAC_VARIANT and any LTAC_ENCODER_C / "
+            "LTAC_ENCODER_QK_C / LTAC_QK_TEMP / LTAC_SPECTRAL_C to the "
+            "values the run used, or pass --allow-missing."
+            % (len(missing), len(unexpected), missing[:4],
+               unexpected[:4], variant))
     if missing or unexpected:
-        print(f"[warn] {len(missing)} missing, {len(unexpected)} unexpected keys")
-        print("       check LTAC_VARIANT and the encoder settings match "
-              "the run that wrote this checkpoint")
+        print("[warn] loaded with %d missing, %d unexpected keys"
+              % (len(missing), len(unexpected)))
     return model.to(device).eval()
 
 
@@ -191,13 +313,19 @@ def rollout(model, env, device, n_episodes, seed0=10_000):
             else:
                 rew = M.reward_fn(aft, tel, soc_next)[0]
 
+            # These live on the CHASSIS, not in the telemetry dict.
+            # step_simulation returns only step, positions, target and
+            # battery; path, energy and solar are per-step attributes
+            # of env.ch, which is where main.py reads them. Using
+            # tel.get(..., 0.0) returned the default silently and
+            # reported every episode as path = 0.
             ep_stat["steps"] += 1
             ep_stat["total_reward"] += float(rew)
             ep_stat["min_batt"] = min(ep_stat["min_batt"], soc_next * 100.0)
-            ep_stat["path_m"] += float(tel.get("path_m", 0.0))
-            ep_stat["motion_mAh"] += float(tel.get("motion_mAh", 0.0))
-            ep_stat["idle_mAh"] += float(tel.get("idle_mAh", 0.0))
-            ep_stat["solar_w"].append(float(tel.get("solar_w", 0.0)))
+            ep_stat["path_m"] += float(env.ch.step_path_m)
+            ep_stat["motion_mAh"] += float(env.ch.step_motion_mAh)
+            ep_stat["idle_mAh"] += float(env.ch.step_idle_mAh)
+            ep_stat["solar_w"].append(float(env.ch.solar_potential))
             ep_stat["abs_action"].append(float(np.abs(a_np).mean()))
             h.append(M.obs(env, x, y, yaw, min(step + 1,
                                                M.MAX_STEPS_PER_EPISODE - 1)))
@@ -297,14 +425,21 @@ def fit_linear_through_origin(x, y):
 
 def main():
     ap = argparse.ArgumentParser(description=__doc__.split("\n")[1])
-    ap.add_argument("checkpoint")
+    ap.add_argument("checkpoint",
+                    help="a .pt file, a run directory, or a "
+                         "checkpoints directory")
+    ap.add_argument("--variant", default=None,
+                    help="override the arm inferred from the path")
     ap.add_argument("--episodes", type=int, default=30)
     ap.add_argument("--out", default="Certify_Probe")
     ap.add_argument("--bins", type=int, default=24)
+    ap.add_argument("--allow-missing", action="store_true",
+                    help="load despite a state_dict mismatch; "
+                         "unmatched layers stay randomly initialised")
     args = ap.parse_args()
 
     device = torch.device("cpu")
-    model = build_model(args.checkpoint, device)
+    model = build_model(_CKPT, device, args.allow_missing)
     env = sim_env("test", 20, M.MAX_STEPS_PER_EPISODE)
     env.set_view_dist(M.VIEW_DISTANCE)
 
@@ -312,7 +447,11 @@ def main():
     rows, ep_stats = rollout(model, env, device, args.episodes)
 
     os.makedirs(args.out, exist_ok=True)
-    stem = os.path.splitext(os.path.basename(args.checkpoint))[0]
+    # Name by run and checkpoint, not the bare filename: every
+    # seed writes "probe_converged.pt", so basenames collide.
+    _v, _s2 = infer_variant(_CKPT)
+    stem = "%s_s%s_%s" % (_v or "unknown", _s2 or "NA",
+                          os.path.splitext(os.path.basename(_CKPT))[0])
     per_step = os.path.join(args.out, f"{stem}_steps.csv")
     with open(per_step, "w", newline="") as f:
         w = csv.DictWriter(f, fieldnames=list(rows[0].keys()))
@@ -400,7 +539,7 @@ def main():
 
     summary = {
         "validation": validation,
-        "checkpoint": args.checkpoint,
+        "checkpoint": _CKPT,
         "variant": M.TRANSFORMER_VARIANT,
         "episodes": args.episodes,
         "steps": len(rows),
