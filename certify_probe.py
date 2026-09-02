@@ -61,6 +61,21 @@ import main as M
 from environment import sim_env
 
 
+# torch.load defaults to weights_only=True from PyTorch 2.6. A
+# full checkpoint carries the numpy RNG state, whose tuple contains a
+# numpy array, and numpy objects are not on the allowlist -- so the
+# load fails. These files are written by our own runs, so unpickling
+# them is no more dangerous than running the script that wrote them;
+# the flag is passed explicitly rather than left to the default so the
+# behaviour does not depend on the installed torch version. Older
+# versions have no such kwarg, hence the fallback.
+def _torch_load(path, map_location="cpu"):
+    try:
+        return torch.load(path, map_location=map_location, weights_only=False)
+    except TypeError:
+        return torch.load(path, map_location=map_location)
+
+
 def build_model(ckpt_path, device):
     """
     Reconstruct the architecture the checkpoint was saved from.
@@ -91,7 +106,7 @@ def build_model(ckpt_path, device):
         model = C(M.VIEW_DISTANCE, scalar_dim=M.SCALAR_DIM,
                   sequence_length=M.SEQUENCE_LENGTH)
 
-    state = torch.load(ckpt_path, map_location="cpu", weights_only=False)
+    state = _torch_load(ckpt_path)
     # Format-2 checkpoints are a dict of run state with the weights
     # under "model"; older ones are a bare state_dict. Accept both, so
     # the probe works on checkpoints written before full checkpointing
@@ -150,11 +165,11 @@ def rollout(model, env, device, n_episodes, seed0=10_000):
             seq = M.seq_tensor(h, device)
             with torch.no_grad():
                 a, _raw, _lp, _v = model.act(seq, True)
-                latent = model.encode(seq).reshape(-1).cpu().numpy()
+                latent = model.encode(seq).reshape(-1).detach().cpu().numpy()
             V = value_of(model, seq)
             soc = env.ch.get_battery() / 100.0
 
-            a_np = a[0].cpu().numpy()
+            a_np = a[0].detach().cpu().numpy()
             dx, dy = a_np * M.MAX_MOVE_PER_STEP
             tx = float(np.clip(x + dx, 0, env.dim - 1))
             ty = float(np.clip(y + dy, 0, env.dim - 1))
@@ -187,9 +202,14 @@ def rollout(model, env, device, n_episodes, seed0=10_000):
             h.append(M.obs(env, x, y, yaw, min(step + 1,
                                                M.MAX_STEPS_PER_EPISODE - 1)))
 
-            V_next = value_of(model, M.seq_tensor(h, device))
-            latent_next = model.encode(M.seq_tensor(h, device)) \
-                               .reshape(-1).cpu().numpy()
+            # Both of these are forward passes and neither needs a
+            # graph. Without no_grad the encode() output carries one,
+            # and .numpy() refuses on a tensor that requires grad --
+            # the first call above was guarded, this one was not.
+            with torch.no_grad():
+                seq_next = M.seq_tensor(h, device)
+                V_next = value_of(model, seq_next)
+                latent_next = model.encode(seq_next).reshape(-1).detach().cpu().numpy()
 
             rows.append({
                 "episode": ep, "step": step,
@@ -316,8 +336,16 @@ def main():
     def agg(key):
         v = np.array([e[key] for e in ep_stats], dtype=float)
         v = v[np.isfinite(v)]
-        return (float(v.mean()), float(v.std()), float(v.min()),
-                float(v.max())) if len(v) else (float("nan"),) * 4
+        # ddof=1: the SAMPLE standard deviation, matching the
+        # training run's validation summary, which uses
+        # pandas .std(ddof=1). numpy defaults to the population form
+        # (ddof=0), and the two differ by ~5% at n=10 -- enough for
+        # the same quantity to print differently in two tables of the
+        # same paper.
+        if not len(v):
+            return (float("nan"),) * 4
+        sd = float(v.std(ddof=1)) if len(v) > 1 else 0.0
+        return float(v.mean()), sd, float(v.min()), float(v.max())
 
     validation = {
         "survived": int(sum(e["survived"] for e in ep_stats)),
