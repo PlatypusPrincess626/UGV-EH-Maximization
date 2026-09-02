@@ -41,6 +41,9 @@ import pandas as pd
 
 QUANTILE_BINS = 24
 
+# Fit the envelope over d up to this quantile, not to the maximum.
+D_MAX_QUANTILE = 1.0
+
 
 def envelope_slope(d, V, n_bins=QUANTILE_BINS, min_per_bin=5, q=0.0,
                    d_max=None):
@@ -87,11 +90,29 @@ def envelope_slope(d, V, n_bins=QUANTILE_BINS, min_per_bin=5, q=0.0,
     return (float((xs * ys).sum() / denom) if denom > 0 else np.nan), len(xs)
 
 
-def trace(path, step=5, q=0.0):
+def trace(path, step=5, q=0.0, d_max_fixed=None, d_q=1.0):
     d = pd.read_csv(path)
     eps = sorted(d.episode.unique())
-    # One range for the whole trace, taken from all episodes.
-    d_max = float(d.d[d.d > 0].max())
+    # One range for the whole trace, capped at a QUANTILE of d rather
+    # than its maximum.
+    #
+    # Far-from-target states are rare, so d.max() is set by whichever
+    # episode happened to wander furthest. Adding episodes then extends
+    # the fit domain into bins holding a handful of noisy samples, and
+    # the slope moves for that reason rather than because the estimate
+    # improved -- which is why going from 30 to 50 episodes can shift
+    # kappa_1 by 20% AND widen its confidence interval, the opposite of
+    # convergence.
+    #
+    # Capping at the 95th percentile keeps the domain where the data is
+    # dense and stable as episodes accumulate. It also matches what the
+    # certificate needs: a lower bound over the region the policy
+    # actually occupies, not over its rarest excursion.
+    dd = d.d[d.d > 0]
+    if d_max_fixed is not None:
+        d_max = float(d_max_fixed)
+    else:
+        d_max = float(np.quantile(dd, d_q)) if len(dd) else 0.0
     rows = []
     for k in list(range(step, len(eps), step)) + [len(eps)]:
         sub = d[d.episode.isin(eps[:k])]
@@ -108,6 +129,16 @@ def main():
                     help="per-bin quantile for the lower envelope; 0 is "
                          "the minimum (as certify_probe uses), 0.05 is "
                          "the 5th percentile and converges far faster")
+    ap.add_argument("--d-max", type=float, default=None,
+                    help="fit the envelope over d in [0, D_MAX]. Set this "
+                         "to a FIXED value and use the same one for every "
+                         "seed and every episode count: taking it from the "
+                         "data lets rare far-from-target excursions move "
+                         "the domain, which shifts kappa_1 for reasons "
+                         "unrelated to convergence.")
+    ap.add_argument("--d-quantile", type=float, default=1.0,
+                    help="alternative to --d-max: cap at this quantile of "
+                         "the observed d. 1.0 is the maximum.")
     ap.add_argument("--boot", type=int, default=200,
                     help="bootstrap resamples over episodes for the CI")
     ap.add_argument("--step", type=int, default=5,
@@ -122,9 +153,16 @@ def main():
         if not os.path.isfile(p):
             print("skip %s" % p)
             continue
-        t = trace(p, args.step, args.quantile)
+        t = trace(p, args.step, args.quantile,
+                  args.d_max, args.d_quantile)
         name = os.path.basename(p).replace("_steps.csv", "")
         print("\n=== %s ===" % name)
+        _dv = pd.read_csv(p).d
+        _dv = _dv[_dv > 0]
+        print("  d over %d states: median %.3f  p90 %.3f  "
+              "p99 %.3f  max %.3f"
+              % (len(_dv), _dv.median(), _dv.quantile(.90),
+                 _dv.quantile(.99), _dv.max()))
         print(t.to_string(index=False,
                           formatters={"kappa1": lambda v: "%8.4f" % v}))
 
@@ -136,7 +174,9 @@ def main():
         # data and so cannot separate drift from ordering.
         d_all = pd.read_csv(p)
         eps_all = sorted(d_all.episode.unique())
-        dm = float(d_all.d[d_all.d > 0].max())
+        _dd = d_all.d[d_all.d > 0]
+        dm = (float(args.d_max) if args.d_max is not None
+              else (float(np.quantile(_dd, args.d_quantile)) if len(_dd) else 0.0))
         rng = np.random.default_rng(0)
         boot = []
         for _ in range(args.boot):
