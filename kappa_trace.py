@@ -42,7 +42,7 @@ import pandas as pd
 QUANTILE_BINS = 24
 
 
-def envelope_slope(d, V, n_bins=QUANTILE_BINS, min_per_bin=5):
+def envelope_slope(d, V, n_bins=QUANTILE_BINS, min_per_bin=5, q=0.0):
     """
     Least-squares slope through the origin of the per-bin minima.
 
@@ -61,7 +61,14 @@ def envelope_slope(d, V, n_bins=QUANTILE_BINS, min_per_bin=5):
         if m.sum() < min_per_bin:
             continue
         xs.append(0.5 * (lo + hi))
-        ys.append(V[m].min())
+        # q = 0 reproduces certify_probe.py's bin minimum. A small
+        # positive q takes a low quantile instead, which converges at
+        # the ordinary sqrt(n) rate rather than as an extreme value --
+        # and is the statistic the guarantee actually needs, since
+        # Corollary 2 already tolerates an epsilon fraction of
+        # violations. kappa_1 then bounds V below for (1 - q) of
+        # states rather than for every state observed.
+        ys.append(V[m].min() if q <= 0 else float(np.quantile(V[m], q)))
     if len(xs) < 2:
         return np.nan, len(xs)
     xs = np.asarray(xs)
@@ -70,13 +77,13 @@ def envelope_slope(d, V, n_bins=QUANTILE_BINS, min_per_bin=5):
     return (float((xs * ys).sum() / denom) if denom > 0 else np.nan), len(xs)
 
 
-def trace(path, step=5):
+def trace(path, step=5, q=0.0):
     d = pd.read_csv(path)
     eps = sorted(d.episode.unique())
     rows = []
     for k in list(range(step, len(eps), step)) + [len(eps)]:
         sub = d[d.episode.isin(eps[:k])]
-        k1, nb = envelope_slope(sub.d.values, sub.V.values)
+        k1, nb = envelope_slope(sub.d.values, sub.V.values, q=q)
         rows.append({"episodes": k, "kappa1": k1, "bins_used": nb,
                      "n_states": len(sub)})
     return pd.DataFrame(rows)
@@ -85,6 +92,10 @@ def trace(path, step=5):
 def main():
     ap = argparse.ArgumentParser(description=__doc__.split("\n")[1])
     ap.add_argument("steps_csv", nargs="+")
+    ap.add_argument("--quantile", type=float, default=0.0,
+                    help="per-bin quantile for the lower envelope; 0 is "
+                         "the minimum (as certify_probe uses), 0.05 is "
+                         "the 5th percentile and converges far faster")
     ap.add_argument("--step", type=int, default=5,
                     help="episode increment between trace points")
     args = ap.parse_args()
@@ -97,7 +108,7 @@ def main():
         if not os.path.isfile(p):
             print("skip %s" % p)
             continue
-        t = trace(p, args.step)
+        t = trace(p, args.step, args.quantile)
         name = os.path.basename(p).replace("_steps.csv", "")
         print("\n=== %s ===" % name)
         print(t.to_string(index=False,
