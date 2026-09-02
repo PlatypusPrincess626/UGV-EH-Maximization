@@ -42,7 +42,8 @@ import pandas as pd
 QUANTILE_BINS = 24
 
 
-def envelope_slope(d, V, n_bins=QUANTILE_BINS, min_per_bin=5, q=0.0):
+def envelope_slope(d, V, n_bins=QUANTILE_BINS, min_per_bin=5, q=0.0,
+                   d_max=None):
     """
     Least-squares slope through the origin of the per-bin minima.
 
@@ -54,7 +55,16 @@ def envelope_slope(d, V, n_bins=QUANTILE_BINS, min_per_bin=5, q=0.0):
     d, V = d[keep], V[keep]
     if len(d) < 10:
         return np.nan, 0
-    edges = np.linspace(0.0, d.max(), n_bins + 1)
+    # Bin edges over a FIXED range, not the subset's own d.max().
+    #
+    # Letting each trace point set its own range makes the fit domain
+    # grow as rarer far-from-target states appear and their bins reach
+    # the minimum count. The slope then changes because the domain
+    # changed, not because the estimate converged -- which shows up as
+    # kappa_1 RISING, and is not convergence in any useful sense.
+    # Holding d_max fixed at the full dataset's value keeps every
+    # trace point measuring the same quantity.
+    edges = np.linspace(0.0, d.max() if d_max is None else d_max, n_bins + 1)
     xs, ys = [], []
     for lo, hi in zip(edges[:-1], edges[1:]):
         m = (d >= lo) & (d < hi)
@@ -80,10 +90,12 @@ def envelope_slope(d, V, n_bins=QUANTILE_BINS, min_per_bin=5, q=0.0):
 def trace(path, step=5, q=0.0):
     d = pd.read_csv(path)
     eps = sorted(d.episode.unique())
+    # One range for the whole trace, taken from all episodes.
+    d_max = float(d.d[d.d > 0].max())
     rows = []
     for k in list(range(step, len(eps), step)) + [len(eps)]:
         sub = d[d.episode.isin(eps[:k])]
-        k1, nb = envelope_slope(sub.d.values, sub.V.values, q=q)
+        k1, nb = envelope_slope(sub.d.values, sub.V.values, q=q, d_max=d_max)
         rows.append({"episodes": k, "kappa1": k1, "bins_used": nb,
                      "n_states": len(sub)})
     return pd.DataFrame(rows)
