@@ -1,0 +1,145 @@
+nohup: ignoring input
+[probe] architecture restored from checkpoint: LTAC_ENCODER_C=2.0, LTAC_ENCODER_QK_C=4.0, LTAC_QK_TEMP=4.0, LTAC_VARIANT=cost_lipschitz
+[probe] checkpoint : rl_csv_cost_lipschitz_s1_2026-09-01_17-52-04/checkpoints/probe_converged.pt
+[probe] variant    : cost_lipschitz
+[probe] full checkpoint, saved at episode 782
+Placing Sensors
+variant=cost_lipschitz  episodes=50
+Placing Sensors
+  episode 1/50: steps=720 minSOC=32.87 path=218
+Placing Sensors
+  episode 2/50: steps=720 minSOC=30.01 path=249
+Placing Sensors
+  episode 3/50: steps=720 minSOC=26.15 path=360
+Placing Sensors
+  episode 4/50: steps=720 minSOC=24.48 path=205
+Placing Sensors
+  episode 5/50: steps=720 minSOC=21.07 path=292
+Placing Sensors
+  episode 6/50: steps=720 minSOC=32.26 path=186
+Placing Sensors
+  episode 7/50: steps=720 minSOC=18.81 path=313
+Placing Sensors
+  episode 8/50: steps=720 minSOC=31.96 path=231
+Placing Sensors
+  episode 9/50: steps=720 minSOC=26.82 path=202
+Placing Sensors
+  episode 10/50: steps=720 minSOC=21.93 path=192
+Placing Sensors
+  episode 11/50: steps=720 minSOC=32.45 path=244
+Placing Sensors
+  episode 12/50: steps=720 minSOC=32.88 path=234
+Placing Sensors
+  episode 13/50: steps=720 minSOC=29.79 path=259
+Placing Sensors
+  episode 14/50: steps=720 minSOC=15.83 path=256
+Placing Sensors
+  episode 15/50: steps=720 minSOC=35.03 path=178
+Placing Sensors
+  episode 16/50: steps=720 minSOC=20.76 path=282
+Placing Sensors
+  episode 17/50: steps=720 minSOC=16.57 path=352
+Placing Sensors
+  episode 18/50: steps=720 minSOC=27.42 path=253
+Placing Sensors
+  episode 19/50: steps=720 minSOC=20.21 path=194
+Placing Sensors
+  episode 20/50: steps=720 minSOC=18.99 path=252
+Placing Sensors
+  episode 21/50: steps=720 minSOC=31.64 path=171
+Placing Sensors
+  episode 22/50: steps=720 minSOC=25.57 path=361
+Placing Sensors
+  episode 23/50: steps=720 minSOC=28.30 path=241
+Placing Sensors
+  episode 24/50: steps=720 minSOC=21.95 path=209
+Placing Sensors
+  episode 25/50: steps=720 minSOC=35.96 path=174
+Placing Sensors
+  episode 26/50: steps=720 minSOC=21.31 path=237
+Placing Sensors
+  episode 27/50: steps=720 minSOC=22.57 path=225
+Placing Sensors
+  episode 28/50: steps=720 minSOC=29.85 path=227
+Placing Sensors
+  episode 29/50: steps=720 minSOC=25.55 path=326
+Placing Sensors
+  episode 30/50: steps=720 minSOC=19.28 path=202
+Placing Sensors
+  episode 31/50: steps=720 minSOC=31.04 path=307
+Placing Sensors
+  episode 32/50: steps=720 minSOC=30.13 path=209
+Placing Sensors
+  episode 33/50: steps=720 minSOC=21.52 path=251
+Placing Sensors
+  episode 34/50: steps=720 minSOC=27.45 path=251
+Placing Sensors
+  episode 35/50: steps=720 minSOC=30.64 path=374
+Placing Sensors
+  episode 36/50: steps=720 minSOC=32.98 path=232
+Placing Sensors
+  episode 37/50: steps=720 minSOC=30.69 path=226
+Placing Sensors
+  episode 38/50: steps=720 minSOC=14.16 path=261
+Placing Sensors
+  episode 39/50: steps=720 minSOC=27.94 path=230
+Placing Sensors
+  episode 40/50: steps=720 minSOC=30.76 path=237
+Placing Sensors
+  episode 41/50: steps=720 minSOC=12.31 path=244
+Placing Sensors
+  episode 42/50: steps=720 minSOC=20.95 path=254
+Placing Sensors
+  episode 43/50: steps=720 minSOC=26.08 path=171
+Placing Sensors
+  episode 44/50: steps=720 minSOC=33.83 path=180
+Placing Sensors
+  episode 45/50: steps=720 minSOC=28.29 path=251
+Placing Sensors
+  episode 46/50: steps=720 minSOC=31.75 path=226
+Placing Sensors
+  episode 47/50: steps=720 minSOC=22.94 path=251
+Placing Sensors
+  episode 48/50: steps=720 minSOC=28.82 path=150
+Placing Sensors
+  episode 49/50: steps=720 minSOC=25.07 path=235
+Placing Sensors
+  episode 50/50: steps=720 minSOC=28.90 path=209
+
+  VALIDATION (this checkpoint)
+    survived                   50/50
+    min_batt                   mean   26.291  sd   5.764  worst   12.312
+    path_m                     mean  241.520  sd  51.256  worst  149.810
+    tortuosity                 mean    4.256  sd   3.840  worst    1.484
+    mean_solar_w               mean   29.324  sd   2.821  worst   21.039
+    mean_abs_action            mean    0.024  sd   0.011  worst    0.017
+
+  CERTIFICATION CONSTANTS
+    variant                    cost_lipschitz
+    episodes                   50
+    steps                      36000
+    states_outside_target      15981
+    kappa1_linear_slope        0.73321336985804
+    kappa2_linear_slope        2.662096524519194
+    nu_p95                     0.74252125499229
+    D_soc                      0.006040972945554723
+    D_full_soc_plus_latent     12.019632274530023
+    L_V_soc_maxslope           6.82969809619674
+    V_mean                     0.5566343800926374
+    V_min                      0.10689815878868103
+    d_max                      0.7768781939976477
+
+wrote Certify_Probe/cost_lipschitz_s1_probe_converged_steps.csv
+wrote Certify_Probe/cost_lipschitz_s1_probe_converged_validation.csv
+wrote Certify_Probe/cost_lipschitz_s1_probe_converged_envelope.csv
+wrote Certify_Probe/cost_lipschitz_s1_probe_converged_summary.json
+
+To obtain R: c = varrho / (1 - alpha_hat) using the margin and
+cert_alpha_q05 from the training CSV, then
+    R = (c + L_V * D) / kappa1_linear_slope
+with L_V the spectral bound if certifying in the latent, or
+L_V_soc_maxslope with D_soc if certifying in SoC alone.
+
+Report kappa1_linear_slope as an ESTIMATE: a per-bin minimum
+over finitely many samples is biased above the true infimum,
+so the fitted slope is optimistic and R correspondingly small.
