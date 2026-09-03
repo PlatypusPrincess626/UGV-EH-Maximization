@@ -1,0 +1,145 @@
+nohup: ignoring input
+
+=== cost_lipschitz_s1_probe_converged ===
+  d over 15981 states: median 0.417  p90 0.637  p99 0.730  max 0.777
+ episodes   kappa1  bins_used  n_states
+        5   0.8645         24      3600
+       10   0.8278         24      7200
+       15   0.8010         24     10800
+       20   0.7704         24     14400
+       25   0.7733         24     18000
+       30   0.7552         24     21600
+       35   0.7470         24     25200
+       40   0.7542         24     28800
+       45   0.7382         24     32400
+       50   0.7223         24     36000
+  bootstrap over 50 episodes (200 resamples):
+    kappa_1 = 0.7223, 95% CI [0.6547, 0.7928], half-width 9.6% of the point estimate
+    -> a trace drift smaller than this is sampling noise, not a trend.
+  last-third mean 0.7383 vs preceding 0.7585 -> -2.7%  SETTLED
+
+=== cost_lipschitz_s2_probe_converged ===
+  d over 16597 states: median 0.391  p90 0.641  p99 0.770  max 0.842
+ episodes   kappa1  bins_used  n_states
+        5   0.7577         24      3600
+       10   0.7990         24      7200
+       15   0.8384         24     10800
+       20   0.8375         24     14400
+       25   0.8510         24     18000
+       30   0.8601         24     21600
+       35   0.8593         24     25200
+       40   0.8859         24     28800
+       45   0.8840         24     32400
+       50   0.8755         24     36000
+  bootstrap over 50 episodes (200 resamples):
+    kappa_1 = 0.8755, 95% CI [0.7500, 0.9519], half-width 11.5% of the point estimate
+    -> a trace drift smaller than this is sampling noise, not a trend.
+  last-third mean 0.8818 vs preceding 0.8568 -> +2.9%  SETTLED
+
+=== cost_lipschitz_s3_probe_converged ===
+  d over 15227 states: median 0.363  p90 0.603  p99 0.666  max 0.724
+ episodes   kappa1  bins_used  n_states
+        5   0.7581         24      3600
+       10   0.7892         24      7200
+       15   0.8204         24     10800
+       20   0.8216         24     14400
+       25   0.8439         24     18000
+       30   0.8241         24     21600
+       35   0.8300         24     25200
+       40   0.8566         24     28800
+       45   0.8677         24     32400
+       50   0.8801         24     36000
+  bootstrap over 50 episodes (200 resamples):
+    kappa_1 = 0.8801, 95% CI [0.7219, 1.0644], half-width 19.5% of the point estimate
+    -> a trace drift smaller than this is sampling noise, not a trend.
+  last-third mean 0.8681 vs preceding 0.8327 -> +4.3%  RISING
+
+=== cost_lipschitz_s4_probe_converged ===
+  d over 14656 states: median 0.365  p90 0.595  p99 0.675  max 0.749
+ episodes   kappa1  bins_used  n_states
+        5   0.9123         24      3600
+       10   0.8521         24      7200
+       15   0.7253         24     10800
+       20   0.6805         24     14400
+       25   0.6524         24     18000
+       30   0.6547         24     21600
+       35   0.6691         24     25200
+       40   0.6823         24     28800
+       45   0.6838         24     32400
+       50   0.6758         24     36000
+  bootstrap over 50 episodes (200 resamples):
+    kappa_1 = 0.6758, 95% CI [0.6356, 0.7344], half-width 7.3% of the point estimate
+    -> a trace drift smaller than this is sampling noise, not a trend.
+  last-third mean 0.6806 vs preceding 0.6587 -> +3.3%  RISING
+
+=== cost_lipschitz_s5_probe_converged ===
+  d over 15778 states: median 0.412  p90 0.656  p99 0.761  max 0.861
+ episodes   kappa1  bins_used  n_states
+        5   1.0947         23      3600
+       10   0.6528         24      7200
+       15   0.6895         24     10800
+       20   0.8141         24     13795
+       25   0.7428         24     17395
+       30   0.7199         24     20995
+       35   0.7409         24     23943
+       40   0.7153         24     27543
+       45   0.7242         24     31143
+       50   0.7467         24     34743
+  bootstrap over 50 episodes (200 resamples):
+    kappa_1 = 0.7467, 95% CI [0.6163, 0.8926], half-width 18.5% of the point estimate
+    -> a trace drift smaller than this is sampling noise, not a trend.
+  last-third mean 0.7287 vs preceding 0.7345 -> -0.8%  SETTLED
+
+=== cost_lipschitz_s6_probe_converged ===
+  d over 15567 states: median 0.396  p90 0.620  p99 0.698  max 0.832
+ episodes   kappa1  bins_used  n_states
+        5   0.9060         24      3600
+       10   0.8215         24      7200
+       15   0.7243         24     10800
+       20   0.6021         24     13752
+       25   0.6242         24     17352
+       30   0.6796         24     20952
+       35   0.7096         24     24552
+       40   0.7296         24     28152
+       45   0.7267         24     31752
+       50   0.7368         24     35352
+  bootstrap over 50 episodes (200 resamples):
+    kappa_1 = 0.7368, 95% CI [0.6133, 0.8940], half-width 19.1% of the point estimate
+    -> a trace drift smaller than this is sampling noise, not a trend.
+  last-third mean 0.7310 vs preceding 0.6712 -> +8.9%  RISING
+
+=== cost_lipschitz_s7_probe_converged ===
+  d over 15556 states: median 0.362  p90 0.625  p99 0.734  max 0.860
+ episodes   kappa1  bins_used  n_states
+        5   0.6590         24      3600
+       10   0.7221         24      7200
+       15   0.6961         24     10800
+       20   0.6541         24     14400
+       25   0.7021         24     18000
+       30   0.7174         24     20982
+       35   0.7106         24     24582
+       40   0.7204         24     28182
+       45   0.7549         24     31782
+       50   0.7380         24     35382
+  bootstrap over 50 episodes (200 resamples):
+    kappa_1 = 0.7380, 95% CI [0.6663, 0.8842], half-width 14.8% of the point estimate
+    -> a trace drift smaller than this is sampling noise, not a trend.
+  last-third mean 0.7378 vs preceding 0.7100 -> +3.9%  RISING
+
+=== cost_lipschitz_s8_probe_converged ===
+  d over 16422 states: median 0.408  p90 0.649  p99 0.738  max 0.795
+ episodes   kappa1  bins_used  n_states
+        5   0.7405         24      3600
+       10   0.6072         24      7200
+       15   0.6289         24     10800
+       20   0.6687         24     14400
+       25   0.6355         24     18000
+       30   0.6242         24     21600
+       35   0.6312         24     25200
+       40   0.6502         24     28800
+       45   0.6577         24     32400
+       50   0.6420         24     36000
+  bootstrap over 50 episodes (200 resamples):
+    kappa_1 = 0.6420, 95% CI [0.5803, 0.7271], half-width 11.4% of the point estimate
+    -> a trace drift smaller than this is sampling noise, not a trend.
+  last-third mean 0.6499 vs preceding 0.6303 -> +3.1%  RISING
