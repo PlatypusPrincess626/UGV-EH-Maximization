@@ -1,0 +1,1814 @@
+Placing Sensors
+[cost_softplus] critic head: beta*softplus, NO spectral norm (sign constraint only)
+Placing Sensors
+[Episode 1/400] Steps:  70 | Reward:  -17.66 | Battery:   0.00% | Loss: 
+Placing Sensors
+[Episode 2/400] Steps:  95 | Reward:  -17.59 | Battery:   0.00% | Loss: 
+Placing Sensors
+[Episode 3/400] Steps: 720 | Reward:   -6.72 | Battery:  67.03% | Loss: 
+Placing Sensors
+Policy -0.0030 | Value 0.0320 | KL 0.00147 | CF 0.0062 | Std 0.1054 | |a| 0.0090 | EV -0.411 | Rsd 0.298 | Res 0.361 | AE nan | Alpha 0.9180 | MB 28/28
+  cert | viol 0.542 | dV -0.177237 | V 0.3775 | inball 0.148 | a*_q05 -0.00164 | a*_q50 0.00934 | dV>=0 0.117 | n=150 | a_used 0.01000 -> 0.00950
+  crit | n=1 | viol 0.979 | V 1.1782 | Vmin 0.9036 | agree +0.584 | a*_q05 -0.00736 | a*_q50 0.00101 | dV>=0 0.447 | beta 0.3054
+  bell | direct viol 0.971 | direct dV>=0 0.515 | d_mean -0.00153 | d_std 0.00890 | d_q95 0.01685
+[Episode 4/400] Steps: 720 | Reward:   -8.97 | Battery:  61.89% | Loss: 1.6543
+Placing Sensors
+[Episode 5/400] Steps: 202 | Reward:  -17.07 | Battery:   0.00% | Loss: 
+Placing Sensors
+[Episode 6/400] Steps:  69 | Reward:  -17.68 | Battery:   0.00% | Loss: 
+Placing Sensors
+[Episode 7/400] Steps:  99 | Reward:  -17.51 | Battery:   0.00% | Loss: 
+Placing Sensors
+[Episode 8/400] Steps:  81 | Reward:  -17.68 | Battery:   0.00% | Loss: 
+Placing Sensors
+[Episode 9/400] Steps: 720 | Reward:   -6.53 | Battery:  66.00% | Loss: 
+Placing Sensors
+[Episode 10/400] Steps: 104 | Reward:  -17.40 | Battery:   0.00% | Loss: 
+Placing Sensors
+Policy -0.0015 | Value 0.0354 | KL 0.00231 | CF 0.0216 | Std 0.1055 | |a| 0.0106 | EV +0.234 | Rsd 0.406 | Res 0.378 | AE nan | Alpha 0.8254 | MB 32/32
+  cert | viol 0.552 | dV -0.155340 | V 0.3263 | inball 0.112 | a*_q05 -0.00529 | a*_q50 0.00771 | dV>=0 0.164 | n=150 | a_used 0.00950 -> 0.00903
+  crit | n=1 | viol 0.991 | V 1.2601 | Vmin 0.8152 | agree +0.709 | a*_q05 -0.00685 | a*_q50 0.00062 | dV>=0 0.452 | beta 0.3086
+  bell | direct viol 0.902 | direct dV>=0 0.538 | d_mean -0.00181 | d_std 0.01295 | d_q95 0.02701
+[Episode 11/400] Steps: 720 | Reward:   -7.40 | Battery:  62.37% | Loss: 1.4106
+Placing Sensors
+[Episode 12/400] Steps: 720 | Reward:   -4.34 | Battery:  59.00% | Loss: 
+Placing Sensors
+[Episode 13/400] Steps:  85 | Reward:  -17.53 | Battery:   0.00% | Loss: 
+Placing Sensors
+[Episode 14/400] Steps: 115 | Reward:  -17.31 | Battery:   0.00% | Loss: 
+Placing Sensors
+Policy -0.0120 | Value 0.0165 | KL 0.00356 | CF 0.0359 | Std 0.1057 | |a| 0.0119 | EV +0.770 | Rsd 0.475 | Res 0.234 | AE nan | Alpha 0.7563 | MB 28/28
+  cert | viol 0.163 | dV -0.253582 | V 0.3210 | inball 0.346 | a*_q05 0.00403 | a*_q50 0.02602 | dV>=0 0.014 | n=150 | a_used 0.00903 -> 0.00893
+  crit | n=1 | viol 0.994 | V 1.1026 | Vmin 0.6139 | agree +0.637 | a*_q05 -0.00690 | a*_q50 -0.00114 | dV>=0 0.592 | beta 0.3054
+  bell | direct viol 0.837 | direct dV>=0 0.459 | d_mean +0.00129 | d_std 0.01222 | d_q95 0.02564
+[Episode 15/400] Steps: 720 | Reward:   -6.42 | Battery:  64.41% | Loss: 1.0958
+Placing Sensors
+[Episode 16/400] Steps: 720 | Reward:   -3.92 | Battery:  63.53% | Loss: 
+Placing Sensors
+[Episode 17/400] Steps:  89 | Reward:  -17.41 | Battery:   0.00% | Loss: 
+Placing Sensors
+Policy -0.0054 | Value 0.0106 | KL 0.00436 | CF 0.0537 | Std 0.1058 | |a| 0.0108 | EV +0.833 | Rsd 0.420 | Res 0.187 | AE nan | Alpha 0.6971 | MB 24/24
+  cert | viol 0.526 | dV -0.148645 | V 0.2162 | inball 0.243 | a*_q05 -0.01388 | a*_q50 0.00876 | dV>=0 0.209 | n=150 | a_used 0.00893 -> 0.00848
+  crit | n=1 | viol 0.999 | V 1.0157 | Vmin 0.5624 | agree +0.492 | a*_q05 -0.00636 | a*_q50 -0.00180 | dV>=0 0.654 | beta 0.3030
+  bell | direct viol 0.875 | direct dV>=0 0.506 | d_mean +0.00143 | d_std 0.00869 | d_q95 0.01785
+[Episode 18/400] Steps: 720 | Reward:   -6.87 | Battery:  47.58% | Loss: 1.1340
+Placing Sensors
+[Episode 19/400] Steps:  63 | Reward:  -17.75 | Battery:   0.00% | Loss: 
+Placing Sensors
+[Episode 20/400] Steps: 720 | Reward:   -7.32 | Battery:  46.89% | Loss: 
+Placing Sensors
+[Episode 21/400] Steps:  87 | Reward:  -17.54 | Battery:   0.00% | Loss: 
+Placing Sensors
+[Episode 22/400] Steps: 110 | Reward:  -17.33 | Battery:   0.00% | Loss: 
+Placing Sensors
+[Episode 23/400] Steps: 116 | Reward:  -17.47 | Battery:   0.00% | Loss: 
+Placing Sensors
+[Episode 24/400] Steps:  68 | Reward:  -17.64 | Battery:   0.00% | Loss: 
+Placing Sensors
+Policy -0.0082 | Value 0.0241 | KL 0.00754 | CF 0.1020 | Std 0.1060 | |a| 0.0121 | EV +0.792 | Rsd 0.552 | Res 0.270 | AE nan | Alpha 0.6305 | MB 32/32
+  cert | viol 0.537 | dV -0.141525 | V 0.2563 | inball 0.123 | a*_q05 -0.01932 | a*_q50 0.00731 | dV>=0 0.152 | n=150 | a_used 0.00848 -> 0.00806
+  crit | n=1 | viol 0.981 | V 1.2197 | Vmin 0.6070 | agree +0.689 | a*_q05 -0.00556 | a*_q50 0.00016 | dV>=0 0.492 | beta 0.3012
+  bell | direct viol 0.888 | direct dV>=0 0.533 | d_mean -0.00124 | d_std 0.01140 | d_q95 0.02430
+[Episode 25/400] Steps: 720 | Reward:   -5.60 | Battery:  66.46% | Loss: 1.0256
+Placing Sensors
+[Episode 26/400] Steps:  78 | Reward:  -17.68 | Battery:   0.00% | Loss: 
+Placing Sensors
+[Episode 27/400] Steps: 720 | Reward:   -5.95 | Battery:  67.05% | Loss: 
+Placing Sensors
+[Episode 28/400] Steps:  72 | Reward:  -17.62 | Battery:   0.00% | Loss: 
+Placing Sensors
+Policy -0.0064 | Value 0.0125 | KL 0.00518 | CF 0.0634 | Std 0.1062 | |a| 0.0114 | EV +0.873 | Rsd 0.541 | Res 0.196 | AE nan | Alpha 0.5793 | MB 28/28
+  cert | viol 0.249 | dV -0.277194 | V 0.3905 | inball 0.388 | a*_q05 0.00008 | a*_q50 0.02505 | dV>=0 0.044 | n=150 | a_used 0.00806 -> 0.00700
+  crit | n=1 | viol 0.917 | V 1.0622 | Vmin 0.5150 | agree +0.595 | a*_q05 -0.00739 | a*_q50 0.00074 | dV>=0 0.439 | beta 0.2976
+  bell | direct viol 0.795 | direct dV>=0 0.421 | d_mean +0.00070 | d_std 0.01159 | d_q95 0.02426
+[Episode 29/400] Steps: 720 | Reward:   -5.74 | Battery:  62.42% | Loss: 0.7886
+Placing Sensors
+[Episode 30/400] Steps: 720 | Reward:   -6.33 | Battery:  60.09% | Loss: 
+Placing Sensors
+[Episode 31/400] Steps: 103 | Reward:  -17.51 | Battery:   0.00% | Loss: 
+Placing Sensors
+[Episode 32/400] Steps: 100 | Reward:  -17.59 | Battery:   0.00% | Loss: 
+Placing Sensors
+Policy -0.0021 | Value 0.0131 | KL 0.00807 | CF 0.1081 | Std 0.1065 | |a| 0.0121 | EV +0.819 | Rsd 0.536 | Res 0.228 | AE nan | Alpha 0.5307 | MB 28/28
+  cert | viol 0.312 | dV -0.224639 | V 0.3715 | inball 0.284 | a*_q05 0.00011 | a*_q50 0.01683 | dV>=0 0.049 | n=150 | a_used 0.00700 -> 0.00538
+  crit | n=1 | viol 0.905 | V 1.1149 | Vmin 0.4724 | agree +0.668 | a*_q05 -0.00585 | a*_q50 0.00047 | dV>=0 0.449 | beta 0.2935
+  bell | direct viol 0.771 | direct dV>=0 0.449 | d_mean -0.00034 | d_std 0.01314 | d_q95 0.02795
+[Episode 33/400] Steps: 720 | Reward:   -6.51 | Battery:  71.79% | Loss: 0.9612
+Placing Sensors
+[Episode 34/400] Steps: 720 | Reward:   -4.91 | Battery:  64.54% | Loss: 
+Placing Sensors
+[Episode 35/400] Steps: 119 | Reward:  -17.21 | Battery:   0.00% | Loss: 
+Placing Sensors
+[Episode 36/400] Steps:  91 | Reward:  -17.61 | Battery:   0.00% | Loss: 
+Placing Sensors
+Policy 0.0002 | Value 0.0167 | KL 0.00527 | CF 0.0634 | Std 0.1067 | |a| 0.0128 | EV +0.891 | Rsd 0.529 | Res 0.176 | AE nan | Alpha 0.4860 | MB 28/28
+  cert | viol 0.080 | dV -0.257283 | V 0.3153 | inball 0.379 | a*_q05 0.00424 | a*_q50 0.02680 | dV>=0 0.000 | n=150 | a_used 0.00538 -> 0.00528
+  crit | n=1 | viol 0.870 | V 1.0054 | Vmin 0.4568 | agree +0.703 | a*_q05 -0.00616 | a*_q50 -0.00016 | dV>=0 0.529 | beta 0.2904
+  bell | direct viol 0.757 | direct dV>=0 0.448 | d_mean -0.00030 | d_std 0.01144 | d_q95 0.02370
+[Episode 37/400] Steps: 720 | Reward:   -5.30 | Battery:  76.33% | Loss: 0.8944
+Placing Sensors
+[Episode 38/400] Steps:  78 | Reward:  -17.71 | Battery:   0.00% | Loss: 
+Placing Sensors
+[Episode 39/400] Steps: 102 | Reward:  -17.45 | Battery:   0.00% | Loss: 
+Placing Sensors
+[Episode 40/400] Steps:  93 | Reward:  -17.46 | Battery:   0.00% | Loss: 
+Placing Sensors
+[Episode 41/400] Steps: 150 | Reward:  -17.25 | Battery:   0.00% | Loss: 
+Placing Sensors
+[Episode 42/400] Steps:  63 | Reward:  -17.70 | Battery:   0.00% | Loss: 
+Placing Sensors
+[Episode 43/400] Steps: 720 | Reward:   -5.83 | Battery:  61.27% | Loss: 
+Placing Sensors
+Policy -0.0074 | Value 0.0207 | KL 0.00573 | CF 0.0686 | Std 0.1070 | |a| 0.0129 | EV +0.772 | Rsd 0.606 | Res 0.301 | AE nan | Alpha 0.4386 | MB 32/32
+  cert | viol 0.200 | dV -0.279433 | V 0.3817 | inball 0.271 | a*_q05 -0.00347 | a*_q50 0.02523 | dV>=0 0.070 | n=150 | a_used 0.00528 -> 0.00483
+  crit | n=1 | viol 0.846 | V 1.1810 | Vmin 0.4630 | agree +0.696 | a*_q05 -0.00675 | a*_q50 0.00075 | dV>=0 0.422 | beta 0.2850
+  bell | direct viol 0.704 | direct dV>=0 0.473 | d_mean -0.00088 | d_std 0.01885 | d_q95 0.03539
+[Episode 44/400] Steps: 720 | Reward:   -6.49 | Battery:  55.17% | Loss: 0.7343
+Placing Sensors
+[Episode 45/400] Steps: 720 | Reward:   -8.33 | Battery:  27.33% | Loss: 
+Placing Sensors
+[Episode 46/400] Steps: 125 | Reward:  -17.31 | Battery:   0.00% | Loss: 
+Placing Sensors
+[Episode 47/400] Steps:  81 | Reward:  -17.53 | Battery:   0.00% | Loss: 
+Placing Sensors
+Policy 0.0011 | Value 0.0219 | KL 0.00549 | CF 0.0602 | Std 0.1072 | |a| 0.0112 | EV +0.870 | Rsd 0.591 | Res 0.216 | AE nan | Alpha 0.4018 | MB 28/28
+  cert | viol 0.361 | dV -0.165577 | V 0.3109 | inball 0.226 | a*_q05 -0.02137 | a*_q50 0.01116 | dV>=0 0.274 | n=150 | a_used 0.00483 -> 0.00458
+  crit | n=1 | viol 0.795 | V 1.0785 | Vmin 0.4299 | agree +0.645 | a*_q05 -0.00587 | a*_q50 0.00059 | dV>=0 0.452 | beta 0.2801
+  bell | direct viol 0.710 | direct dV>=0 0.465 | d_mean +0.00014 | d_std 0.01939 | d_q95 0.03675
+[Episode 48/400] Steps: 720 | Reward:   -4.72 | Battery:  77.38% | Loss: 0.5844
+Placing Sensors
+[Episode 49/400] Steps: 720 | Reward:   -6.21 | Battery:  65.06% | Loss: 
+Placing Sensors
+Policy -0.0080 | Value 0.0093 | KL 0.00410 | CF 0.0429 | Std 0.1075 | |a| 0.0111 | EV +0.843 | Rsd 0.417 | Res 0.172 | AE nan | Alpha 0.3721 | MB 24/24
+  cert | viol 0.129 | dV -0.208532 | V 0.2994 | inball 0.341 | a*_q05 -0.00979 | a*_q50 0.02017 | dV>=0 0.065 | n=150 | a_used 0.00458 -> 0.00436
+  crit | n=1 | viol 0.834 | V 0.9439 | Vmin 0.4203 | agree +0.385 | a*_q05 -0.00604 | a*_q50 -0.00033 | dV>=0 0.526 | beta 0.2761
+  bell | direct viol 0.681 | direct dV>=0 0.481 | d_mean +0.00122 | d_std 0.01557 | d_q95 0.03041
+[Episode 50/400] Steps: 720 | Reward:   -5.28 | Battery:  45.20% | Loss: 0.5616
+Placing Sensors
+[Episode 51/400] Steps: 720 | Reward:   -5.45 | Battery:  71.23% | Loss: 
+Placing Sensors
+Policy -0.0040 | Value 0.0070 | KL 0.00542 | CF 0.0667 | Std 0.1076 | |a| 0.0150 | EV +0.910 | Rsd 0.401 | Res 0.136 | AE nan | Alpha 0.3446 | MB 24/24
+  cert | viol 0.146 | dV -0.234744 | V 0.3162 | inball 0.414 | a*_q05 0.00283 | a*_q50 0.02605 | dV>=0 0.000 | n=150 | a_used 0.00436 -> 0.00422
+  crit | n=1 | viol 0.888 | V 0.8636 | Vmin 0.3731 | agree +0.573 | a*_q05 -0.00651 | a*_q50 -0.00057 | dV>=0 0.550 | beta 0.2693
+  bell | direct viol 0.612 | direct dV>=0 0.355 | d_mean +0.00199 | d_std 0.01449 | d_q95 0.02415
+[Episode 52/400] Steps: 720 | Reward:   -5.01 | Battery:  56.98% | Loss: 0.5183
+Placing Sensors
+[Episode 53/400] Steps:  86 | Reward:  -17.57 | Battery:   0.00% | Loss: 
+Placing Sensors
+[Episode 54/400] Steps: 720 | Reward:   -6.56 | Battery:  61.30% | Loss: 
+Placing Sensors
+[Episode 55/400] Steps: 102 | Reward:  -17.30 | Battery:   0.00% | Loss: 
+Placing Sensors
+Policy 0.0012 | Value 0.0125 | KL 0.00440 | CF 0.0496 | Std 0.1078 | |a| 0.0133 | EV +0.825 | Rsd 0.528 | Res 0.231 | AE nan | Alpha 0.3160 | MB 28/28
+  cert | viol 0.066 | dV -0.329168 | V 0.4020 | inball 0.374 | a*_q05 0.00435 | a*_q50 0.02944 | dV>=0 0.000 | n=150 | a_used 0.00422 -> 0.00431
+  crit | n=1 | viol 0.626 | V 0.9259 | Vmin 0.3290 | agree +0.596 | a*_q05 -0.00586 | a*_q50 0.00156 | dV>=0 0.378 | beta 0.2628
+  bell | direct viol 0.642 | direct dV>=0 0.440 | d_mean -0.00117 | d_std 0.01932 | d_q95 0.03491
+[Episode 56/400] Steps: 720 | Reward:   -5.39 | Battery:  59.58% | Loss: 0.6144
+Placing Sensors
+[Episode 57/400] Steps: 104 | Reward:  -17.47 | Battery:   0.00% | Loss: 
+Placing Sensors
+[Episode 58/400] Steps:  76 | Reward:  -17.67 | Battery:   0.00% | Loss: 
+Placing Sensors
+[Episode 59/400] Steps: 132 | Reward:  -17.39 | Battery:   0.00% | Loss: 
+Placing Sensors
+[Episode 60/400] Steps: 720 | Reward:   -5.69 | Battery:  69.79% | Loss: 
+Placing Sensors
+Policy -0.0026 | Value 0.0178 | KL 0.00539 | CF 0.0674 | Std 0.1080 | |a| 0.0121 | EV +0.836 | Rsd 0.610 | Res 0.249 | AE nan | Alpha 0.2878 | MB 28/28
+  cert | viol 0.118 | dV -0.285902 | V 0.3727 | inball 0.394 | a*_q05 0.00137 | a*_q50 0.02905 | dV>=0 0.035 | n=150 | a_used 0.00431 -> 0.00421
+  crit | n=1 | viol 0.783 | V 1.0518 | Vmin 0.2865 | agree +0.648 | a*_q05 -0.00664 | a*_q50 0.00145 | dV>=0 0.346 | beta 0.2542
+  bell | direct viol 0.671 | direct dV>=0 0.462 | d_mean +0.00003 | d_std 0.01920 | d_q95 0.03685
+[Episode 61/400] Steps: 720 | Reward:   -4.78 | Battery:  70.32% | Loss: 0.3857
+Placing Sensors
+[Episode 62/400] Steps: 720 | Reward:   -6.38 | Battery:  55.97% | Loss: 
+Placing Sensors
+Policy -0.0021 | Value 0.0096 | KL 0.00777 | CF 0.1064 | Std 0.1082 | |a| 0.0157 | EV +0.875 | Rsd 0.499 | Res 0.177 | AE nan | Alpha 0.2665 | MB 24/24
+  cert | viol 0.084 | dV -0.289423 | V 0.3612 | inball 0.358 | a*_q05 0.00264 | a*_q50 0.02801 | dV>=0 0.021 | n=150 | a_used 0.00421 -> 0.00380
+  crit | n=1 | viol 0.716 | V 0.8624 | Vmin 0.3329 | agree +0.487 | a*_q05 -0.00597 | a*_q50 0.00119 | dV>=0 0.436 | beta 0.2475
+  bell | direct viol 0.592 | direct dV>=0 0.415 | d_mean +0.00104 | d_std 0.01874 | d_q95 0.03463
+[Episode 63/400] Steps: 720 | Reward:   -5.24 | Battery:  56.79% | Loss: 0.5263
+Placing Sensors
+[Episode 64/400] Steps: 720 | Reward:   -6.39 | Battery:  82.27% | Loss: 
+Placing Sensors
+[Episode 65/400] Steps: 104 | Reward:  -17.59 | Battery:   0.00% | Loss: 
+Placing Sensors
+Policy 0.0154 | Value 0.0169 | KL 0.00721 | CF 0.0912 | Std 0.1084 | |a| 0.0163 | EV +0.903 | Rsd 0.518 | Res 0.167 | AE nan | Alpha 0.2455 | MB 28/28
+  cert | viol 0.224 | dV -0.225174 | V 0.3626 | inball 0.375 | a*_q05 0.00186 | a*_q50 0.01569 | dV>=0 0.019 | n=150 | a_used 0.00380 -> 0.00380
+  crit | n=1 | viol 0.670 | V 0.8831 | Vmin 0.3050 | agree +0.703 | a*_q05 -0.00511 | a*_q50 0.00228 | dV>=0 0.292 | beta 0.2421
+  bell | direct viol 0.586 | direct dV>=0 0.370 | d_mean -0.00231 | d_std 0.02085 | d_q95 0.04020
+[Episode 66/400] Steps: 720 | Reward:   -5.74 | Battery:  66.17% | Loss: 0.4508
+Placing Sensors
+[Episode 67/400] Steps: 720 | Reward:   -8.40 | Battery:  47.91% | Loss: 
+Placing Sensors
+Policy -0.0001 | Value 0.0087 | KL 0.00499 | CF 0.0643 | Std 0.1085 | |a| 0.0169 | EV +0.899 | Rsd 0.435 | Res 0.144 | AE nan | Alpha 0.2273 | MB 24/24
+  cert | viol 0.371 | dV -0.197959 | V 0.3662 | inball 0.261 | a*_q05 -0.02094 | a*_q50 0.00932 | dV>=0 0.210 | n=150 | a_used 0.00380 -> 0.00361
+  crit | n=1 | viol 0.591 | V 0.8939 | Vmin 0.3963 | agree +0.451 | a*_q05 -0.00496 | a*_q50 0.00237 | dV>=0 0.374 | beta 0.2394
+  bell | direct viol 0.634 | direct dV>=0 0.437 | d_mean -0.00114 | d_std 0.01585 | d_q95 0.02915
+[Episode 68/400] Steps: 720 | Reward:   -5.60 | Battery:  77.30% | Loss: 0.4973
+Placing Sensors
+[Episode 69/400] Steps: 119 | Reward:  -17.35 | Battery:   0.00% | Loss: 
+Placing Sensors
+[Episode 70/400] Steps: 120 | Reward:  -17.37 | Battery:   0.00% | Loss: 
+Placing Sensors
+[Episode 71/400] Steps: 720 | Reward:   -6.14 | Battery:  66.34% | Loss: 
+Placing Sensors
+Policy -0.0054 | Value 0.0176 | KL 0.00597 | CF 0.0738 | Std 0.1086 | |a| 0.0157 | EV +0.842 | Rsd 0.556 | Res 0.228 | AE nan | Alpha 0.2079 | MB 28/28
+  cert | viol 0.282 | dV -0.246309 | V 0.4412 | inball 0.252 | a*_q05 -0.00535 | a*_q50 0.01403 | dV>=0 0.138 | n=150 | a_used 0.00361 -> 0.00343
+  crit | n=1 | viol 0.652 | V 1.1038 | Vmin 0.4055 | agree +0.571 | a*_q05 -0.00579 | a*_q50 0.00129 | dV>=0 0.352 | beta 0.2375
+  bell | direct viol 0.594 | direct dV>=0 0.415 | d_mean -0.00091 | d_std 0.02527 | d_q95 0.05169
+[Episode 72/400] Steps: 720 | Reward:   -8.06 | Battery:  44.54% | Loss: 0.3312
+Placing Sensors
+[Episode 73/400] Steps: 720 | Reward:   -6.30 | Battery:  59.98% | Loss: 
+Placing Sensors
+[Episode 74/400] Steps:  79 | Reward:  -17.62 | Battery:   0.00% | Loss: 
+Placing Sensors
+Policy -0.0054 | Value 0.0140 | KL 0.00685 | CF 0.0836 | Std 0.1088 | |a| 0.0141 | EV +0.839 | Rsd 0.491 | Res 0.199 | AE nan | Alpha 0.1917 | MB 24/24
+  cert | viol 0.168 | dV -0.262278 | V 0.3674 | inball 0.397 | a*_q05 0.00053 | a*_q50 0.02600 | dV>=0 0.035 | n=150 | a_used 0.00343 -> 0.00309
+  crit | n=1 | viol 0.732 | V 0.9828 | Vmin 0.4162 | agree +0.441 | a*_q05 -0.00675 | a*_q50 0.00008 | dV>=0 0.488 | beta 0.2335
+  bell | direct viol 0.525 | direct dV>=0 0.383 | d_mean +0.00047 | d_std 0.02666 | d_q95 0.05012
+[Episode 75/400] Steps: 720 | Reward:   -5.29 | Battery:  70.69% | Loss: 0.2940
+Placing Sensors
+[Episode 76/400] Steps: 720 | Reward:   -6.27 | Battery:  79.05% | Loss: 
+Placing Sensors
+[Episode 77/400] Steps:  74 | Reward:  -17.66 | Battery:   0.00% | Loss: 
+Placing Sensors
+Policy -0.0049 | Value 0.0071 | KL 0.00942 | CF 0.1246 | Std 0.1089 | |a| 0.0146 | EV +0.911 | Rsd 0.420 | Res 0.129 | AE nan | Alpha 0.1768 | MB 24/24
+  cert | viol 0.187 | dV -0.200955 | V 0.3436 | inball 0.323 | a*_q05 0.00076 | a*_q50 0.01193 | dV>=0 0.035 | n=150 | a_used 0.00309 -> 0.00293
+  crit | n=1 | viol 0.632 | V 0.9928 | Vmin 0.4388 | agree +0.623 | a*_q05 -0.00664 | a*_q50 0.00181 | dV>=0 0.332 | beta 0.2327
+  bell | direct viol 0.534 | direct dV>=0 0.375 | d_mean +0.00060 | d_std 0.01926 | d_q95 0.03476
+[Episode 78/400] Steps: 720 | Reward:   -6.21 | Battery:  70.91% | Loss: 0.2397
+Placing Sensors
+[Episode 79/400] Steps: 720 | Reward:   -5.28 | Battery:  73.50% | Loss: 
+Placing Sensors
+[Episode 80/400] Steps:  96 | Reward:  -17.59 | Battery:   0.00% | Loss: 
+Placing Sensors
+[Episode 81/400] Steps: 108 | Reward:  -17.44 | Battery:   0.00% | Loss: 
+Placing Sensors
+[Episode 82/400] Steps:  99 | Reward:  -17.54 | Battery:   0.00% | Loss: 
+Placing Sensors
+[Episode 83/400] Steps:  97 | Reward:  -17.45 | Battery:   0.00% | Loss: 
+Placing Sensors
+Policy -0.0071 | Value 0.0179 | KL 0.00852 | CF 0.1077 | Std 0.1090 | |a| 0.0188 | EV +0.843 | Rsd 0.606 | Res 0.245 | AE nan | Alpha 0.1603 | MB 32/32
+  cert | viol 0.046 | dV -0.246066 | V 0.3439 | inball 0.312 | a*_q05 0.00339 | a*_q50 0.01835 | dV>=0 0.000 | n=150 | a_used 0.00293 -> 0.00299
+  crit | n=1 | viol 0.658 | V 1.0756 | Vmin 0.4173 | agree +0.751 | a*_q05 -0.00644 | a*_q50 0.00123 | dV>=0 0.359 | beta 0.2325
+  bell | direct viol 0.552 | direct dV>=0 0.416 | d_mean -0.00024 | d_std 0.02091 | d_q95 0.03868
+[Episode 84/400] Steps: 720 | Reward:   -6.30 | Battery:  76.44% | Loss: 0.2810
+Placing Sensors
+[Episode 85/400] Steps: 720 | Reward:   -5.55 | Battery:  64.50% | Loss: 
+Placing Sensors
+Policy 0.0037 | Value 0.0100 | KL 0.00685 | CF 0.0920 | Std 0.1091 | |a| 0.0175 | EV +0.867 | Rsd 0.440 | Res 0.191 | AE nan | Alpha 0.1485 | MB 24/24
+  cert | viol 0.045 | dV -0.232877 | V 0.2715 | inball 0.419 | a*_q05 0.00353 | a*_q50 0.02619 | dV>=0 0.040 | n=150 | a_used 0.00299 -> 0.00315
+  crit | n=1 | viol 0.869 | V 0.9511 | Vmin 0.4376 | agree +0.402 | a*_q05 -0.00646 | a*_q50 -0.00162 | dV>=0 0.633 | beta 0.2307
+  bell | direct viol 0.538 | direct dV>=0 0.416 | d_mean +0.00276 | d_std 0.02435 | d_q95 0.04405
+[Episode 86/400] Steps: 720 | Reward:   -4.70 | Battery:  54.61% | Loss: 0.2807
+Placing Sensors
+[Episode 87/400] Steps:  94 | Reward:  -17.59 | Battery:   0.00% | Loss: 
+Placing Sensors
+[Episode 88/400] Steps: 720 | Reward:   -5.87 | Battery:  62.57% | Loss: 
+Placing Sensors
+[Episode 89/400] Steps:  73 | Reward:  -17.69 | Battery:   0.00% | Loss: 
+Placing Sensors
+Policy -0.0141 | Value 0.0109 | KL 0.00824 | CF 0.1109 | Std 0.1092 | |a| 0.0169 | EV +0.889 | Rsd 0.513 | Res 0.174 | AE nan | Alpha 0.1363 | MB 28/28
+  cert | viol 0.228 | dV -0.185317 | V 0.3188 | inball 0.243 | a*_q05 -0.00136 | a*_q50 0.01640 | dV>=0 0.088 | n=150 | a_used 0.00315 -> 0.00299
+  crit | n=1 | viol 0.669 | V 1.0289 | Vmin 0.4573 | agree +0.518 | a*_q05 -0.00650 | a*_q50 0.00051 | dV>=0 0.464 | beta 0.2306
+  bell | direct viol 0.553 | direct dV>=0 0.440 | d_mean -0.00000 | d_std 0.02429 | d_q95 0.04843
+[Episode 90/400] Steps: 720 | Reward:   -6.63 | Battery:  68.07% | Loss: 0.1175
+Placing Sensors
+[Episode 91/400] Steps: 720 | Reward:   -6.10 | Battery:  72.72% | Loss: 
+Placing Sensors
+Policy -0.0027 | Value 0.0066 | KL 0.00548 | CF 0.0652 | Std 0.1093 | |a| 0.0133 | EV +0.872 | Rsd 0.362 | Res 0.135 | AE nan | Alpha 0.1262 | MB 24/24
+  cert | viol 0.139 | dV -0.220947 | V 0.3232 | inball 0.324 | a*_q05 -0.00869 | a*_q50 0.01971 | dV>=0 0.080 | n=150 | a_used 0.00299 -> 0.00284
+  crit | n=1 | viol 0.588 | V 0.8354 | Vmin 0.4538 | agree +0.513 | a*_q05 -0.00599 | a*_q50 0.00124 | dV>=0 0.437 | beta 0.2293
+  bell | direct viol 0.515 | direct dV>=0 0.407 | d_mean +0.00061 | d_std 0.01727 | d_q95 0.03671
+[Episode 92/400] Steps: 720 | Reward:   -5.65 | Battery:  54.32% | Loss: 0.3140
+Placing Sensors
+[Episode 93/400] Steps:  80 | Reward:  -17.68 | Battery:   0.00% | Loss: 
+Placing Sensors
+[Episode 94/400] Steps: 720 | Reward:   -5.30 | Battery:  72.97% | Loss: 
+Placing Sensors
+Policy -0.0062 | Value 0.0109 | KL 0.00607 | CF 0.0618 | Std 0.1094 | |a| 0.0183 | EV +0.853 | Rsd 0.417 | Res 0.174 | AE nan | Alpha 0.1164 | MB 24/24
+  cert | viol 0.000 | dV -0.217211 | V 0.2527 | inball 0.472 | a*_q05 0.00899 | a*_q50 0.02784 | dV>=0 0.000 | n=150 | a_used 0.00284 -> 0.00301
+  crit | n=1 | viol 0.798 | V 0.8402 | Vmin 0.4315 | agree +0.670 | a*_q05 -0.00757 | a*_q50 -0.00110 | dV>=0 0.588 | beta 0.2287
+  bell | direct viol 0.498 | direct dV>=0 0.426 | d_mean +0.00214 | d_std 0.02627 | d_q95 0.04605
+[Episode 95/400] Steps: 720 | Reward:   -3.07 | Battery:  79.08% | Loss: 0.1160
+Placing Sensors
+[Episode 96/400] Steps: 102 | Reward:  -17.44 | Battery:   0.00% | Loss: 
+Placing Sensors
+[Episode 97/400] Steps: 720 | Reward:   -4.85 | Battery:  78.73% | Loss: 
+Placing Sensors
+Policy -0.0219 | Value 0.0105 | KL 0.00962 | CF 0.1262 | Std 0.1095 | |a| 0.0198 | EV +0.872 | Rsd 0.450 | Res 0.162 | AE nan | Alpha 0.1072 | MB 28/28
+  cert | viol 0.027 | dV -0.247783 | V 0.3036 | inball 0.470 | a*_q05 0.00665 | a*_q50 0.02723 | dV>=0 0.000 | n=150 | a_used 0.00301 -> 0.00320
+  crit | n=1 | viol 0.659 | V 0.8455 | Vmin 0.3889 | agree +0.599 | a*_q05 -0.00494 | a*_q50 0.00121 | dV>=0 0.409 | beta 0.2272
+  bell | direct viol 0.459 | direct dV>=0 0.392 | d_mean +0.00145 | d_std 0.02267 | d_q95 0.04265
+[Episode 98/400] Steps: 720 | Reward:   -5.33 | Battery:  65.24% | Loss: -0.1716
+Placing Sensors
+[Episode 99/400] Steps: 720 | Reward:   -5.80 | Battery:  66.32% | Loss: 
+Placing Sensors
+[Episode 100/400] Steps: 144 | Reward:  -17.20 | Battery:   0.00% | Loss: 
+Placing Sensors
+[Episode 101/400] Steps:  97 | Reward:  -17.46 | Battery:   0.00% | Loss: 
+Placing Sensors
+Policy -0.0054 | Value 0.0260 | KL 0.01403 | CF 0.1611 | Std 0.1096 | |a| 0.0165 | EV +0.722 | Rsd 0.498 | Res 0.275 | AE nan | Alpha 0.0980 | MB 28/28
+  cert | viol 0.126 | dV -0.199238 | V 0.3117 | inball 0.190 | a*_q05 -0.00184 | a*_q50 0.01044 | dV>=0 0.046 | n=150 | a_used 0.00320 -> 0.00309
+  crit | n=1 | viol 0.733 | V 1.0307 | Vmin 0.4809 | agree +0.642 | a*_q05 -0.00689 | a*_q50 0.00077 | dV>=0 0.429 | beta 0.2262
+  bell | direct viol 0.542 | direct dV>=0 0.441 | d_mean -0.00041 | d_std 0.03406 | d_q95 0.06735
+[Episode 102/400] Steps: 720 | Reward:   -6.82 | Battery:  66.41% | Loss: 0.1271
+Placing Sensors
+[Episode 103/400] Steps: 720 | Reward:   -6.10 | Battery:  66.66% | Loss: 
+Placing Sensors
+[Episode 104/400] Steps:  90 | Reward:  -17.62 | Battery:   0.00% | Loss: 
+Placing Sensors
+[Episode 105/400] Steps:  87 | Reward:  -17.60 | Battery:   0.00% | Loss: 
+Placing Sensors
+[Episode 106/400] Steps:  61 | Reward:  -17.58 | Battery:   0.00% | Loss: 
+Placing Sensors
+Policy -0.0054 | Value 0.0132 | KL 0.00744 | CF 0.1027 | Std 0.1097 | |a| 0.0185 | EV +0.886 | Rsd 0.548 | Res 0.186 | AE nan | Alpha 0.0896 | MB 28/28
+  cert | viol 0.059 | dV -0.253171 | V 0.3404 | inball 0.322 | a*_q05 0.00309 | a*_q50 0.02170 | dV>=0 0.000 | n=150 | a_used 0.00309 -> 0.00317
+  crit | n=1 | viol 0.660 | V 1.0347 | Vmin 0.4483 | agree +0.647 | a*_q05 -0.00634 | a*_q50 0.00075 | dV>=0 0.421 | beta 0.2251
+  bell | direct viol 0.540 | direct dV>=0 0.444 | d_mean +0.00012 | d_std 0.03023 | d_q95 0.06059
+[Episode 107/400] Steps: 720 | Reward:   -5.30 | Battery:  62.91% | Loss: 0.1632
+Placing Sensors
+[Episode 108/400] Steps:  72 | Reward:  -17.68 | Battery:   0.00% | Loss: 
+Placing Sensors
+[Episode 109/400] Steps: 720 | Reward:   -4.46 | Battery:  57.96% | Loss: 
+Placing Sensors
+Policy -0.0053 | Value 0.0096 | KL 0.00558 | CF 0.0676 | Std 0.1097 | |a| 0.0187 | EV +0.895 | Rsd 0.516 | Res 0.174 | AE nan | Alpha 0.0827 | MB 24/24
+  cert | viol 0.048 | dV -0.146543 | V 0.2136 | inball 0.332 | a*_q05 0.00347 | a*_q50 0.01725 | dV>=0 0.020 | n=150 | a_used 0.00317 -> 0.00277
+  crit | n=1 | viol 0.869 | V 0.9681 | Vmin 0.4272 | agree +0.547 | a*_q05 -0.00532 | a*_q50 -0.00046 | dV>=0 0.568 | beta 0.2243
+  bell | direct viol 0.556 | direct dV>=0 0.431 | d_mean +0.00205 | d_std 0.02023 | d_q95 0.03938
+[Episode 110/400] Steps: 720 | Reward:   -5.58 | Battery:  81.24% | Loss: 0.0664
+Placing Sensors
+[Episode 111/400] Steps: 720 | Reward:   -7.50 | Battery:  49.36% | Loss: 
+Placing Sensors
+[Episode 112/400] Steps: 112 | Reward:  -17.34 | Battery:   0.00% | Loss: 
+Placing Sensors
+[Episode 113/400] Steps:  64 | Reward:  -17.61 | Battery:   0.00% | Loss: 
+Placing Sensors
+Policy -0.0075 | Value 0.0143 | KL 0.00699 | CF 0.0954 | Std 0.1098 | |a| 0.0198 | EV +0.875 | Rsd 0.552 | Res 0.203 | AE nan | Alpha 0.0759 | MB 28/28
+  cert | viol 0.136 | dV -0.197664 | V 0.3245 | inball 0.196 | a*_q05 -0.00003 | a*_q50 0.01723 | dV>=0 0.055 | n=150 | a_used 0.00277 -> 0.00271
+  crit | n=1 | viol 0.613 | V 1.0795 | Vmin 0.4642 | agree +0.514 | a*_q05 -0.00478 | a*_q50 0.00111 | dV>=0 0.409 | beta 0.2237
+  bell | direct viol 0.574 | direct dV>=0 0.465 | d_mean -0.00080 | d_std 0.02618 | d_q95 0.04899
+[Episode 114/400] Steps: 720 | Reward:   -6.45 | Battery:  62.93% | Loss: 0.0637
+Placing Sensors
+[Episode 115/400] Steps:  70 | Reward:  -17.74 | Battery:   0.00% | Loss: 
+Placing Sensors
+[Episode 116/400] Steps:  68 | Reward:  -17.54 | Battery:   0.00% | Loss: 
+Placing Sensors
+[Episode 117/400] Steps:  71 | Reward:  -17.76 | Battery:   0.00% | Loss: 
+Placing Sensors
+[Episode 118/400] Steps:  71 | Reward:  -17.70 | Battery:   0.00% | Loss: 
+Placing Sensors
+[Episode 119/400] Steps: 140 | Reward:  -17.30 | Battery:   0.00% | Loss: 
+Placing Sensors
+[Episode 120/400] Steps: 720 | Reward:   -5.67 | Battery:  77.68% | Loss: 
+Placing Sensors
+[Episode 121/400] Steps:  95 | Reward:  -17.55 | Battery:   0.00% | Loss: 
+Placing Sensors
+Policy -0.0059 | Value 0.0234 | KL 0.00677 | CF 0.0816 | Std 0.1099 | |a| 0.0185 | EV +0.867 | Rsd 0.696 | Res 0.255 | AE nan | Alpha 0.0684 | MB 32/32
+  cert | viol 0.069 | dV -0.266800 | V 0.3501 | inball 0.323 | a*_q05 0.00206 | a*_q50 0.02593 | dV>=0 0.020 | n=150 | a_used 0.00271 -> 0.00262
+  crit | n=1 | viol 0.617 | V 1.1137 | Vmin 0.3768 | agree +0.722 | a*_q05 -0.00773 | a*_q50 0.00124 | dV>=0 0.365 | beta 0.2210
+  bell | direct viol 0.533 | direct dV>=0 0.451 | d_mean -0.00022 | d_std 0.03388 | d_q95 0.06484
+[Episode 122/400] Steps: 720 | Reward:   -4.28 | Battery:  78.92% | Loss: 0.2118
+Placing Sensors
+[Episode 123/400] Steps:  94 | Reward:  -17.56 | Battery:   0.00% | Loss: 
+Placing Sensors
+[Episode 124/400] Steps:  97 | Reward:  -17.52 | Battery:   0.00% | Loss: 
+Placing Sensors
+[Episode 125/400] Steps: 720 | Reward:   -5.49 | Battery:  72.07% | Loss: 
+Placing Sensors
+[Episode 126/400] Steps:  89 | Reward:  -17.46 | Battery:   0.00% | Loss: 
+Placing Sensors
+[Episode 127/400] Steps: 137 | Reward:  -17.35 | Battery:   0.00% | Loss: 
+Placing Sensors
+[Episode 128/400] Steps:  93 | Reward:  -17.45 | Battery:   0.00% | Loss: 
+Placing Sensors
+[Episode 129/400] Steps: 103 | Reward:  -17.50 | Battery:   0.00% | Loss: 
+Placing Sensors
+Policy 0.0086 | Value 0.0204 | KL 0.01045 | CF 0.1344 | Std 0.1100 | |a| 0.0176 | EV +0.845 | Rsd 0.634 | Res 0.252 | AE nan | Alpha 0.0613 | MB 36/36
+  cert | viol 0.333 | dV -0.144659 | V 0.2946 | inball 0.144 | a*_q05 -0.01596 | a*_q50 0.00737 | dV>=0 0.152 | n=150 | a_used 0.00262 -> 0.00268
+  crit | n=1 | viol 0.736 | V 1.2984 | Vmin 0.4245 | agree +0.696 | a*_q05 -0.00542 | a*_q50 0.00033 | dV>=0 0.461 | beta 0.2239
+  bell | direct viol 0.545 | direct dV>=0 0.449 | d_mean +0.00028 | d_std 0.03908 | d_q95 0.07743
+[Episode 130/400] Steps: 720 | Reward:   -7.01 | Battery:  52.10% | Loss: 0.3500
+Placing Sensors
+[Episode 131/400] Steps:  94 | Reward:  -17.51 | Battery:   0.00% | Loss: 
+Placing Sensors
+[Episode 132/400] Steps: 118 | Reward:  -17.39 | Battery:   0.00% | Loss: 
+Placing Sensors
+[Episode 133/400] Steps: 720 | Reward:   -6.22 | Battery:  51.02% | Loss: 
+Placing Sensors
+[Episode 134/400] Steps:  97 | Reward:  -17.60 | Battery:   0.00% | Loss: 
+Placing Sensors
+Policy -0.0088 | Value 0.0138 | KL 0.00699 | CF 0.0953 | Std 0.1100 | |a| 0.0200 | EV +0.927 | Rsd 0.677 | Res 0.184 | AE nan | Alpha 0.0558 | MB 28/28
+  cert | viol 0.081 | dV -0.263596 | V 0.3819 | inball 0.318 | a*_q05 0.00119 | a*_q50 0.02123 | dV>=0 0.035 | n=150 | a_used 0.00268 -> 0.00260
+  crit | n=1 | viol 0.647 | V 1.1782 | Vmin 0.3805 | agree +0.606 | a*_q05 -0.00675 | a*_q50 0.00070 | dV>=0 0.408 | beta 0.2209
+  bell | direct viol 0.571 | direct dV>=0 0.464 | d_mean +0.00153 | d_std 0.03546 | d_q95 0.07256
+[Episode 135/400] Steps: 720 | Reward:   -6.00 | Battery:  79.95% | Loss: 0.1389
+Placing Sensors
+[Episode 136/400] Steps: 149 | Reward:  -17.38 | Battery:   0.00% | Loss: 
+Placing Sensors
+[Episode 137/400] Steps: 110 | Reward:  -17.40 | Battery:   0.00% | Loss: 
+Placing Sensors
+[Episode 138/400] Steps: 720 | Reward:   -5.62 | Battery:  32.55% | Loss: 
+Placing Sensors
+[Episode 139/400] Steps: 110 | Reward:  -17.38 | Battery:   0.00% | Loss: 
+Placing Sensors
+Policy -0.0286 | Value 0.0165 | KL 0.01236 | CF 0.1653 | Std 0.1101 | |a| 0.0194 | EV +0.910 | Rsd 0.662 | Res 0.199 | AE nan | Alpha 0.0507 | MB 32/32
+  cert | viol 0.195 | dV -0.162453 | V 0.2590 | inball 0.221 | a*_q05 -0.01419 | a*_q50 0.01909 | dV>=0 0.171 | n=150 | a_used 0.00260 -> 0.00247
+  crit | n=1 | viol 0.817 | V 1.2303 | Vmin 0.3910 | agree +0.643 | a*_q05 -0.00566 | a*_q50 -0.00066 | dV>=0 0.592 | beta 0.2194
+  bell | direct viol 0.563 | direct dV>=0 0.479 | d_mean -0.00016 | d_std 0.03986 | d_q95 0.08112
+[Episode 140/400] Steps: 720 | Reward:   -6.55 | Battery:  58.32% | Loss: -0.3701
+Placing Sensors
+[Episode 141/400] Steps:  91 | Reward:  -17.61 | Battery:   0.00% | Loss: 
+Placing Sensors
+[Episode 142/400] Steps:  84 | Reward:  -17.68 | Battery:   0.00% | Loss: 
+Placing Sensors
+[Episode 143/400] Steps: 720 | Reward:   -6.09 | Battery:  69.58% | Loss: 
+Placing Sensors
+Policy -0.0078 | Value 0.0206 | KL 0.00600 | CF 0.0745 | Std 0.1102 | |a| 0.0185 | EV +0.815 | Rsd 0.576 | Res 0.253 | AE nan | Alpha 0.0465 | MB 28/28
+  cert | viol 0.142 | dV -0.221605 | V 0.3222 | inball 0.262 | a*_q05 -0.00836 | a*_q50 0.01604 | dV>=0 0.107 | n=150 | a_used 0.00247 -> 0.00235
+  crit | n=1 | viol 0.669 | V 1.1645 | Vmin 0.4478 | agree +0.482 | a*_q05 -0.00638 | a*_q50 0.00022 | dV>=0 0.485 | beta 0.2181
+  bell | direct viol 0.507 | direct dV>=0 0.423 | d_mean +0.00151 | d_std 0.02858 | d_q95 0.05693
+[Episode 144/400] Steps: 720 | Reward:   -6.23 | Battery:  47.17% | Loss: 0.0548
+Placing Sensors
+[Episode 145/400] Steps:  94 | Reward:  -17.57 | Battery:   0.00% | Loss: 
+Placing Sensors
+[Episode 146/400] Steps: 720 | Reward:   -7.02 | Battery:  46.10% | Loss: 
+Placing Sensors
+Policy -0.0084 | Value 0.0130 | KL 0.00819 | CF 0.1024 | Std 0.1102 | |a| 0.0197 | EV +0.900 | Rsd 0.531 | Res 0.169 | AE nan | Alpha 0.0429 | MB 24/24
+  cert | viol 0.189 | dV -0.245086 | V 0.3647 | inball 0.289 | a*_q05 -0.01208 | a*_q50 0.02057 | dV>=0 0.134 | n=150 | a_used 0.00235 -> 0.00223
+  crit | n=1 | viol 0.658 | V 1.0256 | Vmin 0.3302 | agree +0.534 | a*_q05 -0.00730 | a*_q50 -0.00027 | dV>=0 0.523 | beta 0.2167
+  bell | direct viol 0.498 | direct dV>=0 0.439 | d_mean +0.00128 | d_std 0.02997 | d_q95 0.06345
+[Episode 147/400] Steps: 720 | Reward:   -5.62 | Battery:  70.72% | Loss: 0.0935
+Placing Sensors
+[Episode 148/400] Steps: 720 | Reward:   -4.64 | Battery:  68.35% | Loss: 
+Placing Sensors
+Policy -0.0080 | Value 0.0097 | KL 0.00845 | CF 0.0963 | Std 0.1102 | |a| 0.0200 | EV +0.909 | Rsd 0.445 | Res 0.157 | AE nan | Alpha 0.0397 | MB 24/24
+  cert | viol 0.028 | dV -0.267949 | V 0.3478 | inball 0.503 | a*_q05 0.00351 | a*_q50 0.02710 | dV>=0 0.005 | n=150 | a_used 0.00223 -> 0.00225
+  crit | n=1 | viol 0.644 | V 0.8781 | Vmin 0.3762 | agree +0.525 | a*_q05 -0.00715 | a*_q50 0.00114 | dV>=0 0.404 | beta 0.2159
+  bell | direct viol 0.455 | direct dV>=0 0.395 | d_mean +0.00249 | d_std 0.02882 | d_q95 0.05817
+[Episode 149/400] Steps: 720 | Reward:   -5.36 | Battery:  79.45% | Loss: 0.1476
+Placing Sensors
+[Episode 150/400] Steps: 720 | Reward:   -4.84 | Battery:  65.28% | Loss: 
+Placing Sensors
+[Episode 151/400] Steps:  62 | Reward:  -17.56 | Battery:   0.00% | Loss: 
+Placing Sensors
+Policy -0.0051 | Value 0.0091 | KL 0.00739 | CF 0.0909 | Std 0.1102 | |a| 0.0179 | EV +0.925 | Rsd 0.522 | Res 0.146 | AE nan | Alpha 0.0366 | MB 24/24
+  cert | viol 0.052 | dV -0.230262 | V 0.3194 | inball 0.373 | a*_q05 0.00233 | a*_q50 0.02279 | dV>=0 0.014 | n=150 | a_used 0.00225 -> 0.00218
+  crit | n=1 | viol 0.696 | V 0.8803 | Vmin 0.3392 | agree +0.716 | a*_q05 -0.00683 | a*_q50 -0.00025 | dV>=0 0.518 | beta 0.2128
+  bell | direct viol 0.465 | direct dV>=0 0.411 | d_mean +0.00211 | d_std 0.02997 | d_q95 0.06197
+[Episode 152/400] Steps: 720 | Reward:   -5.68 | Battery:  69.23% | Loss: 0.0427
+Placing Sensors
+[Episode 153/400] Steps: 720 | Reward:   -4.78 | Battery:  70.49% | Loss: 
+Placing Sensors
+Policy -0.0063 | Value 0.0066 | KL 0.01173 | CF 0.1606 | Std 0.1103 | |a| 0.0233 | EV +0.902 | Rsd 0.359 | Res 0.120 | AE nan | Alpha 0.0339 | MB 24/24
+  cert | viol 0.016 | dV -0.254975 | V 0.2966 | inball 0.473 | a*_q05 0.00596 | a*_q50 0.02972 | dV>=0 0.000 | n=150 | a_used 0.00218 -> 0.00230
+  crit | n=1 | viol 0.566 | V 0.7391 | Vmin 0.3198 | agree +0.552 | a*_q05 -0.00730 | a*_q50 0.00148 | dV>=0 0.395 | beta 0.2110
+  bell | direct viol 0.477 | direct dV>=0 0.438 | d_mean +0.00104 | d_std 0.02851 | d_q95 0.05877
+[Episode 154/400] Steps: 720 | Reward:   -4.78 | Battery:  64.68% | Loss: 0.1328
+Placing Sensors
+[Episode 155/400] Steps: 720 | Reward:   -6.32 | Battery:  65.27% | Loss: 
+Placing Sensors
+Policy -0.0104 | Value 0.0058 | KL 0.01242 | CF 0.1559 | Std 0.1103 | |a| 0.0216 | EV +0.925 | Rsd 0.363 | Res 0.100 | AE nan | Alpha 0.0314 | MB 24/24
+  cert | viol 0.014 | dV -0.262569 | V 0.3340 | inball 0.388 | a*_q05 0.00502 | a*_q50 0.02315 | dV>=0 0.003 | n=150 | a_used 0.00230 -> 0.00240
+  crit | n=1 | viol 0.459 | V 0.7703 | Vmin 0.3122 | agree +0.509 | a*_q05 -0.00572 | a*_q50 0.00290 | dV>=0 0.353 | beta 0.2080
+  bell | direct viol 0.480 | direct dV>=0 0.449 | d_mean -0.00022 | d_std 0.03674 | d_q95 0.07609
+[Episode 156/400] Steps: 720 | Reward:   -4.83 | Battery:  69.40% | Loss: -0.0872
+Placing Sensors
+[Episode 157/400] Steps: 112 | Reward:  -17.21 | Battery:   0.00% | Loss: 
+Placing Sensors
+[Episode 158/400] Steps: 720 | Reward:   -5.61 | Battery:  75.66% | Loss: 
+Placing Sensors
+Policy -0.0226 | Value 0.0146 | KL 0.02028 | CF 0.2218 | Std 0.1103 | |a| 0.0221 | EV +0.869 | Rsd 0.477 | Res 0.175 | AE nan | Alpha 0.0289 | MB 28/28
+  cert | viol 0.071 | dV -0.282753 | V 0.3756 | inball 0.448 | a*_q05 0.00232 | a*_q50 0.02751 | dV>=0 0.018 | n=150 | a_used 0.00240 -> 0.00249
+  crit | n=1 | viol 0.449 | V 0.8511 | Vmin 0.3147 | agree +0.526 | a*_q05 -0.00637 | a*_q50 0.00307 | dV>=0 0.270 | beta 0.2060
+  bell | direct viol 0.498 | direct dV>=0 0.451 | d_mean -0.00037 | d_std 0.03230 | d_q95 0.06490
+[Episode 159/400] Steps: 720 | Reward:   -5.44 | Battery:  75.59% | Loss: -0.2060
+Placing Sensors
+[Episode 160/400] Steps: 720 | Reward:   -4.51 | Battery:  57.10% | Loss: 
+Placing Sensors
+Policy -0.0066 | Value 0.0059 | KL 0.00979 | CF 0.1231 | Std 0.1103 | |a| 0.0246 | EV +0.900 | Rsd 0.367 | Res 0.128 | AE nan | Alpha 0.0268 | MB 24/24
+  cert | viol 0.000 | dV -0.245187 | V 0.2893 | inball 0.450 | a*_q05 0.00559 | a*_q50 0.03231 | dV>=0 0.000 | n=150 | a_used 0.00249 -> 0.00259
+  crit | n=1 | viol 0.702 | V 0.7532 | Vmin 0.3002 | agree +0.461 | a*_q05 -0.00640 | a*_q50 0.00048 | dV>=0 0.451 | beta 0.2041
+  bell | direct viol 0.496 | direct dV>=0 0.445 | d_mean +0.00193 | d_std 0.02603 | d_q95 0.05046
+[Episode 161/400] Steps: 720 | Reward:   -4.94 | Battery:  54.41% | Loss: -0.0291
+Placing Sensors
+[Episode 162/400] Steps: 720 | Reward:   -2.91 | Battery:  77.82% | Loss: 
+Placing Sensors
+Policy -0.0043 | Value 0.0082 | KL 0.00615 | CF 0.0630 | Std 0.1103 | |a| 0.0207 | EV +0.875 | Rsd 0.340 | Res 0.133 | AE nan | Alpha 0.0248 | MB 24/24
+  cert | viol 0.052 | dV -0.243649 | V 0.3042 | inball 0.493 | a*_q05 0.00284 | a*_q50 0.03314 | dV>=0 0.006 | n=150 | a_used 0.00259 -> 0.00264
+  crit | n=1 | viol 0.649 | V 0.7188 | Vmin 0.3020 | agree +0.454 | a*_q05 -0.00769 | a*_q50 -0.00056 | dV>=0 0.534 | beta 0.2010
+  bell | direct viol 0.486 | direct dV>=0 0.442 | d_mean +0.00173 | d_std 0.03009 | d_q95 0.06069
+[Episode 163/400] Steps: 720 | Reward:   -5.89 | Battery:  54.31% | Loss: 0.0281
+Placing Sensors
+[Episode 164/400] Steps: 720 | Reward:   -5.71 | Battery:  61.42% | Loss: 
+Placing Sensors
+Policy -0.0057 | Value 0.0060 | KL 0.00529 | CF 0.0619 | Std 0.1103 | |a| 0.0151 | EV +0.898 | Rsd 0.344 | Res 0.110 | AE nan | Alpha 0.0230 | MB 24/24
+  cert | viol 0.011 | dV -0.224333 | V 0.2933 | inball 0.443 | a*_q05 0.00425 | a*_q50 0.02122 | dV>=0 0.000 | n=150 | a_used 0.00264 -> 0.00275
+  crit | n=1 | viol 0.453 | V 0.6577 | Vmin 0.2689 | agree +0.507 | a*_q05 -0.00541 | a*_q50 0.00356 | dV>=0 0.307 | beta 0.1960
+  bell | direct viol 0.485 | direct dV>=0 0.450 | d_mean -0.00018 | d_std 0.03374 | d_q95 0.06678
+[Episode 165/400] Steps: 720 | Reward:   -4.11 | Battery:  73.59% | Loss: 0.1061
+Placing Sensors
+[Episode 166/400] Steps: 720 | Reward:   -5.61 | Battery:  79.32% | Loss: 
+Placing Sensors
+Policy -0.0070 | Value 0.0077 | KL 0.00824 | CF 0.0993 | Std 0.1103 | |a| 0.0216 | EV +0.888 | Rsd 0.355 | Res 0.127 | AE nan | Alpha 0.0213 | MB 24/24
+  cert | viol 0.132 | dV -0.195691 | V 0.3328 | inball 0.259 | a*_q05 -0.00010 | a*_q50 0.01160 | dV>=0 0.056 | n=150 | a_used 0.00275 -> 0.00226
+  crit | n=1 | viol 0.444 | V 0.7716 | Vmin 0.3406 | agree +0.563 | a*_q05 -0.00603 | a*_q50 0.00366 | dV>=0 0.279 | beta 0.1947
+  bell | direct viol 0.503 | direct dV>=0 0.452 | d_mean -0.00105 | d_std 0.02966 | d_q95 0.06305
+[Episode 167/400] Steps: 720 | Reward:   -7.29 | Battery:  65.94% | Loss: -0.0110
+Placing Sensors
+[Episode 168/400] Steps:  66 | Reward:  -17.59 | Battery:   0.00% | Loss: 
+Placing Sensors
+[Episode 169/400] Steps: 720 | Reward:   -3.98 | Battery:  66.03% | Loss: 
+Placing Sensors
+[Episode 170/400] Steps:  95 | Reward:  -17.55 | Battery:   0.00% | Loss: 
+Placing Sensors
+Policy -0.0076 | Value 0.0202 | KL 0.00962 | CF 0.1160 | Std 0.1103 | |a| 0.0202 | EV +0.787 | Rsd 0.503 | Res 0.233 | AE nan | Alpha 0.0195 | MB 28/28
+  cert | viol 0.010 | dV -0.252340 | V 0.3067 | inball 0.481 | a*_q05 0.00461 | a*_q50 0.03067 | dV>=0 0.000 | n=150 | a_used 0.00226 -> 0.00241
+  crit | n=1 | viol 0.550 | V 0.7919 | Vmin 0.3001 | agree +0.723 | a*_q05 -0.00662 | a*_q50 0.00177 | dV>=0 0.365 | beta 0.1935
+  bell | direct viol 0.487 | direct dV>=0 0.450 | d_mean +0.00154 | d_std 0.03648 | d_q95 0.07204
+[Episode 171/400] Steps: 720 | Reward:   -4.66 | Battery:  79.67% | Loss: -0.0656
+Placing Sensors
+[Episode 172/400] Steps: 720 | Reward:   -6.47 | Battery:  64.21% | Loss: 
+Placing Sensors
+[Episode 173/400] Steps:  82 | Reward:  -17.62 | Battery:   0.00% | Loss: 
+Placing Sensors
+Policy -0.0072 | Value 0.0107 | KL 0.01068 | CF 0.1137 | Std 0.1103 | |a| 0.0215 | EV +0.881 | Rsd 0.451 | Res 0.156 | AE nan | Alpha 0.0180 | MB 24/24
+  cert | viol 0.184 | dV -0.263583 | V 0.4070 | inball 0.359 | a*_q05 0.00045 | a*_q50 0.02406 | dV>=0 0.035 | n=150 | a_used 0.00241 -> 0.00225
+  crit | n=1 | viol 0.536 | V 0.8839 | Vmin 0.3456 | agree +0.587 | a*_q05 -0.00624 | a*_q50 0.00185 | dV>=0 0.372 | beta 0.1929
+  bell | direct viol 0.499 | direct dV>=0 0.449 | d_mean -0.00042 | d_std 0.03747 | d_q95 0.07732
+[Episode 174/400] Steps: 720 | Reward:   -5.92 | Battery:  73.49% | Loss: 0.0601
+Placing Sensors
+[Episode 175/400] Steps: 720 | Reward:   -4.16 | Battery:  74.50% | Loss: 
+Placing Sensors
+Policy -0.0108 | Value 0.0059 | KL 0.00897 | CF 0.1109 | Std 0.1103 | |a| 0.0202 | EV +0.890 | Rsd 0.330 | Res 0.114 | AE nan | Alpha 0.0167 | MB 24/24
+  cert | viol 0.011 | dV -0.254004 | V 0.3066 | inball 0.512 | a*_q05 0.00514 | a*_q50 0.02674 | dV>=0 0.000 | n=150 | a_used 0.00225 -> 0.00238
+  crit | n=1 | viol 0.495 | V 0.7137 | Vmin 0.3265 | agree +0.407 | a*_q05 -0.00563 | a*_q50 0.00226 | dV>=0 0.316 | beta 0.1909
+  bell | direct viol 0.477 | direct dV>=0 0.458 | d_mean +0.00059 | d_std 0.03380 | d_q95 0.06807
+[Episode 176/400] Steps: 720 | Reward:   -4.88 | Battery:  70.49% | Loss: 0.0508
+Placing Sensors
+[Episode 177/400] Steps: 720 | Reward:   -5.48 | Battery:  61.95% | Loss: 
+Placing Sensors
+Policy 0.0015 | Value 0.0088 | KL 0.01316 | CF 0.1744 | Std 0.1103 | |a| 0.0228 | EV +0.864 | Rsd 0.362 | Res 0.134 | AE nan | Alpha 0.0155 | MB 24/24
+  cert | viol 0.065 | dV -0.257395 | V 0.3399 | inball 0.437 | a*_q05 0.00183 | a*_q50 0.02707 | dV>=0 0.021 | n=150 | a_used 0.00238 -> 0.00239
+  crit | n=1 | viol 0.475 | V 0.7828 | Vmin 0.2899 | agree +0.464 | a*_q05 -0.00638 | a*_q50 0.00283 | dV>=0 0.335 | beta 0.1898
+  bell | direct viol 0.487 | direct dV>=0 0.455 | d_mean +0.00001 | d_std 0.04012 | d_q95 0.08466
+[Episode 178/400] Steps: 720 | Reward:   -5.43 | Battery:  75.89% | Loss: 0.1886
+Placing Sensors
+[Episode 179/400] Steps: 720 | Reward:   -4.41 | Battery:  70.45% | Loss: 
+Placing Sensors
+Policy -0.0049 | Value 0.0077 | KL 0.01038 | CF 0.1251 | Std 0.1103 | |a| 0.0220 | EV +0.902 | Rsd 0.348 | Res 0.122 | AE nan | Alpha 0.0143 | MB 24/24
+  cert | viol 0.018 | dV -0.297446 | V 0.3477 | inball 0.525 | a*_q05 0.00581 | a*_q50 0.03068 | dV>=0 0.000 | n=150 | a_used 0.00239 -> 0.00254
+  crit | n=1 | viol 0.459 | V 0.6883 | Vmin 0.2899 | agree +0.554 | a*_q05 -0.00638 | a*_q50 0.00299 | dV>=0 0.331 | beta 0.1880
+  bell | direct viol 0.500 | direct dV>=0 0.468 | d_mean +0.00076 | d_std 0.03242 | d_q95 0.06761
+[Episode 180/400] Steps: 720 | Reward:   -4.54 | Battery:  80.71% | Loss: 0.0948
+Placing Sensors
+[Episode 181/400] Steps: 720 | Reward:   -4.64 | Battery:  73.91% | Loss: 
+Placing Sensors
+Policy -0.0083 | Value 0.0051 | KL 0.00862 | CF 0.1091 | Std 0.1103 | |a| 0.0186 | EV +0.925 | Rsd 0.337 | Res 0.104 | AE nan | Alpha 0.0133 | MB 24/24
+  cert | viol 0.009 | dV -0.274550 | V 0.3230 | inball 0.523 | a*_q05 0.00576 | a*_q50 0.03193 | dV>=0 0.000 | n=150 | a_used 0.00254 -> 0.00268
+  crit | n=1 | viol 0.532 | V 0.6971 | Vmin 0.3055 | agree +0.520 | a*_q05 -0.00761 | a*_q50 0.00197 | dV>=0 0.393 | beta 0.1867
+  bell | direct viol 0.477 | direct dV>=0 0.428 | d_mean +0.00129 | d_std 0.02808 | d_q95 0.05256
+[Episode 182/400] Steps: 720 | Reward:   -4.23 | Battery:  75.75% | Loss: 0.0173
+Placing Sensors
+[Episode 183/400] Steps: 720 | Reward:   -6.14 | Battery:  56.46% | Loss: 
+Placing Sensors
+Policy -0.0069 | Value 0.0046 | KL 0.01213 | CF 0.1549 | Std 0.1102 | |a| 0.0326 | EV +0.942 | Rsd 0.346 | Res 0.091 | AE nan | Alpha 0.0123 | MB 24/24
+  cert | viol 0.088 | dV -0.253065 | V 0.3329 | inball 0.500 | a*_q05 0.00180 | a*_q50 0.03188 | dV>=0 0.018 | n=150 | a_used 0.00268 -> 0.00261
+  crit | n=1 | viol 0.570 | V 0.7364 | Vmin 0.2555 | agree +0.512 | a*_q05 -0.00714 | a*_q50 0.00168 | dV>=0 0.421 | beta 0.1841
+  bell | direct viol 0.505 | direct dV>=0 0.444 | d_mean +0.00060 | d_std 0.03040 | d_q95 0.06308
+[Episode 184/400] Steps: 720 | Reward:   -3.40 | Battery:  75.34% | Loss: 0.0882
+Placing Sensors
+[Episode 185/400] Steps: 720 | Reward:   -4.99 | Battery:  78.65% | Loss: 
+Placing Sensors
+Policy -0.0117 | Value 0.0050 | KL 0.01059 | CF 0.1295 | Std 0.1102 | |a| 0.0260 | EV +0.923 | Rsd 0.313 | Res 0.089 | AE nan | Alpha 0.0114 | MB 24/24
+  cert | viol 0.093 | dV -0.255410 | V 0.3506 | inball 0.501 | a*_q05 0.00088 | a*_q50 0.02643 | dV>=0 0.038 | n=150 | a_used 0.00261 -> 0.00229
+  crit | n=1 | viol 0.391 | V 0.6118 | Vmin 0.2655 | agree +0.680 | a*_q05 -0.00455 | a*_q50 0.00466 | dV>=0 0.257 | beta 0.1819
+  bell | direct viol 0.466 | direct dV>=0 0.429 | d_mean -0.00076 | d_std 0.02643 | d_q95 0.05355
+[Episode 186/400] Steps: 720 | Reward:   -5.33 | Battery:  80.97% | Loss: -0.0477
+Placing Sensors
+[Episode 187/400] Steps: 720 | Reward:   -3.55 | Battery:  73.39% | Loss: 
+Placing Sensors
+Policy -0.0131 | Value 0.0036 | KL 0.01790 | CF 0.1852 | Std 0.1102 | |a| 0.0307 | EV +0.944 | Rsd 0.310 | Res 0.077 | AE nan | Alpha 0.0105 | MB 24/24
+  cert | viol 0.000 | dV -0.260342 | V 0.2960 | inball 0.550 | a*_q05 0.00726 | a*_q50 0.03191 | dV>=0 0.000 | n=150 | a_used 0.00229 -> 0.00247
+  crit | n=1 | viol 0.407 | V 0.5797 | Vmin 0.2475 | agree +0.514 | a*_q05 -0.00501 | a*_q50 0.00410 | dV>=0 0.321 | beta 0.1777
+  bell | direct viol 0.472 | direct dV>=0 0.452 | d_mean +0.00051 | d_std 0.03334 | d_q95 0.07110
+[Episode 188/400] Steps: 720 | Reward:   -4.64 | Battery:  77.27% | Loss: 0.0187
+Placing Sensors
+[Episode 189/400] Steps:  65 | Reward:  -17.41 | Battery:   0.00% | Loss: 
+Placing Sensors
+[Episode 190/400] Steps: 720 | Reward:   -5.11 | Battery:  56.14% | Loss: 
+Placing Sensors
+Policy -0.0063 | Value 0.0119 | KL 0.01449 | CF 0.1705 | Std 0.1103 | |a| 0.0274 | EV +0.820 | Rsd 0.380 | Res 0.161 | AE nan | Alpha 0.0100 | MB 24/24
+  cert | viol 0.006 | dV -0.233845 | V 0.2889 | inball 0.507 | a*_q05 0.00364 | a*_q50 0.03101 | dV>=0 0.000 | n=150 | a_used 0.00247 -> 0.00253
+  crit | n=1 | viol 0.527 | V 0.6444 | Vmin 0.2477 | agree +0.612 | a*_q05 -0.00653 | a*_q50 0.00203 | dV>=0 0.391 | beta 0.1744
+  bell | direct viol 0.484 | direct dV>=0 0.456 | d_mean -0.00008 | d_std 0.03108 | d_q95 0.06204
+[Episode 191/400] Steps: 720 | Reward:   -3.01 | Battery:  83.03% | Loss: -0.0053
+Placing Sensors
+[Episode 192/400] Steps: 140 | Reward:  -17.38 | Battery:   0.00% | Loss: 
+Placing Sensors
+[Episode 193/400] Steps: 720 | Reward:   -5.68 | Battery:  75.67% | Loss: 
+Placing Sensors
+Policy 0.0022 | Value 0.0198 | KL 0.01582 | CF 0.1725 | Std 0.1103 | |a| 0.0349 | EV +0.787 | Rsd 0.438 | Res 0.215 | AE nan | Alpha 0.0100 | MB 28/28
+  cert | viol 0.115 | dV -0.203545 | V 0.2910 | inball 0.304 | a*_q05 0.00002 | a*_q50 0.02118 | dV>=0 0.034 | n=150 | a_used 0.00253 -> 0.00241
+  crit | n=1 | viol 0.453 | V 0.7984 | Vmin 0.2798 | agree +0.620 | a*_q05 -0.00524 | a*_q50 0.00319 | dV>=0 0.270 | beta 0.1741
+  bell | direct viol 0.521 | direct dV>=0 0.481 | d_mean -0.00132 | d_std 0.03686 | d_q95 0.07640
+[Episode 194/400] Steps: 720 | Reward:   -5.60 | Battery:  65.19% | Loss: 0.2774
+Placing Sensors
+[Episode 195/400] Steps: 720 | Reward:   -6.49 | Battery:  65.55% | Loss: 
+Placing Sensors
+Policy -0.0047 | Value 0.0092 | KL 0.01564 | CF 0.1830 | Std 0.1103 | |a| 0.0319 | EV +0.837 | Rsd 0.336 | Res 0.146 | AE nan | Alpha 0.0100 | MB 24/24
+  cert | viol 0.143 | dV -0.212554 | V 0.3452 | inball 0.321 | a*_q05 -0.00013 | a*_q50 0.01795 | dV>=0 0.063 | n=150 | a_used 0.00241 -> 0.00229
+  crit | n=1 | viol 0.356 | V 0.7562 | Vmin 0.3206 | agree +0.395 | a*_q05 -0.00497 | a*_q50 0.00500 | dV>=0 0.277 | beta 0.1740
+  bell | direct viol 0.498 | direct dV>=0 0.464 | d_mean -0.00171 | d_std 0.03056 | d_q95 0.06153
+[Episode 196/400] Steps: 720 | Reward:   -6.18 | Battery:  62.72% | Loss: -0.0141
+Placing Sensors
+[Episode 197/400] Steps: 720 | Reward:   -5.71 | Battery:  65.65% | Loss: 
+Placing Sensors
+Policy -0.0085 | Value 0.0068 | KL 0.01135 | CF 0.1170 | Std 0.1103 | |a| 0.0320 | EV +0.901 | Rsd 0.347 | Res 0.113 | AE nan | Alpha 0.0100 | MB 24/24
+  cert | viol 0.064 | dV -0.257775 | V 0.3310 | inball 0.487 | a*_q05 0.00206 | a*_q50 0.03043 | dV>=0 0.018 | n=150 | a_used 0.00229 -> 0.00236
+  crit | n=1 | viol 0.549 | V 0.7268 | Vmin 0.3198 | agree +0.598 | a*_q05 -0.00670 | a*_q50 0.00161 | dV>=0 0.388 | beta 0.1732
+  bell | direct viol 0.499 | direct dV>=0 0.455 | d_mean +0.00135 | d_std 0.03252 | d_q95 0.06488
+[Episode 198/400] Steps: 720 | Reward:   -4.20 | Battery:  71.64% | Loss: 0.0552
+Placing Sensors
+[Episode 199/400] Steps: 720 | Reward:   -4.16 | Battery:  75.75% | Loss: 
+Placing Sensors
+Policy -0.0082 | Value 0.0071 | KL 0.00896 | CF 0.1015 | Std 0.1102 | |a| 0.0279 | EV +0.898 | Rsd 0.365 | Res 0.117 | AE nan | Alpha 0.0100 | MB 24/24
+  cert | viol 0.122 | dV -0.274885 | V 0.3972 | inball 0.468 | a*_q05 -0.00130 | a*_q50 0.02803 | dV>=0 0.085 | n=150 | a_used 0.00236 -> 0.00224
+  crit | n=1 | viol 0.431 | V 0.7367 | Vmin 0.3040 | agree +0.579 | a*_q05 -0.00612 | a*_q50 0.00348 | dV>=0 0.315 | beta 0.1723
+  bell | direct viol 0.505 | direct dV>=0 0.475 | d_mean -0.00076 | d_std 0.03832 | d_q95 0.08079
+[Episode 200/400] Steps: 720 | Reward:   -6.78 | Battery:  68.70% | Loss: -0.0616
+Placing Sensors
+[Episode 201/400] Steps: 720 | Reward:   -4.71 | Battery:  73.50% | Loss: 
+Placing Sensors
+Policy -0.0129 | Value 0.0085 | KL 0.01253 | CF 0.1395 | Std 0.1102 | |a| 0.0244 | EV +0.917 | Rsd 0.370 | Res 0.107 | AE nan | Alpha 0.0100 | MB 24/24
+  cert | viol 0.083 | dV -0.251486 | V 0.3535 | inball 0.453 | a*_q05 0.00111 | a*_q50 0.02198 | dV>=0 0.034 | n=150 | a_used 0.00224 -> 0.00213
+  crit | n=1 | viol 0.360 | V 0.6766 | Vmin 0.2576 | agree +0.623 | a*_q05 -0.00612 | a*_q50 0.00413 | dV>=0 0.279 | beta 0.1697
+  bell | direct viol 0.495 | direct dV>=0 0.469 | d_mean -0.00033 | d_std 0.03583 | d_q95 0.07348
+[Episode 202/400] Steps: 720 | Reward:   -5.68 | Battery:  75.71% | Loss: 0.0337
+Placing Sensors
+[Episode 203/400] Steps: 720 | Reward:   -3.93 | Battery:  66.31% | Loss: 
+Placing Sensors
+Policy -0.0076 | Value 0.0057 | KL 0.01273 | CF 0.1395 | Std 0.1102 | |a| 0.0299 | EV +0.915 | Rsd 0.335 | Res 0.098 | AE nan | Alpha 0.0100 | MB 24/24
+  cert | viol 0.044 | dV -0.260764 | V 0.3271 | inball 0.425 | a*_q05 0.00286 | a*_q50 0.02962 | dV>=0 0.022 | n=150 | a_used 0.00213 -> 0.00212
+  crit | n=1 | viol 0.455 | V 0.6513 | Vmin 0.1800 | agree +0.304 | a*_q05 -0.00641 | a*_q50 0.00330 | dV>=0 0.390 | beta 0.1664
+  bell | direct viol 0.506 | direct dV>=0 0.482 | d_mean -0.00039 | d_std 0.03811 | d_q95 0.07451
+[Episode 204/400] Steps: 720 | Reward:   -5.63 | Battery:  60.34% | Loss: 0.0765
+Placing Sensors
+[Episode 205/400] Steps: 720 | Reward:   -6.33 | Battery:  62.88% | Loss: 
+Placing Sensors
+Policy -0.0029 | Value 0.0063 | KL 0.02216 | CF 0.2188 | Std 0.1102 | |a| 0.0310 | EV +0.936 | Rsd 0.352 | Res 0.097 | AE nan | Alpha 0.0100 | MB 24/24
+  cert | viol 0.056 | dV -0.280017 | V 0.3653 | inball 0.415 | a*_q05 0.00220 | a*_q50 0.02697 | dV>=0 0.005 | n=150 | a_used 0.00212 -> 0.00218
+  crit | n=1 | viol 0.386 | V 0.7004 | Vmin 0.2603 | agree +0.524 | a*_q05 -0.00534 | a*_q50 0.00389 | dV>=0 0.307 | beta 0.1652
+  bell | direct viol 0.508 | direct dV>=0 0.484 | d_mean -0.00139 | d_std 0.03981 | d_q95 0.08397
+[Episode 206/400] Steps: 720 | Reward:   -4.99 | Battery:  65.15% | Loss: 0.0805
+Placing Sensors
+[Episode 207/400] Steps: 720 | Reward:   -4.66 | Battery:  78.30% | Loss: 
+Placing Sensors
+Policy -0.0071 | Value 0.0110 | KL 0.01838 | CF 0.1956 | Std 0.1102 | |a| 0.0335 | EV +0.784 | Rsd 0.307 | Res 0.152 | AE nan | Alpha 0.0100 | MB 24/24
+  cert | viol 0.213 | dV -0.190727 | V 0.3296 | inball 0.233 | a*_q05 -0.00574 | a*_q50 0.01294 | dV>=0 0.145 | n=150 | a_used 0.00218 -> 0.00207
+  crit | n=1 | viol 0.496 | V 0.7648 | Vmin 0.3735 | agree +0.437 | a*_q05 -0.00720 | a*_q50 0.00219 | dV>=0 0.386 | beta 0.1676
+  bell | direct viol 0.506 | direct dV>=0 0.480 | d_mean -0.00196 | d_std 0.03654 | d_q95 0.07392
+[Episode 208/400] Steps: 720 | Reward:   -8.03 | Battery:  66.79% | Loss: 0.0739
+Placing Sensors
+[Episode 209/400] Steps: 720 | Reward:   -3.23 | Battery:  86.90% | Loss: 
+Placing Sensors
+Policy -0.0121 | Value 0.0072 | KL 0.01706 | CF 0.1907 | Std 0.1102 | |a| 0.0319 | EV +0.896 | Rsd 0.333 | Res 0.112 | AE nan | Alpha 0.0100 | MB 24/24
+  cert | viol 0.025 | dV -0.247310 | V 0.3298 | inball 0.511 | a*_q05 0.00270 | a*_q50 0.02993 | dV>=0 0.000 | n=150 | a_used 0.00207 -> 0.00209
+  crit | n=1 | viol 0.442 | V 0.6132 | Vmin 0.2503 | agree +0.704 | a*_q05 -0.00720 | a*_q50 0.00286 | dV>=0 0.342 | beta 0.1636
+  bell | direct viol 0.490 | direct dV>=0 0.468 | d_mean +0.00067 | d_std 0.03533 | d_q95 0.07248
+[Episode 210/400] Steps: 720 | Reward:   -5.20 | Battery:  78.49% | Loss: -0.0365
+Placing Sensors
+[Episode 211/400] Steps: 720 | Reward:   -3.61 | Battery:  74.97% | Loss: 
+Placing Sensors
+[Episode 212/400] Steps: 113 | Reward:  -17.44 | Battery:   0.00% | Loss: 
+Placing Sensors
+Policy 0.0003 | Value 0.0196 | KL 0.03242 | CF 0.2666 | Std 0.1102 | |a| 0.0349 | EV +0.783 | Rsd 0.466 | Res 0.217 | AE nan | Alpha 0.0100 | MB 21/28
+  cert | viol 0.000 | dV -0.269876 | V 0.3120 | inball 0.532 | a*_q05 0.00727 | a*_q50 0.03511 | dV>=0 0.000 | n=150 | a_used 0.00209 -> 0.00226
+  crit | n=1 | viol 0.457 | V 0.6690 | Vmin 0.2144 | agree +0.775 | a*_q05 -0.00630 | a*_q50 0.00260 | dV>=0 0.300 | beta 0.1613
+  bell | direct viol 0.467 | direct dV>=0 0.445 | d_mean +0.00138 | d_std 0.04231 | d_q95 0.08317
+[Episode 213/400] Steps: 720 | Reward:   -4.27 | Battery:  83.00% | Loss: -0.0103
+Placing Sensors
+[Episode 214/400] Steps:  63 | Reward:  -17.76 | Battery:   0.00% | Loss: 
+Placing Sensors
+[Episode 215/400] Steps: 720 | Reward:   -3.97 | Battery:  83.93% | Loss: 
+Placing Sensors
+Policy -0.0075 | Value 0.0114 | KL 0.01868 | CF 0.1958 | Std 0.1102 | |a| 0.0261 | EV +0.865 | Rsd 0.455 | Res 0.171 | AE nan | Alpha 0.0100 | MB 24/24
+  cert | viol 0.000 | dV -0.256009 | V 0.2876 | inball 0.558 | a*_q05 0.00672 | a*_q50 0.03618 | dV>=0 0.000 | n=150 | a_used 0.00226 -> 0.00239
+  crit | n=1 | viol 0.490 | V 0.5962 | Vmin 0.2025 | agree +0.741 | a*_q05 -0.00713 | a*_q50 0.00244 | dV>=0 0.357 | beta 0.1579
+  bell | direct viol 0.489 | direct dV>=0 0.471 | d_mean +0.00033 | d_std 0.05877 | d_q95 0.11471
+[Episode 216/400] Steps: 720 | Reward:   -3.83 | Battery:  74.83% | Loss: -0.0295
+Placing Sensors
+[Episode 217/400] Steps: 720 | Reward:   -5.93 | Battery:  74.91% | Loss: 
+Placing Sensors
+Policy -0.0024 | Value 0.0070 | KL 0.01224 | CF 0.1292 | Std 0.1102 | |a| 0.0269 | EV +0.852 | Rsd 0.333 | Res 0.128 | AE nan | Alpha 0.0100 | MB 24/24
+  cert | viol 0.057 | dV -0.216492 | V 0.2925 | inball 0.460 | a*_q05 0.00241 | a*_q50 0.02429 | dV>=0 0.019 | n=150 | a_used 0.00239 -> 0.00242
+  crit | n=1 | viol 0.527 | V 0.6555 | Vmin 0.2953 | agree +0.535 | a*_q05 -0.00422 | a*_q50 0.00207 | dV>=0 0.359 | beta 0.1577
+  bell | direct viol 0.487 | direct dV>=0 0.463 | d_mean -0.00016 | d_std 0.04159 | d_q95 0.08466
+[Episode 218/400] Steps: 720 | Reward:   -3.90 | Battery:  69.66% | Loss: 0.0402
+Placing Sensors
+[Episode 219/400] Steps: 720 | Reward:   -4.84 | Battery:  64.42% | Loss: 
+Placing Sensors
+Policy -0.0171 | Value 0.0050 | KL 0.01002 | CF 0.1287 | Std 0.1102 | |a| 0.0294 | EV +0.939 | Rsd 0.387 | Res 0.096 | AE nan | Alpha 0.0100 | MB 24/24
+  cert | viol 0.037 | dV -0.267898 | V 0.3280 | inball 0.475 | a*_q05 0.00387 | a*_q50 0.03010 | dV>=0 0.000 | n=150 | a_used 0.00242 -> 0.00252
+  crit | n=1 | viol 0.532 | V 0.7228 | Vmin 0.2622 | agree +0.402 | a*_q05 -0.00677 | a*_q50 0.00191 | dV>=0 0.387 | beta 0.1573
+  bell | direct viol 0.499 | direct dV>=0 0.467 | d_mean +0.00020 | d_std 0.03394 | d_q95 0.06803
+[Episode 220/400] Steps: 720 | Reward:   -4.78 | Battery:  65.90% | Loss: -0.0358
+Placing Sensors
+[Episode 221/400] Steps: 115 | Reward:  -17.41 | Battery:   0.00% | Loss: 
+Placing Sensors
+[Episode 222/400] Steps: 720 | Reward:   -3.18 | Battery:  68.58% | Loss: 
+Placing Sensors
+Policy -0.0036 | Value 0.0242 | KL 0.01784 | CF 0.1644 | Std 0.1102 | |a| 0.0314 | EV +0.741 | Rsd 0.445 | Res 0.227 | AE nan | Alpha 0.0100 | MB 28/28
+  cert | viol 0.166 | dV -0.228317 | V 0.3224 | inball 0.320 | a*_q05 -0.00512 | a*_q50 0.01899 | dV>=0 0.116 | n=150 | a_used 0.00252 -> 0.00270
+  crit | n=1 | viol 0.614 | V 0.8255 | Vmin 0.3210 | agree +0.617 | a*_q05 -0.00692 | a*_q50 0.00049 | dV>=0 0.479 | beta 0.1592
+  bell | direct viol 0.486 | direct dV>=0 0.461 | d_mean -0.00037 | d_std 0.04881 | d_q95 0.09783
+[Episode 223/400] Steps: 720 | Reward:   -7.28 | Battery:  72.86% | Loss: 0.1056
+Placing Sensors
+[Episode 224/400] Steps: 720 | Reward:   -2.44 | Battery:  88.81% | Loss: 
+Placing Sensors
+Policy -0.0031 | Value 0.0088 | KL 0.00803 | CF 0.0907 | Std 0.1102 | |a| 0.0347 | EV +0.876 | Rsd 0.360 | Res 0.150 | AE nan | Alpha 0.0100 | MB 24/24
+  cert | viol 0.000 | dV -0.250519 | V 0.2785 | inball 0.586 | a*_q05 0.00999 | a*_q50 0.03291 | dV>=0 0.000 | n=150 | a_used 0.00270 -> 0.00288
+  crit | n=1 | viol 0.722 | V 0.6584 | Vmin 0.2576 | agree +0.581 | a*_q05 -0.00626 | a*_q50 -0.00009 | dV>=0 0.510 | beta 0.1594
+  bell | direct viol 0.502 | direct dV>=0 0.475 | d_mean +0.00278 | d_std 0.04480 | d_q95 0.08720
+[Episode 225/400] Steps: 720 | Reward:   -4.92 | Battery:  68.37% | Loss: 0.0346
+Placing Sensors
+[Episode 226/400] Steps: 720 | Reward:   -4.74 | Battery:  74.70% | Loss: 
+Placing Sensors
+Policy -0.0039 | Value 0.0065 | KL 0.01742 | CF 0.1220 | Std 0.1101 | |a| 0.0307 | EV +0.900 | Rsd 0.354 | Res 0.112 | AE nan | Alpha 0.0100 | MB 24/24
+  cert | viol 0.006 | dV -0.296930 | V 0.3324 | inball 0.565 | a*_q05 0.00681 | a*_q50 0.03657 | dV>=0 0.000 | n=150 | a_used 0.00288 -> 0.00300
+  crit | n=1 | viol 0.529 | V 0.6724 | Vmin 0.2773 | agree +0.414 | a*_q05 -0.00781 | a*_q50 0.00210 | dV>=0 0.421 | beta 0.1589
+  bell | direct viol 0.509 | direct dV>=0 0.470 | d_mean +0.00083 | d_std 0.04089 | d_q95 0.07976
+[Episode 227/400] Steps: 720 | Reward:   -4.23 | Battery:  75.46% | Loss: 0.0016
+Placing Sensors
+[Episode 228/400] Steps: 720 | Reward:   -5.45 | Battery:  61.73% | Loss: 
+Placing Sensors
+Policy -0.0049 | Value 0.0066 | KL 0.00937 | CF 0.0721 | Std 0.1101 | |a| 0.0334 | EV +0.896 | Rsd 0.333 | Res 0.110 | AE nan | Alpha 0.0100 | MB 24/24
+  cert | viol 0.036 | dV -0.304775 | V 0.3561 | inball 0.467 | a*_q05 0.00455 | a*_q50 0.03483 | dV>=0 0.000 | n=150 | a_used 0.00300 -> 0.00302
+  crit | n=1 | viol 0.632 | V 0.6930 | Vmin 0.3161 | agree +0.523 | a*_q05 -0.00681 | a*_q50 0.00051 | dV>=0 0.473 | beta 0.1590
+  bell | direct viol 0.499 | direct dV>=0 0.461 | d_mean +0.00009 | d_std 0.03712 | d_q95 0.07154
+[Episode 229/400] Steps: 720 | Reward:   -4.45 | Battery:  77.41% | Loss: -0.0659
+Placing Sensors
+[Episode 230/400] Steps: 720 | Reward:   -5.51 | Battery:  60.40% | Loss: 
+Placing Sensors
+Policy -0.0106 | Value 0.0093 | KL 0.01313 | CF 0.1452 | Std 0.1101 | |a| 0.0309 | EV +0.903 | Rsd 0.337 | Res 0.119 | AE nan | Alpha 0.0100 | MB 24/24
+  cert | viol 0.047 | dV -0.264675 | V 0.3617 | inball 0.386 | a*_q05 0.00327 | a*_q50 0.02280 | dV>=0 0.006 | n=150 | a_used 0.00302 -> 0.00308
+  crit | n=1 | viol 0.377 | V 0.7087 | Vmin 0.3364 | agree +0.426 | a*_q05 -0.00519 | a*_q50 0.00546 | dV>=0 0.267 | beta 0.1601
+  bell | direct viol 0.518 | direct dV>=0 0.481 | d_mean -0.00175 | d_std 0.03328 | d_q95 0.06534
+[Episode 231/400] Steps: 720 | Reward:   -6.38 | Battery:  75.87% | Loss: -0.1497
+Placing Sensors
+[Episode 232/400] Steps: 720 | Reward:   -5.09 | Battery:  76.62% | Loss: 
+Placing Sensors
+[Episode 233/400] Steps:  66 | Reward:  -17.72 | Battery:   0.00% | Loss: 
+Placing Sensors
+[Episode 234/400] Steps:  79 | Reward:  -17.61 | Battery:   0.00% | Loss: 
+Placing Sensors
+Policy -0.0214 | Value 0.0203 | KL 0.02509 | CF 0.1921 | Std 0.1101 | |a| 0.0315 | EV +0.789 | Rsd 0.482 | Res 0.229 | AE nan | Alpha 0.0100 | MB 28/28
+  cert | viol 0.097 | dV -0.229037 | V 0.2745 | inball 0.333 | a*_q05 0.00199 | a*_q50 0.01950 | dV>=0 0.026 | n=150 | a_used 0.00308 -> 0.00308
+  crit | n=1 | viol 0.638 | V 0.7673 | Vmin 0.3688 | agree +0.786 | a*_q05 -0.00657 | a*_q50 0.00136 | dV>=0 0.408 | beta 0.1609
+  bell | direct viol 0.526 | direct dV>=0 0.482 | d_mean -0.00097 | d_std 0.04450 | d_q95 0.09151
+[Episode 235/400] Steps: 720 | Reward:   -5.04 | Battery:  70.96% | Loss: -0.1725
+Placing Sensors
+[Episode 236/400] Steps: 720 | Reward:   -3.67 | Battery:  69.84% | Loss: 
+Placing Sensors
+[Episode 237/400] Steps: 127 | Reward:  -17.38 | Battery:   0.00% | Loss: 
+Placing Sensors
+Policy -0.0097 | Value 0.0275 | KL 0.01798 | CF 0.1661 | Std 0.1101 | |a| 0.0348 | EV +0.692 | Rsd 0.462 | Res 0.257 | AE nan | Alpha 0.0100 | MB 28/28
+  cert | viol 0.013 | dV -0.277359 | V 0.3218 | inball 0.504 | a*_q05 0.00582 | a*_q50 0.03574 | dV>=0 0.000 | n=150 | a_used 0.00308 -> 0.00316
+  crit | n=1 | viol 0.567 | V 0.7591 | Vmin 0.2662 | agree +0.601 | a*_q05 -0.00707 | a*_q50 0.00220 | dV>=0 0.368 | beta 0.1593
+  bell | direct viol 0.505 | direct dV>=0 0.472 | d_mean +0.00085 | d_std 0.06510 | d_q95 0.14018
+[Episode 238/400] Steps: 720 | Reward:   -4.82 | Battery:  66.08% | Loss: 0.0927
+Placing Sensors
+[Episode 239/400] Steps: 720 | Reward:   -6.68 | Battery:  77.49% | Loss: 
+Placing Sensors
+Policy 0.0039 | Value 0.0108 | KL 0.02269 | CF 0.2437 | Std 0.1101 | |a| 0.0377 | EV +0.825 | Rsd 0.355 | Res 0.166 | AE nan | Alpha 0.0100 | MB 24/24
+  cert | viol 0.070 | dV -0.252712 | V 0.3683 | inball 0.352 | a*_q05 0.00271 | a*_q50 0.01705 | dV>=0 0.012 | n=150 | a_used 0.00316 -> 0.00312
+  crit | n=1 | viol 0.500 | V 0.7467 | Vmin 0.3679 | agree +0.601 | a*_q05 -0.00481 | a*_q50 0.00329 | dV>=0 0.310 | beta 0.1602
+  bell | direct viol 0.532 | direct dV>=0 0.493 | d_mean -0.00214 | d_std 0.05043 | d_q95 0.10915
+[Episode 240/400] Steps: 720 | Reward:   -6.28 | Battery:  53.99% | Loss: -0.0174
+Placing Sensors
+[Episode 241/400] Steps: 720 | Reward:   -3.92 | Battery:  80.09% | Loss: 
+Placing Sensors
+Policy -0.0117 | Value 0.0069 | KL 0.01518 | CF 0.1308 | Std 0.1101 | |a| 0.0387 | EV +0.919 | Rsd 0.362 | Res 0.104 | AE nan | Alpha 0.0100 | MB 24/24
+  cert | viol 0.041 | dV -0.275176 | V 0.3403 | inball 0.459 | a*_q05 0.00349 | a*_q50 0.02928 | dV>=0 0.016 | n=150 | a_used 0.00312 -> 0.00314
+  crit | n=1 | viol 0.602 | V 0.7031 | Vmin 0.3238 | agree +0.487 | a*_q05 -0.00623 | a*_q50 0.00107 | dV>=0 0.437 | beta 0.1597
+  bell | direct viol 0.516 | direct dV>=0 0.479 | d_mean +0.00071 | d_std 0.04844 | d_q95 0.09557
+[Episode 242/400] Steps: 720 | Reward:   -6.10 | Battery:  50.42% | Loss: -0.0614
+Placing Sensors
+[Episode 243/400] Steps: 720 | Reward:   -6.92 | Battery:  57.50% | Loss: 
+Placing Sensors
+Policy -0.0072 | Value 0.0084 | KL 0.01058 | CF 0.1170 | Std 0.1100 | |a| 0.0394 | EV +0.858 | Rsd 0.335 | Res 0.127 | AE nan | Alpha 0.0100 | MB 24/24
+  cert | viol 0.141 | dV -0.203500 | V 0.2945 | inball 0.326 | a*_q05 -0.00544 | a*_q50 0.01575 | dV>=0 0.087 | n=150 | a_used 0.00314 -> 0.00309
+  crit | n=1 | viol 0.562 | V 0.7847 | Vmin 0.3459 | agree +0.371 | a*_q05 -0.00535 | a*_q50 0.00215 | dV>=0 0.372 | beta 0.1611
+  bell | direct viol 0.516 | direct dV>=0 0.482 | d_mean -0.00019 | d_std 0.03930 | d_q95 0.08343
+[Episode 244/400] Steps: 720 | Reward:   -4.65 | Battery:  76.30% | Loss: 0.0870
+Placing Sensors
+[Episode 245/400] Steps: 720 | Reward:   -4.61 | Battery:  82.80% | Loss: 
+Placing Sensors
+Policy -0.0023 | Value 0.0055 | KL 0.02234 | CF 0.1266 | Std 0.1100 | |a| 0.0386 | EV +0.906 | Rsd 0.294 | Res 0.096 | AE nan | Alpha 0.0100 | MB 24/24
+  cert | viol 0.007 | dV -0.237245 | V 0.2899 | inball 0.520 | a*_q05 0.00535 | a*_q50 0.02913 | dV>=0 0.000 | n=150 | a_used 0.00309 -> 0.00316
+  crit | n=1 | viol 0.570 | V 0.6813 | Vmin 0.3088 | agree +0.497 | a*_q05 -0.00643 | a*_q50 0.00199 | dV>=0 0.393 | beta 0.1616
+  bell | direct viol 0.508 | direct dV>=0 0.479 | d_mean +0.00033 | d_std 0.04191 | d_q95 0.08360
+[Episode 246/400] Steps: 720 | Reward:   -4.18 | Battery:  62.68% | Loss: 0.0425
+Placing Sensors
+[Episode 247/400] Steps: 720 | Reward:   -4.82 | Battery:  79.23% | Loss: 
+Placing Sensors
+[Episode 248/400] Steps: 108 | Reward:  -17.41 | Battery:   0.00% | Loss: 
+Placing Sensors
+Policy -0.0301 | Value 0.0279 | KL 0.02998 | CF 0.2241 | Std 0.1100 | |a| 0.0343 | EV +0.736 | Rsd 0.406 | Res 0.209 | AE nan | Alpha 0.0100 | MB 21/28
+  cert | viol 0.012 | dV -0.240682 | V 0.2971 | inball 0.443 | a*_q05 0.00773 | a*_q50 0.02859 | dV>=0 0.000 | n=150 | a_used 0.00316 -> 0.00327
+  crit | n=1 | viol 0.632 | V 0.7710 | Vmin 0.3462 | agree +0.685 | a*_q05 -0.00654 | a*_q50 0.00129 | dV>=0 0.379 | beta 0.1621
+  bell | direct viol 0.499 | direct dV>=0 0.468 | d_mean +0.00087 | d_std 0.05279 | d_q95 0.10479
+[Episode 249/400] Steps: 720 | Reward:   -4.97 | Battery:  62.12% | Loss: -0.0982
+Placing Sensors
+[Episode 250/400] Steps: 720 | Reward:   -5.49 | Battery:  75.61% | Loss: 
+Placing Sensors
+Policy -0.0110 | Value 0.0093 | KL 0.01618 | CF 0.1682 | Std 0.1100 | |a| 0.0288 | EV +0.836 | Rsd 0.336 | Res 0.136 | AE nan | Alpha 0.0100 | MB 24/24
+  cert | viol 0.108 | dV -0.260226 | V 0.3439 | inball 0.400 | a*_q05 -0.00778 | a*_q50 0.02637 | dV>=0 0.052 | n=150 | a_used 0.00327 -> 0.00324
+  crit | n=1 | viol 0.600 | V 0.7535 | Vmin 0.3853 | agree +0.479 | a*_q05 -0.00647 | a*_q50 0.00079 | dV>=0 0.475 | beta 0.1634
+  bell | direct viol 0.525 | direct dV>=0 0.494 | d_mean -0.00004 | d_std 0.04863 | d_q95 0.09894
+[Episode 251/400] Steps: 720 | Reward:   -5.50 | Battery:  49.84% | Loss: -0.0854
+Placing Sensors
+[Episode 252/400] Steps: 720 | Reward:   -6.42 | Battery:  78.94% | Loss: 
+Placing Sensors
+Policy -0.0082 | Value 0.0058 | KL 0.00923 | CF 0.1146 | Std 0.1100 | |a| 0.0323 | EV +0.912 | Rsd 0.334 | Res 0.100 | AE nan | Alpha 0.0100 | MB 24/24
+  cert | viol 0.152 | dV -0.253713 | V 0.3809 | inball 0.455 | a*_q05 0.00006 | a*_q50 0.02340 | dV>=0 0.068 | n=150 | a_used 0.00324 -> 0.00307
+  crit | n=1 | viol 0.451 | V 0.7685 | Vmin 0.3409 | agree +0.608 | a*_q05 -0.00625 | a*_q50 0.00398 | dV>=0 0.289 | beta 0.1639
+  bell | direct viol 0.524 | direct dV>=0 0.488 | d_mean -0.00109 | d_std 0.04238 | d_q95 0.08734
+[Episode 253/400] Steps: 720 | Reward:   -5.13 | Battery:  73.09% | Loss: 0.1152
+Placing Sensors
+[Episode 254/400] Steps: 720 | Reward:   -4.29 | Battery:  59.48% | Loss: 
+Placing Sensors
+Policy -0.0062 | Value 0.0078 | KL 0.01258 | CF 0.1172 | Std 0.1100 | |a| 0.0298 | EV +0.872 | Rsd 0.319 | Res 0.141 | AE nan | Alpha 0.0100 | MB 24/24
+  cert | viol 0.000 | dV -0.237252 | V 0.2604 | inball 0.535 | a*_q05 0.00884 | a*_q50 0.03187 | dV>=0 0.000 | n=150 | a_used 0.00307 -> 0.00326
+  crit | n=1 | viol 0.682 | V 0.7319 | Vmin 0.3598 | agree +0.374 | a*_q05 -0.00730 | a*_q50 -0.00046 | dV>=0 0.522 | beta 0.1644
+  bell | direct viol 0.501 | direct dV>=0 0.463 | d_mean +0.00231 | d_std 0.03400 | d_q95 0.06970
+[Episode 255/400] Steps: 720 | Reward:   -3.81 | Battery:  81.51% | Loss: -0.0158
+Placing Sensors
+[Episode 256/400] Steps: 720 | Reward:   -4.78 | Battery:  75.65% | Loss: 
+Placing Sensors
+Policy -0.0144 | Value 0.0081 | KL 0.01445 | CF 0.1476 | Std 0.1100 | |a| 0.0332 | EV +0.886 | Rsd 0.316 | Res 0.115 | AE nan | Alpha 0.0100 | MB 24/24
+  cert | viol 0.021 | dV -0.286626 | V 0.3312 | inball 0.472 | a*_q05 0.00515 | a*_q50 0.03171 | dV>=0 0.000 | n=150 | a_used 0.00326 -> 0.00341
+  crit | n=1 | viol 0.697 | V 0.7050 | Vmin 0.3662 | agree +0.633 | a*_q05 -0.00754 | a*_q50 0.00007 | dV>=0 0.501 | beta 0.1649
+  bell | direct viol 0.512 | direct dV>=0 0.467 | d_mean +0.00106 | d_std 0.03602 | d_q95 0.07206
+[Episode 257/400] Steps: 720 | Reward:   -4.59 | Battery:  66.18% | Loss: -0.1194
+Placing Sensors
+[Episode 258/400] Steps: 720 | Reward:   -4.94 | Battery:  79.00% | Loss: 
+Placing Sensors
+Policy -0.0080 | Value 0.0052 | KL 0.01004 | CF 0.1250 | Std 0.1100 | |a| 0.0314 | EV +0.884 | Rsd 0.252 | Res 0.087 | AE nan | Alpha 0.0100 | MB 24/24
+  cert | viol 0.030 | dV -0.267871 | V 0.3200 | inball 0.479 | a*_q05 0.00566 | a*_q50 0.02899 | dV>=0 0.005 | n=150 | a_used 0.00341 -> 0.00351
+  crit | n=1 | viol 0.509 | V 0.6268 | Vmin 0.3421 | agree +0.503 | a*_q05 -0.00663 | a*_q50 0.00308 | dV>=0 0.400 | beta 0.1653
+  bell | direct viol 0.526 | direct dV>=0 0.499 | d_mean -0.00068 | d_std 0.03553 | d_q95 0.07331
+[Episode 259/400] Steps: 720 | Reward:   -4.30 | Battery:  72.12% | Loss: 0.0681
+Placing Sensors
+[Episode 260/400] Steps: 720 | Reward:   -4.74 | Battery:  71.61% | Loss: 
+Placing Sensors
+Policy -0.0038 | Value 0.0047 | KL 0.01773 | CF 0.1981 | Std 0.1100 | |a| 0.0400 | EV +0.928 | Rsd 0.286 | Res 0.077 | AE nan | Alpha 0.0100 | MB 24/24
+  cert | viol 0.153 | dV -0.201004 | V 0.2994 | inball 0.406 | a*_q05 0.00223 | a*_q50 0.01578 | dV>=0 0.000 | n=150 | a_used 0.00351 -> 0.00345
+  crit | n=1 | viol 0.468 | V 0.7050 | Vmin 0.3247 | agree +0.550 | a*_q05 -0.00629 | a*_q50 0.00400 | dV>=0 0.259 | beta 0.1647
+  bell | direct viol 0.522 | direct dV>=0 0.471 | d_mean -0.00093 | d_std 0.03892 | d_q95 0.07925
+[Episode 261/400] Steps: 720 | Reward:   -5.95 | Battery:  77.45% | Loss: -0.0881
+Placing Sensors
+[Episode 262/400] Steps: 720 | Reward:   -6.25 | Battery:  72.69% | Loss: 
+Placing Sensors
+Policy -0.0016 | Value 0.0085 | KL 0.02379 | CF 0.2122 | Std 0.1100 | |a| 0.0397 | EV +0.857 | Rsd 0.320 | Res 0.122 | AE nan | Alpha 0.0100 | MB 24/24
+  cert | viol 0.128 | dV -0.283179 | V 0.3939 | inball 0.377 | a*_q05 0.00019 | a*_q50 0.02915 | dV>=0 0.062 | n=150 | a_used 0.00345 -> 0.00328
+  crit | n=1 | viol 0.642 | V 0.7666 | Vmin 0.3677 | agree +0.627 | a*_q05 -0.00710 | a*_q50 0.00056 | dV>=0 0.473 | beta 0.1661
+  bell | direct viol 0.527 | direct dV>=0 0.488 | d_mean -0.00027 | d_std 0.04079 | d_q95 0.08088
+[Episode 263/400] Steps: 720 | Reward:   -4.60 | Battery:  63.34% | Loss: 0.1219
+Placing Sensors
+[Episode 264/400] Steps: 720 | Reward:   -4.84 | Battery:  71.37% | Loss: 
+Placing Sensors
+Policy -0.0094 | Value 0.0075 | KL 0.01598 | CF 0.1604 | Std 0.1100 | |a| 0.0449 | EV +0.870 | Rsd 0.325 | Res 0.123 | AE nan | Alpha 0.0100 | MB 24/24
+  cert | viol 0.014 | dV -0.284280 | V 0.3220 | inball 0.451 | a*_q05 0.00687 | a*_q50 0.03199 | dV>=0 0.002 | n=150 | a_used 0.00328 -> 0.00335
+  crit | n=1 | viol 0.701 | V 0.7488 | Vmin 0.3278 | agree +0.604 | a*_q05 -0.00592 | a*_q50 -0.00028 | dV>=0 0.532 | beta 0.1660
+  bell | direct viol 0.514 | direct dV>=0 0.475 | d_mean +0.00119 | d_std 0.04002 | d_q95 0.08457
+[Episode 265/400] Steps: 720 | Reward:   -5.30 | Battery:  45.88% | Loss: 0.0217
+Placing Sensors
+[Episode 266/400] Steps: 720 | Reward:   -2.94 | Battery:  75.83% | Loss: 
+Placing Sensors
+Policy 0.0077 | Value 0.0054 | KL 0.02107 | CF 0.1007 | Std 0.1100 | |a| 0.0299 | EV +0.931 | Rsd 0.296 | Res 0.079 | AE nan | Alpha 0.0100 | MB 12/24
+  cert | viol 0.000 | dV -0.261718 | V 0.2911 | inball 0.576 | a*_q05 0.00782 | a*_q50 0.03688 | dV>=0 0.000 | n=150 | a_used 0.00335 -> 0.00352
+  crit | n=1 | viol 0.562 | V 0.5889 | Vmin 0.2732 | agree +0.341 | a*_q05 -0.00724 | a*_q50 0.00237 | dV>=0 0.425 | beta 0.1644
+  bell | direct viol 0.502 | direct dV>=0 0.465 | d_mean +0.00076 | d_std 0.03875 | d_q95 0.07964
+[Episode 267/400] Steps: 720 | Reward:   -4.63 | Battery:  68.50% | Loss: -0.0143
+Placing Sensors
+[Episode 268/400] Steps:  82 | Reward:  -17.69 | Battery:   0.00% | Loss: 
+Placing Sensors
+[Episode 269/400] Steps: 720 | Reward:   -3.99 | Battery:  68.35% | Loss: 
+Placing Sensors
+Policy -0.0013 | Value 0.0223 | KL 0.01876 | CF 0.1858 | Std 0.1100 | |a| 0.0314 | EV +0.792 | Rsd 0.434 | Res 0.199 | AE nan | Alpha 0.0100 | MB 24/24
+  cert | viol 0.019 | dV -0.205131 | V 0.2555 | inball 0.532 | a*_q05 0.00468 | a*_q50 0.03279 | dV>=0 0.000 | n=150 | a_used 0.00352 -> 0.00354
+  crit | n=1 | viol 0.653 | V 0.6188 | Vmin 0.2278 | agree +0.717 | a*_q05 -0.00707 | a*_q50 0.00187 | dV>=0 0.345 | beta 0.1613
+  bell | direct viol 0.490 | direct dV>=0 0.459 | d_mean +0.00173 | d_std 0.05508 | d_q95 0.11809
+[Episode 270/400] Steps: 720 | Reward:   -3.47 | Battery:  79.40% | Loss: 0.1799
+Placing Sensors
+[Episode 271/400] Steps: 720 | Reward:   -5.62 | Battery:  57.28% | Loss: 
+Placing Sensors
+Policy -0.0064 | Value 0.0063 | KL 0.01271 | CF 0.1508 | Std 0.1100 | |a| 0.0375 | EV +0.876 | Rsd 0.332 | Res 0.118 | AE nan | Alpha 0.0100 | MB 24/24
+  cert | viol 0.053 | dV -0.259713 | V 0.3260 | inball 0.440 | a*_q05 0.00399 | a*_q50 0.02695 | dV>=0 0.000 | n=150 | a_used 0.00354 -> 0.00362
+  crit | n=1 | viol 0.462 | V 0.6368 | Vmin 0.2580 | agree +0.424 | a*_q05 -0.00692 | a*_q50 0.00414 | dV>=0 0.334 | beta 0.1593
+  bell | direct viol 0.525 | direct dV>=0 0.492 | d_mean -0.00096 | d_std 0.04681 | d_q95 0.09656
+[Episode 272/400] Steps: 720 | Reward:   -4.00 | Battery:  76.71% | Loss: 0.0935
+Placing Sensors
+[Episode 273/400] Steps: 163 | Reward:  -17.10 | Battery:   0.00% | Loss: 
+Placing Sensors
+[Episode 274/400] Steps: 720 | Reward:   -4.27 | Battery:  74.58% | Loss: 
+Placing Sensors
+Policy -0.0080 | Value 0.0222 | KL 0.02251 | CF 0.2195 | Std 0.1100 | |a| 0.0320 | EV +0.739 | Rsd 0.426 | Res 0.221 | AE nan | Alpha 0.0100 | MB 28/28
+  cert | viol 0.031 | dV -0.211463 | V 0.2583 | inball 0.434 | a*_q05 0.00561 | a*_q50 0.02598 | dV>=0 0.000 | n=150 | a_used 0.00362 -> 0.00373
+  crit | n=1 | viol 0.611 | V 0.7589 | Vmin 0.2814 | agree +0.586 | a*_q05 -0.00538 | a*_q50 0.00251 | dV>=0 0.274 | beta 0.1582
+  bell | direct viol 0.498 | direct dV>=0 0.467 | d_mean -0.00014 | d_std 0.06412 | d_q95 0.13689
+[Episode 275/400] Steps: 720 | Reward:   -4.87 | Battery:  68.67% | Loss: -0.0365
+Placing Sensors
+[Episode 276/400] Steps: 157 | Reward:  -17.13 | Battery:   0.00% | Loss: 
+Placing Sensors
+[Episode 277/400] Steps: 720 | Reward:   -4.51 | Battery:  53.45% | Loss: 
+Placing Sensors
+Policy 0.0083 | Value 0.0241 | KL 0.02248 | CF 0.2133 | Std 0.1100 | |a| 0.0387 | EV +0.706 | Rsd 0.443 | Res 0.243 | AE nan | Alpha 0.0100 | MB 21/28
+  cert | viol 0.032 | dV -0.255253 | V 0.2922 | inball 0.426 | a*_q05 0.00571 | a*_q50 0.03327 | dV>=0 0.000 | n=150 | a_used 0.00373 -> 0.00382
+  crit | n=1 | viol 0.664 | V 0.7519 | Vmin 0.2867 | agree +0.660 | a*_q05 -0.00683 | a*_q50 0.00118 | dV>=0 0.408 | beta 0.1571
+  bell | direct viol 0.493 | direct dV>=0 0.466 | d_mean -0.00095 | d_std 0.07896 | d_q95 0.14438
+[Episode 278/400] Steps: 720 | Reward:   -4.62 | Battery:  59.78% | Loss: 0.0034
+Placing Sensors
+[Episode 279/400] Steps: 136 | Reward:  -17.40 | Battery:   0.00% | Loss: 
+Placing Sensors
+[Episode 280/400] Steps: 720 | Reward:   -4.69 | Battery:  68.68% | Loss: 
+Placing Sensors
+Policy -0.0033 | Value 0.0428 | KL 0.02426 | CF 0.2392 | Std 0.1100 | |a| 0.0369 | EV +0.713 | Rsd 0.432 | Res 0.239 | AE nan | Alpha 0.0100 | MB 14/28
+  cert | viol 0.060 | dV -0.248486 | V 0.3205 | inball 0.439 | a*_q05 0.00383 | a*_q50 0.02616 | dV>=0 0.000 | n=150 | a_used 0.00382 -> 0.00383
+  crit | n=1 | viol 0.532 | V 0.7049 | Vmin 0.2515 | agree +0.651 | a*_q05 -0.00562 | a*_q50 0.00321 | dV>=0 0.304 | beta 0.1555
+  bell | direct viol 0.493 | direct dV>=0 0.464 | d_mean +0.00470 | d_std 0.07226 | d_q95 0.15399
+[Episode 281/400] Steps: 720 | Reward:   -4.64 | Battery:  69.52% | Loss: 0.0332
+Placing Sensors
+[Episode 282/400] Steps: 720 | Reward:   -4.36 | Battery:  62.78% | Loss: 
+Placing Sensors
+Policy -0.0081 | Value 0.0063 | KL 0.00927 | CF 0.1095 | Std 0.1100 | |a| 0.0258 | EV +0.934 | Rsd 0.361 | Res 0.096 | AE nan | Alpha 0.0100 | MB 24/24
+  cert | viol 0.045 | dV -0.258400 | V 0.3140 | inball 0.480 | a*_q05 0.00488 | a*_q50 0.02742 | dV>=0 0.005 | n=150 | a_used 0.00383 -> 0.00374
+  crit | n=1 | viol 0.518 | V 0.6194 | Vmin 0.2239 | agree +0.599 | a*_q05 -0.00519 | a*_q50 0.00352 | dV>=0 0.321 | beta 0.1532
+  bell | direct viol 0.515 | direct dV>=0 0.481 | d_mean +0.00002 | d_std 0.03648 | d_q95 0.07389
+[Episode 283/400] Steps: 720 | Reward:   -5.42 | Battery:  77.61% | Loss: -0.1135
+Placing Sensors
+[Episode 284/400] Steps: 720 | Reward:   -5.66 | Battery:  62.71% | Loss: 
+Placing Sensors
+Policy -0.0085 | Value 0.0076 | KL 0.00654 | CF 0.0764 | Std 0.1100 | |a| 0.0315 | EV +0.876 | Rsd 0.344 | Res 0.127 | AE nan | Alpha 0.0100 | MB 24/24
+  cert | viol 0.161 | dV -0.210363 | V 0.2705 | inball 0.362 | a*_q05 -0.00656 | a*_q50 0.01762 | dV>=0 0.137 | n=150 | a_used 0.00374 -> 0.00355
+  crit | n=1 | viol 0.452 | V 0.5979 | Vmin 0.2518 | agree +0.574 | a*_q05 -0.00603 | a*_q50 0.00436 | dV>=0 0.292 | beta 0.1511
+  bell | direct viol 0.533 | direct dV>=0 0.481 | d_mean -0.00104 | d_std 0.03283 | d_q95 0.06992
+[Episode 285/400] Steps: 720 | Reward:   -4.56 | Battery:  77.79% | Loss: -0.0558
+Placing Sensors
+[Episode 286/400] Steps: 152 | Reward:  -17.20 | Battery:   0.00% | Loss: 
+Placing Sensors
+[Episode 287/400] Steps: 720 | Reward:   -3.89 | Battery:  70.71% | Loss: 
+Placing Sensors
+Policy 0.0120 | Value 0.0423 | KL 0.02343 | CF 0.2193 | Std 0.1100 | |a| 0.0313 | EV +0.663 | Rsd 0.447 | Res 0.265 | AE nan | Alpha 0.0100 | MB 14/28
+  cert | viol 0.009 | dV -0.296275 | V 0.3302 | inball 0.479 | a*_q05 0.00799 | a*_q50 0.03471 | dV>=0 0.000 | n=150 | a_used 0.00355 -> 0.00374
+  crit | n=1 | viol 0.513 | V 0.6665 | Vmin 0.2078 | agree +0.576 | a*_q05 -0.00608 | a*_q50 0.00337 | dV>=0 0.363 | beta 0.1452
+  bell | direct viol 0.513 | direct dV>=0 0.469 | d_mean -0.00147 | d_std 0.04449 | d_q95 0.08984
+[Episode 288/400] Steps: 720 | Reward:   -4.41 | Battery:  59.77% | Loss: -0.0286
+Placing Sensors
+[Episode 289/400] Steps: 720 | Reward:   -3.79 | Battery:  64.05% | Loss: 
+Placing Sensors
+Policy 0.0061 | Value 0.0096 | KL 0.01541 | CF 0.2214 | Std 0.1100 | |a| 0.0227 | EV +0.795 | Rsd 0.311 | Res 0.148 | AE nan | Alpha 0.0100 | MB 24/24
+  cert | viol 0.000 | dV -0.288724 | V 0.3081 | inball 0.546 | a*_q05 0.01062 | a*_q50 0.03804 | dV>=0 0.000 | n=150 | a_used 0.00374 -> 0.00393
+  crit | n=1 | viol 0.641 | V 0.6187 | Vmin 0.2316 | agree +0.488 | a*_q05 -0.00676 | a*_q50 0.00089 | dV>=0 0.462 | beta 0.1434
+  bell | direct viol 0.514 | direct dV>=0 0.472 | d_mean +0.00067 | d_std 0.03729 | d_q95 0.07623
+[Episode 290/400] Steps: 720 | Reward:   -4.10 | Battery:  76.04% | Loss: 0.0574
+Placing Sensors
+[Episode 291/400] Steps: 720 | Reward:   -5.12 | Battery:  66.34% | Loss: 
+Placing Sensors
+Policy -0.0071 | Value 0.0048 | KL 0.00756 | CF 0.0938 | Std 0.1100 | |a| 0.0281 | EV +0.920 | Rsd 0.312 | Res 0.089 | AE nan | Alpha 0.0100 | MB 24/24
+  cert | viol 0.031 | dV -0.264694 | V 0.3271 | inball 0.486 | a*_q05 0.00503 | a*_q50 0.02882 | dV>=0 0.000 | n=150 | a_used 0.00393 -> 0.00400
+  crit | n=1 | viol 0.464 | V 0.6191 | Vmin 0.2385 | agree +0.553 | a*_q05 -0.00588 | a*_q50 0.00448 | dV>=0 0.275 | beta 0.1431
+  bell | direct viol 0.521 | direct dV>=0 0.479 | d_mean -0.00066 | d_std 0.03756 | d_q95 0.08063
+[Episode 292/400] Steps: 720 | Reward:   -4.58 | Battery:  73.31% | Loss: 0.1575
+Placing Sensors
+[Episode 293/400] Steps: 720 | Reward:   -5.47 | Battery:  66.33% | Loss: 
+Placing Sensors
+Policy -0.0148 | Value 0.0046 | KL 0.00993 | CF 0.1189 | Std 0.1100 | |a| 0.0346 | EV +0.934 | Rsd 0.323 | Res 0.084 | AE nan | Alpha 0.0100 | MB 24/24
+  cert | viol 0.109 | dV -0.247834 | V 0.3275 | inball 0.441 | a*_q05 0.00163 | a*_q50 0.02758 | dV>=0 0.008 | n=150 | a_used 0.00400 -> 0.00364
+  crit | n=1 | viol 0.490 | V 0.6527 | Vmin 0.2158 | agree +0.511 | a*_q05 -0.00551 | a*_q50 0.00414 | dV>=0 0.255 | beta 0.1431
+  bell | direct viol 0.521 | direct dV>=0 0.461 | d_mean -0.00060 | d_std 0.03046 | d_q95 0.06415
+[Episode 294/400] Steps: 720 | Reward:   -4.48 | Battery:  71.55% | Loss: -0.0134
+Placing Sensors
+[Episode 295/400] Steps: 720 | Reward:   -3.84 | Battery:  72.69% | Loss: 
+Placing Sensors
+Policy -0.0095 | Value 0.0053 | KL 0.00761 | CF 0.0867 | Std 0.1100 | |a| 0.0326 | EV +0.919 | Rsd 0.303 | Res 0.093 | AE nan | Alpha 0.0100 | MB 24/24
+  cert | viol 0.000 | dV -0.279562 | V 0.3073 | inball 0.590 | a*_q05 0.00802 | a*_q50 0.03745 | dV>=0 0.000 | n=150 | a_used 0.00364 -> 0.00374
+  crit | n=1 | viol 0.664 | V 0.5516 | Vmin 0.2284 | agree +0.716 | a*_q05 -0.00697 | a*_q50 0.00145 | dV>=0 0.420 | beta 0.1418
+  bell | direct viol 0.488 | direct dV>=0 0.453 | d_mean +0.00102 | d_std 0.03715 | d_q95 0.07609
+[Episode 296/400] Steps: 720 | Reward:   -3.59 | Battery:  77.62% | Loss: 0.1065
+Placing Sensors
+[Episode 297/400] Steps: 720 | Reward:   -5.23 | Battery:  82.18% | Loss: 
+Placing Sensors
+Policy -0.0095 | Value 0.0068 | KL 0.00904 | CF 0.0808 | Std 0.1099 | |a| 0.0275 | EV +0.857 | Rsd 0.280 | Res 0.107 | AE nan | Alpha 0.0100 | MB 24/24
+  cert | viol 0.050 | dV -0.249593 | V 0.3325 | inball 0.484 | a*_q05 0.00363 | a*_q50 0.02324 | dV>=0 0.000 | n=150 | a_used 0.00374 -> 0.00378
+  crit | n=1 | viol 0.449 | V 0.6569 | Vmin 0.2923 | agree +0.564 | a*_q05 -0.00656 | a*_q50 0.00432 | dV>=0 0.238 | beta 0.1428
+  bell | direct viol 0.507 | direct dV>=0 0.460 | d_mean -0.00109 | d_std 0.03744 | d_q95 0.07265
+[Episode 298/400] Steps: 720 | Reward:   -5.22 | Battery:  75.20% | Loss: 0.1235
+Placing Sensors
+[Episode 299/400] Steps: 720 | Reward:   -4.17 | Battery:  76.46% | Loss: 
+Placing Sensors
+Policy -0.0103 | Value 0.0050 | KL 0.00748 | CF 0.0843 | Std 0.1099 | |a| 0.0328 | EV +0.894 | Rsd 0.299 | Res 0.097 | AE nan | Alpha 0.0100 | MB 24/24
+  cert | viol 0.097 | dV -0.213403 | V 0.2706 | inball 0.493 | a*_q05 0.00299 | a*_q50 0.02829 | dV>=0 0.000 | n=150 | a_used 0.00378 -> 0.00377
+  crit | n=1 | viol 0.477 | V 0.5930 | Vmin 0.2620 | agree +0.436 | a*_q05 -0.00419 | a*_q50 0.00416 | dV>=0 0.323 | beta 0.1422
+  bell | direct viol 0.531 | direct dV>=0 0.473 | d_mean -0.00010 | d_std 0.03614 | d_q95 0.07421
+[Episode 300/400] Steps: 720 | Reward:   -4.45 | Battery:  63.20% | Loss: 0.0355
+Placing Sensors
+[Episode 301/400] Steps: 720 | Reward:   -4.67 | Battery:  64.76% | Loss: 
+Placing Sensors
+Policy -0.0087 | Value 0.0056 | KL 0.01730 | CF 0.1705 | Std 0.1099 | |a| 0.0279 | EV +0.918 | Rsd 0.299 | Res 0.090 | AE nan | Alpha 0.0100 | MB 24/24
+  cert | viol 0.111 | dV -0.227796 | V 0.3174 | inball 0.460 | a*_q05 0.00177 | a*_q50 0.02496 | dV>=0 0.030 | n=150 | a_used 0.00377 -> 0.00369
+  crit | n=1 | viol 0.521 | V 0.6329 | Vmin 0.2923 | agree +0.487 | a*_q05 -0.00567 | a*_q50 0.00345 | dV>=0 0.293 | beta 0.1427
+  bell | direct viol 0.541 | direct dV>=0 0.497 | d_mean -0.00077 | d_std 0.03244 | d_q95 0.06421
+[Episode 302/400] Steps: 720 | Reward:   -5.47 | Battery:  73.26% | Loss: -0.0438
+Placing Sensors
+[Episode 303/400] Steps: 720 | Reward:   -4.39 | Battery:  79.14% | Loss: 
+Placing Sensors
+Policy -0.0126 | Value 0.0060 | KL 0.01658 | CF 0.1696 | Std 0.1099 | |a| 0.0366 | EV +0.911 | Rsd 0.324 | Res 0.104 | AE nan | Alpha 0.0100 | MB 24/24
+  cert | viol 0.081 | dV -0.268522 | V 0.3819 | inball 0.455 | a*_q05 0.00267 | a*_q50 0.02375 | dV>=0 0.012 | n=150 | a_used 0.00369 -> 0.00344
+  crit | n=1 | viol 0.346 | V 0.6593 | Vmin 0.2573 | agree +0.589 | a*_q05 -0.00622 | a*_q50 0.00637 | dV>=0 0.232 | beta 0.1429
+  bell | direct viol 0.506 | direct dV>=0 0.456 | d_mean -0.00143 | d_std 0.02982 | d_q95 0.06446
+[Episode 304/400] Steps: 720 | Reward:   -6.68 | Battery:  76.29% | Loss: 0.1905
+Placing Sensors
+[Episode 305/400] Steps: 720 | Reward:   -3.24 | Battery:  71.21% | Loss: 
+Placing Sensors
+[Episode 306/400] Steps:  72 | Reward:  -17.69 | Battery:   0.00% | Loss: 
+Placing Sensors
+Policy -0.0057 | Value 0.0161 | KL 0.01810 | CF 0.1535 | Std 0.1099 | |a| 0.0325 | EV +0.799 | Rsd 0.394 | Res 0.177 | AE nan | Alpha 0.0100 | MB 24/24
+  cert | viol 0.052 | dV -0.248343 | V 0.3000 | inball 0.543 | a*_q05 0.00416 | a*_q50 0.03177 | dV>=0 0.008 | n=150 | a_used 0.00344 -> 0.00344
+  crit | n=1 | viol 0.491 | V 0.6692 | Vmin 0.3036 | agree +0.512 | a*_q05 -0.00694 | a*_q50 0.00358 | dV>=0 0.305 | beta 0.1439
+  bell | direct viol 0.514 | direct dV>=0 0.489 | d_mean -0.00039 | d_std 0.04922 | d_q95 0.10150
+[Episode 307/400] Steps: 720 | Reward:   -4.86 | Battery:  83.11% | Loss: -0.0520
+Placing Sensors
+[Episode 308/400] Steps: 720 | Reward:   -5.26 | Battery:  67.39% | Loss: 
+Placing Sensors
+Policy -0.0132 | Value 0.0076 | KL 0.01404 | CF 0.1578 | Std 0.1099 | |a| 0.0391 | EV +0.851 | Rsd 0.315 | Res 0.122 | AE nan | Alpha 0.0100 | MB 24/24
+  cert | viol 0.112 | dV -0.237929 | V 0.3024 | inball 0.411 | a*_q05 -0.00832 | a*_q50 0.02633 | dV>=0 0.071 | n=150 | a_used 0.00344 -> 0.00327
+  crit | n=1 | viol 0.618 | V 0.6642 | Vmin 0.2918 | agree +0.557 | a*_q05 -0.00585 | a*_q50 0.00140 | dV>=0 0.439 | beta 0.1446
+  bell | direct viol 0.523 | direct dV>=0 0.484 | d_mean +0.00010 | d_std 0.03669 | d_q95 0.07553
+[Episode 309/400] Steps: 720 | Reward:   -4.57 | Battery:  72.34% | Loss: -0.1106
+Placing Sensors
+[Episode 310/400] Steps: 720 | Reward:   -3.19 | Battery:  76.61% | Loss: 
+Placing Sensors
+Policy -0.0072 | Value 0.0056 | KL 0.00916 | CF 0.1227 | Std 0.1099 | |a| 0.0300 | EV +0.890 | Rsd 0.247 | Res 0.110 | AE nan | Alpha 0.0100 | MB 24/24
+  cert | viol 0.000 | dV -0.222549 | V 0.2447 | inball 0.636 | a*_q05 0.00869 | a*_q50 0.03445 | dV>=0 0.000 | n=150 | a_used 0.00327 -> 0.00343
+  crit | n=1 | viol 0.780 | V 0.5669 | Vmin 0.2878 | agree +0.674 | a*_q05 -0.00631 | a*_q50 0.00032 | dV>=0 0.469 | beta 0.1436
+  bell | direct viol 0.481 | direct dV>=0 0.444 | d_mean +0.00258 | d_std 0.03044 | d_q95 0.05964
+[Episode 311/400] Steps: 720 | Reward:   -3.19 | Battery:  86.59% | Loss: -0.0727
+Placing Sensors
+[Episode 312/400] Steps: 720 | Reward:   -2.25 | Battery:  86.14% | Loss: 
+Placing Sensors
+Policy -0.0044 | Value 0.0051 | KL 0.01664 | CF 0.1888 | Std 0.1099 | |a| 0.0314 | EV +0.952 | Rsd 0.348 | Res 0.088 | AE nan | Alpha 0.0100 | MB 24/24
+  cert | viol 0.000 | dV -0.280621 | V 0.3147 | inball 0.571 | a*_q05 0.00867 | a*_q50 0.03516 | dV>=0 0.000 | n=150 | a_used 0.00343 -> 0.00362
+  crit | n=1 | viol 0.468 | V 0.5640 | Vmin 0.2137 | agree +0.565 | a*_q05 -0.00647 | a*_q50 0.00398 | dV>=0 0.318 | beta 0.1412
+  bell | direct viol 0.492 | direct dV>=0 0.463 | d_mean +0.00126 | d_std 0.03212 | d_q95 0.06806
+[Episode 313/400] Steps: 720 | Reward:   -5.03 | Battery:  70.22% | Loss: -0.0422
+Placing Sensors
+[Episode 314/400] Steps: 720 | Reward:   -4.68 | Battery:  75.83% | Loss: 
+Placing Sensors
+Policy -0.0090 | Value 0.0040 | KL 0.00960 | CF 0.1152 | Std 0.1098 | |a| 0.0325 | EV +0.939 | Rsd 0.314 | Res 0.078 | AE nan | Alpha 0.0100 | MB 24/24
+  cert | viol 0.032 | dV -0.251691 | V 0.3077 | inball 0.553 | a*_q05 0.00495 | a*_q50 0.03216 | dV>=0 0.000 | n=150 | a_used 0.00362 -> 0.00366
+  crit | n=1 | viol 0.391 | V 0.5467 | Vmin 0.2072 | agree +0.614 | a*_q05 -0.00514 | a*_q50 0.00476 | dV>=0 0.217 | beta 0.1395
+  bell | direct viol 0.498 | direct dV>=0 0.471 | d_mean +0.00012 | d_std 0.03331 | d_q95 0.06290
+[Episode 315/400] Steps: 720 | Reward:   -3.12 | Battery:  77.55% | Loss: 0.0869
+Placing Sensors
+[Episode 316/400] Steps: 720 | Reward:   -3.81 | Battery:  66.68% | Loss: 
+Placing Sensors
+Policy -0.0108 | Value 0.0038 | KL 0.01394 | CF 0.1447 | Std 0.1098 | |a| 0.0388 | EV +0.942 | Rsd 0.318 | Res 0.080 | AE nan | Alpha 0.0100 | MB 24/24
+  cert | viol 0.000 | dV -0.228961 | V 0.2568 | inball 0.562 | a*_q05 0.00757 | a*_q50 0.03503 | dV>=0 0.000 | n=150 | a_used 0.00366 -> 0.00379
+  crit | n=1 | viol 0.628 | V 0.5316 | Vmin 0.1894 | agree +0.578 | a*_q05 -0.00570 | a*_q50 0.00234 | dV>=0 0.337 | beta 0.1362
+  bell | direct viol 0.498 | direct dV>=0 0.459 | d_mean +0.00201 | d_std 0.03230 | d_q95 0.06476
+[Episode 317/400] Steps: 720 | Reward:   -3.17 | Battery:  81.80% | Loss: -0.1011
+Placing Sensors
+[Episode 318/400] Steps: 720 | Reward:   -3.57 | Battery:  75.45% | Loss: 
+Placing Sensors
+Policy -0.0201 | Value 0.0062 | KL 0.01460 | CF 0.1624 | Std 0.1098 | |a| 0.0385 | EV +0.863 | Rsd 0.288 | Res 0.113 | AE nan | Alpha 0.0100 | MB 24/24
+  cert | viol 0.065 | dV -0.251838 | V 0.3172 | inball 0.481 | a*_q05 0.00345 | a*_q50 0.03078 | dV>=0 0.015 | n=150 | a_used 0.00379 -> 0.00354
+  crit | n=1 | viol 0.421 | V 0.5548 | Vmin 0.2065 | agree +0.313 | a*_q05 -0.00715 | a*_q50 0.00658 | dV>=0 0.339 | beta 0.1345
+  bell | direct viol 0.496 | direct dV>=0 0.461 | d_mean -0.00100 | d_std 0.02990 | d_q95 0.06102
+[Episode 319/400] Steps: 720 | Reward:   -5.40 | Battery:  83.73% | Loss: 0.0567
+Placing Sensors
+[Episode 320/400] Steps: 720 | Reward:   -2.80 | Battery:  85.00% | Loss: 
+Placing Sensors
+Policy -0.0098 | Value 0.0031 | KL 0.01161 | CF 0.1137 | Std 0.1098 | |a| 0.0404 | EV +0.938 | Rsd 0.312 | Res 0.079 | AE nan | Alpha 0.0100 | MB 24/24
+  cert | viol 0.000 | dV -0.283928 | V 0.3092 | inball 0.623 | a*_q05 0.00899 | a*_q50 0.03613 | dV>=0 0.000 | n=150 | a_used 0.00354 -> 0.00370
+  crit | n=1 | viol 0.412 | V 0.4943 | Vmin 0.1613 | agree +0.506 | a*_q05 -0.00497 | a*_q50 0.00480 | dV>=0 0.281 | beta 0.1311
+  bell | direct viol 0.503 | direct dV>=0 0.463 | d_mean -0.00016 | d_std 0.03236 | d_q95 0.06298
+[Episode 321/400] Steps: 720 | Reward:   -3.99 | Battery:  73.44% | Loss: 0.0753
+Placing Sensors
+[Episode 322/400] Steps: 720 | Reward:   -3.74 | Battery:  80.01% | Loss: 
+Placing Sensors
+Policy -0.0055 | Value 0.0043 | KL 0.01578 | CF 0.1689 | Std 0.1098 | |a| 0.0452 | EV +0.949 | Rsd 0.351 | Res 0.081 | AE nan | Alpha 0.0100 | MB 24/24
+  cert | viol 0.004 | dV -0.350269 | V 0.3863 | inball 0.556 | a*_q05 0.00843 | a*_q50 0.03670 | dV>=0 0.000 | n=150 | a_used 0.00370 -> 0.00385
+  crit | n=1 | viol 0.420 | V 0.5557 | Vmin 0.1817 | agree +0.597 | a*_q05 -0.00619 | a*_q50 0.00509 | dV>=0 0.304 | beta 0.1289
+  bell | direct viol 0.501 | direct dV>=0 0.471 | d_mean -0.00047 | d_std 0.03313 | d_q95 0.06696
+[Episode 323/400] Steps: 720 | Reward:   -5.16 | Battery:  73.76% | Loss: -0.0072
+Placing Sensors
+[Episode 324/400] Steps: 720 | Reward:   -5.27 | Battery:  77.67% | Loss: 
+Placing Sensors
+[Episode 325/400] Steps:  98 | Reward:  -17.44 | Battery:   0.00% | Loss: 
+Placing Sensors
+Policy -0.0218 | Value 0.0224 | KL 0.02976 | CF 0.2297 | Std 0.1098 | |a| 0.0454 | EV +0.857 | Rsd 0.459 | Res 0.180 | AE nan | Alpha 0.0100 | MB 21/28
+  cert | viol 0.128 | dV -0.265038 | V 0.3680 | inball 0.512 | a*_q05 0.00326 | a*_q50 0.03041 | dV>=0 0.000 | n=150 | a_used 0.00385 -> 0.00390
+  crit | n=1 | viol 0.414 | V 0.6070 | Vmin 0.2021 | agree +0.616 | a*_q05 -0.00542 | a*_q50 0.00574 | dV>=0 0.233 | beta 0.1294
+  bell | direct viol 0.461 | direct dV>=0 0.436 | d_mean +0.00395 | d_std 0.03927 | d_q95 0.07826
+[Episode 326/400] Steps: 720 | Reward:   -3.28 | Battery:  86.41% | Loss: -0.1683
+Placing Sensors
+[Episode 327/400] Steps: 720 | Reward:   -6.77 | Battery:  74.41% | Loss: 
+Placing Sensors
+[Episode 328/400] Steps: 119 | Reward:  -17.23 | Battery:   0.00% | Loss: 
+Placing Sensors
+Policy 0.0163 | Value 0.0471 | KL 0.03869 | CF 0.3270 | Std 0.1098 | |a| 0.0509 | EV +0.755 | Rsd 0.456 | Res 0.228 | AE nan | Alpha 0.0100 | MB 7/28
+  cert | viol 0.099 | dV -0.243423 | V 0.3412 | inball 0.435 | a*_q05 0.00359 | a*_q50 0.02771 | dV>=0 0.003 | n=150 | a_used 0.00390 -> 0.00409
+  crit | n=1 | viol 0.486 | V 0.7636 | Vmin 0.2406 | agree +0.510 | a*_q05 -0.00616 | a*_q50 0.00461 | dV>=0 0.349 | beta 0.1301
+  bell | direct viol 0.511 | direct dV>=0 0.468 | d_mean +0.00139 | d_std 0.04889 | d_q95 0.09943
+[Episode 329/400] Steps: 720 | Reward:   -3.25 | Battery:  77.20% | Loss: 0.1746
+Placing Sensors
+[Episode 330/400] Steps: 720 | Reward:   -2.80 | Battery:  82.06% | Loss: 
+Placing Sensors
+Policy -0.0043 | Value 0.0066 | KL 0.01823 | CF 0.1452 | Std 0.1098 | |a| 0.0373 | EV +0.905 | Rsd 0.341 | Res 0.106 | AE nan | Alpha 0.0100 | MB 24/24
+  cert | viol 0.022 | dV -0.290156 | V 0.3416 | inball 0.547 | a*_q05 0.00604 | a*_q50 0.03417 | dV>=0 0.000 | n=150 | a_used 0.00409 -> 0.00410
+  crit | n=1 | viol 0.592 | V 0.5740 | Vmin 0.1698 | agree +0.706 | a*_q05 -0.00659 | a*_q50 0.00200 | dV>=0 0.395 | beta 0.1289
+  bell | direct viol 0.512 | direct dV>=0 0.488 | d_mean +0.00080 | d_std 0.05372 | d_q95 0.10936
+[Episode 331/400] Steps: 720 | Reward:   -5.79 | Battery:  66.88% | Loss: -0.0103
+Placing Sensors
+[Episode 332/400] Steps: 720 | Reward:   -3.51 | Battery:  80.23% | Loss: 
+Placing Sensors
+Policy -0.0106 | Value 0.0057 | KL 0.01427 | CF 0.1691 | Std 0.1098 | |a| 0.0430 | EV +0.899 | Rsd 0.304 | Res 0.096 | AE nan | Alpha 0.0100 | MB 24/24
+  cert | viol 0.000 | dV -0.254219 | V 0.2809 | inball 0.579 | a*_q05 0.00923 | a*_q50 0.03572 | dV>=0 0.000 | n=150 | a_used 0.00410 -> 0.00428
+  crit | n=1 | viol 0.482 | V 0.4724 | Vmin 0.1660 | agree +0.615 | a*_q05 -0.00566 | a*_q50 0.00430 | dV>=0 0.238 | beta 0.1256
+  bell | direct viol 0.502 | direct dV>=0 0.476 | d_mean +0.00125 | d_std 0.03867 | d_q95 0.07316
+[Episode 333/400] Steps: 720 | Reward:   -3.49 | Battery:  74.35% | Loss: -0.0765
+Placing Sensors
+[Episode 334/400] Steps: 720 | Reward:   -3.64 | Battery:  76.86% | Loss: 
+Placing Sensors
+Policy -0.0029 | Value 0.0035 | KL 0.01738 | CF 0.1735 | Std 0.1099 | |a| 0.0444 | EV +0.944 | Rsd 0.308 | Res 0.077 | AE nan | Alpha 0.0100 | MB 24/24
+  cert | viol 0.017 | dV -0.248392 | V 0.2764 | inball 0.596 | a*_q05 0.00739 | a*_q50 0.03647 | dV>=0 0.000 | n=150 | a_used 0.00428 -> 0.00439
+  crit | n=1 | viol 0.671 | V 0.5348 | Vmin 0.1594 | agree +0.625 | a*_q05 -0.00639 | a*_q50 0.00215 | dV>=0 0.366 | beta 0.1230
+  bell | direct viol 0.501 | direct dV>=0 0.459 | d_mean +0.00099 | d_std 0.03639 | d_q95 0.07460
+[Episode 335/400] Steps: 720 | Reward:   -3.52 | Battery:  78.26% | Loss: -0.0372
+Placing Sensors
+[Episode 336/400] Steps: 720 | Reward:   -4.48 | Battery:  65.28% | Loss: 
+Placing Sensors
+Policy -0.0076 | Value 0.0050 | KL 0.01265 | CF 0.1452 | Std 0.1099 | |a| 0.0476 | EV +0.908 | Rsd 0.331 | Res 0.101 | AE nan | Alpha 0.0100 | MB 24/24
+  cert | viol 0.000 | dV -0.260902 | V 0.2795 | inball 0.560 | a*_q05 0.01116 | a*_q50 0.03862 | dV>=0 0.000 | n=150 | a_used 0.00439 -> 0.00457
+  crit | n=1 | viol 0.647 | V 0.5563 | Vmin 0.1848 | agree +0.417 | a*_q05 -0.00725 | a*_q50 0.00229 | dV>=0 0.399 | beta 0.1216
+  bell | direct viol 0.508 | direct dV>=0 0.465 | d_mean -0.00016 | d_std 0.03571 | d_q95 0.06913
+[Episode 337/400] Steps: 720 | Reward:   -2.98 | Battery:  69.33% | Loss: 0.0599
+Placing Sensors
+[Episode 338/400] Steps: 720 | Reward:   -3.18 | Battery:  66.27% | Loss: 
+Placing Sensors
+Policy -0.0040 | Value 0.0040 | KL 0.02070 | CF 0.1785 | Std 0.1099 | |a| 0.0498 | EV +0.888 | Rsd 0.246 | Res 0.082 | AE nan | Alpha 0.0100 | MB 24/24
+  cert | viol 0.000 | dV -0.200974 | V 0.2170 | inball 0.614 | a*_q05 0.00978 | a*_q50 0.03518 | dV>=0 0.000 | n=150 | a_used 0.00457 -> 0.00475
+  crit | n=1 | viol 0.659 | V 0.4614 | Vmin 0.2021 | agree +0.452 | a*_q05 -0.00580 | a*_q50 0.00233 | dV>=0 0.351 | beta 0.1199
+  bell | direct viol 0.486 | direct dV>=0 0.456 | d_mean +0.00063 | d_std 0.03835 | d_q95 0.07535
+[Episode 339/400] Steps: 720 | Reward:   -3.54 | Battery:  82.88% | Loss: 0.0712
+Placing Sensors
+[Episode 340/400] Steps: 720 | Reward:   -4.83 | Battery:  75.48% | Loss: 
+Placing Sensors
+Policy -0.0141 | Value 0.0043 | KL 0.02192 | CF 0.1823 | Std 0.1099 | |a| 0.0510 | EV +0.923 | Rsd 0.292 | Res 0.081 | AE nan | Alpha 0.0100 | MB 18/24
+  cert | viol 0.024 | dV -0.333797 | V 0.3757 | inball 0.576 | a*_q05 0.00694 | a*_q50 0.03646 | dV>=0 0.000 | n=150 | a_used 0.00475 -> 0.00491
+  crit | n=1 | viol 0.339 | V 0.5005 | Vmin 0.2050 | agree +0.641 | a*_q05 -0.00533 | a*_q50 0.00784 | dV>=0 0.202 | beta 0.1191
+  bell | direct viol 0.502 | direct dV>=0 0.465 | d_mean -0.00125 | d_std 0.03458 | d_q95 0.07088
+[Episode 341/400] Steps: 720 | Reward:   -3.64 | Battery:  84.31% | Loss: -0.0332
+Placing Sensors
+[Episode 342/400] Steps: 720 | Reward:   -3.83 | Battery:  69.12% | Loss: 
+Placing Sensors
+[Episode 343/400] Steps:  96 | Reward:  -17.51 | Battery:   0.00% | Loss: 
+Placing Sensors
+[Episode 344/400] Steps:  73 | Reward:  -17.75 | Battery:   0.00% | Loss: 
+Placing Sensors
+Policy -0.0120 | Value 0.0302 | KL 0.02054 | CF 0.1629 | Std 0.1099 | |a| 0.0648 | EV +0.741 | Rsd 0.499 | Res 0.276 | AE nan | Alpha 0.0100 | MB 28/28
+  cert | viol 0.077 | dV -0.230963 | V 0.2815 | inball 0.468 | a*_q05 0.00416 | a*_q50 0.03118 | dV>=0 0.000 | n=150 | a_used 0.00491 -> 0.00486
+  crit | n=1 | viol 0.496 | V 0.6659 | Vmin 0.2481 | agree +0.618 | a*_q05 -0.00619 | a*_q50 0.00499 | dV>=0 0.211 | beta 0.1201
+  bell | direct viol 0.523 | direct dV>=0 0.474 | d_mean -0.00178 | d_std 0.04874 | d_q95 0.10085
+[Episode 345/400] Steps: 720 | Reward:   -4.42 | Battery:  77.34% | Loss: -0.0878
+Placing Sensors
+[Episode 346/400] Steps: 720 | Reward:   -3.99 | Battery:  74.42% | Loss: 
+Placing Sensors
+Policy 0.0036 | Value 0.0086 | KL 0.02186 | CF 0.2423 | Std 0.1099 | |a| 0.0501 | EV +0.859 | Rsd 0.288 | Res 0.109 | AE nan | Alpha 0.0100 | MB 18/24
+  cert | viol 0.031 | dV -0.191845 | V 0.2373 | inball 0.511 | a*_q05 0.00513 | a*_q50 0.02842 | dV>=0 0.000 | n=150 | a_used 0.00486 -> 0.00487
+  crit | n=1 | viol 0.567 | V 0.5799 | Vmin 0.2672 | agree +0.187 | a*_q05 -0.00640 | a*_q50 0.00390 | dV>=0 0.305 | beta 0.1209
+  bell | direct viol 0.514 | direct dV>=0 0.484 | d_mean -0.00062 | d_std 0.04156 | d_q95 0.08460
+[Episode 347/400] Steps: 720 | Reward:   -3.73 | Battery:  77.89% | Loss: 0.1090
+Placing Sensors
+[Episode 348/400] Steps: 720 | Reward:   -2.51 | Battery:  85.29% | Loss: 
+Placing Sensors
+Policy -0.0001 | Value 0.0075 | KL 0.01551 | CF 0.1702 | Std 0.1099 | |a| 0.0609 | EV +0.840 | Rsd 0.301 | Res 0.155 | AE nan | Alpha 0.0100 | MB 24/24
+  cert | viol 0.000 | dV -0.248019 | V 0.2588 | inball 0.682 | a*_q05 0.01316 | a*_q50 0.04118 | dV>=0 0.000 | n=150 | a_used 0.00487 -> 0.00505
+  crit | n=1 | viol 0.832 | V 0.5586 | Vmin 0.2272 | agree +0.577 | a*_q05 -0.00750 | a*_q50 -0.00074 | dV>=0 0.547 | beta 0.1201
+  bell | direct viol 0.503 | direct dV>=0 0.471 | d_mean +0.00326 | d_std 0.04574 | d_q95 0.09419
+[Episode 349/400] Steps: 720 | Reward:   -3.18 | Battery:  81.96% | Loss: 0.0843
+Placing Sensors
+[Episode 350/400] Steps: 720 | Reward:   -2.74 | Battery:  84.11% | Loss: 
+Placing Sensors
+Policy 0.0050 | Value 0.0071 | KL 0.02199 | CF 0.2010 | Std 0.1099 | |a| 0.0504 | EV +0.877 | Rsd 0.288 | Res 0.104 | AE nan | Alpha 0.0100 | MB 18/24
+  cert | viol 0.000 | dV -0.240963 | V 0.2549 | inball 0.636 | a*_q05 0.01138 | a*_q50 0.03800 | dV>=0 0.000 | n=150 | a_used 0.00505 -> 0.00522
+  crit | n=1 | viol 0.727 | V 0.4977 | Vmin 0.2016 | agree +0.626 | a*_q05 -0.00712 | a*_q50 0.00177 | dV>=0 0.401 | beta 0.1205
+  bell | direct viol 0.511 | direct dV>=0 0.475 | d_mean +0.00158 | d_std 0.04234 | d_q95 0.08400
+[Episode 351/400] Steps: 720 | Reward:   -3.95 | Battery:  73.75% | Loss: 0.1129
+Placing Sensors
+[Episode 352/400] Steps: 720 | Reward:   -4.35 | Battery:  59.65% | Loss: 
+Placing Sensors
+Policy -0.0127 | Value 0.0096 | KL 0.02101 | CF 0.1988 | Std 0.1098 | |a| 0.0540 | EV +0.884 | Rsd 0.345 | Res 0.118 | AE nan | Alpha 0.0100 | MB 24/24
+  cert | viol 0.067 | dV -0.299626 | V 0.3636 | inball 0.470 | a*_q05 0.00461 | a*_q50 0.03292 | dV>=0 0.000 | n=150 | a_used 0.00522 -> 0.00521
+  crit | n=1 | viol 0.513 | V 0.6243 | Vmin 0.2413 | agree +0.416 | a*_q05 -0.00658 | a*_q50 0.00493 | dV>=0 0.351 | beta 0.1208
+  bell | direct viol 0.537 | direct dV>=0 0.492 | d_mean -0.00033 | d_std 0.03974 | d_q95 0.08144
+[Episode 353/400] Steps: 720 | Reward:   -5.17 | Battery:  74.41% | Loss: -0.0393
+Placing Sensors
+[Episode 354/400] Steps: 720 | Reward:   -4.49 | Battery:  49.13% | Loss: 
+Placing Sensors
+Policy -0.0095 | Value 0.0047 | KL 0.01053 | CF 0.1004 | Std 0.1098 | |a| 0.0605 | EV +0.913 | Rsd 0.277 | Res 0.084 | AE nan | Alpha 0.0100 | MB 24/24
+  cert | viol 0.007 | dV -0.221169 | V 0.2389 | inball 0.540 | a*_q05 0.01103 | a*_q50 0.03638 | dV>=0 0.007 | n=150 | a_used 0.00521 -> 0.00538
+  crit | n=1 | viol 0.726 | V 0.5581 | Vmin 0.2192 | agree +0.356 | a*_q05 -0.00723 | a*_q50 0.00215 | dV>=0 0.340 | beta 0.1208
+  bell | direct viol 0.581 | direct dV>=0 0.498 | d_mean +0.00058 | d_std 0.03342 | d_q95 0.06659
+[Episode 355/400] Steps: 720 | Reward:   -2.92 | Battery:  78.12% | Loss: 0.0074
+Placing Sensors
+[Episode 356/400] Steps: 720 | Reward:   -4.69 | Battery:  73.72% | Loss: 
+Placing Sensors
+Policy 0.0035 | Value 0.0071 | KL 0.02767 | CF 0.1271 | Std 0.1098 | |a| 0.0573 | EV +0.903 | Rsd 0.295 | Res 0.092 | AE nan | Alpha 0.0100 | MB 12/24
+  cert | viol 0.116 | dV -0.248392 | V 0.3174 | inball 0.484 | a*_q05 0.00344 | a*_q50 0.02600 | dV>=0 0.000 | n=150 | a_used 0.00538 -> 0.00531
+  crit | n=1 | viol 0.528 | V 0.6225 | Vmin 0.2390 | agree +0.563 | a*_q05 -0.00629 | a*_q50 0.00515 | dV>=0 0.237 | beta 0.1211
+  bell | direct viol 0.516 | direct dV>=0 0.459 | d_mean -0.00067 | d_std 0.03362 | d_q95 0.07150
+[Episode 357/400] Steps: 720 | Reward:   -4.65 | Battery:  76.32% | Loss: 0.1613
+Placing Sensors
+[Episode 358/400] Steps: 720 | Reward:   -5.07 | Battery:  69.87% | Loss: 
+Placing Sensors
+Policy -0.0122 | Value 0.0050 | KL 0.02226 | CF 0.1710 | Std 0.1098 | |a| 0.0684 | EV +0.889 | Rsd 0.286 | Res 0.096 | AE nan | Alpha 0.0100 | MB 24/24
+  cert | viol 0.157 | dV -0.223136 | V 0.2974 | inball 0.499 | a*_q05 0.00312 | a*_q50 0.02618 | dV>=0 0.000 | n=150 | a_used 0.00531 -> 0.00516
+  crit | n=1 | viol 0.468 | V 0.5748 | Vmin 0.2287 | agree +0.535 | a*_q05 -0.00617 | a*_q50 0.00565 | dV>=0 0.220 | beta 0.1210
+  bell | direct viol 0.516 | direct dV>=0 0.462 | d_mean -0.00052 | d_std 0.03919 | d_q95 0.07887
+[Episode 359/400] Steps: 720 | Reward:   -3.34 | Battery:  77.92% | Loss: -0.0522
+Placing Sensors
+[Episode 360/400] Steps: 720 | Reward:   -2.94 | Battery:  75.38% | Loss: 
+Placing Sensors
+Policy -0.0071 | Value 0.0045 | KL 0.01862 | CF 0.1995 | Std 0.1098 | |a| 0.0563 | EV +0.894 | Rsd 0.246 | Res 0.081 | AE nan | Alpha 0.0100 | MB 24/24
+  cert | viol 0.037 | dV -0.253855 | V 0.2871 | inball 0.595 | a*_q05 0.00662 | a*_q50 0.03476 | dV>=0 0.000 | n=150 | a_used 0.00516 -> 0.00522
+  crit | n=1 | viol 0.478 | V 0.4820 | Vmin 0.2025 | agree +0.411 | a*_q05 -0.00719 | a*_q50 0.00547 | dV>=0 0.307 | beta 0.1208
+  bell | direct viol 0.532 | direct dV>=0 0.491 | d_mean -0.00001 | d_std 0.03744 | d_q95 0.07087
+[Episode 361/400] Steps: 720 | Reward:   -4.28 | Battery:  81.50% | Loss: 0.1008
+Placing Sensors
+[Episode 362/400] Steps: 720 | Reward:   -2.87 | Battery:  79.80% | Loss: 
+Placing Sensors
+Policy 0.0101 | Value 0.0030 | KL 0.02578 | CF 0.2676 | Std 0.1098 | |a| 0.0536 | EV +0.947 | Rsd 0.237 | Res 0.056 | AE nan | Alpha 0.0100 | MB 12/24
+  cert | viol 0.000 | dV -0.255100 | V 0.2706 | inball 0.629 | a*_q05 0.01206 | a*_q50 0.03369 | dV>=0 0.000 | n=150 | a_used 0.00522 -> 0.00539
+  crit | n=1 | viol 0.579 | V 0.4433 | Vmin 0.1889 | agree +0.595 | a*_q05 -0.00658 | a*_q50 0.00399 | dV>=0 0.306 | beta 0.1190
+  bell | direct viol 0.507 | direct dV>=0 0.461 | d_mean +0.00025 | d_std 0.03090 | d_q95 0.05790
+[Episode 363/400] Steps: 720 | Reward:   -3.42 | Battery:  80.47% | Loss: 0.1652
+Placing Sensors
+[Episode 364/400] Steps: 720 | Reward:   -4.19 | Battery:  78.02% | Loss: 
+Placing Sensors
+Policy -0.0142 | Value 0.0046 | KL 0.02208 | CF 0.1495 | Std 0.1098 | |a| 0.0596 | EV +0.923 | Rsd 0.310 | Res 0.088 | AE nan | Alpha 0.0100 | MB 24/24
+  cert | viol 0.076 | dV -0.278025 | V 0.3375 | inball 0.547 | a*_q05 0.00476 | a*_q50 0.03070 | dV>=0 0.000 | n=150 | a_used 0.00539 -> 0.00540
+  crit | n=1 | viol 0.420 | V 0.5393 | Vmin 0.1558 | agree +0.387 | a*_q05 -0.00521 | a*_q50 0.00699 | dV>=0 0.219 | beta 0.1169
+  bell | direct viol 0.508 | direct dV>=0 0.458 | d_mean -0.00151 | d_std 0.03600 | d_q95 0.07518
+[Episode 365/400] Steps: 720 | Reward:   -4.37 | Battery:  72.81% | Loss: -0.0733
+Placing Sensors
+[Episode 366/400] Steps: 720 | Reward:   -2.99 | Battery:  81.66% | Loss: 
+Placing Sensors
+Policy -0.0069 | Value 0.0059 | KL 0.01508 | CF 0.1721 | Std 0.1098 | |a| 0.0513 | EV +0.897 | Rsd 0.288 | Res 0.094 | AE nan | Alpha 0.0100 | MB 24/24
+  cert | viol 0.058 | dV -0.249573 | V 0.2844 | inball 0.609 | a*_q05 0.00550 | a*_q50 0.03661 | dV>=0 0.000 | n=150 | a_used 0.00540 -> 0.00522
+  crit | n=1 | viol 0.709 | V 0.4974 | Vmin 0.1642 | agree +0.708 | a*_q05 -0.00592 | a*_q50 0.00191 | dV>=0 0.370 | beta 0.1155
+  bell | direct viol 0.511 | direct dV>=0 0.459 | d_mean +0.00119 | d_std 0.03645 | d_q95 0.07633
+[Episode 367/400] Steps: 720 | Reward:   -4.28 | Battery:  81.09% | Loss: -0.0709
+Placing Sensors
+[Episode 368/400] Steps: 720 | Reward:   -4.49 | Battery:  80.11% | Loss: 
+Placing Sensors
+Policy -0.0092 | Value 0.0067 | KL 0.01564 | CF 0.1689 | Std 0.1098 | |a| 0.0561 | EV +0.863 | Rsd 0.245 | Res 0.101 | AE nan | Alpha 0.0100 | MB 24/24
+  cert | viol 0.037 | dV -0.252384 | V 0.2937 | inball 0.548 | a*_q05 0.00613 | a*_q50 0.03043 | dV>=0 0.000 | n=150 | a_used 0.00522 -> 0.00531
+  crit | n=1 | viol 0.457 | V 0.4761 | Vmin 0.1816 | agree +0.441 | a*_q05 -0.00416 | a*_q50 0.00619 | dV>=0 0.230 | beta 0.1138
+  bell | direct viol 0.502 | direct dV>=0 0.461 | d_mean -0.00166 | d_std 0.03405 | d_q95 0.06961
+[Episode 369/400] Steps: 720 | Reward:   -3.61 | Battery:  72.09% | Loss: -0.0412
+Placing Sensors
+[Episode 370/400] Steps: 720 | Reward:   -3.81 | Battery:  74.00% | Loss: 
+Placing Sensors
+Policy -0.0118 | Value 0.0050 | KL 0.01899 | CF 0.1437 | Std 0.1098 | |a| 0.0523 | EV +0.901 | Rsd 0.275 | Res 0.088 | AE nan | Alpha 0.0100 | MB 24/24
+  cert | viol 0.020 | dV -0.274492 | V 0.3042 | inball 0.581 | a*_q05 0.00803 | a*_q50 0.03328 | dV>=0 0.000 | n=150 | a_used 0.00531 -> 0.00539
+  crit | n=1 | viol 0.613 | V 0.5617 | Vmin 0.2027 | agree +0.569 | a*_q05 -0.00504 | a*_q50 0.00349 | dV>=0 0.292 | beta 0.1133
+  bell | direct viol 0.515 | direct dV>=0 0.468 | d_mean -0.00035 | d_std 0.03556 | d_q95 0.07300
+[Episode 371/400] Steps: 720 | Reward:   -4.00 | Battery:  83.03% | Loss: 0.0937
+Placing Sensors
+[Episode 372/400] Steps: 720 | Reward:   -3.96 | Battery:  84.90% | Loss: 
+Placing Sensors
+Policy -0.0179 | Value 0.0041 | KL 0.01513 | CF 0.1336 | Std 0.1098 | |a| 0.0596 | EV +0.903 | Rsd 0.275 | Res 0.092 | AE nan | Alpha 0.0100 | MB 24/24
+  cert | viol 0.036 | dV -0.233618 | V 0.2665 | inball 0.634 | a*_q05 0.00671 | a*_q50 0.03510 | dV>=0 0.000 | n=150 | a_used 0.00539 -> 0.00556
+  crit | n=1 | viol 0.595 | V 0.4504 | Vmin 0.1619 | agree +0.644 | a*_q05 -0.00546 | a*_q50 0.00232 | dV>=0 0.359 | beta 0.1109
+  bell | direct viol 0.515 | direct dV>=0 0.471 | d_mean +0.00087 | d_std 0.04031 | d_q95 0.08361
+[Episode 373/400] Steps: 720 | Reward:   -1.96 | Battery:  79.40% | Loss: -0.1062
+Placing Sensors
+[Episode 374/400] Steps: 720 | Reward:   -3.12 | Battery:  76.35% | Loss: 
+Placing Sensors
+Policy -0.0032 | Value 0.0046 | KL 0.02324 | CF 0.1659 | Std 0.1098 | |a| 0.0656 | EV +0.943 | Rsd 0.304 | Res 0.073 | AE nan | Alpha 0.0100 | MB 12/24
+  cert | viol 0.000 | dV -0.237503 | V 0.2513 | inball 0.608 | a*_q05 0.01076 | a*_q50 0.03909 | dV>=0 0.000 | n=150 | a_used 0.00556 -> 0.00573
+  crit | n=1 | viol 0.577 | V 0.4709 | Vmin 0.1258 | agree +0.376 | a*_q05 -0.00644 | a*_q50 0.00442 | dV>=0 0.341 | beta 0.1086
+  bell | direct viol 0.522 | direct dV>=0 0.480 | d_mean +0.00029 | d_std 0.05249 | d_q95 0.10095
+[Episode 375/400] Steps: 720 | Reward:   -3.22 | Battery:  67.40% | Loss: -0.0547
+Placing Sensors
+[Episode 376/400] Steps: 720 | Reward:   -3.09 | Battery:  69.27% | Loss: 
+Placing Sensors
+Policy -0.0154 | Value 0.0030 | KL 0.02068 | CF 0.2236 | Std 0.1098 | |a| 0.0585 | EV +0.955 | Rsd 0.314 | Res 0.067 | AE nan | Alpha 0.0100 | MB 24/24
+  cert | viol 0.026 | dV -0.246753 | V 0.2722 | inball 0.599 | a*_q05 0.00795 | a*_q50 0.03881 | dV>=0 0.000 | n=150 | a_used 0.00573 -> 0.00577
+  crit | n=1 | viol 0.585 | V 0.4862 | Vmin 0.1412 | agree +0.475 | a*_q05 -0.00523 | a*_q50 0.00461 | dV>=0 0.289 | beta 0.1063
+  bell | direct viol 0.528 | direct dV>=0 0.484 | d_mean +0.00077 | d_std 0.03749 | d_q95 0.07921
+[Episode 377/400] Steps: 720 | Reward:   -3.79 | Battery:  78.67% | Loss: -0.0743
+Placing Sensors
+[Episode 378/400] Steps: 720 | Reward:   -3.71 | Battery:  71.54% | Loss: 
+Placing Sensors
+Policy -0.0072 | Value 0.0041 | KL 0.02162 | CF 0.2028 | Std 0.1097 | |a| 0.0481 | EV +0.930 | Rsd 0.279 | Res 0.073 | AE nan | Alpha 0.0100 | MB 24/24
+  cert | viol 0.065 | dV -0.216643 | V 0.2595 | inball 0.517 | a*_q05 0.00533 | a*_q50 0.03201 | dV>=0 0.000 | n=150 | a_used 0.00577 -> 0.00575
+  crit | n=1 | viol 0.632 | V 0.5084 | Vmin 0.1680 | agree +0.467 | a*_q05 -0.00593 | a*_q50 0.00423 | dV>=0 0.310 | beta 0.1055
+  bell | direct viol 0.512 | direct dV>=0 0.475 | d_mean +0.00044 | d_std 0.04369 | d_q95 0.08666
+[Episode 379/400] Steps: 720 | Reward:   -3.77 | Battery:  75.19% | Loss: -0.0451
+Placing Sensors
+[Episode 380/400] Steps: 720 | Reward:   -4.55 | Battery:  63.30% | Loss: 
+Placing Sensors
+Policy 0.0010 | Value 0.0048 | KL 0.03201 | CF 0.2094 | Std 0.1098 | |a| 0.0605 | EV +0.930 | Rsd 0.310 | Res 0.084 | AE nan | Alpha 0.0100 | MB 18/24
+  cert | viol 0.029 | dV -0.237827 | V 0.2682 | inball 0.580 | a*_q05 0.00786 | a*_q50 0.03766 | dV>=0 0.000 | n=150 | a_used 0.00575 -> 0.00591
+  crit | n=1 | viol 0.636 | V 0.4815 | Vmin 0.1261 | agree +0.534 | a*_q05 -0.00611 | a*_q50 0.00372 | dV>=0 0.312 | beta 0.1039
+  bell | direct viol 0.511 | direct dV>=0 0.455 | d_mean +0.00094 | d_std 0.03674 | d_q95 0.07776
+[Episode 381/400] Steps: 720 | Reward:   -2.13 | Battery:  83.48% | Loss: 0.0198
+Placing Sensors
+[Episode 382/400] Steps: 720 | Reward:   -2.47 | Battery:  82.41% | Loss: 
+Placing Sensors
+Policy -0.0032 | Value 0.0038 | KL 0.01140 | CF 0.0951 | Std 0.1098 | |a| 0.0703 | EV +0.941 | Rsd 0.280 | Res 0.084 | AE nan | Alpha 0.0100 | MB 24/24
+  cert | viol 0.026 | dV -0.225627 | V 0.2420 | inball 0.583 | a*_q05 0.00960 | a*_q50 0.04035 | dV>=0 0.003 | n=150 | a_used 0.00591 -> 0.00607
+  crit | n=1 | viol 0.887 | V 0.4893 | Vmin 0.1533 | agree +0.489 | a*_q05 -0.00803 | a*_q50 0.00127 | dV>=0 0.425 | beta 0.1034
+  bell | direct viol 0.526 | direct dV>=0 0.452 | d_mean +0.00176 | d_std 0.02899 | d_q95 0.06036
+[Episode 383/400] Steps: 720 | Reward:   -3.28 | Battery:  69.01% | Loss: -0.1629
+Placing Sensors
+[Episode 384/400] Steps: 720 | Reward:   -2.96 | Battery:  77.55% | Loss: 
+Placing Sensors
+Policy -0.0090 | Value 0.0052 | KL 0.01584 | CF 0.1628 | Std 0.1098 | |a| 0.0458 | EV +0.891 | Rsd 0.244 | Res 0.081 | AE nan | Alpha 0.0100 | MB 24/24
+  cert | viol 0.040 | dV -0.208070 | V 0.2298 | inball 0.652 | a*_q05 0.00698 | a*_q50 0.03807 | dV>=0 0.000 | n=150 | a_used 0.00607 -> 0.00605
+  crit | n=1 | viol 0.649 | V 0.3658 | Vmin 0.0995 | agree +0.416 | a*_q05 -0.00673 | a*_q50 0.00360 | dV>=0 0.289 | beta 0.0989
+  bell | direct viol 0.523 | direct dV>=0 0.487 | d_mean -0.00048 | d_std 0.03328 | d_q95 0.06512
+[Episode 385/400] Steps: 720 | Reward:   -1.93 | Battery:  82.44% | Loss: 0.0274
+Placing Sensors
+[Episode 386/400] Steps: 720 | Reward:   -3.21 | Battery:  69.78% | Loss: 
+Placing Sensors
+Policy -0.0050 | Value 0.0051 | KL 0.02235 | CF 0.1391 | Std 0.1098 | |a| 0.0517 | EV +0.944 | Rsd 0.291 | Res 0.078 | AE nan | Alpha 0.0100 | MB 12/24
+  cert | viol 0.039 | dV -0.214366 | V 0.2492 | inball 0.576 | a*_q05 0.00658 | a*_q50 0.03348 | dV>=0 0.000 | n=150 | a_used 0.00605 -> 0.00613
+  crit | n=1 | viol 0.506 | V 0.4743 | Vmin 0.1275 | agree +0.388 | a*_q05 -0.00532 | a*_q50 0.00616 | dV>=0 0.213 | beta 0.0980
+  bell | direct viol 0.517 | direct dV>=0 0.464 | d_mean -0.00091 | d_std 0.03290 | d_q95 0.06759
+[Episode 387/400] Steps: 720 | Reward:   -4.40 | Battery:  75.47% | Loss: -0.0707
+Placing Sensors
+[Episode 388/400] Steps: 720 | Reward:   -2.83 | Battery:  86.44% | Loss: 
+Placing Sensors
+Policy -0.0050 | Value 0.0030 | KL 0.02370 | CF 0.2024 | Std 0.1098 | |a| 0.0493 | EV +0.941 | Rsd 0.254 | Res 0.062 | AE nan | Alpha 0.0100 | MB 24/24
+  cert | viol 0.029 | dV -0.212821 | V 0.2400 | inball 0.638 | a*_q05 0.00746 | a*_q50 0.03625 | dV>=0 0.000 | n=150 | a_used 0.00613 -> 0.00616
+  crit | n=1 | viol 0.532 | V 0.3922 | Vmin 0.1227 | agree +0.628 | a*_q05 -0.00523 | a*_q50 0.00576 | dV>=0 0.214 | beta 0.0969
+  bell | direct viol 0.522 | direct dV>=0 0.470 | d_mean +0.00038 | d_std 0.02925 | d_q95 0.05984
+[Episode 389/400] Steps: 720 | Reward:   -2.85 | Battery:  80.99% | Loss: -0.0641
+Placing Sensors
+[Episode 390/400] Steps: 720 | Reward:   -2.37 | Battery:  80.21% | Loss: 
+Placing Sensors
+Policy -0.0132 | Value 0.0029 | KL 0.01701 | CF 0.1272 | Std 0.1098 | |a| 0.0554 | EV +0.948 | Rsd 0.282 | Res 0.066 | AE nan | Alpha 0.0100 | MB 24/24
+  cert | viol 0.034 | dV -0.273730 | V 0.2969 | inball 0.637 | a*_q05 0.00842 | a*_q50 0.03972 | dV>=0 0.000 | n=150 | a_used 0.00616 -> 0.00631
+  crit | n=1 | viol 0.606 | V 0.3987 | Vmin 0.1045 | agree +0.616 | a*_q05 -0.00583 | a*_q50 0.00475 | dV>=0 0.271 | beta 0.0936
+  bell | direct viol 0.495 | direct dV>=0 0.444 | d_mean +0.00009 | d_std 0.03573 | d_q95 0.07295
+[Episode 391/400] Steps: 720 | Reward:   -3.58 | Battery:  77.47% | Loss: 0.0815
+Placing Sensors
+[Episode 392/400] Steps: 720 | Reward:   -3.54 | Battery:  79.67% | Loss: 
+Placing Sensors
+Policy -0.0024 | Value 0.0045 | KL 0.02265 | CF 0.1476 | Std 0.1098 | |a| 0.0614 | EV +0.933 | Rsd 0.315 | Res 0.081 | AE nan | Alpha 0.0100 | MB 24/24
+  cert | viol 0.047 | dV -0.310897 | V 0.3412 | inball 0.572 | a*_q05 0.00707 | a*_q50 0.03897 | dV>=0 0.000 | n=150 | a_used 0.00631 -> 0.00635
+  crit | n=1 | viol 0.454 | V 0.4639 | Vmin 0.1055 | agree +0.517 | a*_q05 -0.00643 | a*_q50 0.00717 | dV>=0 0.318 | beta 0.0921
+  bell | direct viol 0.508 | direct dV>=0 0.451 | d_mean +0.00046 | d_std 0.03746 | d_q95 0.07721
+[Episode 393/400] Steps: 720 | Reward:   -3.92 | Battery:  74.05% | Loss: -0.0532
+Placing Sensors
+[Episode 394/400] Steps: 720 | Reward:   -5.69 | Battery:  53.26% | Loss: 
+Placing Sensors
+Policy -0.0111 | Value 0.0054 | KL 0.01826 | CF 0.1671 | Std 0.1098 | |a| 0.0536 | EV +0.916 | Rsd 0.298 | Res 0.093 | AE nan | Alpha 0.0100 | MB 24/24
+  cert | viol 0.068 | dV -0.264172 | V 0.3131 | inball 0.505 | a*_q05 0.00575 | a*_q50 0.03365 | dV>=0 0.000 | n=150 | a_used 0.00635 -> 0.00639
+  crit | n=1 | viol 0.543 | V 0.5038 | Vmin 0.1503 | agree +0.528 | a*_q05 -0.00542 | a*_q50 0.00552 | dV>=0 0.295 | beta 0.0916
+  bell | direct viol 0.512 | direct dV>=0 0.463 | d_mean -0.00102 | d_std 0.03482 | d_q95 0.06936
+[Episode 395/400] Steps: 720 | Reward:   -2.87 | Battery:  80.04% | Loss: 0.1353
+Placing Sensors
+[Episode 396/400] Steps: 720 | Reward:   -3.51 | Battery:  72.68% | Loss: 
+Placing Sensors
+Policy -0.0017 | Value 0.0039 | KL 0.02230 | CF 0.2038 | Std 0.1098 | |a| 0.0566 | EV +0.938 | Rsd 0.281 | Res 0.070 | AE nan | Alpha 0.0100 | MB 23/24
+  cert | viol 0.004 | dV -0.280699 | V 0.3063 | inball 0.525 | a*_q05 0.00904 | a*_q50 0.03698 | dV>=0 0.000 | n=150 | a_used 0.00639 -> 0.00650
+  crit | n=1 | viol 0.660 | V 0.5341 | Vmin 0.1605 | agree +0.374 | a*_q05 -0.00568 | a*_q50 0.00359 | dV>=0 0.350 | beta 0.0912
+  bell | direct viol 0.538 | direct dV>=0 0.480 | d_mean -0.00023 | d_std 0.03159 | d_q95 0.06193
+[Episode 397/400] Steps: 720 | Reward:   -4.44 | Battery:  65.36% | Loss: 0.0666
+Placing Sensors
+[Episode 398/400] Steps: 720 | Reward:   -2.83 | Battery:  73.96% | Loss: 
+Placing Sensors
+Policy -0.0086 | Value 0.0051 | KL 0.01539 | CF 0.1758 | Std 0.1098 | |a| 0.0537 | EV +0.912 | Rsd 0.274 | Res 0.087 | AE nan | Alpha 0.0100 | MB 24/24
+  cert | viol 0.065 | dV -0.227978 | V 0.2585 | inball 0.634 | a*_q05 0.00623 | a*_q50 0.03759 | dV>=0 0.000 | n=150 | a_used 0.00650 -> 0.00644
+  crit | n=1 | viol 0.678 | V 0.5264 | Vmin 0.1809 | agree +0.365 | a*_q05 -0.00717 | a*_q50 0.00168 | dV>=0 0.372 | beta 0.0911
+  bell | direct viol 0.514 | direct dV>=0 0.459 | d_mean +0.00031 | d_std 0.03230 | d_q95 0.06069
+[Episode 399/400] Steps: 720 | Reward:   -3.68 | Battery:  82.19% | Loss: -0.0454
+Placing Sensors
+[Episode 400/400] Steps: 720 | Reward:   -3.44 | Battery:  72.59% | Loss: 
+Placing Sensors
+Policy -0.0139 | Value 0.0035 | KL 0.01292 | CF 0.1388 | Std 0.1098 | |a| 0.0493 | EV +0.931 | Rsd 0.260 | Res 0.069 | AE nan | Alpha 0.0100 | MB 24/24
+  cert | viol 0.000 | dV -0.241668 | V 0.2540 | inball 0.640 | a*_q05 0.01265 | a*_q50 0.03953 | dV>=0 0.000 | n=150 | a_used 0.00644 -> 0.00658
+  crit | n=1 | viol 0.705 | V 0.4314 | Vmin 0.1548 | agree +0.463 | a*_q05 -0.00593 | a*_q50 0.00366 | dV>=0 0.303 | beta 0.0904
+  bell | direct viol 0.503 | direct dV>=0 0.448 | d_mean +0.00153 | d_std 0.03372 | d_q95 0.06853
+[Episode 401/400] Steps: 720 | Reward:   -2.58 | Battery:  81.87% | Loss: -0.1072
+Placing Sensors
+[Episode 402/400] Steps: 720 | Reward:   -3.96 | Battery:  79.07% | Loss: 
+Placing Sensors
+Policy -0.0101 | Value 0.0048 | KL 0.01357 | CF 0.1590 | Std 0.1097 | |a| 0.0579 | EV +0.855 | Rsd 0.257 | Res 0.098 | AE nan | Alpha 0.0100 | MB 24/24
+  cert | viol 0.087 | dV -0.275172 | V 0.3162 | inball 0.590 | a*_q05 0.00474 | a*_q50 0.03732 | dV>=0 0.000 | n=150 | a_used 0.00658 -> 0.00632
+  crit | n=1 | viol 0.527 | V 0.4684 | Vmin 0.1616 | agree +0.498 | a*_q05 -0.00696 | a*_q50 0.00563 | dV>=0 0.332 | beta 0.0896
+  bell | direct viol 0.501 | direct dV>=0 0.447 | d_mean -0.00010 | d_std 0.03759 | d_q95 0.07360
+[Episode 403/400] Steps: 720 | Reward:   -3.01 | Battery:  78.54% | Loss: -0.0589
+Placing Sensors
+[Episode 404/400] Steps: 720 | Reward:   -3.49 | Battery:  76.88% | Loss: 
+Placing Sensors
+Policy -0.0111 | Value 0.0021 | KL 0.01334 | CF 0.1348 | Std 0.1097 | |a| 0.0564 | EV +0.962 | Rsd 0.268 | Res 0.052 | AE nan | Alpha 0.0100 | MB 24/24
+  cert | viol 0.015 | dV -0.255708 | V 0.2770 | inball 0.592 | a*_q05 0.00940 | a*_q50 0.03396 | dV>=0 0.000 | n=150 | a_used 0.00632 -> 0.00637
+  crit | n=1 | viol 0.493 | V 0.4614 | Vmin 0.1525 | agree +0.497 | a*_q05 -0.00466 | a*_q50 0.00627 | dV>=0 0.213 | beta 0.0887
+  bell | direct viol 0.501 | direct dV>=0 0.446 | d_mean +0.00000 | d_std 0.02742 | d_q95 0.05688
+[Episode 405/400] Steps: 720 | Reward:   -3.67 | Battery:  76.99% | Loss: 0.1162
+Placing Sensors
+[Episode 406/400] Steps: 720 | Reward:   -3.18 | Battery:  80.37% | Loss: 
+Placing Sensors
+Policy -0.0064 | Value 0.0039 | KL 0.01764 | CF 0.2007 | Std 0.1097 | |a| 0.0491 | EV +0.913 | Rsd 0.266 | Res 0.079 | AE nan | Alpha 0.0100 | MB 24/24
+  cert | viol 0.029 | dV -0.247334 | V 0.2706 | inball 0.615 | a*_q05 0.00855 | a*_q50 0.03708 | dV>=0 0.000 | n=150 | a_used 0.00637 -> 0.00639
+  crit | n=1 | viol 0.438 | V 0.3724 | Vmin 0.1030 | agree +0.586 | a*_q05 -0.00388 | a*_q50 0.00719 | dV>=0 0.182 | beta 0.0861
+  bell | direct viol 0.493 | direct dV>=0 0.450 | d_mean +0.00006 | d_std 0.03064 | d_q95 0.06330
+[Episode 407/400] Steps: 720 | Reward:   -3.05 | Battery:  74.80% | Loss: 0.0432
+Placing Sensors
+[Episode 408/400] Steps: 720 | Reward:   -4.94 | Battery:  66.91% | Loss: 
+Placing Sensors
+Policy -0.0133 | Value 0.0054 | KL 0.02054 | CF 0.1625 | Std 0.1097 | |a| 0.0558 | EV +0.921 | Rsd 0.306 | Res 0.102 | AE nan | Alpha 0.0100 | MB 24/24
+  cert | viol 0.061 | dV -0.281632 | V 0.3226 | inball 0.506 | a*_q05 0.00633 | a*_q50 0.03416 | dV>=0 0.000 | n=150 | a_used 0.00639 -> 0.00624
+  crit | n=1 | viol 0.490 | V 0.5219 | Vmin 0.1353 | agree +0.407 | a*_q05 -0.00455 | a*_q50 0.00650 | dV>=0 0.257 | beta 0.0866
+  bell | direct viol 0.538 | direct dV>=0 0.483 | d_mean -0.00126 | d_std 0.03668 | d_q95 0.07492
+[Episode 409/400] Steps: 720 | Reward:   -4.35 | Battery:  59.82% | Loss: -0.0163
+Placing Sensors
+[Episode 410/400] Steps: 720 | Reward:   -3.31 | Battery:  69.17% | Loss: 
+Placing Sensors
+Policy -0.0033 | Value 0.0038 | KL 0.01444 | CF 0.1487 | Std 0.1097 | |a| 0.0518 | EV +0.920 | Rsd 0.266 | Res 0.083 | AE nan | Alpha 0.0100 | MB 24/24
+  cert | viol 0.000 | dV -0.230279 | V 0.2410 | inball 0.630 | a*_q05 0.01354 | a*_q50 0.03769 | dV>=0 0.000 | n=150 | a_used 0.00624 -> 0.00639
+  crit | n=1 | viol 0.695 | V 0.4740 | Vmin 0.1455 | agree +0.495 | a*_q05 -0.00628 | a*_q50 0.00302 | dV>=0 0.326 | beta 0.0873
+  bell | direct viol 0.509 | direct dV>=0 0.456 | d_mean +0.00126 | d_std 0.03122 | d_q95 0.06398
+[Episode 411/400] Steps: 720 | Reward:   -2.57 | Battery:  83.25% | Loss: 0.0611
+Placing Sensors
+[Episode 412/400] Steps: 720 | Reward:   -3.12 | Battery:  75.22% | Loss: 
+Placing Sensors
+Policy -0.0131 | Value 0.0042 | KL 0.00974 | CF 0.0975 | Std 0.1097 | |a| 0.0582 | EV +0.900 | Rsd 0.256 | Res 0.081 | AE nan | Alpha 0.0100 | MB 24/24
+  cert | viol 0.000 | dV -0.241325 | V 0.2516 | inball 0.646 | a*_q05 0.01364 | a*_q50 0.04062 | dV>=0 0.000 | n=150 | a_used 0.00639 -> 0.00653
+  crit | n=1 | viol 0.679 | V 0.4709 | Vmin 0.1652 | agree +0.360 | a*_q05 -0.00688 | a*_q50 0.00378 | dV>=0 0.317 | beta 0.0874
+  bell | direct viol 0.526 | direct dV>=0 0.474 | d_mean +0.00133 | d_std 0.02842 | d_q95 0.05934
+[Episode 413/400] Steps: 720 | Reward:   -3.31 | Battery:  83.06% | Loss: -0.0323
+Placing Sensors
+[Episode 414/400] Steps: 720 | Reward:   -3.81 | Battery:  70.17% | Loss: 
+Placing Sensors
+Policy -0.0099 | Value 0.0037 | KL 0.01931 | CF 0.1099 | Std 0.1097 | |a| 0.0565 | EV +0.913 | Rsd 0.254 | Res 0.077 | AE nan | Alpha 0.0100 | MB 18/24
+  cert | viol 0.017 | dV -0.226862 | V 0.2506 | inball 0.598 | a*_q05 0.00870 | a*_q50 0.03361 | dV>=0 0.000 | n=150 | a_used 0.00653 -> 0.00661
+  crit | n=1 | viol 0.696 | V 0.4992 | Vmin 0.2135 | agree +0.604 | a*_q05 -0.00504 | a*_q50 0.00401 | dV>=0 0.291 | beta 0.0886
+  bell | direct viol 0.535 | direct dV>=0 0.480 | d_mean -0.00059 | d_std 0.03412 | d_q95 0.07033
+[Episode 415/400] Steps: 720 | Reward:   -3.42 | Battery:  86.11% | Loss: -0.0065
+Placing Sensors
+[Episode 416/400] Steps: 720 | Reward:   -3.18 | Battery:  85.72% | Loss: 
+Placing Sensors
+Policy -0.0090 | Value 0.0052 | KL 0.03304 | CF 0.1423 | Std 0.1097 | |a| 0.0549 | EV +0.910 | Rsd 0.285 | Res 0.086 | AE nan | Alpha 0.0100 | MB 12/24
+  cert | viol 0.058 | dV -0.285370 | V 0.3159 | inball 0.636 | a*_q05 0.00642 | a*_q50 0.03734 | dV>=0 0.000 | n=150 | a_used 0.00661 -> 0.00659
+  crit | n=1 | viol 0.543 | V 0.4440 | Vmin 0.1669 | agree +0.658 | a*_q05 -0.00677 | a*_q50 0.00593 | dV>=0 0.299 | beta 0.0878
+  bell | direct viol 0.539 | direct dV>=0 0.488 | d_mean -0.00159 | d_std 0.04243 | d_q95 0.08864
+[Episode 417/400] Steps: 720 | Reward:   -3.48 | Battery:  75.31% | Loss: 0.0088
+Placing Sensors
+[Episode 418/400] Steps: 720 | Reward:   -3.50 | Battery:  79.06% | Loss: 
+Placing Sensors
+Policy -0.0077 | Value 0.0043 | KL 0.02014 | CF 0.0929 | Std 0.1097 | |a| 0.0517 | EV +0.941 | Rsd 0.313 | Res 0.077 | AE nan | Alpha 0.0100 | MB 18/24
+  cert | viol 0.000 | dV -0.267146 | V 0.2743 | inball 0.640 | a*_q05 0.01640 | a*_q50 0.04231 | dV>=0 0.000 | n=150 | a_used 0.00659 -> 0.00673
+  crit | n=1 | viol 0.686 | V 0.4253 | Vmin 0.1301 | agree +0.513 | a*_q05 -0.00621 | a*_q50 0.00315 | dV>=0 0.333 | beta 0.0863
+  bell | direct viol 0.498 | direct dV>=0 0.464 | d_mean +0.00171 | d_std 0.04286 | d_q95 0.08466
+[Episode 419/400] Steps: 720 | Reward:   -2.38 | Battery:  74.66% | Loss: -0.0019
+Placing Sensors
+[Episode 420/400] Steps: 720 | Reward:   -3.12 | Battery:  77.27% | Loss: 
+Placing Sensors
+Policy -0.0070 | Value 0.0027 | KL 0.02588 | CF 0.1781 | Std 0.1097 | |a| 0.0508 | EV +0.953 | Rsd 0.302 | Res 0.066 | AE nan | Alpha 0.0100 | MB 24/24
+  cert | viol 0.011 | dV -0.268442 | V 0.2884 | inball 0.625 | a*_q05 0.00967 | a*_q50 0.04007 | dV>=0 0.000 | n=150 | a_used 0.00673 -> 0.00683
+  crit | n=1 | viol 0.698 | V 0.4130 | Vmin 0.0924 | agree +0.617 | a*_q05 -0.00586 | a*_q50 0.00358 | dV>=0 0.304 | beta 0.0844
+  bell | direct viol 0.498 | direct dV>=0 0.432 | d_mean +0.00087 | d_std 0.03382 | d_q95 0.06704
+[Episode 421/400] Steps: 720 | Reward:   -2.91 | Battery:  77.94% | Loss: 0.0830
+Placing Sensors
+[Episode 422/400] Steps: 720 | Reward:   -6.31 | Battery:  65.42% | Loss: 
+Placing Sensors
+Policy -0.0073 | Value 0.0090 | KL 0.01703 | CF 0.1295 | Std 0.1097 | |a| 0.0572 | EV +0.875 | Rsd 0.306 | Res 0.124 | AE nan | Alpha 0.0100 | MB 24/24
+  cert | viol 0.339 | dV -0.211667 | V 0.3390 | inball 0.392 | a*_q05 -0.00010 | a*_q50 0.01709 | dV>=0 0.053 | n=150 | a_used 0.00683 -> 0.00612
+  crit | n=1 | viol 0.531 | V 0.6507 | Vmin 0.1962 | agree +0.327 | a*_q05 -0.00367 | a*_q50 0.00627 | dV>=0 0.161 | beta 0.0857
+  bell | direct viol 0.580 | direct dV>=0 0.477 | d_mean -0.00271 | d_std 0.02713 | d_q95 0.05631
+[Episode 423/400] Steps: 720 | Reward:   -5.04 | Battery:  77.76% | Loss: 0.0106
+Placing Sensors
+[Episode 424/400] Steps: 720 | Reward:   -4.53 | Battery:  82.24% | Loss: 
+Placing Sensors
+Policy -0.0142 | Value 0.0057 | KL 0.02307 | CF 0.0945 | Std 0.1097 | |a| 0.0513 | EV +0.921 | Rsd 0.307 | Res 0.087 | AE nan | Alpha 0.0100 | MB 12/24
+  cert | viol 0.151 | dV -0.263292 | V 0.3474 | inball 0.572 | a*_q05 -0.00022 | a*_q50 0.03319 | dV>=0 0.067 | n=150 | a_used 0.00612 -> 0.00581
+  crit | n=1 | viol 0.598 | V 0.5054 | Vmin 0.1693 | agree +0.604 | a*_q05 -0.00650 | a*_q50 0.00456 | dV>=0 0.294 | beta 0.0859
+  bell | direct viol 0.513 | direct dV>=0 0.468 | d_mean -0.00070 | d_std 0.04314 | d_q95 0.08771
+[Episode 425/400] Steps: 720 | Reward:   -3.58 | Battery:  79.33% | Loss: -0.0906
+Placing Sensors
+[Episode 426/400] Steps: 720 | Reward:   -3.35 | Battery:  78.33% | Loss: 
+Placing Sensors
+Policy 0.0081 | Value 0.0062 | KL 0.01938 | CF 0.1150 | Std 0.1097 | |a| 0.0611 | EV +0.941 | Rsd 0.340 | Res 0.083 | AE nan | Alpha 0.0100 | MB 12/24
+  cert | viol 0.092 | dV -0.280177 | V 0.3365 | inball 0.538 | a*_q05 0.00339 | a*_q50 0.03384 | dV>=0 0.020 | n=150 | a_used 0.00581 -> 0.00565
+  crit | n=1 | viol 0.575 | V 0.6010 | Vmin 0.1408 | agree +0.455 | a*_q05 -0.00572 | a*_q50 0.00487 | dV>=0 0.333 | beta 0.0857
+  bell | direct viol 0.542 | direct dV>=0 0.498 | d_mean -0.00066 | d_std 0.04704 | d_q95 0.09651
+[Episode 427/400] Steps: 720 | Reward:   -5.27 | Battery:  71.00% | Loss: 0.0837
+Placing Sensors
+[Episode 428/400] Steps: 720 | Reward:   -1.97 | Battery:  83.25% | Loss: 
+Placing Sensors
+Policy -0.0018 | Value 0.0035 | KL 0.01543 | CF 0.1714 | Std 0.1097 | |a| 0.0438 | EV +0.911 | Rsd 0.265 | Res 0.082 | AE nan | Alpha 0.0100 | MB 24/24
+  cert | viol 0.035 | dV -0.186197 | V 0.2138 | inball 0.610 | a*_q05 0.00731 | a*_q50 0.03091 | dV>=0 0.000 | n=150 | a_used 0.00565 -> 0.00567
+  crit | n=1 | viol 0.491 | V 0.4019 | Vmin 0.1115 | agree +0.431 | a*_q05 -0.00465 | a*_q50 0.00577 | dV>=0 0.196 | beta 0.0839
+  bell | direct viol 0.491 | direct dV>=0 0.458 | d_mean +0.00023 | d_std 0.03651 | d_q95 0.07401
+[Episode 429/400] Steps: 720 | Reward:   -4.43 | Battery:  79.42% | Loss: 0.1178
+Placing Sensors
+[Episode 430/400] Steps: 720 | Reward:   -5.10 | Battery:  77.16% | Loss: 
+Placing Sensors
+Policy -0.0105 | Value 0.0035 | KL 0.02116 | CF 0.1523 | Std 0.1097 | |a| 0.0531 | EV +0.961 | Rsd 0.349 | Res 0.076 | AE nan | Alpha 0.0100 | MB 24/24
+  cert | viol 0.139 | dV -0.229147 | V 0.3032 | inball 0.499 | a*_q05 0.00312 | a*_q50 0.02826 | dV>=0 0.000 | n=150 | a_used 0.00567 -> 0.00546
+  crit | n=1 | viol 0.524 | V 0.5481 | Vmin 0.1424 | agree +0.520 | a*_q05 -0.00388 | a*_q50 0.00558 | dV>=0 0.211 | beta 0.0830
+  bell | direct viol 0.514 | direct dV>=0 0.461 | d_mean -0.00115 | d_std 0.03632 | d_q95 0.07270
+[Episode 431/400] Steps: 720 | Reward:   -3.93 | Battery:  65.65% | Loss: -0.0433
+Placing Sensors
+[Episode 432/400] Steps: 720 | Reward:   -4.05 | Battery:  84.42% | Loss: 
+Placing Sensors
+Policy -0.0076 | Value 0.0083 | KL 0.01820 | CF 0.1623 | Std 0.1097 | |a| 0.0503 | EV +0.891 | Rsd 0.327 | Res 0.117 | AE nan | Alpha 0.0100 | MB 24/24
+  cert | viol 0.205 | dV -0.268707 | V 0.3773 | inball 0.533 | a*_q05 -0.00131 | a*_q50 0.02908 | dV>=0 0.081 | n=150 | a_used 0.00546 -> 0.00519
+  crit | n=1 | viol 0.392 | V 0.5351 | Vmin 0.1513 | agree +0.503 | a*_q05 -0.00500 | a*_q50 0.00849 | dV>=0 0.219 | beta 0.0837
+  bell | direct viol 0.533 | direct dV>=0 0.494 | d_mean -0.00224 | d_std 0.04662 | d_q95 0.08998
+[Episode 433/400] Steps: 720 | Reward:   -5.50 | Battery:  78.21% | Loss: 0.0611
+Placing Sensors
+[Episode 434/400] Steps: 720 | Reward:   -3.67 | Battery:  73.82% | Loss: 
+Placing Sensors
+Policy -0.0072 | Value 0.0033 | KL 0.00655 | CF 0.0775 | Std 0.1097 | |a| 0.0496 | EV +0.956 | Rsd 0.324 | Res 0.068 | AE nan | Alpha 0.0100 | MB 24/24
+  cert | viol 0.038 | dV -0.285292 | V 0.3199 | inball 0.576 | a*_q05 0.00652 | a*_q50 0.03442 | dV>=0 0.000 | n=150 | a_used 0.00519 -> 0.00519
+  crit | n=1 | viol 0.473 | V 0.5071 | Vmin 0.1315 | agree +0.517 | a*_q05 -0.00536 | a*_q50 0.00586 | dV>=0 0.236 | beta 0.0831
+  bell | direct viol 0.507 | direct dV>=0 0.460 | d_mean -0.00083 | d_std 0.03921 | d_q95 0.07754
+[Episode 435/400] Steps: 720 | Reward:   -3.87 | Battery:  76.11% | Loss: 0.0684
+Placing Sensors
+[Episode 436/400] Steps: 720 | Reward:   -2.55 | Battery:  78.62% | Loss: 
+Placing Sensors
+Policy -0.0099 | Value 0.0044 | KL 0.01294 | CF 0.0921 | Std 0.1097 | |a| 0.0505 | EV +0.931 | Rsd 0.330 | Res 0.097 | AE nan | Alpha 0.0100 | MB 24/24
+  cert | viol 0.003 | dV -0.288793 | V 0.3055 | inball 0.575 | a*_q05 0.01094 | a*_q50 0.04098 | dV>=0 0.000 | n=150 | a_used 0.00519 -> 0.00536
+  crit | n=1 | viol 0.722 | V 0.5190 | Vmin 0.1255 | agree +0.525 | a*_q05 -0.00759 | a*_q50 0.00076 | dV>=0 0.483 | beta 0.0831
+  bell | direct viol 0.500 | direct dV>=0 0.450 | d_mean +0.00252 | d_std 0.03273 | d_q95 0.06940
+[Episode 437/400] Steps: 720 | Reward:   -4.15 | Battery:  69.84% | Loss: -0.0322
+Placing Sensors
+[Episode 438/400] Steps: 720 | Reward:   -3.44 | Battery:  88.16% | Loss: 
+Placing Sensors
+Policy -0.0013 | Value 0.0027 | KL 0.01416 | CF 0.1309 | Std 0.1098 | |a| 0.0537 | EV +0.957 | Rsd 0.306 | Res 0.065 | AE nan | Alpha 0.0100 | MB 24/24
+  cert | viol 0.016 | dV -0.247622 | V 0.2844 | inball 0.569 | a*_q05 0.00659 | a*_q50 0.03349 | dV>=0 0.000 | n=150 | a_used 0.00536 -> 0.00541
+  crit | n=1 | viol 0.668 | V 0.5478 | Vmin 0.1769 | agree +0.551 | a*_q05 -0.00535 | a*_q50 0.00355 | dV>=0 0.220 | beta 0.0835
+  bell | direct viol 0.520 | direct dV>=0 0.474 | d_mean +0.00081 | d_std 0.03484 | d_q95 0.07222
+[Episode 439/400] Steps: 720 | Reward:   -4.44 | Battery:  67.00% | Loss: -0.0072
+Placing Sensors
+[Episode 440/400] Steps: 720 | Reward:   -3.70 | Battery:  72.18% | Loss: 
+Placing Sensors
+Policy -0.0112 | Value 0.0025 | KL 0.01332 | CF 0.0895 | Std 0.1097 | |a| 0.0526 | EV +0.962 | Rsd 0.296 | Res 0.066 | AE nan | Alpha 0.0100 | MB 24/24
+  cert | viol 0.014 | dV -0.237427 | V 0.2543 | inball 0.662 | a*_q05 0.01000 | a*_q50 0.04083 | dV>=0 0.000 | n=150 | a_used 0.00541 -> 0.00558
+  crit | n=1 | viol 0.603 | V 0.4275 | Vmin 0.1151 | agree +0.437 | a*_q05 -0.00638 | a*_q50 0.00364 | dV>=0 0.328 | beta 0.0829
+  bell | direct viol 0.494 | direct dV>=0 0.457 | d_mean +0.00071 | d_std 0.03591 | d_q95 0.07352
+[Episode 441/400] Steps: 720 | Reward:   -1.52 | Battery:  86.09% | Loss: -0.0648
+Placing Sensors
+[Episode 442/400] Steps: 720 | Reward:   -4.27 | Battery:  71.29% | Loss: 
+Placing Sensors
+Policy -0.0103 | Value 0.0023 | KL 0.01644 | CF 0.1304 | Std 0.1097 | |a| 0.0566 | EV +0.947 | Rsd 0.309 | Res 0.073 | AE nan | Alpha 0.0100 | MB 24/24
+  cert | viol 0.100 | dV -0.227782 | V 0.2723 | inball 0.601 | a*_q05 0.00427 | a*_q50 0.03595 | dV>=0 0.000 | n=150 | a_used 0.00558 -> 0.00555
+  crit | n=1 | viol 0.668 | V 0.4809 | Vmin 0.1383 | agree +0.567 | a*_q05 -0.00683 | a*_q50 0.00420 | dV>=0 0.270 | beta 0.0823
+  bell | direct viol 0.532 | direct dV>=0 0.444 | d_mean +0.00012 | d_std 0.02771 | d_q95 0.05681
+[Episode 443/400] Steps: 720 | Reward:   -2.26 | Battery:  82.99% | Loss: -0.0289
+Placing Sensors
+[Episode 444/400] Steps: 720 | Reward:   -1.92 | Battery:  85.98% | Loss: 
+Placing Sensors
+Policy 0.0037 | Value 0.0023 | KL 0.01769 | CF 0.1452 | Std 0.1097 | |a| 0.0460 | EV +0.958 | Rsd 0.278 | Res 0.063 | AE nan | Alpha 0.0100 | MB 24/24
+  cert | viol 0.000 | dV -0.235961 | V 0.2437 | inball 0.691 | a*_q05 0.01494 | a*_q50 0.04191 | dV>=0 0.000 | n=150 | a_used 0.00555 -> 0.00572
+  crit | n=1 | viol 0.580 | V 0.3974 | Vmin 0.1193 | agree +0.393 | a*_q05 -0.00684 | a*_q50 0.00447 | dV>=0 0.313 | beta 0.0808
+  bell | direct viol 0.479 | direct dV>=0 0.451 | d_mean +0.00180 | d_std 0.03553 | d_q95 0.06898
+[Episode 445/400] Steps: 720 | Reward:   -2.88 | Battery:  82.30% | Loss: 0.1165
+Placing Sensors
+[Episode 446/400] Steps: 720 | Reward:   -5.04 | Battery:  70.53% | Loss: 
+Placing Sensors
+Policy -0.0070 | Value 0.0046 | KL 0.01317 | CF 0.1366 | Std 0.1097 | |a| 0.0463 | EV +0.936 | Rsd 0.307 | Res 0.083 | AE nan | Alpha 0.0100 | MB 24/24
+  cert | viol 0.038 | dV -0.293390 | V 0.3318 | inball 0.562 | a*_q05 0.00667 | a*_q50 0.03470 | dV>=0 0.000 | n=150 | a_used 0.00572 -> 0.00578
+  crit | n=1 | viol 0.430 | V 0.4982 | Vmin 0.1452 | agree +0.528 | a*_q05 -0.00537 | a*_q50 0.00674 | dV>=0 0.252 | beta 0.0806
+  bell | direct viol 0.531 | direct dV>=0 0.473 | d_mean -0.00137 | d_std 0.03125 | d_q95 0.06317
+[Episode 447/400] Steps: 720 | Reward:   -3.23 | Battery:  79.94% | Loss: -0.0460
+Placing Sensors
+[Episode 448/400] Steps: 720 | Reward:   -3.03 | Battery:  74.17% | Loss: 
+Placing Sensors
+Policy -0.0101 | Value 0.0019 | KL 0.01362 | CF 0.1541 | Std 0.1097 | |a| 0.0447 | EV +0.973 | Rsd 0.290 | Res 0.048 | AE nan | Alpha 0.0100 | MB 24/24
+  cert | viol 0.032 | dV -0.243431 | V 0.2705 | inball 0.593 | a*_q05 0.00768 | a*_q50 0.03735 | dV>=0 0.000 | n=150 | a_used 0.00578 -> 0.00588
+  crit | n=1 | viol 0.465 | V 0.4507 | Vmin 0.1411 | agree +0.405 | a*_q05 -0.00526 | a*_q50 0.00615 | dV>=0 0.219 | beta 0.0798
+  bell | direct viol 0.500 | direct dV>=0 0.446 | d_mean -0.00028 | d_std 0.02632 | d_q95 0.05344
+[Episode 449/400] Steps: 720 | Reward:   -3.32 | Battery:  76.39% | Loss: 0.0820
+Placing Sensors
+[Episode 450/400] Steps: 720 | Reward:   -3.34 | Battery:  77.59% | Loss: 
+Placing Sensors
+Policy -0.0086 | Value 0.0026 | KL 0.00868 | CF 0.0778 | Std 0.1097 | |a| 0.0421 | EV +0.951 | Rsd 0.297 | Res 0.070 | AE nan | Alpha 0.0100 | MB 24/24
+  cert | viol 0.035 | dV -0.232357 | V 0.2626 | inball 0.534 | a*_q05 0.00724 | a*_q50 0.03362 | dV>=0 0.000 | n=150 | a_used 0.00588 -> 0.00595
+  crit | n=1 | viol 0.530 | V 0.4790 | Vmin 0.1588 | agree +0.398 | a*_q05 -0.00560 | a*_q50 0.00543 | dV>=0 0.216 | beta 0.0800
+  bell | direct viol 0.538 | direct dV>=0 0.487 | d_mean -0.00046 | d_std 0.02704 | d_q95 0.05497
+[Episode 451/400] Steps: 720 | Reward:   -4.14 | Battery:  74.83% | Loss: 0.0418
+Placing Sensors
+[Episode 452/400] Steps: 720 | Reward:   -4.25 | Battery:  78.21% | Loss: 
+Placing Sensors
+Policy -0.0084 | Value 0.0070 | KL 0.01813 | CF 0.0936 | Std 0.1097 | |a| 0.0522 | EV +0.939 | Rsd 0.364 | Res 0.115 | AE nan | Alpha 0.0100 | MB 18/24
+  cert | viol 0.077 | dV -0.335269 | V 0.4030 | inball 0.481 | a*_q05 0.00500 | a*_q50 0.03115 | dV>=0 0.005 | n=150 | a_used 0.00595 -> 0.00591
+  crit | n=1 | viol 0.295 | V 0.5358 | Vmin 0.1108 | agree +0.438 | a*_q05 -0.00337 | a*_q50 0.01070 | dV>=0 0.165 | beta 0.0787
+  bell | direct viol 0.522 | direct dV>=0 0.447 | d_mean -0.00278 | d_std 0.02707 | d_q95 0.05491
+[Episode 453/400] Steps: 720 | Reward:   -5.85 | Battery:  61.47% | Loss: 0.1112
+Placing Sensors
+[Episode 454/400] Steps: 720 | Reward:   -3.95 | Battery:  82.15% | Loss: 
+Placing Sensors
+
+[CONVERGED] episode 455: deaths 0% over the last 100, survivor reward flat for 25 consecutive episodes. Wrote probe_converged.pt.
+Policy -0.0131 | Value 0.0045 | KL 0.01140 | CF 0.1118 | Std 0.1097 | |a| 0.0592 | EV +0.931 | Rsd 0.281 | Res 0.086 | AE nan | Alpha 0.0100 | MB 24/24
+  cert | viol 0.095 | dV -0.248076 | V 0.2930 | inball 0.561 | a*_q05 0.00454 | a*_q50 0.03365 | dV>=0 0.000 | n=150 | a_used 0.00591 -> 0.00576
+  crit | n=1 | viol 0.768 | V 0.6089 | Vmin 0.2176 | agree +0.549 | a*_q05 -0.00713 | a*_q50 0.00403 | dV>=0 0.277 | beta 0.0805
+  bell | direct viol 0.516 | direct dV>=0 0.446 | d_mean +0.00072 | d_std 0.02971 | d_q95 0.06164
+[Episode 455/400] Steps: 720 | Reward:   -3.84 | Battery:  70.72% | Loss: -0.0219
+Placing Sensors
+[Episode 456/400] Steps: 720 | Reward:   -3.07 | Battery:  80.17% | Loss: 
+Placing Sensors
+Policy 0.0017 | Value 0.0036 | KL 0.02792 | CF 0.1556 | Std 0.1097 | |a| 0.0535 | EV +0.936 | Rsd 0.264 | Res 0.067 | AE nan | Alpha 0.0100 | MB 18/24
+  cert | viol 0.016 | dV -0.236146 | V 0.2611 | inball 0.627 | a*_q05 0.00816 | a*_q50 0.03696 | dV>=0 0.000 | n=150 | a_used 0.00576 -> 0.00577
+  crit | n=1 | viol 0.456 | V 0.4395 | Vmin 0.1317 | agree +0.326 | a*_q05 -0.00509 | a*_q50 0.00688 | dV>=0 0.202 | beta 0.0801
+  bell | direct viol 0.487 | direct dV>=0 0.452 | d_mean -0.00036 | d_std 0.03935 | d_q95 0.08242
+[Episode 457/400] Steps: 720 | Reward:   -3.16 | Battery:  81.41% | Loss: 0.0950
+Placing Sensors
+[Episode 458/400] Steps: 720 | Reward:   -2.15 | Battery:  83.71% | Loss: 
+Placing Sensors
+Policy -0.0004 | Value 0.0049 | KL 0.01160 | CF 0.0935 | Std 0.1097 | |a| 0.0613 | EV +0.904 | Rsd 0.303 | Res 0.099 | AE nan | Alpha 0.0100 | MB 24/24
+  cert | viol 0.141 | dV -0.234810 | V 0.3108 | inball 0.575 | a*_q05 0.00122 | a*_q50 0.03481 | dV>=0 0.045 | n=150 | a_used 0.00577 -> 0.00553
+  crit | n=1 | viol 0.651 | V 0.5280 | Vmin 0.1408 | agree +0.558 | a*_q05 -0.00679 | a*_q50 0.00362 | dV>=0 0.340 | beta 0.0803
+  bell | direct viol 0.548 | direct dV>=0 0.462 | d_mean +0.00076 | d_std 0.02643 | d_q95 0.05698
+[Episode 459/400] Steps: 720 | Reward:   -4.95 | Battery:  68.59% | Loss: 0.0049
+Placing Sensors
+[Episode 460/400] Steps: 720 | Reward:   -2.80 | Battery:  85.48% | Loss: 
+Placing Sensors
+Policy -0.0093 | Value 0.0035 | KL 0.01635 | CF 0.0908 | Std 0.1097 | |a| 0.0577 | EV +0.955 | Rsd 0.287 | Res 0.065 | AE nan | Alpha 0.0100 | MB 18/24
+  cert | viol 0.007 | dV -0.272411 | V 0.2964 | inball 0.602 | a*_q05 0.00897 | a*_q50 0.03803 | dV>=0 0.000 | n=150 | a_used 0.00553 -> 0.00563
+  crit | n=1 | viol 0.592 | V 0.4607 | Vmin 0.1371 | agree +0.641 | a*_q05 -0.00575 | a*_q50 0.00421 | dV>=0 0.309 | beta 0.0802
+  bell | direct viol 0.487 | direct dV>=0 0.457 | d_mean +0.00062 | d_std 0.04031 | d_q95 0.08161
+[Episode 461/400] Steps: 720 | Reward:   -3.85 | Battery:  65.80% | Loss: -0.0196
+Placing Sensors
+[Episode 462/400] Steps: 720 | Reward:   -3.54 | Battery:  77.09% | Loss: 
+Placing Sensors
+Policy -0.0044 | Value 0.0062 | KL 0.02837 | CF 0.1553 | Std 0.1097 | |a| 0.0587 | EV +0.894 | Rsd 0.261 | Res 0.087 | AE nan | Alpha 0.0100 | MB 12/24
+  cert | viol 0.000 | dV -0.240197 | V 0.2663 | inball 0.580 | a*_q05 0.00821 | a*_q50 0.03707 | dV>=0 0.000 | n=150 | a_used 0.00563 -> 0.00571
+  crit | n=1 | viol 0.807 | V 0.4918 | Vmin 0.1494 | agree +0.626 | a*_q05 -0.00634 | a*_q50 0.00126 | dV>=0 0.416 | beta 0.0809
+  bell | direct viol 0.505 | direct dV>=0 0.457 | d_mean +0.00107 | d_std 0.03506 | d_q95 0.06883
+[Episode 463/400] Steps: 720 | Reward:   -3.33 | Battery:  74.06% | Loss: -0.0278
+Placing Sensors
+[Episode 464/400] Steps: 720 | Reward:   -2.99 | Battery:  85.17% | Loss: 
+Placing Sensors
+Policy -0.0080 | Value 0.0031 | KL 0.00774 | CF 0.0797 | Std 0.1097 | |a| 0.0480 | EV +0.931 | Rsd 0.246 | Res 0.066 | AE nan | Alpha 0.0100 | MB 24/24
+  cert | viol 0.017 | dV -0.214868 | V 0.2348 | inball 0.645 | a*_q05 0.00860 | a*_q50 0.03708 | dV>=0 0.000 | n=150 | a_used 0.00571 -> 0.00581
+  crit | n=1 | viol 0.516 | V 0.4125 | Vmin 0.1323 | agree +0.530 | a*_q05 -0.00588 | a*_q50 0.00557 | dV>=0 0.171 | beta 0.0802
+  bell | direct viol 0.480 | direct dV>=0 0.433 | d_mean +0.00076 | d_std 0.02756 | d_q95 0.05475
+[Episode 465/400] Steps: 720 | Reward:   -2.73 | Battery:  78.72% | Loss: 0.0166
+Placing Sensors
+[Episode 466/400] Steps: 720 | Reward:   -3.30 | Battery:  78.88% | Loss: 
+Placing Sensors
+Policy -0.0005 | Value 0.0017 | KL 0.01508 | CF 0.1242 | Std 0.1097 | |a| 0.0580 | EV +0.972 | Rsd 0.273 | Res 0.046 | AE nan | Alpha 0.0100 | MB 24/24
+  cert | viol 0.000 | dV -0.237809 | V 0.2568 | inball 0.557 | a*_q05 0.01081 | a*_q50 0.03266 | dV>=0 0.000 | n=150 | a_used 0.00581 -> 0.00597
+  crit | n=1 | viol 0.588 | V 0.4961 | Vmin 0.1329 | agree +0.511 | a*_q05 -0.00576 | a*_q50 0.00452 | dV>=0 0.257 | beta 0.0806
+  bell | direct viol 0.543 | direct dV>=0 0.490 | d_mean +0.00042 | d_std 0.03370 | d_q95 0.06546
+[Episode 467/400] Steps: 720 | Reward:   -3.99 | Battery:  72.49% | Loss: 0.1244
+Placing Sensors
+[Episode 468/400] Steps: 720 | Reward:   -3.48 | Battery:  76.88% | Loss: 
+Placing Sensors
+Policy -0.0057 | Value 0.0028 | KL 0.00899 | CF 0.0935 | Std 0.1096 | |a| 0.0517 | EV +0.948 | Rsd 0.268 | Res 0.061 | AE nan | Alpha 0.0100 | MB 24/24
+  cert | viol 0.045 | dV -0.271321 | V 0.2968 | inball 0.616 | a*_q05 0.00739 | a*_q50 0.03997 | dV>=0 0.000 | n=150 | a_used 0.00597 -> 0.00611
+  crit | n=1 | viol 0.472 | V 0.3848 | Vmin 0.1285 | agree +0.628 | a*_q05 -0.00606 | a*_q50 0.00648 | dV>=0 0.279 | beta 0.0794
+  bell | direct viol 0.524 | direct dV>=0 0.458 | d_mean -0.00034 | d_std 0.02635 | d_q95 0.05249
+[Episode 469/400] Steps: 720 | Reward:   -2.72 | Battery:  82.60% | Loss: 0.1184
+Placing Sensors
+[Episode 470/400] Steps: 720 | Reward:   -2.75 | Battery:  82.60% | Loss: 
+Placing Sensors
+Policy -0.0088 | Value 0.0028 | KL 0.01107 | CF 0.0977 | Std 0.1096 | |a| 0.0654 | EV +0.929 | Rsd 0.261 | Res 0.080 | AE nan | Alpha 0.0100 | MB 24/24
+  cert | viol 0.000 | dV -0.199896 | V 0.2190 | inball 0.570 | a*_q05 0.00960 | a*_q50 0.03747 | dV>=0 0.000 | n=150 | a_used 0.00611 -> 0.00626
+  crit | n=1 | viol 0.791 | V 0.4826 | Vmin 0.1580 | agree +0.511 | a*_q05 -0.00643 | a*_q50 0.00243 | dV>=0 0.260 | beta 0.0797
+  bell | direct viol 0.544 | direct dV>=0 0.464 | d_mean +0.00117 | d_std 0.02488 | d_q95 0.04926
+[Episode 471/400] Steps: 720 | Reward:   -3.27 | Battery:  52.31% | Loss: -0.0461
+Placing Sensors
+[Episode 472/400] Steps: 720 | Reward:   -2.86 | Battery:  86.87% | Loss: 
+Placing Sensors
+Policy -0.0153 | Value 0.0027 | KL 0.01741 | CF 0.1176 | Std 0.1096 | |a| 0.0588 | EV +0.949 | Rsd 0.273 | Res 0.062 | AE nan | Alpha 0.0100 | MB 24/24
+  cert | viol 0.000 | dV -0.237229 | V 0.2474 | inball 0.628 | a*_q05 0.01329 | a*_q50 0.04031 | dV>=0 0.000 | n=150 | a_used 0.00626 -> 0.00641
+  crit | n=1 | viol 0.744 | V 0.4257 | Vmin 0.1446 | agree +0.528 | a*_q05 -0.00600 | a*_q50 0.00298 | dV>=0 0.344 | beta 0.0795
+  bell | direct viol 0.535 | direct dV>=0 0.455 | d_mean +0.00068 | d_std 0.02786 | d_q95 0.05628
+[Episode 473/400] Steps: 720 | Reward:   -3.20 | Battery:  65.83% | Loss: 0.1085
+Placing Sensors
+[Episode 474/400] Steps: 720 | Reward:   -2.83 | Battery:  79.98% | Loss: 
+Placing Sensors
+Policy -0.0090 | Value 0.0038 | KL 0.01859 | CF 0.1239 | Std 0.1096 | |a| 0.0571 | EV +0.929 | Rsd 0.265 | Res 0.072 | AE nan | Alpha 0.0100 | MB 24/24
+  cert | viol 0.026 | dV -0.261614 | V 0.2843 | inball 0.580 | a*_q05 0.00912 | a*_q50 0.03797 | dV>=0 0.000 | n=150 | a_used 0.00641 -> 0.00656
+  crit | n=1 | viol 0.609 | V 0.4475 | Vmin 0.1518 | agree +0.453 | a*_q05 -0.00709 | a*_q50 0.00446 | dV>=0 0.350 | beta 0.0793
+  bell | direct viol 0.533 | direct dV>=0 0.481 | d_mean -0.00027 | d_std 0.03006 | d_q95 0.05944
+[Episode 475/400] Steps: 720 | Reward:   -3.71 | Battery:  80.82% | Loss: 0.0079
+Placing Sensors
+[Episode 476/400] Steps: 720 | Reward:   -3.77 | Battery:  77.67% | Loss: 
+Placing Sensors
+Policy -0.0084 | Value 0.0036 | KL 0.01560 | CF 0.1293 | Std 0.1097 | |a| 0.0561 | EV +0.920 | Rsd 0.288 | Res 0.084 | AE nan | Alpha 0.0100 | MB 24/24
+  cert | viol 0.019 | dV -0.294665 | V 0.3157 | inball 0.625 | a*_q05 0.01039 | a*_q50 0.04020 | dV>=0 0.000 | n=150 | a_used 0.00656 -> 0.00665
+  crit | n=1 | viol 0.610 | V 0.4389 | Vmin 0.1340 | agree +0.551 | a*_q05 -0.00683 | a*_q50 0.00251 | dV>=0 0.366 | beta 0.0790
+  bell | direct viol 0.524 | direct dV>=0 0.467 | d_mean +0.00052 | d_std 0.02703 | d_q95 0.05168
+[Episode 477/400] Steps: 720 | Reward:   -2.22 | Battery:  74.84% | Loss: -0.0598
+Placing Sensors
+[Episode 478/400] Steps: 720 | Reward:   -2.16 | Battery:  87.42% | Loss: 
+Placing Sensors
+Policy -0.0052 | Value 0.0027 | KL 0.01699 | CF 0.1668 | Std 0.1097 | |a| 0.0551 | EV +0.939 | Rsd 0.240 | Res 0.066 | AE nan | Alpha 0.0100 | MB 24/24
+  cert | viol 0.000 | dV -0.216669 | V 0.2251 | inball 0.645 | a*_q05 0.01485 | a*_q50 0.03702 | dV>=0 0.000 | n=150 | a_used 0.00665 -> 0.00679
+  crit | n=1 | viol 0.719 | V 0.3858 | Vmin 0.1347 | agree +0.659 | a*_q05 -0.00576 | a*_q50 0.00360 | dV>=0 0.312 | beta 0.0785
+  bell | direct viol 0.501 | direct dV>=0 0.459 | d_mean +0.00156 | d_std 0.02796 | d_q95 0.05773
+[Episode 479/400] Steps: 720 | Reward:   -2.98 | Battery:  78.29% | Loss: -0.0975
+Placing Sensors
+[Episode 480/400] Steps: 720 | Reward:   -4.69 | Battery:  80.93% | Loss: 
+Placing Sensors
+Policy -0.0015 | Value 0.0023 | KL 0.01143 | CF 0.1255 | Std 0.1097 | |a| 0.0626 | EV +0.953 | Rsd 0.257 | Res 0.064 | AE nan | Alpha 0.0100 | MB 24/24
+  cert | viol 0.142 | dV -0.221621 | V 0.2776 | inball 0.558 | a*_q05 0.00266 | a*_q50 0.03265 | dV>=0 0.000 | n=150 | a_used 0.00679 -> 0.00657
+  crit | n=1 | viol 0.449 | V 0.5036 | Vmin 0.1864 | agree +0.395 | a*_q05 -0.00504 | a*_q50 0.00786 | dV>=0 0.176 | beta 0.0792
+  bell | direct viol 0.510 | direct dV>=0 0.444 | d_mean -0.00161 | d_std 0.02427 | d_q95 0.05106
+[Episode 481/400] Steps: 720 | Reward:   -3.56 | Battery:  77.29% | Loss: 0.0267
+Placing Sensors
+[Episode 482/400] Steps: 720 | Reward:   -3.20 | Battery:  75.17% | Loss: 
+Placing Sensors
+Policy -0.0073 | Value 0.0026 | KL 0.01414 | CF 0.1229 | Std 0.1097 | |a| 0.0554 | EV +0.946 | Rsd 0.268 | Res 0.064 | AE nan | Alpha 0.0100 | MB 24/24
+  cert | viol 0.000 | dV -0.264417 | V 0.2740 | inball 0.615 | a*_q05 0.01446 | a*_q50 0.04082 | dV>=0 0.000 | n=150 | a_used 0.00657 -> 0.00671
+  crit | n=1 | viol 0.793 | V 0.4216 | Vmin 0.1445 | agree +0.540 | a*_q05 -0.00638 | a*_q50 0.00190 | dV>=0 0.370 | beta 0.0785
+  bell | direct viol 0.536 | direct dV>=0 0.472 | d_mean +0.00082 | d_std 0.02744 | d_q95 0.05626
+[Episode 483/400] Steps: 720 | Reward:   -2.67 | Battery:  73.80% | Loss: 0.0790
+Placing Sensors
+[Episode 484/400] Steps: 720 | Reward:   -4.37 | Battery:  83.42% | Loss: 
+Placing Sensors
+Policy 0.0052 | Value 0.0062 | KL 0.02037 | CF 0.1600 | Std 0.1097 | |a| 0.0716 | EV +0.901 | Rsd 0.287 | Res 0.093 | AE nan | Alpha 0.0100 | MB 12/24
+  cert | viol 0.132 | dV -0.240083 | V 0.2931 | inball 0.523 | a*_q05 0.00045 | a*_q50 0.03281 | dV>=0 0.052 | n=150 | a_used 0.00671 -> 0.00638
+  crit | n=1 | viol 0.552 | V 0.5052 | Vmin 0.1483 | agree +0.605 | a*_q05 -0.00711 | a*_q50 0.00510 | dV>=0 0.277 | beta 0.0798
+  bell | direct viol 0.548 | direct dV>=0 0.479 | d_mean -0.00162 | d_std 0.03236 | d_q95 0.06641
+[Episode 485/400] Steps: 720 | Reward:   -3.89 | Battery:  62.90% | Loss: -0.0300
+Placing Sensors
+[Episode 486/400] Steps: 720 | Reward:   -2.90 | Battery:  78.95% | Loss: 
+[budget] 288336 transitions collected over 486 episodes -- step budget met, stopping.
+Placing Sensors
+  [validation 1/10] steps 720 | battery  35.3% ->  88.5% (min  29.0%) | reward    -2.27 | |a| 0.041 | path     397 m
+Placing Sensors
+  [validation 2/10] steps 720 | battery  39.6% ->  72.2% (min  17.0%) | reward    -6.22 | |a| 0.112 | path     343 m
+Placing Sensors
+  [validation 3/10] steps 720 | battery  30.1% ->  81.4% (min  27.2%) | reward    -2.62 | |a| 0.037 | path     343 m
+Placing Sensors
+  [validation 4/10] steps 720 | battery  33.8% ->  87.0% (min  31.5%) | reward    -1.62 | |a| 0.032 | path     265 m
+Placing Sensors
+  [validation 5/10] steps 720 | battery  31.5% ->  83.6% (min  27.1%) | reward    -2.17 | |a| 0.077 | path     347 m
+Placing Sensors
+  [validation 6/10] steps 720 | battery  33.9% ->  89.2% (min  26.9%) | reward    -2.20 | |a| 0.037 | path     336 m
+Placing Sensors
+  [validation 7/10] steps 720 | battery  38.6% ->  85.0% (min  35.5%) | reward    -1.96 | |a| 0.035 | path     299 m
+Placing Sensors
+  [validation 8/10] steps 720 | battery  30.9% ->  90.5% (min  26.2%) | reward    -1.56 | |a| 0.032 | path     244 m
+Placing Sensors
+  [validation 9/10] steps 720 | battery  37.1% ->  82.8% (min  36.9%) | reward    -1.80 | |a| 0.037 | path     330 m
+Placing Sensors
+  [validation 10/10] steps 720 | battery  33.9% ->  83.3% (min  24.8%) | reward    -2.76 | |a| 0.053 | path     309 m
+
+==============================================================================
+VALIDATION COMPLETE -- 10 independent deterministic episodes
+==============================================================================
+metric                       mean        std        min        max
+reward                      -2.52       1.36      -6.22      -1.56
+final battery %             84.35       5.24      72.20      90.49
+min battery %               28.21       5.64      16.97      36.90
+steps                      720.00       0.00     720.00     720.00
+solar W                     30.58       3.36      21.59      33.63
+|action|                     0.05       0.03       0.03       0.11
+path m                     321.27      43.97     243.91     396.69
+tortuosity                   4.24       3.27       1.79      13.03
+motion mAh                 232.13      31.14     185.97     291.42
+idle mAh                 11583.52       3.54   11582.40   11593.59
+
+survived full 720 steps : 10/10
+ended below 20% battery         : 0/10
+ended above 70% battery         : 10/10
+
+reward 95% CI: -2.52 +- 0.84  (-3.36 to -1.67)
+
+total step rows written: 7200
+
+==============================================
+WALL CLOCK BREAKDOWN
+==============================================
+Total run time        :   17322.19 s
+  Rollout (training)  :   16770.01 s  ( 96.8%)
+    - policy inference:     218.14 s  (  1.3%)
+    - env + reward    :   16551.87 s  ( 95.6%)
+  PPO update()        :      56.27 s  (  0.3%)
+  Checkpoint saves    :       0.04 s  (  0.0%)
+  Final evaluation    :     371.96 s  (  2.1%)
+  Other / logging     :     123.92 s  (  0.7%)
+
+==============================================
+PER-CALL AVERAGES
+==============================================
+Policy inference      :   295536 calls |    0.756 ms/step
+  final eval only     :     7200 calls |    0.749 ms/step
+PPO update()          :      193 calls |  291.545 ms/update
+Episode               :      400 eps   |   42.375 s/episode
+
+update() share of wall clock: 0.3%

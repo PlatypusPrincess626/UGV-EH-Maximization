@@ -17,7 +17,7 @@ Placing Sensors
 Placing Sensors
 [Episode 8/400] Steps:  93 | Reward:  -17.61 | Battery:   0.00% | Loss: 
 Placing Sensors
-Policy -0.0072 | Value 0.0891 | KL 0.00336 | CF 0.0344 | Std 0.1054 | |a| 0.0107 | EV +0.103 | AE nan | Alpha 0.9255 | MB 24/24
+Policy -0.0072 | Value 0.0891 | KL 0.00336 | CF 0.0344 | Std 0.1054 | |a| 0.0107 | EV +0.103 | Rsd 0.481 | Res 0.543 | AE nan | Alpha 0.9255 | MB 24/24
   cert | viol 0.253 | dV -0.235957 | V 0.2981 | inball 0.142 | a*_q05 -0.02074 | a*_q50 0.02123 | dV>=0 0.132 | n=150 | a_used 0.01000 -> 0.00950
   crit | n=1 | viol 0.980 | V 1.4004 | Vmin 0.8555 | agree +0.640 | a*_q05 -0.00666 | a*_q50 0.00129 | dV>=0 0.382 | beta 0.1000
   bell | direct viol 0.891 | direct dV>=0 0.524 | d_mean -0.00274 | d_std 0.01594 | d_q95 0.03149
@@ -39,7 +39,7 @@ Placing Sensors
 Placing Sensors
 [Episode 17/400] Steps:  80 | Reward:  -17.49 | Battery:   0.00% | Loss: 
 Placing Sensors
-Policy 0.0033 | Value 0.0356 | KL 0.00244 | CF 0.0176 | Std 0.1055 | |a| 0.0107 | EV +0.592 | AE nan | Alpha 0.8273 | MB 36/36
+Policy 0.0033 | Value 0.0356 | KL 0.00244 | CF 0.0176 | Std 0.1055 | |a| 0.0107 | EV +0.592 | Rsd 0.534 | Res 0.348 | AE nan | Alpha 0.8273 | MB 36/36
   cert | viol 0.547 | dV -0.187004 | V 0.2932 | inball 0.109 | a*_q05 -0.01399 | a*_q50 0.00777 | dV>=0 0.281 | n=150 | a_used 0.00950 -> 0.00903
   crit | n=1 | viol 0.987 | V 1.3293 | Vmin 0.5998 | agree +0.738 | a*_q05 -0.00579 | a*_q50 -0.00035 | dV>=0 0.531 | beta 0.1000
   bell | direct viol 0.832 | direct dV>=0 0.471 | d_mean +0.00089 | d_std 0.01494 | d_q95 0.02884
@@ -61,7 +61,7 @@ Placing Sensors
 Placing Sensors
 [Episode 26/400] Steps: 109 | Reward:  -17.47 | Battery:   0.00% | Loss: 
 Placing Sensors
-Policy 0.0039 | Value 0.0131 | KL 0.00452 | CF 0.0487 | Std 0.1057 | |a| 0.0086 | EV +0.834 | AE nan | Alpha 0.7400 | MB 36/36
+Policy 0.0039 | Value 0.0131 | KL 0.00452 | CF 0.0487 | Std 0.1057 | |a| 0.0086 | EV +0.834 | Rsd 0.607 | Res 0.252 | AE nan | Alpha 0.7400 | MB 36/36
   cert | viol 0.316 | dV -0.221425 | V 0.3195 | inball 0.165 | a*_q05 -0.01007 | a*_q50 0.01726 | dV>=0 0.126 | n=150 | a_used 0.00903 -> 0.00861
   crit | n=1 | viol 0.988 | V 1.3903 | Vmin 0.5431 | agree +0.651 | a*_q05 -0.00642 | a*_q50 -0.00036 | dV>=0 0.553 | beta 0.1000
   bell | direct viol 0.863 | direct dV>=0 0.539 | d_mean -0.00036 | d_std 0.01358 | d_q95 0.02699
@@ -83,7 +83,7 @@ Placing Sensors
 Placing Sensors
 [Episode 35/400] Steps:  75 | Reward:  -17.66 | Battery:   0.00% | Loss: 
 Placing Sensors
-Policy -0.0063 | Value 0.0271 | KL 0.00499 | CF 0.0602 | Std 0.1059 | |a| 0.0115 | EV +0.812 | AE nan | Alpha 0.6642 | MB 32/32
+Policy -0.0063 | Value 0.0271 | KL 0.00499 | CF 0.0602 | Std 0.1059 | |a| 0.0115 | EV +0.812 | Rsd 0.594 | Res 0.258 | AE nan | Alpha 0.6642 | MB 32/32
   cert | viol 0.415 | dV -0.187315 | V 0.3405 | inball 0.148 | a*_q05 -0.00982 | a*_q50 0.01231 | dV>=0 0.078 | n=150 | a_used 0.00861 -> 0.00817
   crit | n=1 | viol 0.979 | V 1.4813 | Vmin 0.5549 | agree +0.674 | a*_q05 -0.00583 | a*_q50 -0.00060 | dV>=0 0.579 | beta 0.1000
   bell | direct viol 0.831 | direct dV>=0 0.472 | d_mean +0.00217 | d_std 0.01440 | d_q95 0.02782
@@ -97,7 +97,7 @@ Placing Sensors
 Placing Sensors
 [Episode 40/400] Steps: 101 | Reward:  -17.36 | Battery:   0.00% | Loss: 
 Placing Sensors
-Policy -0.0041 | Value 0.0114 | KL 0.00371 | CF 0.0374 | Std 0.1061 | |a| 0.0129 | EV +0.890 | AE nan | Alpha 0.6057 | MB 28/28
+Policy -0.0041 | Value 0.0114 | KL 0.00371 | CF 0.0374 | Std 0.1061 | |a| 0.0129 | EV +0.890 | Rsd 0.545 | Res 0.181 | AE nan | Alpha 0.6057 | MB 28/28
   cert | viol 0.456 | dV -0.156383 | V 0.3307 | inball 0.087 | a*_q05 -0.02263 | a*_q50 0.01026 | dV>=0 0.241 | n=150 | a_used 0.00817 -> 0.00777
   crit | n=1 | viol 0.954 | V 1.2812 | Vmin 0.5983 | agree +0.641 | a*_q05 -0.00563 | a*_q50 -0.00059 | dV>=0 0.569 | beta 0.1000
   bell | direct viol 0.869 | direct dV>=0 0.466 | d_mean +0.00061 | d_std 0.01108 | d_q95 0.02252
@@ -117,7 +117,7 @@ Placing Sensors
 Placing Sensors
 [Episode 48/400] Steps:  87 | Reward:  -17.37 | Battery:   0.00% | Loss: 
 Placing Sensors
-Policy -0.0046 | Value 0.0531 | KL 0.00500 | CF 0.0665 | Std 0.1063 | |a| 0.0179 | EV +0.496 | AE nan | Alpha 0.5598 | MB 24/24
+Policy -0.0046 | Value 0.0531 | KL 0.00500 | CF 0.0665 | Std 0.1063 | |a| 0.0179 | EV +0.496 | Rsd 0.495 | Res 0.360 | AE nan | Alpha 0.5598 | MB 24/24
   cert | viol 0.407 | dV -0.159614 | V 0.2802 | inball 0.021 | a*_q05 -0.02185 | a*_q50 0.00917 | dV>=0 0.258 | n=150 | a_used 0.00777 -> 0.00738
   crit | n=1 | viol 0.984 | V 1.6169 | Vmin 0.8387 | agree +0.658 | a*_q05 -0.00657 | a*_q50 -0.00004 | dV>=0 0.517 | beta 0.1000
   bell | direct viol 0.863 | direct dV>=0 0.513 | d_mean +0.00049 | d_std 0.01411 | d_q95 0.02778
@@ -141,7 +141,7 @@ Placing Sensors
 Placing Sensors
 [Episode 58/400] Steps:  81 | Reward:  -17.45 | Battery:   0.00% | Loss: 
 Placing Sensors
-Policy -0.0076 | Value 0.0253 | KL 0.00666 | CF 0.0903 | Std 0.1065 | |a| 0.0106 | EV +0.662 | AE nan | Alpha 0.5133 | MB 28/28
+Policy -0.0076 | Value 0.0253 | KL 0.00666 | CF 0.0903 | Std 0.1065 | |a| 0.0106 | EV +0.662 | Rsd 0.484 | Res 0.317 | AE nan | Alpha 0.5133 | MB 28/28
   cert | viol 0.578 | dV -0.148817 | V 0.3525 | inball 0.001 | a*_q05 -0.02082 | a*_q50 0.00482 | dV>=0 0.363 | n=150 | a_used 0.00738 -> 0.00701
   crit | n=1 | viol 0.989 | V 1.7105 | Vmin 0.8016 | agree +0.620 | a*_q05 -0.00563 | a*_q50 -0.00008 | dV>=0 0.521 | beta 0.1000
   bell | direct viol 0.874 | direct dV>=0 0.531 | d_mean -0.00126 | d_std 0.02056 | d_q95 0.03438
@@ -149,7 +149,7 @@ Policy -0.0076 | Value 0.0253 | KL 0.00666 | CF 0.0903 | Std 0.1065 | |a| 0.0106
 Placing Sensors
 [Episode 60/400] Steps: 720 | Reward:   -7.20 | Battery:  36.78% | Loss: 
 Placing Sensors
-Policy -0.0033 | Value 0.0193 | KL 0.00372 | CF 0.0450 | Std 0.1067 | |a| 0.0157 | EV +0.858 | AE nan | Alpha 0.4754 | MB 24/24
+Policy -0.0033 | Value 0.0193 | KL 0.00372 | CF 0.0450 | Std 0.1067 | |a| 0.0157 | EV +0.858 | Rsd 0.401 | Res 0.233 | AE nan | Alpha 0.4754 | MB 24/24
   cert | viol 0.251 | dV -0.219307 | V 0.3353 | inball 0.191 | a*_q05 -0.00319 | a*_q50 0.01269 | dV>=0 0.050 | n=150 | a_used 0.00701 -> 0.00666
   crit | n=1 | viol 0.986 | V 1.3612 | Vmin 0.9046 | agree +0.282 | a*_q05 -0.00743 | a*_q50 -0.00235 | dV>=0 0.673 | beta 0.1000
   bell | direct viol 0.894 | direct dV>=0 0.462 | d_mean +0.00362 | d_std 0.01060 | d_q95 0.02093
@@ -165,7 +165,7 @@ Placing Sensors
 Placing Sensors
 [Episode 66/400] Steps:  69 | Reward:  -17.44 | Battery:   0.00% | Loss: 
 Placing Sensors
-Policy -0.0033 | Value 0.0102 | KL 0.00351 | CF 0.0381 | Std 0.1069 | |a| 0.0156 | EV +0.848 | AE nan | Alpha 0.4326 | MB 28/28
+Policy -0.0033 | Value 0.0102 | KL 0.00351 | CF 0.0381 | Std 0.1069 | |a| 0.0156 | EV +0.848 | Rsd 0.496 | Res 0.197 | AE nan | Alpha 0.4326 | MB 28/28
   cert | viol 0.393 | dV -0.169782 | V 0.2931 | inball 0.183 | a*_q05 -0.01459 | a*_q50 0.01401 | dV>=0 0.083 | n=150 | a_used 0.00666 -> 0.00633
   crit | n=1 | viol 0.994 | V 1.3386 | Vmin 0.7030 | agree +0.702 | a*_q05 -0.00672 | a*_q50 -0.00143 | dV>=0 0.662 | beta 0.1000
   bell | direct viol 0.853 | direct dV>=0 0.462 | d_mean +0.00184 | d_std 0.01311 | d_q95 0.02533
@@ -181,7 +181,7 @@ Placing Sensors
 Placing Sensors
 [Episode 72/400] Steps:  88 | Reward:  -17.57 | Battery:   0.00% | Loss: 
 Placing Sensors
-Policy -0.0374 | Value 0.0146 | KL 0.00570 | CF 0.0762 | Std 0.1072 | |a| 0.0165 | EV +0.800 | AE nan | Alpha 0.3930 | MB 32/32
+Policy -0.0374 | Value 0.0146 | KL 0.00570 | CF 0.0762 | Std 0.1072 | |a| 0.0165 | EV +0.800 | Rsd 0.490 | Res 0.224 | AE nan | Alpha 0.3930 | MB 32/32
   cert | viol 0.532 | dV -0.109639 | V 0.3162 | inball 0.106 | a*_q05 -0.00705 | a*_q50 0.00527 | dV>=0 0.330 | n=150 | a_used 0.00633 -> 0.00601
   crit | n=1 | viol 0.979 | V 1.3771 | Vmin 0.7189 | agree +0.684 | a*_q05 -0.00513 | a*_q50 -0.00006 | dV>=0 0.513 | beta 0.1000
   bell | direct viol 0.842 | direct dV>=0 0.496 | d_mean -0.00079 | d_std 0.01457 | d_q95 0.02857
@@ -193,7 +193,7 @@ Placing Sensors
 Placing Sensors
 [Episode 76/400] Steps:  91 | Reward:  -17.57 | Battery:   0.00% | Loss: 
 Placing Sensors
-Policy -0.0028 | Value 0.0146 | KL 0.00503 | CF 0.0546 | Std 0.1074 | |a| 0.0161 | EV +0.816 | AE nan | Alpha 0.3608 | MB 28/28
+Policy -0.0028 | Value 0.0146 | KL 0.00503 | CF 0.0546 | Std 0.1074 | |a| 0.0161 | EV +0.816 | Rsd 0.483 | Res 0.227 | AE nan | Alpha 0.3608 | MB 28/28
   cert | viol 0.305 | dV -0.177360 | V 0.2629 | inball 0.183 | a*_q05 -0.02055 | a*_q50 0.01367 | dV>=0 0.192 | n=150 | a_used 0.00601 -> 0.00571
   crit | n=1 | viol 0.986 | V 1.2324 | Vmin 0.7239 | agree +0.721 | a*_q05 -0.00683 | a*_q50 -0.00205 | dV>=0 0.735 | beta 0.1000
   bell | direct viol 0.841 | direct dV>=0 0.480 | d_mean +0.00238 | d_std 0.01555 | d_q95 0.02758
@@ -209,7 +209,7 @@ Placing Sensors
 Placing Sensors
 [Episode 82/400] Steps: 105 | Reward:  -17.49 | Battery:   0.00% | Loss: 
 Placing Sensors
-Policy -0.0037 | Value 0.0181 | KL 0.00634 | CF 0.0788 | Std 0.1076 | |a| 0.0155 | EV +0.788 | AE nan | Alpha 0.3261 | MB 32/32
+Policy -0.0037 | Value 0.0181 | KL 0.00634 | CF 0.0788 | Std 0.1076 | |a| 0.0155 | EV +0.788 | Rsd 0.558 | Res 0.259 | AE nan | Alpha 0.3261 | MB 32/32
   cert | viol 0.210 | dV -0.215389 | V 0.3346 | inball 0.258 | a*_q05 0.00014 | a*_q50 0.02247 | dV>=0 0.058 | n=150 | a_used 0.00571 -> 0.00518
   crit | n=1 | viol 0.910 | V 1.1996 | Vmin 0.5704 | agree +0.698 | a*_q05 -0.00617 | a*_q50 0.00035 | dV>=0 0.458 | beta 0.1000
   bell | direct viol 0.791 | direct dV>=0 0.489 | d_mean -0.00035 | d_std 0.02019 | d_q95 0.03736
@@ -221,7 +221,7 @@ Placing Sensors
 Placing Sensors
 [Episode 86/400] Steps: 105 | Reward:  -17.31 | Battery:   0.00% | Loss: 
 Placing Sensors
-Policy 0.0017 | Value 0.0271 | KL 0.00592 | CF 0.0755 | Std 0.1078 | |a| 0.0151 | EV +0.815 | AE nan | Alpha 0.2986 | MB 28/28
+Policy 0.0017 | Value 0.0271 | KL 0.00592 | CF 0.0755 | Std 0.1078 | |a| 0.0151 | EV +0.815 | Rsd 0.495 | Res 0.225 | AE nan | Alpha 0.2986 | MB 28/28
   cert | viol 0.219 | dV -0.171354 | V 0.2424 | inball 0.204 | a*_q05 -0.01783 | a*_q50 0.01273 | dV>=0 0.144 | n=150 | a_used 0.00518 -> 0.00492
   crit | n=1 | viol 0.971 | V 1.1736 | Vmin 0.5993 | agree +0.662 | a*_q05 -0.00753 | a*_q50 -0.00165 | dV>=0 0.674 | beta 0.1000
   bell | direct viol 0.736 | direct dV>=0 0.438 | d_mean +0.00262 | d_std 0.02597 | d_q95 0.04488
@@ -231,7 +231,7 @@ Placing Sensors
 Placing Sensors
 [Episode 89/400] Steps:  98 | Reward:  -17.48 | Battery:   0.00% | Loss: 
 Placing Sensors
-Policy 0.0238 | Value 0.0077 | KL 0.00718 | CF 0.1024 | Std 0.1080 | |a| 0.0143 | EV +0.896 | AE nan | Alpha 0.2751 | MB 28/28
+Policy 0.0238 | Value 0.0077 | KL 0.00718 | CF 0.1024 | Std 0.1080 | |a| 0.0143 | EV +0.896 | Rsd 0.481 | Res 0.161 | AE nan | Alpha 0.2751 | MB 28/28
   cert | viol 0.235 | dV -0.262042 | V 0.3828 | inball 0.301 | a*_q05 0.00466 | a*_q50 0.02521 | dV>=0 0.009 | n=150 | a_used 0.00492 -> 0.00510
   crit | n=1 | viol 0.873 | V 1.0591 | Vmin 0.5527 | agree +0.543 | a*_q05 -0.00558 | a*_q50 0.00038 | dV>=0 0.470 | beta 0.1000
   bell | direct viol 0.718 | direct dV>=0 0.453 | d_mean +0.00044 | d_std 0.01717 | d_q95 0.03213
@@ -241,7 +241,7 @@ Placing Sensors
 Placing Sensors
 [Episode 92/400] Steps: 720 | Reward:   -5.93 | Battery:  70.16% | Loss: 
 Placing Sensors
-Policy -0.0454 | Value 0.0253 | KL 0.00612 | CF 0.0753 | Std 0.1082 | |a| 0.0146 | EV +0.765 | AE nan | Alpha 0.2534 | MB 28/28
+Policy -0.0454 | Value 0.0253 | KL 0.00612 | CF 0.0753 | Std 0.1082 | |a| 0.0146 | EV +0.765 | Rsd 0.442 | Res 0.222 | AE nan | Alpha 0.2534 | MB 28/28
   cert | viol 0.069 | dV -0.215041 | V 0.2730 | inball 0.343 | a*_q05 0.00658 | a*_q50 0.02090 | dV>=0 0.000 | n=150 | a_used 0.00510 -> 0.00526
   crit | n=1 | viol 0.923 | V 0.9594 | Vmin 0.5289 | agree +0.670 | a*_q05 -0.00659 | a*_q50 -0.00072 | dV>=0 0.587 | beta 0.1000
   bell | direct viol 0.713 | direct dV>=0 0.428 | d_mean +0.00160 | d_std 0.02168 | d_q95 0.03832
@@ -253,7 +253,7 @@ Placing Sensors
 Placing Sensors
 [Episode 96/400] Steps: 118 | Reward:  -17.40 | Battery:   0.00% | Loss: 
 Placing Sensors
-Policy -0.0019 | Value 0.0141 | KL 0.00727 | CF 0.0959 | Std 0.1083 | |a| 0.0153 | EV +0.822 | AE nan | Alpha 0.2322 | MB 28/28
+Policy -0.0019 | Value 0.0141 | KL 0.00727 | CF 0.0959 | Std 0.1083 | |a| 0.0153 | EV +0.822 | Rsd 0.520 | Res 0.220 | AE nan | Alpha 0.2322 | MB 28/28
   cert | viol 0.124 | dV -0.261350 | V 0.3462 | inball 0.412 | a*_q05 0.00308 | a*_q50 0.02295 | dV>=0 0.000 | n=150 | a_used 0.00526 -> 0.00509
   crit | n=1 | viol 0.839 | V 0.9707 | Vmin 0.3987 | agree +0.691 | a*_q05 -0.00714 | a*_q50 0.00147 | dV>=0 0.333 | beta 0.1000
   bell | direct viol 0.695 | direct dV>=0 0.442 | d_mean -0.00037 | d_std 0.02176 | d_q95 0.03547
@@ -269,7 +269,7 @@ Placing Sensors
 Placing Sensors
 [Episode 102/400] Steps: 720 | Reward:   -5.65 | Battery:  72.26% | Loss: 
 Placing Sensors
-Policy -0.0077 | Value 0.0219 | KL 0.00816 | CF 0.1082 | Std 0.1085 | |a| 0.0147 | EV +0.795 | AE nan | Alpha 0.2107 | MB 32/32
+Policy -0.0077 | Value 0.0219 | KL 0.00816 | CF 0.1082 | Std 0.1085 | |a| 0.0147 | EV +0.795 | Rsd 0.628 | Res 0.285 | AE nan | Alpha 0.2107 | MB 32/32
   cert | viol 0.116 | dV -0.245049 | V 0.3315 | inball 0.331 | a*_q05 0.00302 | a*_q50 0.02142 | dV>=0 0.012 | n=150 | a_used 0.00509 -> 0.00501
   crit | n=1 | viol 0.834 | V 1.1344 | Vmin 0.3857 | agree +0.678 | a*_q05 -0.00716 | a*_q50 0.00118 | dV>=0 0.353 | beta 0.1000
   bell | direct viol 0.660 | direct dV>=0 0.441 | d_mean +0.00075 | d_std 0.02912 | d_q95 0.05138
@@ -277,7 +277,7 @@ Policy -0.0077 | Value 0.0219 | KL 0.00816 | CF 0.1082 | Std 0.1085 | |a| 0.0147
 Placing Sensors
 [Episode 104/400] Steps: 720 | Reward:   -4.62 | Battery:  74.62% | Loss: 
 Placing Sensors
-Policy -0.0018 | Value 0.0163 | KL 0.00717 | CF 0.0893 | Std 0.1086 | |a| 0.0174 | EV +0.822 | AE nan | Alpha 0.1951 | MB 24/24
+Policy -0.0018 | Value 0.0163 | KL 0.00717 | CF 0.0893 | Std 0.1086 | |a| 0.0174 | EV +0.822 | Rsd 0.441 | Res 0.221 | AE nan | Alpha 0.1951 | MB 24/24
   cert | viol 0.038 | dV -0.222275 | V 0.2774 | inball 0.464 | a*_q05 0.00554 | a*_q50 0.02748 | dV>=0 0.000 | n=150 | a_used 0.00501 -> 0.00504
   crit | n=1 | viol 0.894 | V 0.9159 | Vmin 0.4092 | agree +0.417 | a*_q05 -0.00815 | a*_q50 -0.00027 | dV>=0 0.521 | beta 0.1000
   bell | direct viol 0.617 | direct dV>=0 0.405 | d_mean +0.00369 | d_std 0.02070 | d_q95 0.04132
@@ -285,7 +285,7 @@ Policy -0.0018 | Value 0.0163 | KL 0.00717 | CF 0.0893 | Std 0.1086 | |a| 0.0174
 Placing Sensors
 [Episode 106/400] Steps: 720 | Reward:   -5.22 | Battery:  70.88% | Loss: 
 Placing Sensors
-Policy -0.0008 | Value 0.0067 | KL 0.00962 | CF 0.1255 | Std 0.1088 | |a| 0.0165 | EV +0.907 | AE nan | Alpha 0.1807 | MB 24/24
+Policy -0.0008 | Value 0.0067 | KL 0.00962 | CF 0.1255 | Std 0.1088 | |a| 0.0165 | EV +0.907 | Rsd 0.381 | Res 0.127 | AE nan | Alpha 0.1807 | MB 24/24
   cert | viol 0.171 | dV -0.219310 | V 0.3070 | inball 0.400 | a*_q05 0.00276 | a*_q50 0.02262 | dV>=0 0.000 | n=150 | a_used 0.00504 -> 0.00485
   crit | n=1 | viol 0.773 | V 0.8452 | Vmin 0.4083 | agree +0.323 | a*_q05 -0.00665 | a*_q50 0.00143 | dV>=0 0.415 | beta 0.1000
   bell | direct viol 0.589 | direct dV>=0 0.420 | d_mean +0.00056 | d_std 0.02208 | d_q95 0.04553
@@ -295,7 +295,7 @@ Placing Sensors
 Placing Sensors
 [Episode 109/400] Steps: 720 | Reward:   -6.77 | Battery:  48.68% | Loss: 
 Placing Sensors
-Policy -0.0035 | Value 0.0120 | KL 0.01012 | CF 0.1395 | Std 0.1089 | |a| 0.0169 | EV +0.867 | AE nan | Alpha 0.1666 | MB 24/24
+Policy -0.0035 | Value 0.0120 | KL 0.01012 | CF 0.1395 | Std 0.1089 | |a| 0.0169 | EV +0.867 | Rsd 0.468 | Res 0.171 | AE nan | Alpha 0.1666 | MB 24/24
   cert | viol 0.182 | dV -0.257061 | V 0.3747 | inball 0.336 | a*_q05 0.00102 | a*_q50 0.02104 | dV>=0 0.036 | n=150 | a_used 0.00485 -> 0.00432
   crit | n=1 | viol 0.776 | V 0.9656 | Vmin 0.4009 | agree +0.538 | a*_q05 -0.00620 | a*_q50 0.00133 | dV>=0 0.411 | beta 0.1000
   bell | direct viol 0.650 | direct dV>=0 0.444 | d_mean +0.00038 | d_std 0.02288 | d_q95 0.04869
@@ -313,7 +313,7 @@ Placing Sensors
 Placing Sensors
 [Episode 116/400] Steps:  81 | Reward:  -17.58 | Battery:   0.00% | Loss: 
 Placing Sensors
-Policy -0.0050 | Value 0.0217 | KL 0.00673 | CF 0.0839 | Std 0.1090 | |a| 0.0137 | EV +0.788 | AE nan | Alpha 0.1509 | MB 32/32
+Policy -0.0050 | Value 0.0217 | KL 0.00673 | CF 0.0839 | Std 0.1090 | |a| 0.0137 | EV +0.788 | Rsd 0.549 | Res 0.283 | AE nan | Alpha 0.1509 | MB 32/32
   cert | viol 0.195 | dV -0.190760 | V 0.3129 | inball 0.157 | a*_q05 -0.00475 | a*_q50 0.01233 | dV>=0 0.089 | n=150 | a_used 0.00432 -> 0.00432
   crit | n=1 | viol 0.731 | V 1.1038 | Vmin 0.4786 | agree +0.731 | a*_q05 -0.00544 | a*_q50 0.00112 | dV>=0 0.382 | beta 0.1000
   bell | direct viol 0.625 | direct dV>=0 0.471 | d_mean -0.00220 | d_std 0.02371 | d_q95 0.04871
@@ -321,7 +321,7 @@ Policy -0.0050 | Value 0.0217 | KL 0.00673 | CF 0.0839 | Std 0.1090 | |a| 0.0137
 Placing Sensors
 [Episode 118/400] Steps: 720 | Reward:   -6.45 | Battery:  78.36% | Loss: 
 Placing Sensors
-Policy -0.0122 | Value 0.0101 | KL 0.00865 | CF 0.1188 | Std 0.1091 | |a| 0.0133 | EV +0.892 | AE nan | Alpha 0.1398 | MB 24/24
+Policy -0.0122 | Value 0.0101 | KL 0.00865 | CF 0.1188 | Std 0.1091 | |a| 0.0133 | EV +0.892 | Rsd 0.437 | Res 0.157 | AE nan | Alpha 0.1398 | MB 24/24
   cert | viol 0.291 | dV -0.217339 | V 0.3702 | inball 0.408 | a*_q05 0.00075 | a*_q50 0.01615 | dV>=0 0.032 | n=150 | a_used 0.00432 -> 0.00392
   crit | n=1 | viol 0.740 | V 0.9546 | Vmin 0.4238 | agree +0.524 | a*_q05 -0.00595 | a*_q50 0.00124 | dV>=0 0.368 | beta 0.1000
   bell | direct viol 0.533 | direct dV>=0 0.394 | d_mean +0.00141 | d_std 0.02659 | d_q95 0.04971
@@ -329,7 +329,7 @@ Policy -0.0122 | Value 0.0101 | KL 0.00865 | CF 0.1188 | Std 0.1091 | |a| 0.0133
 Placing Sensors
 [Episode 120/400] Steps: 720 | Reward:   -5.03 | Battery:  53.41% | Loss: 
 Placing Sensors
-Policy -0.0070 | Value 0.0109 | KL 0.00893 | CF 0.1159 | Std 0.1092 | |a| 0.0154 | EV +0.830 | AE nan | Alpha 0.1294 | MB 24/24
+Policy -0.0070 | Value 0.0109 | KL 0.00893 | CF 0.1159 | Std 0.1092 | |a| 0.0154 | EV +0.830 | Rsd 0.366 | Res 0.165 | AE nan | Alpha 0.1294 | MB 24/24
   cert | viol 0.063 | dV -0.173117 | V 0.2388 | inball 0.308 | a*_q05 0.00350 | a*_q50 0.01712 | dV>=0 0.000 | n=150 | a_used 0.00392 -> 0.00385
   crit | n=1 | viol 0.835 | V 0.9131 | Vmin 0.4800 | agree +0.268 | a*_q05 -0.00609 | a*_q50 -0.00021 | dV>=0 0.523 | beta 0.1000
   bell | direct viol 0.569 | direct dV>=0 0.433 | d_mean +0.00171 | d_std 0.02445 | d_q95 0.04346
@@ -337,7 +337,7 @@ Policy -0.0070 | Value 0.0109 | KL 0.00893 | CF 0.1159 | Std 0.1092 | |a| 0.0154
 Placing Sensors
 [Episode 122/400] Steps: 720 | Reward:   -8.26 | Battery:  69.39% | Loss: 
 Placing Sensors
-Policy -0.0073 | Value 0.0110 | KL 0.00566 | CF 0.0718 | Std 0.1093 | |a| 0.0201 | EV +0.805 | AE nan | Alpha 0.1199 | MB 24/24
+Policy -0.0073 | Value 0.0110 | KL 0.00566 | CF 0.0718 | Std 0.1093 | |a| 0.0201 | EV +0.805 | Rsd 0.364 | Res 0.165 | AE nan | Alpha 0.1199 | MB 24/24
   cert | viol 0.356 | dV -0.188908 | V 0.4118 | inball 0.234 | a*_q05 -0.00238 | a*_q50 0.00863 | dV>=0 0.187 | n=150 | a_used 0.00385 -> 0.00366
   crit | n=1 | viol 0.525 | V 0.9459 | Vmin 0.4742 | agree +0.501 | a*_q05 -0.00657 | a*_q50 0.00356 | dV>=0 0.314 | beta 0.1000
   bell | direct viol 0.574 | direct dV>=0 0.432 | d_mean -0.00141 | d_std 0.02302 | d_q95 0.04591
@@ -347,7 +347,7 @@ Placing Sensors
 Placing Sensors
 [Episode 125/400] Steps: 720 | Reward:   -6.83 | Battery:  60.19% | Loss: 
 Placing Sensors
-Policy -0.0042 | Value 0.0127 | KL 0.00504 | CF 0.0596 | Std 0.1094 | |a| 0.0115 | EV +0.828 | AE nan | Alpha 0.1106 | MB 24/24
+Policy -0.0042 | Value 0.0127 | KL 0.00504 | CF 0.0596 | Std 0.1094 | |a| 0.0115 | EV +0.828 | Rsd 0.400 | Res 0.168 | AE nan | Alpha 0.1106 | MB 24/24
   cert | viol 0.094 | dV -0.214231 | V 0.3062 | inball 0.358 | a*_q05 0.00047 | a*_q50 0.01664 | dV>=0 0.046 | n=150 | a_used 0.00366 -> 0.00366
   crit | n=1 | viol 0.734 | V 0.9242 | Vmin 0.4201 | agree +0.498 | a*_q05 -0.00826 | a*_q50 0.00081 | dV>=0 0.438 | beta 0.1000
   bell | direct viol 0.558 | direct dV>=0 0.433 | d_mean +0.00064 | d_std 0.02293 | d_q95 0.04657
@@ -357,7 +357,7 @@ Placing Sensors
 Placing Sensors
 [Episode 128/400] Steps: 720 | Reward:   -4.88 | Battery:  71.91% | Loss: 
 Placing Sensors
-Policy -0.0070 | Value 0.0113 | KL 0.00705 | CF 0.0881 | Std 0.1095 | |a| 0.0151 | EV +0.871 | AE nan | Alpha 0.1020 | MB 24/24
+Policy -0.0070 | Value 0.0113 | KL 0.00705 | CF 0.0881 | Std 0.1095 | |a| 0.0151 | EV +0.871 | Rsd 0.459 | Res 0.170 | AE nan | Alpha 0.1020 | MB 24/24
   cert | viol 0.038 | dV -0.242298 | V 0.3202 | inball 0.454 | a*_q05 0.00400 | a*_q50 0.02407 | dV>=0 0.000 | n=150 | a_used 0.00366 -> 0.00360
   crit | n=1 | viol 0.684 | V 0.8500 | Vmin 0.3339 | agree +0.529 | a*_q05 -0.00613 | a*_q50 0.00182 | dV>=0 0.322 | beta 0.1000
   bell | direct viol 0.541 | direct dV>=0 0.424 | d_mean +0.00143 | d_std 0.02233 | d_q95 0.04663
@@ -369,7 +369,7 @@ Placing Sensors
 Placing Sensors
 [Episode 132/400] Steps:  80 | Reward:  -17.66 | Battery:   0.00% | Loss: 
 Placing Sensors
-Policy -0.0014 | Value 0.0210 | KL 0.00751 | CF 0.0897 | Std 0.1096 | |a| 0.0159 | EV +0.816 | AE nan | Alpha 0.0937 | MB 28/28
+Policy -0.0014 | Value 0.0210 | KL 0.00751 | CF 0.0897 | Std 0.1096 | |a| 0.0159 | EV +0.816 | Rsd 0.525 | Res 0.230 | AE nan | Alpha 0.0937 | MB 28/28
   cert | viol 0.146 | dV -0.232685 | V 0.3449 | inball 0.320 | a*_q05 0.00106 | a*_q50 0.02081 | dV>=0 0.020 | n=150 | a_used 0.00360 -> 0.00339
   crit | n=1 | viol 0.599 | V 0.9704 | Vmin 0.4319 | agree +0.503 | a*_q05 -0.00511 | a*_q50 0.00203 | dV>=0 0.330 | beta 0.1000
   bell | direct viol 0.539 | direct dV>=0 0.430 | d_mean -0.00054 | d_std 0.02597 | d_q95 0.05142
@@ -379,7 +379,7 @@ Placing Sensors
 Placing Sensors
 [Episode 135/400] Steps: 720 | Reward:   -4.62 | Battery:  65.34% | Loss: 
 Placing Sensors
-Policy -0.0023 | Value 0.0123 | KL 0.00891 | CF 0.1119 | Std 0.1096 | |a| 0.0163 | EV +0.842 | AE nan | Alpha 0.0864 | MB 24/24
+Policy -0.0023 | Value 0.0123 | KL 0.00891 | CF 0.1119 | Std 0.1096 | |a| 0.0163 | EV +0.842 | Rsd 0.422 | Res 0.177 | AE nan | Alpha 0.0864 | MB 24/24
   cert | viol 0.000 | dV -0.222802 | V 0.2620 | inball 0.496 | a*_q05 0.00674 | a*_q50 0.03089 | dV>=0 0.000 | n=150 | a_used 0.00339 -> 0.00352
   crit | n=1 | viol 0.706 | V 0.8039 | Vmin 0.3935 | agree +0.554 | a*_q05 -0.00746 | a*_q50 0.00078 | dV>=0 0.441 | beta 0.1000
   bell | direct viol 0.518 | direct dV>=0 0.411 | d_mean +0.00069 | d_std 0.02018 | d_q95 0.03657
@@ -387,7 +387,7 @@ Policy -0.0023 | Value 0.0123 | KL 0.00891 | CF 0.1119 | Std 0.1096 | |a| 0.0163
 Placing Sensors
 [Episode 137/400] Steps: 720 | Reward:   -5.60 | Battery:  75.61% | Loss: 
 Placing Sensors
-Policy -0.0048 | Value 0.0046 | KL 0.00792 | CF 0.1078 | Std 0.1097 | |a| 0.0167 | EV +0.931 | AE nan | Alpha 0.0800 | MB 24/24
+Policy -0.0048 | Value 0.0046 | KL 0.00792 | CF 0.1078 | Std 0.1097 | |a| 0.0167 | EV +0.931 | Rsd 0.368 | Res 0.099 | AE nan | Alpha 0.0800 | MB 24/24
   cert | viol 0.052 | dV -0.273816 | V 0.3378 | inball 0.479 | a*_q05 0.00392 | a*_q50 0.02955 | dV>=0 0.015 | n=150 | a_used 0.00352 -> 0.00364
   crit | n=1 | viol 0.604 | V 0.7141 | Vmin 0.3314 | agree +0.573 | a*_q05 -0.00639 | a*_q50 0.00158 | dV>=0 0.419 | beta 0.1000
   bell | direct viol 0.515 | direct dV>=0 0.405 | d_mean +0.00069 | d_std 0.02179 | d_q95 0.04270
@@ -397,7 +397,7 @@ Placing Sensors
 Placing Sensors
 [Episode 140/400] Steps:  73 | Reward:  -17.75 | Battery:   0.00% | Loss: 
 Placing Sensors
-Policy -0.0002 | Value 0.0132 | KL 0.00648 | CF 0.0796 | Std 0.1098 | |a| 0.0183 | EV +0.823 | AE nan | Alpha 0.0738 | MB 24/24
+Policy -0.0002 | Value 0.0132 | KL 0.00648 | CF 0.0796 | Std 0.1098 | |a| 0.0183 | EV +0.823 | Rsd 0.401 | Res 0.169 | AE nan | Alpha 0.0738 | MB 24/24
   cert | viol 0.038 | dV -0.235515 | V 0.2919 | inball 0.523 | a*_q05 0.00490 | a*_q50 0.02854 | dV>=0 0.000 | n=150 | a_used 0.00364 -> 0.00368
   crit | n=1 | viol 0.599 | V 0.6967 | Vmin 0.2997 | agree +0.593 | a*_q05 -0.00629 | a*_q50 0.00224 | dV>=0 0.339 | beta 0.1000
   bell | direct viol 0.502 | direct dV>=0 0.426 | d_mean -0.00051 | d_std 0.02697 | d_q95 0.04861
@@ -407,7 +407,7 @@ Placing Sensors
 Placing Sensors
 [Episode 143/400] Steps: 115 | Reward:  -17.38 | Battery:   0.00% | Loss: 
 Placing Sensors
-Policy -0.0404 | Value 0.0105 | KL 0.01520 | CF 0.1885 | Std 0.1098 | |a| 0.0189 | EV +0.887 | AE nan | Alpha 0.0680 | MB 28/28
+Policy -0.0404 | Value 0.0105 | KL 0.01520 | CF 0.1885 | Std 0.1098 | |a| 0.0189 | EV +0.887 | Rsd 0.493 | Res 0.167 | AE nan | Alpha 0.0680 | MB 28/28
   cert | viol 0.088 | dV -0.238645 | V 0.3222 | inball 0.389 | a*_q05 0.00122 | a*_q50 0.02683 | dV>=0 0.056 | n=150 | a_used 0.00368 -> 0.00384
   crit | n=1 | viol 0.547 | V 0.7999 | Vmin 0.2893 | agree +0.613 | a*_q05 -0.00626 | a*_q50 0.00304 | dV>=0 0.325 | beta 0.1000
   bell | direct viol 0.502 | direct dV>=0 0.435 | d_mean +0.00119 | d_std 0.03372 | d_q95 0.06939
@@ -417,7 +417,7 @@ Placing Sensors
 Placing Sensors
 [Episode 146/400] Steps: 720 | Reward:   -7.06 | Battery:  70.17% | Loss: 
 Placing Sensors
-Policy -0.0003 | Value 0.0136 | KL 0.00575 | CF 0.0706 | Std 0.1099 | |a| 0.0262 | EV +0.850 | AE nan | Alpha 0.0627 | MB 24/24
+Policy -0.0003 | Value 0.0136 | KL 0.00575 | CF 0.0706 | Std 0.1099 | |a| 0.0262 | EV +0.850 | Rsd 0.417 | Res 0.178 | AE nan | Alpha 0.0627 | MB 24/24
   cert | viol 0.362 | dV -0.175234 | V 0.2962 | inball 0.140 | a*_q05 -0.00668 | a*_q50 0.01017 | dV>=0 0.273 | n=150 | a_used 0.00384 -> 0.00365
   crit | n=1 | viol 0.627 | V 0.8555 | Vmin 0.3811 | agree +0.452 | a*_q05 -0.00636 | a*_q50 0.00175 | dV>=0 0.394 | beta 0.1000
   bell | direct viol 0.520 | direct dV>=0 0.453 | d_mean -0.00103 | d_std 0.02853 | d_q95 0.05714
@@ -431,7 +431,7 @@ Placing Sensors
 Placing Sensors
 [Episode 151/400] Steps:  76 | Reward:  -17.58 | Battery:   0.00% | Loss: 
 Placing Sensors
-Policy -0.0025 | Value 0.0173 | KL 0.00645 | CF 0.0773 | Std 0.1099 | |a| 0.0290 | EV +0.847 | AE nan | Alpha 0.0573 | MB 28/28
+Policy -0.0025 | Value 0.0173 | KL 0.00645 | CF 0.0773 | Std 0.1099 | |a| 0.0290 | EV +0.847 | Rsd 0.594 | Res 0.237 | AE nan | Alpha 0.0573 | MB 28/28
   cert | viol 0.072 | dV -0.214501 | V 0.2968 | inball 0.385 | a*_q05 0.00321 | a*_q50 0.02014 | dV>=0 0.000 | n=150 | a_used 0.00365 -> 0.00373
   crit | n=1 | viol 0.611 | V 0.9134 | Vmin 0.3212 | agree +0.730 | a*_q05 -0.00508 | a*_q50 0.00224 | dV>=0 0.298 | beta 0.1000
   bell | direct viol 0.520 | direct dV>=0 0.448 | d_mean +0.00084 | d_std 0.03546 | d_q95 0.07161
@@ -443,7 +443,7 @@ Placing Sensors
 Placing Sensors
 [Episode 155/400] Steps: 720 | Reward:   -7.72 | Battery:  65.48% | Loss: 
 Placing Sensors
-Policy -0.0194 | Value 0.0150 | KL 0.00973 | CF 0.1219 | Std 0.1100 | |a| 0.0224 | EV +0.889 | AE nan | Alpha 0.0526 | MB 28/28
+Policy -0.0194 | Value 0.0150 | KL 0.00973 | CF 0.1219 | Std 0.1100 | |a| 0.0224 | EV +0.889 | Rsd 0.579 | Res 0.200 | AE nan | Alpha 0.0526 | MB 28/28
   cert | viol 0.180 | dV -0.224375 | V 0.3600 | inball 0.311 | a*_q05 -0.00046 | a*_q50 0.02060 | dV>=0 0.102 | n=150 | a_used 0.00373 -> 0.00354
   crit | n=1 | viol 0.562 | V 0.9563 | Vmin 0.3174 | agree +0.550 | a*_q05 -0.00656 | a*_q50 0.00278 | dV>=0 0.324 | beta 0.1000
   bell | direct viol 0.516 | direct dV>=0 0.457 | d_mean -0.00055 | d_std 0.04239 | d_q95 0.08962
@@ -453,7 +453,7 @@ Placing Sensors
 Placing Sensors
 [Episode 158/400] Steps: 720 | Reward:   -6.66 | Battery:  79.93% | Loss: 
 Placing Sensors
-Policy -0.0093 | Value 0.0142 | KL 0.01134 | CF 0.1549 | Std 0.1100 | |a| 0.0224 | EV +0.856 | AE nan | Alpha 0.0485 | MB 24/24
+Policy -0.0093 | Value 0.0142 | KL 0.01134 | CF 0.1549 | Std 0.1100 | |a| 0.0224 | EV +0.856 | Rsd 0.524 | Res 0.199 | AE nan | Alpha 0.0485 | MB 24/24
   cert | viol 0.213 | dV -0.238949 | V 0.3778 | inball 0.346 | a*_q05 -0.00027 | a*_q50 0.02331 | dV>=0 0.074 | n=150 | a_used 0.00354 -> 0.00336
   crit | n=1 | viol 0.613 | V 0.8892 | Vmin 0.3147 | agree +0.579 | a*_q05 -0.00681 | a*_q50 0.00138 | dV>=0 0.404 | beta 0.1000
   bell | direct viol 0.539 | direct dV>=0 0.475 | d_mean +0.00055 | d_std 0.03014 | d_q95 0.06085
@@ -463,7 +463,7 @@ Placing Sensors
 Placing Sensors
 [Episode 161/400] Steps: 720 | Reward:   -3.62 | Battery:  83.75% | Loss: 
 Placing Sensors
-Policy -0.0038 | Value 0.0173 | KL 0.01270 | CF 0.1640 | Std 0.1100 | |a| 0.0219 | EV +0.885 | AE nan | Alpha 0.0447 | MB 24/24
+Policy -0.0038 | Value 0.0173 | KL 0.01270 | CF 0.1640 | Std 0.1100 | |a| 0.0219 | EV +0.885 | Rsd 0.514 | Res 0.180 | AE nan | Alpha 0.0447 | MB 24/24
   cert | viol 0.021 | dV -0.237631 | V 0.2901 | inball 0.455 | a*_q05 0.00525 | a*_q50 0.02482 | dV>=0 0.000 | n=150 | a_used 0.00336 -> 0.00339
   crit | n=1 | viol 0.671 | V 0.8430 | Vmin 0.2925 | agree +0.579 | a*_q05 -0.00699 | a*_q50 0.00115 | dV>=0 0.399 | beta 0.1000
   bell | direct viol 0.504 | direct dV>=0 0.437 | d_mean +0.00241 | d_std 0.03136 | d_q95 0.06071
@@ -479,7 +479,7 @@ Placing Sensors
 Placing Sensors
 [Episode 167/400] Steps:  97 | Reward:  -17.52 | Battery:   0.00% | Loss: 
 Placing Sensors
-Policy -0.0048 | Value 0.0209 | KL 0.01366 | CF 0.1522 | Std 0.1101 | |a| 0.0189 | EV +0.837 | AE nan | Alpha 0.0405 | MB 32/32
+Policy -0.0048 | Value 0.0209 | KL 0.01366 | CF 0.1522 | Std 0.1101 | |a| 0.0189 | EV +0.837 | Rsd 0.603 | Res 0.262 | AE nan | Alpha 0.0405 | MB 32/32
   cert | viol 0.089 | dV -0.215881 | V 0.3143 | inball 0.273 | a*_q05 0.00241 | a*_q50 0.02051 | dV>=0 0.008 | n=150 | a_used 0.00339 -> 0.00339
   crit | n=1 | viol 0.683 | V 1.0390 | Vmin 0.3474 | agree +0.738 | a*_q05 -0.00530 | a*_q50 0.00139 | dV>=0 0.351 | beta 0.1000
   bell | direct viol 0.535 | direct dV>=0 0.458 | d_mean -0.00106 | d_std 0.04455 | d_q95 0.09070
@@ -493,7 +493,7 @@ Placing Sensors
 Placing Sensors
 [Episode 172/400] Steps:  88 | Reward:  -17.60 | Battery:   0.00% | Loss: 
 Placing Sensors
-Policy -0.0068 | Value 0.0174 | KL 0.00663 | CF 0.0719 | Std 0.1102 | |a| 0.0198 | EV +0.866 | AE nan | Alpha 0.0370 | MB 28/28
+Policy -0.0068 | Value 0.0174 | KL 0.00663 | CF 0.0719 | Std 0.1102 | |a| 0.0198 | EV +0.866 | Rsd 0.596 | Res 0.222 | AE nan | Alpha 0.0370 | MB 28/28
   cert | viol 0.146 | dV -0.231218 | V 0.3424 | inball 0.414 | a*_q05 -0.00012 | a*_q50 0.02726 | dV>=0 0.098 | n=150 | a_used 0.00339 -> 0.00332
   crit | n=1 | viol 0.702 | V 0.9310 | Vmin 0.3575 | agree +0.701 | a*_q05 -0.00712 | a*_q50 0.00053 | dV>=0 0.436 | beta 0.1000
   bell | direct viol 0.547 | direct dV>=0 0.475 | d_mean -0.00071 | d_std 0.03819 | d_q95 0.08000
@@ -509,7 +509,7 @@ Placing Sensors
 Placing Sensors
 [Episode 178/400] Steps: 109 | Reward:  -17.49 | Battery:   0.00% | Loss: 
 Placing Sensors
-Policy -0.0114 | Value 0.0150 | KL 0.01007 | CF 0.1308 | Std 0.1102 | |a| 0.0180 | EV +0.898 | AE nan | Alpha 0.0335 | MB 32/32
+Policy -0.0114 | Value 0.0150 | KL 0.01007 | CF 0.1308 | Std 0.1102 | |a| 0.0180 | EV +0.898 | Rsd 0.674 | Res 0.222 | AE nan | Alpha 0.0335 | MB 32/32
   cert | viol 0.225 | dV -0.184670 | V 0.3304 | inball 0.161 | a*_q05 -0.00087 | a*_q50 0.00976 | dV>=0 0.061 | n=150 | a_used 0.00332 -> 0.00321
   crit | n=1 | viol 0.656 | V 1.1866 | Vmin 0.3772 | agree +0.676 | a*_q05 -0.00525 | a*_q50 0.00106 | dV>=0 0.392 | beta 0.1000
   bell | direct viol 0.547 | direct dV>=0 0.470 | d_mean +0.00038 | d_std 0.03767 | d_q95 0.07639
@@ -517,7 +517,7 @@ Policy -0.0114 | Value 0.0150 | KL 0.01007 | CF 0.1308 | Std 0.1102 | |a| 0.0180
 Placing Sensors
 [Episode 180/400] Steps: 720 | Reward:   -4.66 | Battery:  72.51% | Loss: 
 Placing Sensors
-Policy -0.0077 | Value 0.0112 | KL 0.00455 | CF 0.0467 | Std 0.1103 | |a| 0.0199 | EV +0.856 | AE nan | Alpha 0.0310 | MB 24/24
+Policy -0.0077 | Value 0.0112 | KL 0.00455 | CF 0.0467 | Std 0.1103 | |a| 0.0199 | EV +0.856 | Rsd 0.449 | Res 0.174 | AE nan | Alpha 0.0310 | MB 24/24
   cert | viol 0.060 | dV -0.244566 | V 0.3160 | inball 0.463 | a*_q05 0.00308 | a*_q50 0.02688 | dV>=0 0.000 | n=150 | a_used 0.00321 -> 0.00304
   crit | n=1 | viol 0.685 | V 0.8293 | Vmin 0.3277 | agree +0.410 | a*_q05 -0.00742 | a*_q50 0.00097 | dV>=0 0.427 | beta 0.1000
   bell | direct viol 0.495 | direct dV>=0 0.439 | d_mean +0.00126 | d_std 0.03380 | d_q95 0.07099
@@ -529,7 +529,7 @@ Placing Sensors
 Placing Sensors
 [Episode 184/400] Steps:  77 | Reward:  -17.78 | Battery:   0.00% | Loss: 
 Placing Sensors
-Policy -0.0022 | Value 0.0161 | KL 0.01071 | CF 0.1143 | Std 0.1103 | |a| 0.0230 | EV +0.826 | AE nan | Alpha 0.0285 | MB 28/28
+Policy -0.0022 | Value 0.0161 | KL 0.01071 | CF 0.1143 | Std 0.1103 | |a| 0.0230 | EV +0.826 | Rsd 0.522 | Res 0.218 | AE nan | Alpha 0.0285 | MB 28/28
   cert | viol 0.144 | dV -0.150198 | V 0.2433 | inball 0.291 | a*_q05 -0.00030 | a*_q50 0.01480 | dV>=0 0.063 | n=150 | a_used 0.00304 -> 0.00289
   crit | n=1 | viol 0.730 | V 1.0098 | Vmin 0.3855 | agree +0.589 | a*_q05 -0.00716 | a*_q50 0.00060 | dV>=0 0.436 | beta 0.1000
   bell | direct viol 0.511 | direct dV>=0 0.452 | d_mean +0.00132 | d_std 0.03159 | d_q95 0.06250
@@ -539,7 +539,7 @@ Placing Sensors
 Placing Sensors
 [Episode 187/400] Steps: 121 | Reward:  -17.39 | Battery:   0.00% | Loss: 
 Placing Sensors
-Policy 0.0199 | Value 0.0236 | KL 0.01484 | CF 0.1650 | Std 0.1103 | |a| 0.0213 | EV +0.848 | AE nan | Alpha 0.0262 | MB 28/28
+Policy 0.0199 | Value 0.0236 | KL 0.01484 | CF 0.1650 | Std 0.1103 | |a| 0.0213 | EV +0.848 | Rsd 0.454 | Res 0.178 | AE nan | Alpha 0.0262 | MB 28/28
   cert | viol 0.124 | dV -0.242089 | V 0.3508 | inball 0.386 | a*_q05 0.00112 | a*_q50 0.01997 | dV>=0 0.044 | n=150 | a_used 0.00289 -> 0.00279
   crit | n=1 | viol 0.516 | V 0.9221 | Vmin 0.3622 | agree +0.562 | a*_q05 -0.00564 | a*_q50 0.00270 | dV>=0 0.281 | beta 0.1000
   bell | direct viol 0.519 | direct dV>=0 0.469 | d_mean -0.00160 | d_std 0.03347 | d_q95 0.06824
@@ -551,7 +551,7 @@ Placing Sensors
 Placing Sensors
 [Episode 191/400] Steps: 720 | Reward:   -6.04 | Battery:  64.39% | Loss: 
 Placing Sensors
-Policy -0.0043 | Value 0.0227 | KL 0.00735 | CF 0.0872 | Std 0.1103 | |a| 0.0180 | EV +0.762 | AE nan | Alpha 0.0240 | MB 28/28
+Policy -0.0043 | Value 0.0227 | KL 0.00735 | CF 0.0872 | Std 0.1103 | |a| 0.0180 | EV +0.762 | Rsd 0.517 | Res 0.255 | AE nan | Alpha 0.0240 | MB 28/28
   cert | viol 0.128 | dV -0.245513 | V 0.3501 | inball 0.298 | a*_q05 0.00106 | a*_q50 0.01846 | dV>=0 0.029 | n=150 | a_used 0.00279 -> 0.00253
   crit | n=1 | viol 0.590 | V 0.9762 | Vmin 0.4247 | agree +0.598 | a*_q05 -0.00705 | a*_q50 0.00158 | dV>=0 0.363 | beta 0.1000
   bell | direct viol 0.514 | direct dV>=0 0.468 | d_mean +0.00027 | d_std 0.04240 | d_q95 0.08542
@@ -559,7 +559,7 @@ Policy -0.0043 | Value 0.0227 | KL 0.00735 | CF 0.0872 | Std 0.1103 | |a| 0.0180
 Placing Sensors
 [Episode 193/400] Steps: 720 | Reward:   -7.05 | Battery:  64.42% | Loss: 
 Placing Sensors
-Policy -0.0053 | Value 0.0073 | KL 0.00913 | CF 0.1102 | Std 0.1103 | |a| 0.0194 | EV +0.913 | AE nan | Alpha 0.0223 | MB 24/24
+Policy -0.0053 | Value 0.0073 | KL 0.00913 | CF 0.1102 | Std 0.1103 | |a| 0.0194 | EV +0.913 | Rsd 0.437 | Res 0.140 | AE nan | Alpha 0.0223 | MB 24/24
   cert | viol 0.115 | dV -0.203678 | V 0.3297 | inball 0.297 | a*_q05 0.00026 | a*_q50 0.01653 | dV>=0 0.051 | n=150 | a_used 0.00253 -> 0.00224
   crit | n=1 | viol 0.675 | V 0.9760 | Vmin 0.4511 | agree +0.503 | a*_q05 -0.00625 | a*_q50 0.00035 | dV>=0 0.460 | beta 0.1000
   bell | direct viol 0.510 | direct dV>=0 0.458 | d_mean +0.00133 | d_std 0.03437 | d_q95 0.06754
@@ -567,7 +567,7 @@ Policy -0.0053 | Value 0.0073 | KL 0.00913 | CF 0.1102 | Std 0.1103 | |a| 0.0194
 Placing Sensors
 [Episode 195/400] Steps: 720 | Reward:   -5.08 | Battery:  76.91% | Loss: 
 Placing Sensors
-Policy -0.0006 | Value 0.0066 | KL 0.00585 | CF 0.0565 | Std 0.1103 | |a| 0.0178 | EV +0.903 | AE nan | Alpha 0.0206 | MB 24/24
+Policy -0.0006 | Value 0.0066 | KL 0.00585 | CF 0.0565 | Std 0.1103 | |a| 0.0178 | EV +0.903 | Rsd 0.375 | Res 0.131 | AE nan | Alpha 0.0206 | MB 24/24
   cert | viol 0.090 | dV -0.184160 | V 0.2742 | inball 0.369 | a*_q05 0.00164 | a*_q50 0.01964 | dV>=0 0.000 | n=150 | a_used 0.00224 -> 0.00216
   crit | n=1 | viol 0.671 | V 0.9311 | Vmin 0.4561 | agree +0.414 | a*_q05 -0.00631 | a*_q50 0.00053 | dV>=0 0.442 | beta 0.1000
   bell | direct viol 0.501 | direct dV>=0 0.451 | d_mean +0.00168 | d_std 0.02637 | d_q95 0.05379
@@ -575,7 +575,7 @@ Policy -0.0006 | Value 0.0066 | KL 0.00585 | CF 0.0565 | Std 0.1103 | |a| 0.0178
 Placing Sensors
 [Episode 197/400] Steps: 720 | Reward:   -3.98 | Battery:  81.75% | Loss: 
 Placing Sensors
-Policy -0.0113 | Value 0.0057 | KL 0.00994 | CF 0.1319 | Std 0.1103 | |a| 0.0233 | EV +0.918 | AE nan | Alpha 0.0191 | MB 24/24
+Policy -0.0113 | Value 0.0057 | KL 0.00994 | CF 0.1319 | Std 0.1103 | |a| 0.0233 | EV +0.918 | Rsd 0.322 | Res 0.111 | AE nan | Alpha 0.0191 | MB 24/24
   cert | viol 0.048 | dV -0.224904 | V 0.2915 | inball 0.491 | a*_q05 0.00267 | a*_q50 0.02691 | dV>=0 0.000 | n=150 | a_used 0.00216 -> 0.00218
   crit | n=1 | viol 0.625 | V 0.7534 | Vmin 0.3558 | agree +0.594 | a*_q05 -0.00645 | a*_q50 0.00063 | dV>=0 0.444 | beta 0.1000
   bell | direct viol 0.482 | direct dV>=0 0.442 | d_mean +0.00204 | d_std 0.02553 | d_q95 0.05070
@@ -585,7 +585,7 @@ Placing Sensors
 Placing Sensors
 [Episode 200/400] Steps:  87 | Reward:  -17.54 | Battery:   0.00% | Loss: 
 Placing Sensors
-Policy -0.0074 | Value 0.0169 | KL 0.00693 | CF 0.0791 | Std 0.1103 | |a| 0.0223 | EV +0.798 | AE nan | Alpha 0.0176 | MB 24/24
+Policy -0.0074 | Value 0.0169 | KL 0.00693 | CF 0.0791 | Std 0.1103 | |a| 0.0223 | EV +0.798 | Rsd 0.435 | Res 0.197 | AE nan | Alpha 0.0176 | MB 24/24
   cert | viol 0.011 | dV -0.281052 | V 0.3223 | inball 0.451 | a*_q05 0.00596 | a*_q50 0.03045 | dV>=0 0.011 | n=150 | a_used 0.00218 -> 0.00229
   crit | n=1 | viol 0.673 | V 0.7684 | Vmin 0.3032 | agree +0.757 | a*_q05 -0.00570 | a*_q50 -0.00062 | dV>=0 0.529 | beta 0.1000
   bell | direct viol 0.478 | direct dV>=0 0.445 | d_mean +0.00157 | d_std 0.03099 | d_q95 0.06332
@@ -595,7 +595,7 @@ Placing Sensors
 Placing Sensors
 [Episode 203/400] Steps:  86 | Reward:  -17.54 | Battery:   0.00% | Loss: 
 Placing Sensors
-Policy -0.0049 | Value 0.0085 | KL 0.00856 | CF 0.1061 | Std 0.1103 | |a| 0.0236 | EV +0.909 | AE nan | Alpha 0.0162 | MB 24/24
+Policy -0.0049 | Value 0.0085 | KL 0.00856 | CF 0.1061 | Std 0.1103 | |a| 0.0236 | EV +0.909 | Rsd 0.458 | Res 0.138 | AE nan | Alpha 0.0162 | MB 24/24
   cert | viol 0.029 | dV -0.240414 | V 0.2992 | inball 0.462 | a*_q05 0.00331 | a*_q50 0.02669 | dV>=0 0.000 | n=150 | a_used 0.00229 -> 0.00229
   crit | n=1 | viol 0.493 | V 0.7230 | Vmin 0.2663 | agree +0.671 | a*_q05 -0.00676 | a*_q50 0.00244 | dV>=0 0.337 | beta 0.1000
   bell | direct viol 0.502 | direct dV>=0 0.469 | d_mean +0.00049 | d_std 0.03455 | d_q95 0.06676
@@ -603,7 +603,7 @@ Policy -0.0049 | Value 0.0085 | KL 0.00856 | CF 0.1061 | Std 0.1103 | |a| 0.0236
 Placing Sensors
 [Episode 205/400] Steps: 720 | Reward:   -6.06 | Battery:  70.01% | Loss: 
 Placing Sensors
-Policy -0.0133 | Value 0.0101 | KL 0.00900 | CF 0.1181 | Std 0.1103 | |a| 0.0200 | EV +0.830 | AE nan | Alpha 0.0150 | MB 24/24
+Policy -0.0133 | Value 0.0101 | KL 0.00900 | CF 0.1181 | Std 0.1103 | |a| 0.0200 | EV +0.830 | Rsd 0.358 | Res 0.150 | AE nan | Alpha 0.0150 | MB 24/24
   cert | viol 0.089 | dV -0.261103 | V 0.3764 | inball 0.410 | a*_q05 0.00142 | a*_q50 0.02043 | dV>=0 0.021 | n=150 | a_used 0.00229 -> 0.00235
   crit | n=1 | viol 0.289 | V 0.7131 | Vmin 0.2517 | agree +0.522 | a*_q05 -0.00491 | a*_q50 0.00568 | dV>=0 0.233 | beta 0.1000
   bell | direct viol 0.474 | direct dV>=0 0.444 | d_mean -0.00186 | d_std 0.03917 | d_q95 0.07540
@@ -611,7 +611,7 @@ Policy -0.0133 | Value 0.0101 | KL 0.00900 | CF 0.1181 | Std 0.1103 | |a| 0.0200
 Placing Sensors
 [Episode 207/400] Steps: 720 | Reward:   -3.83 | Battery:  87.38% | Loss: 
 Placing Sensors
-Policy -0.0065 | Value 0.0075 | KL 0.01048 | CF 0.1322 | Std 0.1103 | |a| 0.0203 | EV +0.838 | AE nan | Alpha 0.0139 | MB 24/24
+Policy -0.0065 | Value 0.0075 | KL 0.01048 | CF 0.1322 | Std 0.1103 | |a| 0.0203 | EV +0.838 | Rsd 0.329 | Res 0.133 | AE nan | Alpha 0.0139 | MB 24/24
   cert | viol 0.119 | dV -0.239101 | V 0.3816 | inball 0.504 | a*_q05 -0.00203 | a*_q50 0.02272 | dV>=0 0.085 | n=150 | a_used 0.00235 -> 0.00223
   crit | n=1 | viol 0.335 | V 0.7166 | Vmin 0.2884 | agree +0.624 | a*_q05 -0.00606 | a*_q50 0.00450 | dV>=0 0.221 | beta 0.1000
   bell | direct viol 0.483 | direct dV>=0 0.455 | d_mean -0.00101 | d_std 0.03478 | d_q95 0.07259
@@ -623,7 +623,7 @@ Placing Sensors
 Placing Sensors
 [Episode 211/400] Steps: 720 | Reward:   -3.75 | Battery:  76.64% | Loss: 
 Placing Sensors
-Policy 0.0149 | Value 0.0142 | KL 0.01737 | CF 0.1749 | Std 0.1103 | |a| 0.0194 | EV +0.844 | AE nan | Alpha 0.0128 | MB 28/28
+Policy 0.0149 | Value 0.0142 | KL 0.01737 | CF 0.1749 | Std 0.1103 | |a| 0.0194 | EV +0.844 | Rsd 0.476 | Res 0.188 | AE nan | Alpha 0.0128 | MB 28/28
   cert | viol 0.000 | dV -0.242538 | V 0.2665 | inball 0.519 | a*_q05 0.00957 | a*_q50 0.03352 | dV>=0 0.000 | n=150 | a_used 0.00223 -> 0.00239
   crit | n=1 | viol 0.559 | V 0.6897 | Vmin 0.2788 | agree +0.796 | a*_q05 -0.00801 | a*_q50 0.00129 | dV>=0 0.422 | beta 0.1000
   bell | direct viol 0.496 | direct dV>=0 0.465 | d_mean +0.00063 | d_std 0.03532 | d_q95 0.06965
@@ -631,7 +631,7 @@ Policy 0.0149 | Value 0.0142 | KL 0.01737 | CF 0.1749 | Std 0.1103 | |a| 0.0194 
 Placing Sensors
 [Episode 213/400] Steps: 720 | Reward:   -4.68 | Battery:  73.65% | Loss: 
 Placing Sensors
-Policy -0.0031 | Value 0.0075 | KL 0.00577 | CF 0.0665 | Std 0.1104 | |a| 0.0177 | EV +0.884 | AE nan | Alpha 0.0118 | MB 24/24
+Policy -0.0031 | Value 0.0075 | KL 0.00577 | CF 0.0665 | Std 0.1104 | |a| 0.0177 | EV +0.884 | Rsd 0.396 | Res 0.135 | AE nan | Alpha 0.0118 | MB 24/24
   cert | viol 0.044 | dV -0.292058 | V 0.3674 | inball 0.516 | a*_q05 0.00305 | a*_q50 0.03116 | dV>=0 0.014 | n=150 | a_used 0.00239 -> 0.00244
   crit | n=1 | viol 0.407 | V 0.6773 | Vmin 0.2083 | agree +0.515 | a*_q05 -0.00604 | a*_q50 0.00388 | dV>=0 0.290 | beta 0.1000
   bell | direct viol 0.457 | direct dV>=0 0.433 | d_mean -0.00002 | d_std 0.03311 | d_q95 0.06870
@@ -643,7 +643,7 @@ Placing Sensors
 Placing Sensors
 [Episode 217/400] Steps: 720 | Reward:   -6.18 | Battery:  75.36% | Loss: 
 Placing Sensors
-Policy -0.0033 | Value 0.0192 | KL 0.01018 | CF 0.1219 | Std 0.1104 | |a| 0.0234 | EV +0.805 | AE nan | Alpha 0.0109 | MB 28/28
+Policy -0.0033 | Value 0.0192 | KL 0.01018 | CF 0.1219 | Std 0.1104 | |a| 0.0234 | EV +0.805 | Rsd 0.570 | Res 0.255 | AE nan | Alpha 0.0109 | MB 28/28
   cert | viol 0.116 | dV -0.299203 | V 0.4238 | inball 0.407 | a*_q05 -0.00088 | a*_q50 0.02758 | dV>=0 0.073 | n=150 | a_used 0.00244 -> 0.00236
   crit | n=1 | viol 0.476 | V 0.8904 | Vmin 0.2121 | agree +0.545 | a*_q05 -0.00565 | a*_q50 0.00275 | dV>=0 0.296 | beta 0.1000
   bell | direct viol 0.497 | direct dV>=0 0.458 | d_mean -0.00025 | d_std 0.03973 | d_q95 0.08170
@@ -651,7 +651,7 @@ Policy -0.0033 | Value 0.0192 | KL 0.01018 | CF 0.1219 | Std 0.1104 | |a| 0.0234
 Placing Sensors
 [Episode 219/400] Steps: 720 | Reward:   -5.74 | Battery:  68.77% | Loss: 
 Placing Sensors
-Policy -0.0094 | Value 0.0107 | KL 0.01066 | CF 0.1196 | Std 0.1104 | |a| 0.0223 | EV +0.851 | AE nan | Alpha 0.0101 | MB 24/24
+Policy -0.0094 | Value 0.0107 | KL 0.01066 | CF 0.1196 | Std 0.1104 | |a| 0.0223 | EV +0.851 | Rsd 0.441 | Res 0.170 | AE nan | Alpha 0.0101 | MB 24/24
   cert | viol 0.051 | dV -0.266385 | V 0.3444 | inball 0.465 | a*_q05 0.00257 | a*_q50 0.02752 | dV>=0 0.008 | n=150 | a_used 0.00236 -> 0.00244
   crit | n=1 | viol 0.508 | V 0.7420 | Vmin 0.2079 | agree +0.565 | a*_q05 -0.00695 | a*_q50 0.00230 | dV>=0 0.358 | beta 0.1000
   bell | direct viol 0.477 | direct dV>=0 0.442 | d_mean +0.00094 | d_std 0.03637 | d_q95 0.07109
@@ -659,7 +659,7 @@ Policy -0.0094 | Value 0.0107 | KL 0.01066 | CF 0.1196 | Std 0.1104 | |a| 0.0223
 Placing Sensors
 [Episode 221/400] Steps: 720 | Reward:   -5.59 | Battery:  74.30% | Loss: 
 Placing Sensors
-Policy -0.0083 | Value 0.0075 | KL 0.01185 | CF 0.1427 | Std 0.1104 | |a| 0.0232 | EV +0.876 | AE nan | Alpha 0.0100 | MB 24/24
+Policy -0.0083 | Value 0.0075 | KL 0.01185 | CF 0.1427 | Std 0.1104 | |a| 0.0232 | EV +0.876 | Rsd 0.374 | Res 0.134 | AE nan | Alpha 0.0100 | MB 24/24
   cert | viol 0.056 | dV -0.232696 | V 0.3277 | inball 0.449 | a*_q05 0.00253 | a*_q50 0.02149 | dV>=0 0.000 | n=150 | a_used 0.00244 -> 0.00243
   crit | n=1 | viol 0.404 | V 0.6949 | Vmin 0.2723 | agree +0.451 | a*_q05 -0.00610 | a*_q50 0.00371 | dV>=0 0.252 | beta 0.1000
   bell | direct viol 0.481 | direct dV>=0 0.443 | d_mean +0.00038 | d_std 0.03146 | d_q95 0.06335
@@ -667,7 +667,7 @@ Policy -0.0083 | Value 0.0075 | KL 0.01185 | CF 0.1427 | Std 0.1104 | |a| 0.0232
 Placing Sensors
 [Episode 223/400] Steps: 720 | Reward:   -4.97 | Battery:  68.76% | Loss: 
 Placing Sensors
-Policy -0.0073 | Value 0.0082 | KL 0.00505 | CF 0.0585 | Std 0.1104 | |a| 0.0208 | EV +0.900 | AE nan | Alpha 0.0100 | MB 24/24
+Policy -0.0073 | Value 0.0082 | KL 0.00505 | CF 0.0585 | Std 0.1104 | |a| 0.0208 | EV +0.900 | Rsd 0.381 | Res 0.125 | AE nan | Alpha 0.0100 | MB 24/24
   cert | viol 0.111 | dV -0.228970 | V 0.3251 | inball 0.309 | a*_q05 0.00011 | a*_q50 0.01937 | dV>=0 0.051 | n=150 | a_used 0.00243 -> 0.00231
   crit | n=1 | viol 0.453 | V 0.7705 | Vmin 0.3305 | agree +0.404 | a*_q05 -0.00573 | a*_q50 0.00297 | dV>=0 0.278 | beta 0.1000
   bell | direct viol 0.508 | direct dV>=0 0.475 | d_mean -0.00073 | d_std 0.03360 | d_q95 0.06602
@@ -675,7 +675,7 @@ Policy -0.0073 | Value 0.0082 | KL 0.00505 | CF 0.0585 | Std 0.1104 | |a| 0.0208
 Placing Sensors
 [Episode 225/400] Steps: 720 | Reward:   -5.29 | Battery:  71.04% | Loss: 
 Placing Sensors
-Policy -0.0049 | Value 0.0067 | KL 0.00597 | CF 0.0770 | Std 0.1103 | |a| 0.0191 | EV +0.857 | AE nan | Alpha 0.0100 | MB 24/24
+Policy -0.0049 | Value 0.0067 | KL 0.00597 | CF 0.0770 | Std 0.1103 | |a| 0.0191 | EV +0.857 | Rsd 0.323 | Res 0.131 | AE nan | Alpha 0.0100 | MB 24/24
   cert | viol 0.012 | dV -0.203433 | V 0.2541 | inball 0.470 | a*_q05 0.00528 | a*_q50 0.02609 | dV>=0 0.000 | n=150 | a_used 0.00231 -> 0.00242
   crit | n=1 | viol 0.755 | V 0.7047 | Vmin 0.2927 | agree +0.623 | a*_q05 -0.00569 | a*_q50 -0.00042 | dV>=0 0.545 | beta 0.1000
   bell | direct viol 0.525 | direct dV>=0 0.480 | d_mean +0.00178 | d_std 0.03303 | d_q95 0.06298
@@ -683,7 +683,7 @@ Policy -0.0049 | Value 0.0067 | KL 0.00597 | CF 0.0770 | Std 0.1103 | |a| 0.0191
 Placing Sensors
 [Episode 227/400] Steps: 720 | Reward:   -3.91 | Battery:  82.95% | Loss: 
 Placing Sensors
-Policy -0.0069 | Value 0.0069 | KL 0.00490 | CF 0.0527 | Std 0.1103 | |a| 0.0202 | EV +0.911 | AE nan | Alpha 0.0100 | MB 24/24
+Policy -0.0069 | Value 0.0069 | KL 0.00490 | CF 0.0527 | Std 0.1103 | |a| 0.0202 | EV +0.911 | Rsd 0.351 | Res 0.105 | AE nan | Alpha 0.0100 | MB 24/24
   cert | viol 0.094 | dV -0.211990 | V 0.3350 | inball 0.449 | a*_q05 0.00118 | a*_q50 0.01734 | dV>=0 0.008 | n=150 | a_used 0.00242 -> 0.00240
   crit | n=1 | viol 0.474 | V 0.7698 | Vmin 0.3405 | agree +0.570 | a*_q05 -0.00560 | a*_q50 0.00268 | dV>=0 0.273 | beta 0.1000
   bell | direct viol 0.491 | direct dV>=0 0.447 | d_mean -0.00019 | d_std 0.02660 | d_q95 0.05253
@@ -691,7 +691,7 @@ Policy -0.0069 | Value 0.0069 | KL 0.00490 | CF 0.0527 | Std 0.1103 | |a| 0.0202
 Placing Sensors
 [Episode 229/400] Steps: 720 | Reward:   -6.02 | Battery:  60.79% | Loss: 
 Placing Sensors
-Policy -0.0051 | Value 0.0059 | KL 0.00701 | CF 0.0745 | Std 0.1103 | |a| 0.0201 | EV +0.885 | AE nan | Alpha 0.0100 | MB 24/24
+Policy -0.0051 | Value 0.0059 | KL 0.00701 | CF 0.0745 | Std 0.1103 | |a| 0.0201 | EV +0.885 | Rsd 0.320 | Res 0.108 | AE nan | Alpha 0.0100 | MB 24/24
   cert | viol 0.074 | dV -0.219302 | V 0.3367 | inball 0.328 | a*_q05 0.00168 | a*_q50 0.01841 | dV>=0 0.022 | n=150 | a_used 0.00240 -> 0.00223
   crit | n=1 | viol 0.464 | V 0.8293 | Vmin 0.3932 | agree +0.455 | a*_q05 -0.00617 | a*_q50 0.00293 | dV>=0 0.284 | beta 0.1000
   bell | direct viol 0.511 | direct dV>=0 0.465 | d_mean -0.00087 | d_std 0.02814 | d_q95 0.05681
@@ -699,7 +699,7 @@ Policy -0.0051 | Value 0.0059 | KL 0.00701 | CF 0.0745 | Std 0.1103 | |a| 0.0201
 Placing Sensors
 [Episode 231/400] Steps: 720 | Reward:   -6.52 | Battery:  75.48% | Loss: 
 Placing Sensors
-Policy -0.0090 | Value 0.0052 | KL 0.00497 | CF 0.0558 | Std 0.1103 | |a| 0.0223 | EV +0.892 | AE nan | Alpha 0.0100 | MB 24/24
+Policy -0.0090 | Value 0.0052 | KL 0.00497 | CF 0.0558 | Std 0.1103 | |a| 0.0223 | EV +0.892 | Rsd 0.281 | Res 0.093 | AE nan | Alpha 0.0100 | MB 24/24
   cert | viol 0.027 | dV -0.220388 | V 0.3203 | inball 0.358 | a*_q05 0.00277 | a*_q50 0.01791 | dV>=0 0.000 | n=150 | a_used 0.00223 -> 0.00226
   crit | n=1 | viol 0.479 | V 0.7810 | Vmin 0.3820 | agree +0.526 | a*_q05 -0.00644 | a*_q50 0.00272 | dV>=0 0.353 | beta 0.1000
   bell | direct viol 0.506 | direct dV>=0 0.460 | d_mean -0.00044 | d_std 0.02333 | d_q95 0.04432
@@ -707,7 +707,7 @@ Policy -0.0090 | Value 0.0052 | KL 0.00497 | CF 0.0558 | Std 0.1103 | |a| 0.0223
 Placing Sensors
 [Episode 233/400] Steps: 720 | Reward:   -4.28 | Battery:  55.59% | Loss: 
 Placing Sensors
-Policy -0.0092 | Value 0.0061 | KL 0.00880 | CF 0.1147 | Std 0.1103 | |a| 0.0273 | EV +0.852 | AE nan | Alpha 0.0100 | MB 24/24
+Policy -0.0092 | Value 0.0061 | KL 0.00880 | CF 0.1147 | Std 0.1103 | |a| 0.0273 | EV +0.852 | Rsd 0.266 | Res 0.113 | AE nan | Alpha 0.0100 | MB 24/24
   cert | viol 0.109 | dV -0.175627 | V 0.2381 | inball 0.369 | a*_q05 -0.01610 | a*_q50 0.02113 | dV>=0 0.093 | n=150 | a_used 0.00226 -> 0.00215
   crit | n=1 | viol 0.661 | V 0.7551 | Vmin 0.4049 | agree +0.536 | a*_q05 -0.00699 | a*_q50 0.00017 | dV>=0 0.490 | beta 0.1000
   bell | direct viol 0.472 | direct dV>=0 0.420 | d_mean +0.00156 | d_std 0.02039 | d_q95 0.04117
@@ -715,7 +715,7 @@ Policy -0.0092 | Value 0.0061 | KL 0.00880 | CF 0.1147 | Std 0.1103 | |a| 0.0273
 Placing Sensors
 [Episode 235/400] Steps: 720 | Reward:   -6.96 | Battery:  72.63% | Loss: 
 Placing Sensors
-Policy -0.0084 | Value 0.0089 | KL 0.00478 | CF 0.0548 | Std 0.1103 | |a| 0.0301 | EV +0.826 | AE nan | Alpha 0.0100 | MB 24/24
+Policy -0.0084 | Value 0.0089 | KL 0.00478 | CF 0.0548 | Std 0.1103 | |a| 0.0301 | EV +0.826 | Rsd 0.278 | Res 0.129 | AE nan | Alpha 0.0100 | MB 24/24
   cert | viol 0.156 | dV -0.192019 | V 0.3306 | inball 0.215 | a*_q05 -0.00438 | a*_q50 0.00887 | dV>=0 0.126 | n=150 | a_used 0.00215 -> 0.00204
   crit | n=1 | viol 0.456 | V 0.8267 | Vmin 0.4773 | agree +0.394 | a*_q05 -0.00656 | a*_q50 0.00307 | dV>=0 0.352 | beta 0.1000
   bell | direct viol 0.512 | direct dV>=0 0.472 | d_mean -0.00175 | d_std 0.02268 | d_q95 0.04700
@@ -725,7 +725,7 @@ Placing Sensors
 Placing Sensors
 [Episode 238/400] Steps:  81 | Reward:  -17.69 | Battery:   0.00% | Loss: 
 Placing Sensors
-Policy -0.0084 | Value 0.0188 | KL 0.00882 | CF 0.1040 | Std 0.1104 | |a| 0.0253 | EV +0.783 | AE nan | Alpha 0.0100 | MB 24/24
+Policy -0.0084 | Value 0.0188 | KL 0.00882 | CF 0.1040 | Std 0.1104 | |a| 0.0253 | EV +0.783 | Rsd 0.383 | Res 0.183 | AE nan | Alpha 0.0100 | MB 24/24
   cert | viol 0.037 | dV -0.202525 | V 0.2805 | inball 0.285 | a*_q05 0.00270 | a*_q50 0.01567 | dV>=0 0.001 | n=150 | a_used 0.00204 -> 0.00204
   crit | n=1 | viol 0.548 | V 0.8567 | Vmin 0.4626 | agree +0.643 | a*_q05 -0.00574 | a*_q50 0.00150 | dV>=0 0.396 | beta 0.1000
   bell | direct viol 0.525 | direct dV>=0 0.482 | d_mean -0.00105 | d_std 0.02863 | d_q95 0.05545
@@ -733,7 +733,7 @@ Policy -0.0084 | Value 0.0188 | KL 0.00882 | CF 0.1040 | Std 0.1104 | |a| 0.0253
 Placing Sensors
 [Episode 240/400] Steps: 720 | Reward:   -5.18 | Battery:  74.44% | Loss: 
 Placing Sensors
-Policy -0.0113 | Value 0.0049 | KL 0.00616 | CF 0.0603 | Std 0.1103 | |a| 0.0338 | EV +0.948 | AE nan | Alpha 0.0100 | MB 24/24
+Policy -0.0113 | Value 0.0049 | KL 0.00616 | CF 0.0603 | Std 0.1103 | |a| 0.0338 | EV +0.948 | Rsd 0.373 | Res 0.097 | AE nan | Alpha 0.0100 | MB 24/24
   cert | viol 0.012 | dV -0.228304 | V 0.2713 | inball 0.456 | a*_q05 0.00578 | a*_q50 0.03180 | dV>=0 0.012 | n=150 | a_used 0.00204 -> 0.00216
   crit | n=1 | viol 0.685 | V 0.7929 | Vmin 0.3667 | agree +0.467 | a*_q05 -0.00738 | a*_q50 -0.00029 | dV>=0 0.526 | beta 0.1000
   bell | direct viol 0.491 | direct dV>=0 0.455 | d_mean +0.00176 | d_std 0.02673 | d_q95 0.05320
@@ -741,7 +741,7 @@ Policy -0.0113 | Value 0.0049 | KL 0.00616 | CF 0.0603 | Std 0.1103 | |a| 0.0338
 Placing Sensors
 [Episode 242/400] Steps: 720 | Reward:   -5.47 | Battery:  72.44% | Loss: 
 Placing Sensors
-Policy -0.0098 | Value 0.0064 | KL 0.00739 | CF 0.0975 | Std 0.1103 | |a| 0.0294 | EV +0.903 | AE nan | Alpha 0.0100 | MB 24/24
+Policy -0.0098 | Value 0.0064 | KL 0.00739 | CF 0.0975 | Std 0.1103 | |a| 0.0294 | EV +0.903 | Rsd 0.338 | Res 0.105 | AE nan | Alpha 0.0100 | MB 24/24
   cert | viol 0.058 | dV -0.210716 | V 0.2895 | inball 0.395 | a*_q05 0.00175 | a*_q50 0.02573 | dV>=0 0.034 | n=150 | a_used 0.00216 -> 0.00221
   crit | n=1 | viol 0.623 | V 0.7410 | Vmin 0.3394 | agree +0.477 | a*_q05 -0.00681 | a*_q50 0.00033 | dV>=0 0.472 | beta 0.1000
   bell | direct viol 0.515 | direct dV>=0 0.477 | d_mean +0.00065 | d_std 0.02818 | d_q95 0.05531
@@ -749,7 +749,7 @@ Policy -0.0098 | Value 0.0064 | KL 0.00739 | CF 0.0975 | Std 0.1103 | |a| 0.0294
 Placing Sensors
 [Episode 244/400] Steps: 720 | Reward:   -5.09 | Battery:  57.17% | Loss: 
 Placing Sensors
-Policy -0.0090 | Value 0.0056 | KL 0.00898 | CF 0.1168 | Std 0.1103 | |a| 0.0264 | EV +0.933 | AE nan | Alpha 0.0100 | MB 24/24
+Policy -0.0090 | Value 0.0056 | KL 0.00898 | CF 0.1168 | Std 0.1103 | |a| 0.0264 | EV +0.933 | Rsd 0.369 | Res 0.105 | AE nan | Alpha 0.0100 | MB 24/24
   cert | viol 0.000 | dV -0.232421 | V 0.2689 | inball 0.490 | a*_q05 0.00618 | a*_q50 0.02844 | dV>=0 0.000 | n=150 | a_used 0.00221 -> 0.00233
   crit | n=1 | viol 0.624 | V 0.7465 | Vmin 0.3186 | agree +0.536 | a*_q05 -0.00646 | a*_q50 0.00079 | dV>=0 0.440 | beta 0.1000
   bell | direct viol 0.477 | direct dV>=0 0.441 | d_mean +0.00210 | d_std 0.02442 | d_q95 0.04909
@@ -757,7 +757,7 @@ Policy -0.0090 | Value 0.0056 | KL 0.00898 | CF 0.1168 | Std 0.1103 | |a| 0.0264
 Placing Sensors
 [Episode 246/400] Steps: 720 | Reward:   -5.27 | Battery:  70.19% | Loss: 
 Placing Sensors
-Policy -0.0058 | Value 0.0032 | KL 0.00663 | CF 0.0739 | Std 0.1102 | |a| 0.0263 | EV +0.935 | AE nan | Alpha 0.0100 | MB 24/24
+Policy -0.0058 | Value 0.0032 | KL 0.00663 | CF 0.0739 | Std 0.1102 | |a| 0.0263 | EV +0.935 | Rsd 0.265 | Res 0.069 | AE nan | Alpha 0.0100 | MB 24/24
   cert | viol 0.000 | dV -0.222580 | V 0.2897 | inball 0.486 | a*_q05 0.00495 | a*_q50 0.02431 | dV>=0 0.000 | n=150 | a_used 0.00233 -> 0.00243
   crit | n=1 | viol 0.349 | V 0.5975 | Vmin 0.3329 | agree +0.653 | a*_q05 -0.00584 | a*_q50 0.00390 | dV>=0 0.198 | beta 0.1000
   bell | direct viol 0.476 | direct dV>=0 0.433 | d_mean -0.00069 | d_std 0.02521 | d_q95 0.05112
@@ -767,7 +767,7 @@ Placing Sensors
 Placing Sensors
 [Episode 249/400] Steps: 116 | Reward:  -17.34 | Battery:   0.00% | Loss: 
 Placing Sensors
-Policy 0.0261 | Value 0.0213 | KL 0.01946 | CF 0.2023 | Std 0.1102 | |a| 0.0292 | EV +0.820 | AE nan | Alpha 0.0100 | MB 28/28
+Policy 0.0261 | Value 0.0213 | KL 0.01946 | CF 0.2023 | Std 0.1102 | |a| 0.0292 | EV +0.820 | Rsd 0.430 | Res 0.193 | AE nan | Alpha 0.0100 | MB 28/28
   cert | viol 0.052 | dV -0.238850 | V 0.3147 | inball 0.385 | a*_q05 0.00309 | a*_q50 0.02603 | dV>=0 0.022 | n=150 | a_used 0.00243 -> 0.00260
   crit | n=1 | viol 0.460 | V 0.7905 | Vmin 0.3370 | agree +0.576 | a*_q05 -0.00506 | a*_q50 0.00304 | dV>=0 0.321 | beta 0.1000
   bell | direct viol 0.506 | direct dV>=0 0.456 | d_mean -0.00139 | d_std 0.03261 | d_q95 0.06383
@@ -775,7 +775,7 @@ Policy 0.0261 | Value 0.0213 | KL 0.01946 | CF 0.2023 | Std 0.1102 | |a| 0.0292 
 Placing Sensors
 [Episode 251/400] Steps: 720 | Reward:   -3.31 | Battery:  68.56% | Loss: 
 Placing Sensors
-Policy -0.0030 | Value 0.0119 | KL 0.01161 | CF 0.1462 | Std 0.1102 | |a| 0.0230 | EV +0.767 | AE nan | Alpha 0.0100 | MB 24/24
+Policy -0.0030 | Value 0.0119 | KL 0.01161 | CF 0.1462 | Std 0.1102 | |a| 0.0230 | EV +0.767 | Rsd 0.350 | Res 0.169 | AE nan | Alpha 0.0100 | MB 24/24
   cert | viol 0.030 | dV -0.240826 | V 0.3048 | inball 0.501 | a*_q05 0.00440 | a*_q50 0.02665 | dV>=0 0.007 | n=150 | a_used 0.00260 -> 0.00267
   crit | n=1 | viol 0.538 | V 0.6582 | Vmin 0.3350 | agree +0.691 | a*_q05 -0.00680 | a*_q50 0.00192 | dV>=0 0.390 | beta 0.1000
   bell | direct viol 0.511 | direct dV>=0 0.468 | d_mean +0.00037 | d_std 0.03055 | d_q95 0.05727
@@ -785,7 +785,7 @@ Placing Sensors
 Placing Sensors
 [Episode 254/400] Steps:  75 | Reward:  -17.58 | Battery:   0.00% | Loss: 
 Placing Sensors
-Policy -0.0046 | Value 0.0148 | KL 0.00868 | CF 0.0992 | Std 0.1102 | |a| 0.0266 | EV +0.834 | AE nan | Alpha 0.0100 | MB 24/24
+Policy -0.0046 | Value 0.0148 | KL 0.00868 | CF 0.0992 | Std 0.1102 | |a| 0.0266 | EV +0.834 | Rsd 0.395 | Res 0.163 | AE nan | Alpha 0.0100 | MB 24/24
   cert | viol 0.065 | dV -0.190188 | V 0.2710 | inball 0.308 | a*_q05 0.00234 | a*_q50 0.01447 | dV>=0 0.010 | n=150 | a_used 0.00267 -> 0.00274
   crit | n=1 | viol 0.526 | V 0.8306 | Vmin 0.4097 | agree +0.528 | a*_q05 -0.00734 | a*_q50 0.00241 | dV>=0 0.314 | beta 0.1000
   bell | direct viol 0.529 | direct dV>=0 0.491 | d_mean -0.00030 | d_std 0.02997 | d_q95 0.06261
@@ -793,7 +793,7 @@ Policy -0.0046 | Value 0.0148 | KL 0.00868 | CF 0.0992 | Std 0.1102 | |a| 0.0266
 Placing Sensors
 [Episode 256/400] Steps: 720 | Reward:   -5.92 | Battery:  74.52% | Loss: 
 Placing Sensors
-Policy -0.0103 | Value 0.0093 | KL 0.00649 | CF 0.0773 | Std 0.1102 | |a| 0.0248 | EV +0.893 | AE nan | Alpha 0.0100 | MB 24/24
+Policy -0.0103 | Value 0.0093 | KL 0.00649 | CF 0.0773 | Std 0.1102 | |a| 0.0248 | EV +0.893 | Rsd 0.379 | Res 0.131 | AE nan | Alpha 0.0100 | MB 24/24
   cert | viol 0.218 | dV -0.203472 | V 0.3792 | inball 0.322 | a*_q05 -0.00159 | a*_q50 0.01418 | dV>=0 0.106 | n=150 | a_used 0.00274 -> 0.00260
   crit | n=1 | viol 0.453 | V 0.8431 | Vmin 0.3654 | agree +0.547 | a*_q05 -0.00491 | a*_q50 0.00350 | dV>=0 0.278 | beta 0.1000
   bell | direct viol 0.522 | direct dV>=0 0.479 | d_mean -0.00169 | d_std 0.03250 | d_q95 0.06717
@@ -801,7 +801,7 @@ Policy -0.0103 | Value 0.0093 | KL 0.00649 | CF 0.0773 | Std 0.1102 | |a| 0.0248
 Placing Sensors
 [Episode 258/400] Steps: 720 | Reward:   -5.03 | Battery:  75.46% | Loss: 
 Placing Sensors
-Policy -0.0055 | Value 0.0082 | KL 0.01069 | CF 0.1282 | Std 0.1102 | |a| 0.0269 | EV +0.875 | AE nan | Alpha 0.0100 | MB 24/24
+Policy -0.0055 | Value 0.0082 | KL 0.01069 | CF 0.1282 | Std 0.1102 | |a| 0.0269 | EV +0.875 | Rsd 0.329 | Res 0.141 | AE nan | Alpha 0.0100 | MB 24/24
   cert | viol 0.030 | dV -0.263237 | V 0.3129 | inball 0.496 | a*_q05 0.00517 | a*_q50 0.03266 | dV>=0 0.000 | n=150 | a_used 0.00260 -> 0.00271
   crit | n=1 | viol 0.659 | V 0.7851 | Vmin 0.3733 | agree +0.547 | a*_q05 -0.00753 | a*_q50 0.00033 | dV>=0 0.478 | beta 0.1000
   bell | direct viol 0.496 | direct dV>=0 0.454 | d_mean +0.00247 | d_std 0.03066 | d_q95 0.06045
@@ -809,7 +809,7 @@ Policy -0.0055 | Value 0.0082 | KL 0.01069 | CF 0.1282 | Std 0.1102 | |a| 0.0269
 Placing Sensors
 [Episode 260/400] Steps: 720 | Reward:   -3.32 | Battery:  67.30% | Loss: 
 Placing Sensors
-Policy -0.0041 | Value 0.0054 | KL 0.00788 | CF 0.1016 | Std 0.1102 | |a| 0.0275 | EV +0.924 | AE nan | Alpha 0.0100 | MB 24/24
+Policy -0.0041 | Value 0.0054 | KL 0.00788 | CF 0.1016 | Std 0.1102 | |a| 0.0275 | EV +0.924 | Rsd 0.339 | Res 0.112 | AE nan | Alpha 0.0100 | MB 24/24
   cert | viol 0.000 | dV -0.290440 | V 0.3265 | inball 0.501 | a*_q05 0.00850 | a*_q50 0.03492 | dV>=0 0.000 | n=150 | a_used 0.00271 -> 0.00289
   crit | n=1 | viol 0.669 | V 0.7042 | Vmin 0.2846 | agree +0.483 | a*_q05 -0.00772 | a*_q50 -0.00009 | dV>=0 0.505 | beta 0.1000
   bell | direct viol 0.490 | direct dV>=0 0.443 | d_mean +0.00158 | d_std 0.02561 | d_q95 0.05133
@@ -817,7 +817,7 @@ Policy -0.0041 | Value 0.0054 | KL 0.00788 | CF 0.1016 | Std 0.1102 | |a| 0.0275
 Placing Sensors
 [Episode 262/400] Steps: 720 | Reward:   -5.08 | Battery:  73.68% | Loss: 
 Placing Sensors
-Policy -0.0143 | Value 0.0066 | KL 0.01455 | CF 0.1635 | Std 0.1102 | |a| 0.0241 | EV +0.823 | AE nan | Alpha 0.0100 | MB 24/24
+Policy -0.0143 | Value 0.0066 | KL 0.01455 | CF 0.1635 | Std 0.1102 | |a| 0.0241 | EV +0.823 | Rsd 0.259 | Res 0.109 | AE nan | Alpha 0.0100 | MB 24/24
   cert | viol 0.039 | dV -0.229206 | V 0.2835 | inball 0.508 | a*_q05 0.00370 | a*_q50 0.02988 | dV>=0 0.007 | n=150 | a_used 0.00289 -> 0.00295
   crit | n=1 | viol 0.528 | V 0.6312 | Vmin 0.3233 | agree +0.578 | a*_q05 -0.00624 | a*_q50 0.00242 | dV>=0 0.358 | beta 0.1000
   bell | direct viol 0.494 | direct dV>=0 0.461 | d_mean -0.00069 | d_std 0.03531 | d_q95 0.06878
@@ -825,7 +825,7 @@ Policy -0.0143 | Value 0.0066 | KL 0.01455 | CF 0.1635 | Std 0.1102 | |a| 0.0241
 Placing Sensors
 [Episode 264/400] Steps: 720 | Reward:   -2.66 | Battery:  83.01% | Loss: 
 Placing Sensors
-Policy 0.0010 | Value 0.0053 | KL 0.01162 | CF 0.1500 | Std 0.1102 | |a| 0.0230 | EV +0.886 | AE nan | Alpha 0.0100 | MB 24/24
+Policy 0.0010 | Value 0.0053 | KL 0.01162 | CF 0.1500 | Std 0.1102 | |a| 0.0230 | EV +0.886 | Rsd 0.292 | Res 0.104 | AE nan | Alpha 0.0100 | MB 24/24
   cert | viol 0.000 | dV -0.252207 | V 0.2828 | inball 0.534 | a*_q05 0.00864 | a*_q50 0.03386 | dV>=0 0.000 | n=150 | a_used 0.00295 -> 0.00313
   crit | n=1 | viol 0.672 | V 0.6315 | Vmin 0.2944 | agree +0.468 | a*_q05 -0.00696 | a*_q50 -0.00024 | dV>=0 0.515 | beta 0.1000
   bell | direct viol 0.503 | direct dV>=0 0.473 | d_mean +0.00060 | d_std 0.02664 | d_q95 0.04931
@@ -833,7 +833,7 @@ Policy 0.0010 | Value 0.0053 | KL 0.01162 | CF 0.1500 | Std 0.1102 | |a| 0.0230 
 Placing Sensors
 [Episode 266/400] Steps: 720 | Reward:   -2.92 | Battery:  75.63% | Loss: 
 Placing Sensors
-Policy -0.0057 | Value 0.0062 | KL 0.00712 | CF 0.0861 | Std 0.1102 | |a| 0.0189 | EV +0.915 | AE nan | Alpha 0.0100 | MB 24/24
+Policy -0.0057 | Value 0.0062 | KL 0.00712 | CF 0.0861 | Std 0.1102 | |a| 0.0189 | EV +0.915 | Rsd 0.338 | Res 0.099 | AE nan | Alpha 0.0100 | MB 24/24
   cert | viol 0.092 | dV -0.269458 | V 0.3413 | inball 0.556 | a*_q05 0.00187 | a*_q50 0.03301 | dV>=0 0.013 | n=150 | a_used 0.00313 -> 0.00299
   crit | n=1 | viol 0.528 | V 0.5693 | Vmin 0.2129 | agree +0.560 | a*_q05 -0.00677 | a*_q50 0.00274 | dV>=0 0.363 | beta 0.1000
   bell | direct viol 0.471 | direct dV>=0 0.432 | d_mean +0.00052 | d_std 0.02684 | d_q95 0.05147
@@ -843,7 +843,7 @@ Placing Sensors
 Placing Sensors
 [Episode 269/400] Steps: 720 | Reward:   -4.27 | Battery:  86.41% | Loss: 
 Placing Sensors
-Policy -0.0057 | Value 0.0137 | KL 0.01191 | CF 0.1469 | Std 0.1102 | |a| 0.0220 | EV +0.897 | AE nan | Alpha 0.0100 | MB 24/24
+Policy -0.0057 | Value 0.0137 | KL 0.01191 | CF 0.1469 | Std 0.1102 | |a| 0.0220 | EV +0.897 | Rsd 0.487 | Res 0.166 | AE nan | Alpha 0.0100 | MB 24/24
   cert | viol 0.154 | dV -0.293249 | V 0.4314 | inball 0.457 | a*_q05 -0.00208 | a*_q50 0.02881 | dV>=0 0.094 | n=150 | a_used 0.00299 -> 0.00284
   crit | n=1 | viol 0.390 | V 0.7281 | Vmin 0.1873 | agree +0.602 | a*_q05 -0.00529 | a*_q50 0.00484 | dV>=0 0.265 | beta 0.1000
   bell | direct viol 0.491 | direct dV>=0 0.452 | d_mean -0.00116 | d_std 0.03625 | d_q95 0.07418
@@ -851,7 +851,7 @@ Policy -0.0057 | Value 0.0137 | KL 0.01191 | CF 0.1469 | Std 0.1102 | |a| 0.0220
 Placing Sensors
 [Episode 271/400] Steps: 720 | Reward:   -4.18 | Battery:  75.47% | Loss: 
 Placing Sensors
-Policy -0.0056 | Value 0.0054 | KL 0.00515 | CF 0.0636 | Std 0.1102 | |a| 0.0258 | EV +0.937 | AE nan | Alpha 0.0100 | MB 24/24
+Policy -0.0056 | Value 0.0054 | KL 0.00515 | CF 0.0636 | Std 0.1102 | |a| 0.0258 | EV +0.937 | Rsd 0.362 | Res 0.094 | AE nan | Alpha 0.0100 | MB 24/24
   cert | viol 0.070 | dV -0.245910 | V 0.3544 | inball 0.417 | a*_q05 0.00210 | a*_q50 0.02132 | dV>=0 0.019 | n=150 | a_used 0.00284 -> 0.00274
   crit | n=1 | viol 0.368 | V 0.6447 | Vmin 0.2105 | agree +0.631 | a*_q05 -0.00586 | a*_q50 0.00558 | dV>=0 0.248 | beta 0.1000
   bell | direct viol 0.474 | direct dV>=0 0.440 | d_mean -0.00090 | d_std 0.02906 | d_q95 0.06223
@@ -861,7 +861,7 @@ Placing Sensors
 Placing Sensors
 [Episode 274/400] Steps: 720 | Reward:   -4.18 | Battery:  81.59% | Loss: 
 Placing Sensors
-Policy -0.0046 | Value 0.0098 | KL 0.00747 | CF 0.0907 | Std 0.1101 | |a| 0.0209 | EV +0.898 | AE nan | Alpha 0.0100 | MB 24/24
+Policy -0.0046 | Value 0.0098 | KL 0.00747 | CF 0.0907 | Std 0.1101 | |a| 0.0209 | EV +0.898 | Rsd 0.460 | Res 0.147 | AE nan | Alpha 0.0100 | MB 24/24
   cert | viol 0.112 | dV -0.240922 | V 0.3293 | inball 0.514 | a*_q05 0.00118 | a*_q50 0.02907 | dV>=0 0.022 | n=150 | a_used 0.00274 -> 0.00271
   crit | n=1 | viol 0.474 | V 0.6803 | Vmin 0.1731 | agree +0.743 | a*_q05 -0.00462 | a*_q50 0.00297 | dV>=0 0.249 | beta 0.1000
   bell | direct viol 0.498 | direct dV>=0 0.465 | d_mean -0.00024 | d_std 0.03321 | d_q95 0.07092
@@ -875,7 +875,7 @@ Placing Sensors
 Placing Sensors
 [Episode 279/400] Steps:  64 | Reward:  -17.83 | Battery:   0.00% | Loss: 
 Placing Sensors
-Policy -0.0077 | Value 0.0132 | KL 0.00555 | CF 0.0596 | Std 0.1102 | |a| 0.0252 | EV +0.907 | AE nan | Alpha 0.0100 | MB 28/28
+Policy -0.0077 | Value 0.0132 | KL 0.00555 | CF 0.0596 | Std 0.1102 | |a| 0.0252 | EV +0.907 | Rsd 0.618 | Res 0.191 | AE nan | Alpha 0.0100 | MB 28/28
   cert | viol 0.073 | dV -0.280943 | V 0.3532 | inball 0.429 | a*_q05 0.00130 | a*_q50 0.03143 | dV>=0 0.051 | n=150 | a_used 0.00271 -> 0.00284
   crit | n=1 | viol 0.543 | V 0.9031 | Vmin 0.2254 | agree +0.653 | a*_q05 -0.00568 | a*_q50 0.00207 | dV>=0 0.355 | beta 0.1000
   bell | direct viol 0.509 | direct dV>=0 0.456 | d_mean +0.00009 | d_std 0.03862 | d_q95 0.07403
@@ -883,7 +883,7 @@ Policy -0.0077 | Value 0.0132 | KL 0.00555 | CF 0.0596 | Std 0.1102 | |a| 0.0252
 Placing Sensors
 [Episode 281/400] Steps: 720 | Reward:   -6.58 | Battery:  80.42% | Loss: 
 Placing Sensors
-Policy -0.0059 | Value 0.0123 | KL 0.00621 | CF 0.0704 | Std 0.1102 | |a| 0.0208 | EV +0.848 | AE nan | Alpha 0.0100 | MB 24/24
+Policy -0.0059 | Value 0.0123 | KL 0.00621 | CF 0.0704 | Std 0.1102 | |a| 0.0208 | EV +0.848 | Rsd 0.493 | Res 0.192 | AE nan | Alpha 0.0100 | MB 24/24
   cert | viol 0.119 | dV -0.333138 | V 0.4667 | inball 0.409 | a*_q05 0.00109 | a*_q50 0.02680 | dV>=0 0.018 | n=150 | a_used 0.00284 -> 0.00268
   crit | n=1 | viol 0.432 | V 0.7941 | Vmin 0.1995 | agree +0.478 | a*_q05 -0.00668 | a*_q50 0.00466 | dV>=0 0.336 | beta 0.1000
   bell | direct viol 0.511 | direct dV>=0 0.468 | d_mean +0.00007 | d_std 0.03408 | d_q95 0.06370
@@ -891,7 +891,7 @@ Policy -0.0059 | Value 0.0123 | KL 0.00621 | CF 0.0704 | Std 0.1102 | |a| 0.0208
 Placing Sensors
 [Episode 283/400] Steps: 720 | Reward:   -6.33 | Battery:  69.75% | Loss: 
 Placing Sensors
-Policy -0.0117 | Value 0.0051 | KL 0.00537 | CF 0.0655 | Std 0.1101 | |a| 0.0199 | EV +0.942 | AE nan | Alpha 0.0100 | MB 24/24
+Policy -0.0117 | Value 0.0051 | KL 0.00537 | CF 0.0655 | Std 0.1101 | |a| 0.0199 | EV +0.942 | Rsd 0.396 | Res 0.095 | AE nan | Alpha 0.0100 | MB 24/24
   cert | viol 0.127 | dV -0.237642 | V 0.3618 | inball 0.439 | a*_q05 -0.00076 | a*_q50 0.02069 | dV>=0 0.077 | n=150 | a_used 0.00268 -> 0.00250
   crit | n=1 | viol 0.370 | V 0.8013 | Vmin 0.2992 | agree +0.435 | a*_q05 -0.00601 | a*_q50 0.00458 | dV>=0 0.207 | beta 0.1000
   bell | direct viol 0.491 | direct dV>=0 0.444 | d_mean -0.00053 | d_std 0.02626 | d_q95 0.05353
@@ -899,7 +899,7 @@ Policy -0.0117 | Value 0.0051 | KL 0.00537 | CF 0.0655 | Std 0.1101 | |a| 0.0199
 Placing Sensors
 [Episode 285/400] Steps: 720 | Reward:   -7.00 | Battery:  65.36% | Loss: 
 Placing Sensors
-Policy -0.0061 | Value 0.0072 | KL 0.01003 | CF 0.1201 | Std 0.1101 | |a| 0.0239 | EV +0.907 | AE nan | Alpha 0.0100 | MB 24/24
+Policy -0.0061 | Value 0.0072 | KL 0.01003 | CF 0.1201 | Std 0.1101 | |a| 0.0239 | EV +0.907 | Rsd 0.396 | Res 0.126 | AE nan | Alpha 0.0100 | MB 24/24
   cert | viol 0.070 | dV -0.256776 | V 0.3633 | inball 0.458 | a*_q05 0.00183 | a*_q50 0.02421 | dV>=0 0.031 | n=150 | a_used 0.00250 -> 0.00252
   crit | n=1 | viol 0.463 | V 0.7846 | Vmin 0.2968 | agree +0.519 | a*_q05 -0.00643 | a*_q50 0.00313 | dV>=0 0.310 | beta 0.1000
   bell | direct viol 0.486 | direct dV>=0 0.432 | d_mean +0.00035 | d_std 0.02402 | d_q95 0.04864
@@ -907,7 +907,7 @@ Policy -0.0061 | Value 0.0072 | KL 0.01003 | CF 0.1201 | Std 0.1101 | |a| 0.0239
 Placing Sensors
 [Episode 287/400] Steps: 720 | Reward:   -4.94 | Battery:  77.09% | Loss: 
 Placing Sensors
-Policy -0.0028 | Value 0.0037 | KL 0.00781 | CF 0.1005 | Std 0.1101 | |a| 0.0269 | EV +0.942 | AE nan | Alpha 0.0100 | MB 24/24
+Policy -0.0028 | Value 0.0037 | KL 0.00781 | CF 0.1005 | Std 0.1101 | |a| 0.0269 | EV +0.942 | Rsd 0.328 | Res 0.095 | AE nan | Alpha 0.0100 | MB 24/24
   cert | viol 0.049 | dV -0.263990 | V 0.3422 | inball 0.497 | a*_q05 0.00281 | a*_q50 0.02848 | dV>=0 0.005 | n=150 | a_used 0.00252 -> 0.00249
   crit | n=1 | viol 0.450 | V 0.7569 | Vmin 0.3450 | agree +0.452 | a*_q05 -0.00698 | a*_q50 0.00328 | dV>=0 0.322 | beta 0.1000
   bell | direct viol 0.480 | direct dV>=0 0.441 | d_mean +0.00075 | d_std 0.02234 | d_q95 0.04346
@@ -915,7 +915,7 @@ Policy -0.0028 | Value 0.0037 | KL 0.00781 | CF 0.1005 | Std 0.1101 | |a| 0.0269
 Placing Sensors
 [Episode 289/400] Steps: 720 | Reward:   -4.19 | Battery:  76.97% | Loss: 
 Placing Sensors
-Policy -0.0101 | Value 0.0049 | KL 0.00839 | CF 0.0862 | Std 0.1101 | |a| 0.0248 | EV +0.927 | AE nan | Alpha 0.0100 | MB 24/24
+Policy -0.0101 | Value 0.0049 | KL 0.00839 | CF 0.0862 | Std 0.1101 | |a| 0.0248 | EV +0.927 | Rsd 0.344 | Res 0.101 | AE nan | Alpha 0.0100 | MB 24/24
   cert | viol 0.030 | dV -0.244182 | V 0.3095 | inball 0.486 | a*_q05 0.00365 | a*_q50 0.02478 | dV>=0 0.000 | n=150 | a_used 0.00249 -> 0.00257
   crit | n=1 | viol 0.576 | V 0.7357 | Vmin 0.2922 | agree +0.711 | a*_q05 -0.00492 | a*_q50 0.00187 | dV>=0 0.334 | beta 0.1000
   bell | direct viol 0.493 | direct dV>=0 0.443 | d_mean +0.00060 | d_std 0.02475 | d_q95 0.05058
@@ -925,7 +925,7 @@ Placing Sensors
 Placing Sensors
 [Episode 292/400] Steps: 125 | Reward:  -17.24 | Battery:   0.00% | Loss: 
 Placing Sensors
-Policy -0.0075 | Value 0.0184 | KL 0.01435 | CF 0.1718 | Std 0.1101 | |a| 0.0242 | EV +0.820 | AE nan | Alpha 0.0100 | MB 28/28
+Policy -0.0075 | Value 0.0184 | KL 0.01435 | CF 0.1718 | Std 0.1101 | |a| 0.0242 | EV +0.820 | Rsd 0.442 | Res 0.189 | AE nan | Alpha 0.0100 | MB 28/28
   cert | viol 0.002 | dV -0.243186 | V 0.3000 | inball 0.500 | a*_q05 0.00554 | a*_q50 0.02639 | dV>=0 0.000 | n=150 | a_used 0.00257 -> 0.00266
   crit | n=1 | viol 0.567 | V 0.7080 | Vmin 0.2688 | agree +0.828 | a*_q05 -0.00510 | a*_q50 0.00219 | dV>=0 0.214 | beta 0.1000
   bell | direct viol 0.464 | direct dV>=0 0.423 | d_mean +0.00107 | d_std 0.02982 | d_q95 0.06082
@@ -933,7 +933,7 @@ Policy -0.0075 | Value 0.0184 | KL 0.01435 | CF 0.1718 | Std 0.1101 | |a| 0.0242
 Placing Sensors
 [Episode 294/400] Steps: 720 | Reward:   -6.22 | Battery:  63.21% | Loss: 
 Placing Sensors
-Policy -0.0119 | Value 0.0074 | KL 0.00377 | CF 0.0352 | Std 0.1101 | |a| 0.0185 | EV +0.881 | AE nan | Alpha 0.0100 | MB 24/24
+Policy -0.0119 | Value 0.0074 | KL 0.00377 | CF 0.0352 | Std 0.1101 | |a| 0.0185 | EV +0.881 | Rsd 0.375 | Res 0.133 | AE nan | Alpha 0.0100 | MB 24/24
   cert | viol 0.145 | dV -0.251216 | V 0.3739 | inball 0.417 | a*_q05 -0.00065 | a*_q50 0.02299 | dV>=0 0.070 | n=150 | a_used 0.00266 -> 0.00252
   crit | n=1 | viol 0.402 | V 0.7302 | Vmin 0.3111 | agree +0.405 | a*_q05 -0.00513 | a*_q50 0.00443 | dV>=0 0.245 | beta 0.1000
   bell | direct viol 0.497 | direct dV>=0 0.450 | d_mean -0.00109 | d_std 0.02677 | d_q95 0.05493
@@ -943,7 +943,7 @@ Placing Sensors
 Placing Sensors
 [Episode 297/400] Steps: 163 | Reward:  -17.24 | Battery:   0.00% | Loss: 
 Placing Sensors
-Policy -0.0048 | Value 0.0228 | KL 0.01500 | CF 0.1774 | Std 0.1100 | |a| 0.0231 | EV +0.692 | AE nan | Alpha 0.0100 | MB 28/28
+Policy -0.0048 | Value 0.0228 | KL 0.01500 | CF 0.1774 | Std 0.1100 | |a| 0.0231 | EV +0.692 | Rsd 0.468 | Res 0.260 | AE nan | Alpha 0.0100 | MB 28/28
   cert | viol 0.000 | dV -0.252488 | V 0.2655 | inball 0.565 | a*_q05 0.01232 | a*_q50 0.03912 | dV>=0 0.000 | n=150 | a_used 0.00252 -> 0.00270
   crit | n=1 | viol 0.538 | V 0.6705 | Vmin 0.2156 | agree +0.684 | a*_q05 -0.00673 | a*_q50 0.00191 | dV>=0 0.383 | beta 0.1000
   bell | direct viol 0.484 | direct dV>=0 0.450 | d_mean +0.00116 | d_std 0.03916 | d_q95 0.07855
@@ -951,7 +951,7 @@ Policy -0.0048 | Value 0.0228 | KL 0.01500 | CF 0.1774 | Std 0.1100 | |a| 0.0231
 Placing Sensors
 [Episode 299/400] Steps: 720 | Reward:   -5.10 | Battery:  64.58% | Loss: 
 Placing Sensors
-Policy -0.0078 | Value 0.0077 | KL 0.00683 | CF 0.0784 | Std 0.1100 | |a| 0.0216 | EV +0.903 | AE nan | Alpha 0.0100 | MB 24/24
+Policy -0.0078 | Value 0.0077 | KL 0.00683 | CF 0.0784 | Std 0.1100 | |a| 0.0216 | EV +0.903 | Rsd 0.394 | Res 0.130 | AE nan | Alpha 0.0100 | MB 24/24
   cert | viol 0.031 | dV -0.266737 | V 0.3236 | inball 0.464 | a*_q05 0.00435 | a*_q50 0.02948 | dV>=0 0.000 | n=150 | a_used 0.00270 -> 0.00278
   crit | n=1 | viol 0.568 | V 0.7169 | Vmin 0.2053 | agree +0.500 | a*_q05 -0.00652 | a*_q50 0.00174 | dV>=0 0.398 | beta 0.1000
   bell | direct viol 0.499 | direct dV>=0 0.458 | d_mean +0.00121 | d_std 0.03002 | d_q95 0.05997
@@ -959,7 +959,7 @@ Policy -0.0078 | Value 0.0077 | KL 0.00683 | CF 0.0784 | Std 0.1100 | |a| 0.0216
 Placing Sensors
 [Episode 301/400] Steps: 720 | Reward:   -3.03 | Battery:  84.67% | Loss: 
 Placing Sensors
-Policy -0.0081 | Value 0.0069 | KL 0.00590 | CF 0.0748 | Std 0.1100 | |a| 0.0207 | EV +0.875 | AE nan | Alpha 0.0100 | MB 24/24
+Policy -0.0081 | Value 0.0069 | KL 0.00590 | CF 0.0748 | Std 0.1100 | |a| 0.0207 | EV +0.875 | Rsd 0.380 | Res 0.134 | AE nan | Alpha 0.0100 | MB 24/24
   cert | viol 0.067 | dV -0.248986 | V 0.3419 | inball 0.501 | a*_q05 0.00233 | a*_q50 0.02735 | dV>=0 0.015 | n=150 | a_used 0.00278 -> 0.00267
   crit | n=1 | viol 0.378 | V 0.6374 | Vmin 0.1967 | agree +0.631 | a*_q05 -0.00602 | a*_q50 0.00487 | dV>=0 0.245 | beta 0.1000
   bell | direct viol 0.503 | direct dV>=0 0.460 | d_mean +0.00006 | d_std 0.03023 | d_q95 0.05855
@@ -967,7 +967,7 @@ Policy -0.0081 | Value 0.0069 | KL 0.00590 | CF 0.0748 | Std 0.1100 | |a| 0.0207
 Placing Sensors
 [Episode 303/400] Steps: 720 | Reward:   -4.96 | Battery:  82.88% | Loss: 
 Placing Sensors
-Policy -0.0053 | Value 0.0056 | KL 0.01197 | CF 0.1299 | Std 0.1100 | |a| 0.0241 | EV +0.912 | AE nan | Alpha 0.0100 | MB 24/24
+Policy -0.0053 | Value 0.0056 | KL 0.01197 | CF 0.1299 | Std 0.1100 | |a| 0.0241 | EV +0.912 | Rsd 0.338 | Res 0.102 | AE nan | Alpha 0.0100 | MB 24/24
   cert | viol 0.048 | dV -0.277670 | V 0.3540 | inball 0.544 | a*_q05 0.00337 | a*_q50 0.02810 | dV>=0 0.000 | n=150 | a_used 0.00267 -> 0.00264
   crit | n=1 | viol 0.236 | V 0.5734 | Vmin 0.1653 | agree +0.596 | a*_q05 -0.00444 | a*_q50 0.00635 | dV>=0 0.160 | beta 0.1000
   bell | direct viol 0.489 | direct dV>=0 0.459 | d_mean -0.00049 | d_std 0.03093 | d_q95 0.05997
@@ -975,7 +975,7 @@ Policy -0.0053 | Value 0.0056 | KL 0.01197 | CF 0.1299 | Std 0.1100 | |a| 0.0241
 Placing Sensors
 [Episode 305/400] Steps: 720 | Reward:   -5.10 | Battery:  80.94% | Loss: 
 Placing Sensors
-Policy -0.0018 | Value 0.0035 | KL 0.00824 | CF 0.0915 | Std 0.1100 | |a| 0.0253 | EV +0.961 | AE nan | Alpha 0.0100 | MB 24/24
+Policy -0.0018 | Value 0.0035 | KL 0.00824 | CF 0.0915 | Std 0.1100 | |a| 0.0253 | EV +0.961 | Rsd 0.367 | Res 0.074 | AE nan | Alpha 0.0100 | MB 24/24
   cert | viol 0.080 | dV -0.266668 | V 0.3586 | inball 0.522 | a*_q05 0.00175 | a*_q50 0.02545 | dV>=0 0.013 | n=150 | a_used 0.00264 -> 0.00252
   crit | n=1 | viol 0.289 | V 0.6504 | Vmin 0.2162 | agree +0.612 | a*_q05 -0.00494 | a*_q50 0.00505 | dV>=0 0.171 | beta 0.1000
   bell | direct viol 0.485 | direct dV>=0 0.440 | d_mean -0.00093 | d_std 0.03057 | d_q95 0.06007
@@ -985,7 +985,7 @@ Placing Sensors
 Placing Sensors
 [Episode 308/400] Steps:  94 | Reward:  -17.52 | Battery:   0.00% | Loss: 
 Placing Sensors
-Policy -0.0069 | Value 0.0182 | KL 0.00468 | CF 0.0482 | Std 0.1100 | |a| 0.0239 | EV +0.874 | AE nan | Alpha 0.0100 | MB 24/24
+Policy -0.0069 | Value 0.0182 | KL 0.00468 | CF 0.0482 | Std 0.1100 | |a| 0.0239 | EV +0.874 | Rsd 0.496 | Res 0.184 | AE nan | Alpha 0.0100 | MB 24/24
   cert | viol 0.010 | dV -0.287208 | V 0.3441 | inball 0.488 | a*_q05 0.00569 | a*_q50 0.02750 | dV>=0 0.000 | n=150 | a_used 0.00252 -> 0.00265
   crit | n=1 | viol 0.258 | V 0.6697 | Vmin 0.1873 | agree +0.706 | a*_q05 -0.00314 | a*_q50 0.00530 | dV>=0 0.126 | beta 0.1000
   bell | direct viol 0.495 | direct dV>=0 0.454 | d_mean -0.00067 | d_std 0.03287 | d_q95 0.06759
@@ -995,7 +995,7 @@ Placing Sensors
 Placing Sensors
 [Episode 311/400] Steps: 720 | Reward:   -6.92 | Battery:  75.28% | Loss: 
 Placing Sensors
-Policy -0.0123 | Value 0.0192 | KL 0.01079 | CF 0.1173 | Std 0.1100 | |a| 0.0238 | EV +0.828 | AE nan | Alpha 0.0100 | MB 24/24
+Policy -0.0123 | Value 0.0192 | KL 0.01079 | CF 0.1173 | Std 0.1100 | |a| 0.0238 | EV +0.828 | Rsd 0.484 | Res 0.202 | AE nan | Alpha 0.0100 | MB 24/24
   cert | viol 0.072 | dV -0.264513 | V 0.3718 | inball 0.369 | a*_q05 0.00149 | a*_q50 0.02387 | dV>=0 0.034 | n=150 | a_used 0.00265 -> 0.00265
   crit | n=1 | viol 0.481 | V 0.8601 | Vmin 0.2622 | agree +0.460 | a*_q05 -0.00693 | a*_q50 0.00295 | dV>=0 0.315 | beta 0.1000
   bell | direct viol 0.500 | direct dV>=0 0.452 | d_mean +0.00063 | d_std 0.03379 | d_q95 0.06899
@@ -1005,7 +1005,7 @@ Placing Sensors
 Placing Sensors
 [Episode 314/400] Steps:  98 | Reward:  -17.43 | Battery:   0.00% | Loss: 
 Placing Sensors
-Policy -0.0800 | Value 0.0119 | KL 0.01327 | CF 0.1501 | Std 0.1100 | |a| 0.0264 | EV +0.910 | AE nan | Alpha 0.0100 | MB 28/28
+Policy -0.0800 | Value 0.0119 | KL 0.01327 | CF 0.1501 | Std 0.1100 | |a| 0.0264 | EV +0.910 | Rsd 0.516 | Res 0.155 | AE nan | Alpha 0.0100 | MB 28/28
   cert | viol 0.027 | dV -0.235565 | V 0.2957 | inball 0.490 | a*_q05 0.00889 | a*_q50 0.02910 | dV>=0 0.000 | n=150 | a_used 0.00265 -> 0.00283
   crit | n=1 | viol 0.633 | V 0.7778 | Vmin 0.2944 | agree +0.543 | a*_q05 -0.00459 | a*_q50 0.00157 | dV>=0 0.358 | beta 0.1000
   bell | direct viol 0.507 | direct dV>=0 0.465 | d_mean +0.00075 | d_std 0.02918 | d_q95 0.06071
@@ -1013,7 +1013,7 @@ Policy -0.0800 | Value 0.0119 | KL 0.01327 | CF 0.1501 | Std 0.1100 | |a| 0.0264
 Placing Sensors
 [Episode 316/400] Steps: 720 | Reward:   -5.29 | Battery:  54.07% | Loss: 
 Placing Sensors
-Policy -0.0098 | Value 0.0073 | KL 0.01015 | CF 0.1259 | Std 0.1100 | |a| 0.0338 | EV +0.884 | AE nan | Alpha 0.0100 | MB 24/24
+Policy -0.0098 | Value 0.0073 | KL 0.01015 | CF 0.1259 | Std 0.1100 | |a| 0.0338 | EV +0.884 | Rsd 0.417 | Res 0.145 | AE nan | Alpha 0.0100 | MB 24/24
   cert | viol 0.083 | dV -0.213738 | V 0.3017 | inball 0.294 | a*_q05 0.00219 | a*_q50 0.02016 | dV>=0 0.006 | n=150 | a_used 0.00283 -> 0.00276
   crit | n=1 | viol 0.509 | V 0.7954 | Vmin 0.2765 | agree +0.333 | a*_q05 -0.00679 | a*_q50 0.00273 | dV>=0 0.364 | beta 0.1000
   bell | direct viol 0.528 | direct dV>=0 0.483 | d_mean -0.00060 | d_std 0.02775 | d_q95 0.05458
@@ -1021,7 +1021,7 @@ Policy -0.0098 | Value 0.0073 | KL 0.01015 | CF 0.1259 | Std 0.1100 | |a| 0.0338
 Placing Sensors
 [Episode 318/400] Steps: 720 | Reward:   -3.35 | Battery:  84.09% | Loss: 
 Placing Sensors
-Policy -0.0080 | Value 0.0073 | KL 0.00684 | CF 0.0863 | Std 0.1100 | |a| 0.0243 | EV +0.864 | AE nan | Alpha 0.0100 | MB 24/24
+Policy -0.0080 | Value 0.0073 | KL 0.00684 | CF 0.0863 | Std 0.1100 | |a| 0.0243 | EV +0.864 | Rsd 0.296 | Res 0.137 | AE nan | Alpha 0.0100 | MB 24/24
   cert | viol 0.000 | dV -0.240823 | V 0.2764 | inball 0.631 | a*_q05 0.00617 | a*_q50 0.03562 | dV>=0 0.000 | n=150 | a_used 0.00276 -> 0.00291
   crit | n=1 | viol 0.512 | V 0.6329 | Vmin 0.2941 | agree +0.486 | a*_q05 -0.00781 | a*_q50 0.00266 | dV>=0 0.357 | beta 0.1000
   bell | direct viol 0.479 | direct dV>=0 0.431 | d_mean +0.00109 | d_std 0.02565 | d_q95 0.05232
@@ -1029,7 +1029,7 @@ Policy -0.0080 | Value 0.0073 | KL 0.00684 | CF 0.0863 | Std 0.1100 | |a| 0.0243
 Placing Sensors
 [Episode 320/400] Steps: 720 | Reward:   -4.27 | Battery:  76.84% | Loss: 
 Placing Sensors
-Policy -0.0062 | Value 0.0038 | KL 0.01142 | CF 0.1220 | Std 0.1100 | |a| 0.0236 | EV +0.953 | AE nan | Alpha 0.0100 | MB 24/24
+Policy -0.0062 | Value 0.0038 | KL 0.01142 | CF 0.1220 | Std 0.1100 | |a| 0.0236 | EV +0.953 | Rsd 0.349 | Res 0.081 | AE nan | Alpha 0.0100 | MB 24/24
   cert | viol 0.000 | dV -0.263520 | V 0.3044 | inball 0.525 | a*_q05 0.00598 | a*_q50 0.03052 | dV>=0 0.000 | n=150 | a_used 0.00291 -> 0.00300
   crit | n=1 | viol 0.577 | V 0.7023 | Vmin 0.2899 | agree +0.454 | a*_q05 -0.00550 | a*_q50 0.00190 | dV>=0 0.391 | beta 0.1000
   bell | direct viol 0.517 | direct dV>=0 0.471 | d_mean +0.00055 | d_std 0.02408 | d_q95 0.04545
@@ -1037,7 +1037,7 @@ Policy -0.0062 | Value 0.0038 | KL 0.01142 | CF 0.1220 | Std 0.1100 | |a| 0.0236
 Placing Sensors
 [Episode 322/400] Steps: 720 | Reward:   -4.86 | Battery:  79.72% | Loss: 
 Placing Sensors
-Policy -0.0070 | Value 0.0051 | KL 0.01101 | CF 0.1425 | Std 0.1100 | |a| 0.0425 | EV +0.926 | AE nan | Alpha 0.0100 | MB 24/24
+Policy -0.0070 | Value 0.0051 | KL 0.01101 | CF 0.1425 | Std 0.1100 | |a| 0.0425 | EV +0.926 | Rsd 0.338 | Res 0.095 | AE nan | Alpha 0.0100 | MB 24/24
   cert | viol 0.000 | dV -0.269355 | V 0.3122 | inball 0.548 | a*_q05 0.00807 | a*_q50 0.03261 | dV>=0 0.000 | n=150 | a_used 0.00300 -> 0.00315
   crit | n=1 | viol 0.351 | V 0.6160 | Vmin 0.2379 | agree +0.593 | a*_q05 -0.00620 | a*_q50 0.00541 | dV>=0 0.242 | beta 0.1000
   bell | direct viol 0.472 | direct dV>=0 0.426 | d_mean +0.00047 | d_std 0.02023 | d_q95 0.04187
@@ -1045,7 +1045,7 @@ Policy -0.0070 | Value 0.0051 | KL 0.01101 | CF 0.1425 | Std 0.1100 | |a| 0.0425
 Placing Sensors
 [Episode 324/400] Steps: 720 | Reward:   -3.45 | Battery:  84.85% | Loss: 
 Placing Sensors
-Policy -0.0128 | Value 0.0052 | KL 0.01045 | CF 0.1319 | Std 0.1100 | |a| 0.0265 | EV +0.936 | AE nan | Alpha 0.0100 | MB 24/24
+Policy -0.0128 | Value 0.0052 | KL 0.01045 | CF 0.1319 | Std 0.1100 | |a| 0.0265 | EV +0.936 | Rsd 0.359 | Res 0.108 | AE nan | Alpha 0.0100 | MB 24/24
   cert | viol 0.002 | dV -0.251239 | V 0.2910 | inball 0.603 | a*_q05 0.00582 | a*_q50 0.03397 | dV>=0 0.000 | n=150 | a_used 0.00315 -> 0.00320
   crit | n=1 | viol 0.617 | V 0.6058 | Vmin 0.2046 | agree +0.673 | a*_q05 -0.00725 | a*_q50 0.00212 | dV>=0 0.305 | beta 0.1000
   bell | direct viol 0.478 | direct dV>=0 0.429 | d_mean +0.00211 | d_std 0.02136 | d_q95 0.04215
@@ -1053,7 +1053,7 @@ Policy -0.0128 | Value 0.0052 | KL 0.01045 | CF 0.1319 | Std 0.1100 | |a| 0.0265
 Placing Sensors
 [Episode 326/400] Steps: 720 | Reward:   -3.68 | Battery:  74.22% | Loss: 
 Placing Sensors
-Policy 0.0037 | Value 0.0037 | KL 0.02135 | CF 0.2185 | Std 0.1099 | |a| 0.0278 | EV +0.955 | AE nan | Alpha 0.0100 | MB 24/24
+Policy 0.0037 | Value 0.0037 | KL 0.02135 | CF 0.2185 | Std 0.1099 | |a| 0.0278 | EV +0.955 | Rsd 0.351 | Res 0.079 | AE nan | Alpha 0.0100 | MB 24/24
   cert | viol 0.006 | dV -0.275536 | V 0.3095 | inball 0.544 | a*_q05 0.00680 | a*_q50 0.03551 | dV>=0 0.000 | n=150 | a_used 0.00320 -> 0.00337
   crit | n=1 | viol 0.552 | V 0.6224 | Vmin 0.2114 | agree +0.488 | a*_q05 -0.00648 | a*_q50 0.00186 | dV>=0 0.413 | beta 0.1000
   bell | direct viol 0.501 | direct dV>=0 0.460 | d_mean +0.00075 | d_std 0.03265 | d_q95 0.06874
@@ -1063,7 +1063,7 @@ Placing Sensors
 Placing Sensors
 [Episode 329/400] Steps: 720 | Reward:   -3.92 | Battery:  78.50% | Loss: 
 Placing Sensors
-Policy -0.0045 | Value 0.0150 | KL 0.01338 | CF 0.1344 | Std 0.1100 | |a| 0.0296 | EV +0.830 | AE nan | Alpha 0.0100 | MB 24/24
+Policy -0.0045 | Value 0.0150 | KL 0.01338 | CF 0.1344 | Std 0.1100 | |a| 0.0296 | EV +0.830 | Rsd 0.443 | Res 0.184 | AE nan | Alpha 0.0100 | MB 24/24
   cert | viol 0.000 | dV -0.237863 | V 0.2854 | inball 0.533 | a*_q05 0.00486 | a*_q50 0.03245 | dV>=0 0.000 | n=150 | a_used 0.00337 -> 0.00350
   crit | n=1 | viol 0.657 | V 0.6746 | Vmin 0.2299 | agree +0.746 | a*_q05 -0.00690 | a*_q50 0.00167 | dV>=0 0.352 | beta 0.1000
   bell | direct viol 0.500 | direct dV>=0 0.438 | d_mean +0.00175 | d_std 0.03102 | d_q95 0.06142
@@ -1071,7 +1071,7 @@ Policy -0.0045 | Value 0.0150 | KL 0.01338 | CF 0.1344 | Std 0.1100 | |a| 0.0296
 Placing Sensors
 [Episode 331/400] Steps: 720 | Reward:   -5.72 | Battery:  72.96% | Loss: 
 Placing Sensors
-Policy -0.0062 | Value 0.0053 | KL 0.01044 | CF 0.1390 | Std 0.1100 | |a| 0.0320 | EV +0.951 | AE nan | Alpha 0.0100 | MB 24/24
+Policy -0.0062 | Value 0.0053 | KL 0.01044 | CF 0.1390 | Std 0.1100 | |a| 0.0320 | EV +0.951 | Rsd 0.446 | Res 0.102 | AE nan | Alpha 0.0100 | MB 24/24
   cert | viol 0.061 | dV -0.284693 | V 0.3650 | inball 0.397 | a*_q05 0.00304 | a*_q50 0.02767 | dV>=0 0.022 | n=150 | a_used 0.00350 -> 0.00333
   crit | n=1 | viol 0.414 | V 0.7304 | Vmin 0.2302 | agree +0.465 | a*_q05 -0.00525 | a*_q50 0.00469 | dV>=0 0.303 | beta 0.1000
   bell | direct viol 0.512 | direct dV>=0 0.464 | d_mean -0.00032 | d_std 0.03482 | d_q95 0.07153
@@ -1079,7 +1079,7 @@ Policy -0.0062 | Value 0.0053 | KL 0.01044 | CF 0.1390 | Std 0.1100 | |a| 0.0320
 Placing Sensors
 [Episode 333/400] Steps: 720 | Reward:   -4.05 | Battery:  75.29% | Loss: 
 Placing Sensors
-Policy -0.0105 | Value 0.0045 | KL 0.00902 | CF 0.1154 | Std 0.1099 | |a| 0.0234 | EV +0.923 | AE nan | Alpha 0.0100 | MB 24/24
+Policy -0.0105 | Value 0.0045 | KL 0.00902 | CF 0.1154 | Std 0.1099 | |a| 0.0234 | EV +0.923 | Rsd 0.317 | Res 0.090 | AE nan | Alpha 0.0100 | MB 24/24
   cert | viol 0.013 | dV -0.213943 | V 0.2529 | inball 0.540 | a*_q05 0.00553 | a*_q50 0.03030 | dV>=0 0.000 | n=150 | a_used 0.00333 -> 0.00340
   crit | n=1 | viol 0.599 | V 0.6209 | Vmin 0.2658 | agree +0.364 | a*_q05 -0.00654 | a*_q50 0.00211 | dV>=0 0.372 | beta 0.1000
   bell | direct viol 0.475 | direct dV>=0 0.438 | d_mean +0.00046 | d_std 0.03374 | d_q95 0.06647
@@ -1089,7 +1089,7 @@ Placing Sensors
 Placing Sensors
 [Episode 336/400] Steps: 720 | Reward:   -3.76 | Battery:  63.79% | Loss: 
 Placing Sensors
-Policy -0.0100 | Value 0.0130 | KL 0.00963 | CF 0.1067 | Std 0.1099 | |a| 0.0307 | EV +0.884 | AE nan | Alpha 0.0100 | MB 24/24
+Policy -0.0100 | Value 0.0130 | KL 0.00963 | CF 0.1067 | Std 0.1099 | |a| 0.0307 | EV +0.884 | Rsd 0.475 | Res 0.162 | AE nan | Alpha 0.0100 | MB 24/24
   cert | viol 0.037 | dV -0.272595 | V 0.3243 | inball 0.506 | a*_q05 0.00482 | a*_q50 0.03002 | dV>=0 0.000 | n=150 | a_used 0.00340 -> 0.00346
   crit | n=1 | viol 0.523 | V 0.7133 | Vmin 0.2385 | agree +0.675 | a*_q05 -0.00479 | a*_q50 0.00321 | dV>=0 0.226 | beta 0.1000
   bell | direct viol 0.492 | direct dV>=0 0.444 | d_mean +0.00024 | d_std 0.02787 | d_q95 0.05929
@@ -1097,7 +1097,7 @@ Policy -0.0100 | Value 0.0130 | KL 0.00963 | CF 0.1067 | Std 0.1099 | |a| 0.0307
 Placing Sensors
 [Episode 338/400] Steps: 720 | Reward:   -3.81 | Battery:  71.18% | Loss: 
 Placing Sensors
-Policy -0.0058 | Value 0.0049 | KL 0.01415 | CF 0.1698 | Std 0.1099 | |a| 0.0312 | EV +0.914 | AE nan | Alpha 0.0100 | MB 24/24
+Policy -0.0058 | Value 0.0049 | KL 0.01415 | CF 0.1698 | Std 0.1099 | |a| 0.0312 | EV +0.914 | Rsd 0.336 | Res 0.108 | AE nan | Alpha 0.0100 | MB 24/24
   cert | viol 0.000 | dV -0.266409 | V 0.2840 | inball 0.629 | a*_q05 0.01063 | a*_q50 0.03858 | dV>=0 0.000 | n=150 | a_used 0.00346 -> 0.00363
   crit | n=1 | viol 0.607 | V 0.5858 | Vmin 0.2365 | agree +0.483 | a*_q05 -0.00742 | a*_q50 0.00206 | dV>=0 0.371 | beta 0.1000
   bell | direct viol 0.478 | direct dV>=0 0.432 | d_mean +0.00217 | d_std 0.02728 | d_q95 0.05381
@@ -1107,7 +1107,7 @@ Placing Sensors
 Placing Sensors
 [Episode 341/400] Steps: 720 | Reward:   -3.95 | Battery:  78.61% | Loss: 
 Placing Sensors
-Policy -0.0030 | Value 0.0121 | KL 0.01040 | CF 0.1176 | Std 0.1098 | |a| 0.0315 | EV +0.854 | AE nan | Alpha 0.0100 | MB 24/24
+Policy -0.0030 | Value 0.0121 | KL 0.01040 | CF 0.1176 | Std 0.1098 | |a| 0.0315 | EV +0.854 | Rsd 0.436 | Res 0.167 | AE nan | Alpha 0.0100 | MB 24/24
   cert | viol 0.082 | dV -0.248291 | V 0.3260 | inball 0.465 | a*_q05 0.00207 | a*_q50 0.02886 | dV>=0 0.021 | n=150 | a_used 0.00363 -> 0.00360
   crit | n=1 | viol 0.525 | V 0.7285 | Vmin 0.2735 | agree +0.653 | a*_q05 -0.00749 | a*_q50 0.00335 | dV>=0 0.284 | beta 0.1000
   bell | direct viol 0.521 | direct dV>=0 0.474 | d_mean -0.00078 | d_std 0.03588 | d_q95 0.07572
@@ -1115,7 +1115,7 @@ Policy -0.0030 | Value 0.0121 | KL 0.01040 | CF 0.1176 | Std 0.1098 | |a| 0.0315
 Placing Sensors
 [Episode 343/400] Steps: 720 | Reward:   -4.59 | Battery:  73.59% | Loss: 
 Placing Sensors
-Policy -0.0110 | Value 0.0052 | KL 0.01450 | CF 0.1563 | Std 0.1098 | |a| 0.0299 | EV +0.900 | AE nan | Alpha 0.0100 | MB 24/24
+Policy -0.0110 | Value 0.0052 | KL 0.01450 | CF 0.1563 | Std 0.1098 | |a| 0.0299 | EV +0.900 | Rsd 0.326 | Res 0.105 | AE nan | Alpha 0.0100 | MB 24/24
   cert | viol 0.030 | dV -0.246743 | V 0.3054 | inball 0.446 | a*_q05 0.00433 | a*_q50 0.02786 | dV>=0 0.000 | n=150 | a_used 0.00360 -> 0.00367
   crit | n=1 | viol 0.540 | V 0.6542 | Vmin 0.2423 | agree +0.536 | a*_q05 -0.00666 | a*_q50 0.00317 | dV>=0 0.319 | beta 0.1000
   bell | direct viol 0.522 | direct dV>=0 0.460 | d_mean +0.00076 | d_std 0.02675 | d_q95 0.05208
@@ -1123,7 +1123,7 @@ Policy -0.0110 | Value 0.0052 | KL 0.01450 | CF 0.1563 | Std 0.1098 | |a| 0.0299
 Placing Sensors
 [Episode 345/400] Steps: 720 | Reward:   -6.27 | Battery:  75.18% | Loss: 
 Placing Sensors
-Policy -0.0051 | Value 0.0055 | KL 0.01199 | CF 0.1329 | Std 0.1098 | |a| 0.0348 | EV +0.923 | AE nan | Alpha 0.0100 | MB 24/24
+Policy -0.0051 | Value 0.0055 | KL 0.01199 | CF 0.1329 | Std 0.1098 | |a| 0.0348 | EV +0.923 | Rsd 0.377 | Res 0.105 | AE nan | Alpha 0.0100 | MB 24/24
   cert | viol 0.070 | dV -0.273858 | V 0.3568 | inball 0.458 | a*_q05 0.00304 | a*_q50 0.02654 | dV>=0 0.000 | n=150 | a_used 0.00367 -> 0.00366
   crit | n=1 | viol 0.416 | V 0.6666 | Vmin 0.2180 | agree +0.537 | a*_q05 -0.00614 | a*_q50 0.00465 | dV>=0 0.206 | beta 0.1000
   bell | direct viol 0.512 | direct dV>=0 0.454 | d_mean -0.00040 | d_std 0.03144 | d_q95 0.05427
@@ -1131,7 +1131,7 @@ Policy -0.0051 | Value 0.0055 | KL 0.01199 | CF 0.1329 | Std 0.1098 | |a| 0.0348
 Placing Sensors
 [Episode 347/400] Steps: 720 | Reward:   -3.10 | Battery:  75.77% | Loss: 
 Placing Sensors
-Policy -0.0103 | Value 0.0036 | KL 0.01197 | CF 0.1315 | Std 0.1098 | |a| 0.0306 | EV +0.943 | AE nan | Alpha 0.0100 | MB 24/24
+Policy -0.0103 | Value 0.0036 | KL 0.01197 | CF 0.1315 | Std 0.1098 | |a| 0.0306 | EV +0.943 | Rsd 0.308 | Res 0.083 | AE nan | Alpha 0.0100 | MB 24/24
   cert | viol 0.000 | dV -0.208608 | V 0.2300 | inball 0.557 | a*_q05 0.00929 | a*_q50 0.03483 | dV>=0 0.000 | n=150 | a_used 0.00366 -> 0.00382
   crit | n=1 | viol 0.660 | V 0.5667 | Vmin 0.2139 | agree +0.421 | a*_q05 -0.00706 | a*_q50 0.00110 | dV>=0 0.427 | beta 0.1000
   bell | direct viol 0.519 | direct dV>=0 0.471 | d_mean +0.00023 | d_std 0.02680 | d_q95 0.05300
@@ -1139,7 +1139,7 @@ Policy -0.0103 | Value 0.0036 | KL 0.01197 | CF 0.1315 | Std 0.1098 | |a| 0.0306
 Placing Sensors
 [Episode 349/400] Steps: 720 | Reward:   -3.88 | Battery:  79.26% | Loss: 
 Placing Sensors
-Policy -0.0097 | Value 0.0069 | KL 0.01472 | CF 0.0890 | Std 0.1098 | |a| 0.0335 | EV +0.845 | AE nan | Alpha 0.0100 | MB 24/24
+Policy -0.0097 | Value 0.0069 | KL 0.01472 | CF 0.0890 | Std 0.1098 | |a| 0.0335 | EV +0.845 | Rsd 0.298 | Res 0.117 | AE nan | Alpha 0.0100 | MB 24/24
   cert | viol 0.061 | dV -0.247599 | V 0.3148 | inball 0.511 | a*_q05 0.00380 | a*_q50 0.02691 | dV>=0 0.000 | n=150 | a_used 0.00382 -> 0.00378
   crit | n=1 | viol 0.439 | V 0.5873 | Vmin 0.2224 | agree +0.557 | a*_q05 -0.00619 | a*_q50 0.00498 | dV>=0 0.260 | beta 0.1000
   bell | direct viol 0.519 | direct dV>=0 0.474 | d_mean -0.00079 | d_std 0.02947 | d_q95 0.05860
@@ -1147,7 +1147,7 @@ Policy -0.0097 | Value 0.0069 | KL 0.01472 | CF 0.0890 | Std 0.1098 | |a| 0.0335
 Placing Sensors
 [Episode 351/400] Steps: 720 | Reward:   -3.24 | Battery:  83.46% | Loss: 
 Placing Sensors
-Policy -0.0084 | Value 0.0069 | KL 0.01812 | CF 0.1577 | Std 0.1098 | |a| 0.0406 | EV +0.917 | AE nan | Alpha 0.0100 | MB 24/24
+Policy -0.0084 | Value 0.0069 | KL 0.01812 | CF 0.1577 | Std 0.1098 | |a| 0.0406 | EV +0.917 | Rsd 0.308 | Res 0.109 | AE nan | Alpha 0.0100 | MB 24/24
   cert | viol 0.053 | dV -0.245473 | V 0.2808 | inball 0.603 | a*_q05 0.00437 | a*_q50 0.03673 | dV>=0 0.000 | n=150 | a_used 0.00378 -> 0.00386
   crit | n=1 | viol 0.613 | V 0.6030 | Vmin 0.2250 | agree +0.470 | a*_q05 -0.00675 | a*_q50 0.00239 | dV>=0 0.348 | beta 0.1000
   bell | direct viol 0.501 | direct dV>=0 0.456 | d_mean +0.00044 | d_std 0.03432 | d_q95 0.07084
@@ -1155,7 +1155,7 @@ Policy -0.0084 | Value 0.0069 | KL 0.01812 | CF 0.1577 | Std 0.1098 | |a| 0.0406
 Placing Sensors
 [Episode 353/400] Steps: 720 | Reward:   -4.30 | Battery:  77.85% | Loss: 
 Placing Sensors
-Policy -0.0058 | Value 0.0031 | KL 0.01728 | CF 0.1842 | Std 0.1098 | |a| 0.0359 | EV +0.967 | AE nan | Alpha 0.0100 | MB 24/24
+Policy -0.0058 | Value 0.0031 | KL 0.01728 | CF 0.1842 | Std 0.1098 | |a| 0.0359 | EV +0.967 | Rsd 0.375 | Res 0.071 | AE nan | Alpha 0.0100 | MB 24/24
   cert | viol 0.082 | dV -0.302062 | V 0.3659 | inball 0.582 | a*_q05 0.00240 | a*_q50 0.03468 | dV>=0 0.000 | n=150 | a_used 0.00386 -> 0.00379
   crit | n=1 | viol 0.367 | V 0.5365 | Vmin 0.1473 | agree +0.608 | a*_q05 -0.00656 | a*_q50 0.00560 | dV>=0 0.236 | beta 0.1000
   bell | direct viol 0.502 | direct dV>=0 0.460 | d_mean +0.00044 | d_std 0.03109 | d_q95 0.05899
@@ -1163,7 +1163,7 @@ Policy -0.0058 | Value 0.0031 | KL 0.01728 | CF 0.1842 | Std 0.1098 | |a| 0.0359
 Placing Sensors
 [Episode 355/400] Steps: 720 | Reward:   -4.05 | Battery:  73.44% | Loss: 
 Placing Sensors
-Policy 0.0174 | Value 0.0039 | KL 0.02552 | CF 0.2113 | Std 0.1098 | |a| 0.0359 | EV +0.970 | AE nan | Alpha 0.0100 | MB 12/24
+Policy 0.0174 | Value 0.0039 | KL 0.02552 | CF 0.2113 | Std 0.1098 | |a| 0.0359 | EV +0.970 | Rsd 0.377 | Res 0.076 | AE nan | Alpha 0.0100 | MB 12/24
   cert | viol 0.000 | dV -0.281978 | V 0.3181 | inball 0.578 | a*_q05 0.00675 | a*_q50 0.03319 | dV>=0 0.000 | n=150 | a_used 0.00379 -> 0.00389
   crit | n=1 | viol 0.540 | V 0.5549 | Vmin 0.1402 | agree +0.681 | a*_q05 -0.00627 | a*_q50 0.00329 | dV>=0 0.250 | beta 0.1000
   bell | direct viol 0.480 | direct dV>=0 0.442 | d_mean +0.00099 | d_std 0.02836 | d_q95 0.05779
@@ -1171,7 +1171,7 @@ Policy 0.0174 | Value 0.0039 | KL 0.02552 | CF 0.2113 | Std 0.1098 | |a| 0.0359 
 Placing Sensors
 [Episode 357/400] Steps: 720 | Reward:   -4.71 | Battery:  71.85% | Loss: 
 Placing Sensors
-Policy -0.0041 | Value 0.0035 | KL 0.01169 | CF 0.1308 | Std 0.1098 | |a| 0.0310 | EV +0.934 | AE nan | Alpha 0.0100 | MB 24/24
+Policy -0.0041 | Value 0.0035 | KL 0.01169 | CF 0.1308 | Std 0.1098 | |a| 0.0310 | EV +0.934 | Rsd 0.287 | Res 0.078 | AE nan | Alpha 0.0100 | MB 24/24
   cert | viol 0.074 | dV -0.221275 | V 0.2728 | inball 0.501 | a*_q05 0.00340 | a*_q50 0.02986 | dV>=0 0.000 | n=150 | a_used 0.00389 -> 0.00394
   crit | n=1 | viol 0.446 | V 0.5484 | Vmin 0.1935 | agree +0.408 | a*_q05 -0.00582 | a*_q50 0.00465 | dV>=0 0.238 | beta 0.1000
   bell | direct viol 0.509 | direct dV>=0 0.457 | d_mean -0.00066 | d_std 0.02143 | d_q95 0.04518
@@ -1179,7 +1179,7 @@ Policy -0.0041 | Value 0.0035 | KL 0.01169 | CF 0.1308 | Std 0.1098 | |a| 0.0310
 Placing Sensors
 [Episode 359/400] Steps: 720 | Reward:   -3.77 | Battery:  86.01% | Loss: 
 Placing Sensors
-Policy -0.0111 | Value 0.0032 | KL 0.01360 | CF 0.1140 | Std 0.1097 | |a| 0.0336 | EV +0.937 | AE nan | Alpha 0.0100 | MB 24/24
+Policy -0.0111 | Value 0.0032 | KL 0.01360 | CF 0.1140 | Std 0.1097 | |a| 0.0336 | EV +0.937 | Rsd 0.275 | Res 0.069 | AE nan | Alpha 0.0100 | MB 24/24
   cert | viol 0.000 | dV -0.236985 | V 0.2736 | inball 0.599 | a*_q05 0.00587 | a*_q50 0.03255 | dV>=0 0.000 | n=150 | a_used 0.00394 -> 0.00401
   crit | n=1 | viol 0.318 | V 0.4931 | Vmin 0.1774 | agree +0.508 | a*_q05 -0.00537 | a*_q50 0.00629 | dV>=0 0.161 | beta 0.1000
   bell | direct viol 0.497 | direct dV>=0 0.449 | d_mean -0.00011 | d_std 0.02362 | d_q95 0.04796
@@ -1187,7 +1187,7 @@ Policy -0.0111 | Value 0.0032 | KL 0.01360 | CF 0.1140 | Std 0.1097 | |a| 0.0336
 Placing Sensors
 [Episode 361/400] Steps: 720 | Reward:   -2.27 | Battery:  85.10% | Loss: 
 Placing Sensors
-Policy -0.0097 | Value 0.0024 | KL 0.00957 | CF 0.0882 | Std 0.1097 | |a| 0.0302 | EV +0.970 | AE nan | Alpha 0.0100 | MB 24/24
+Policy -0.0097 | Value 0.0024 | KL 0.00957 | CF 0.0882 | Std 0.1097 | |a| 0.0302 | EV +0.970 | Rsd 0.298 | Res 0.061 | AE nan | Alpha 0.0100 | MB 24/24
   cert | viol 0.047 | dV -0.237510 | V 0.2688 | inball 0.632 | a*_q05 0.00527 | a*_q50 0.03487 | dV>=0 0.000 | n=150 | a_used 0.00401 -> 0.00399
   crit | n=1 | viol 0.571 | V 0.4836 | Vmin 0.1398 | agree +0.505 | a*_q05 -0.00636 | a*_q50 0.00320 | dV>=0 0.277 | beta 0.1000
   bell | direct viol 0.485 | direct dV>=0 0.440 | d_mean +0.00049 | d_std 0.02150 | d_q95 0.04286
@@ -1195,7 +1195,7 @@ Policy -0.0097 | Value 0.0024 | KL 0.00957 | CF 0.0882 | Std 0.1097 | |a| 0.0302
 Placing Sensors
 [Episode 363/400] Steps: 720 | Reward:   -3.40 | Battery:  76.05% | Loss: 
 Placing Sensors
-Policy -0.0098 | Value 0.0033 | KL 0.01852 | CF 0.1392 | Std 0.1097 | |a| 0.0329 | EV +0.954 | AE nan | Alpha 0.0100 | MB 24/24
+Policy -0.0098 | Value 0.0033 | KL 0.01852 | CF 0.1392 | Std 0.1097 | |a| 0.0329 | EV +0.954 | Rsd 0.298 | Res 0.071 | AE nan | Alpha 0.0100 | MB 24/24
   cert | viol 0.000 | dV -0.301648 | V 0.3232 | inball 0.634 | a*_q05 0.00996 | a*_q50 0.03941 | dV>=0 0.000 | n=150 | a_used 0.00399 -> 0.00418
   crit | n=1 | viol 0.459 | V 0.4895 | Vmin 0.1623 | agree +0.567 | a*_q05 -0.00604 | a*_q50 0.00463 | dV>=0 0.326 | beta 0.1000
   bell | direct viol 0.493 | direct dV>=0 0.436 | d_mean +0.00099 | d_std 0.02393 | d_q95 0.04875
@@ -1203,7 +1203,7 @@ Policy -0.0098 | Value 0.0033 | KL 0.01852 | CF 0.1392 | Std 0.1097 | |a| 0.0329
 Placing Sensors
 [Episode 365/400] Steps: 720 | Reward:   -2.63 | Battery:  74.82% | Loss: 
 Placing Sensors
-Policy -0.0086 | Value 0.0037 | KL 0.01375 | CF 0.1358 | Std 0.1097 | |a| 0.0375 | EV +0.948 | AE nan | Alpha 0.0100 | MB 24/24
+Policy -0.0086 | Value 0.0037 | KL 0.01375 | CF 0.1358 | Std 0.1097 | |a| 0.0375 | EV +0.948 | Rsd 0.302 | Res 0.072 | AE nan | Alpha 0.0100 | MB 24/24
   cert | viol 0.000 | dV -0.267253 | V 0.2837 | inball 0.651 | a*_q05 0.01038 | a*_q50 0.04007 | dV>=0 0.000 | n=150 | a_used 0.00418 -> 0.00436
   crit | n=1 | viol 0.541 | V 0.4573 | Vmin 0.1361 | agree +0.492 | a*_q05 -0.00605 | a*_q50 0.00364 | dV>=0 0.322 | beta 0.1000
   bell | direct viol 0.487 | direct dV>=0 0.450 | d_mean +0.00044 | d_std 0.02813 | d_q95 0.05564
@@ -1211,7 +1211,7 @@ Policy -0.0086 | Value 0.0037 | KL 0.01375 | CF 0.1358 | Std 0.1097 | |a| 0.0375
 Placing Sensors
 [Episode 367/400] Steps: 720 | Reward:   -3.24 | Battery:  86.74% | Loss: 
 Placing Sensors
-Policy -0.0141 | Value 0.0031 | KL 0.01454 | CF 0.1537 | Std 0.1097 | |a| 0.0336 | EV +0.954 | AE nan | Alpha 0.0100 | MB 24/24
+Policy -0.0141 | Value 0.0031 | KL 0.01454 | CF 0.1537 | Std 0.1097 | |a| 0.0336 | EV +0.954 | Rsd 0.355 | Res 0.076 | AE nan | Alpha 0.0100 | MB 24/24
   cert | viol 0.109 | dV -0.300891 | V 0.3829 | inball 0.562 | a*_q05 0.00140 | a*_q50 0.03336 | dV>=0 0.022 | n=150 | a_used 0.00436 -> 0.00422
   crit | n=1 | viol 0.390 | V 0.5491 | Vmin 0.1324 | agree +0.616 | a*_q05 -0.00587 | a*_q50 0.00563 | dV>=0 0.230 | beta 0.1000
   bell | direct viol 0.520 | direct dV>=0 0.462 | d_mean -0.00138 | d_std 0.03312 | d_q95 0.06690
@@ -1219,7 +1219,7 @@ Policy -0.0141 | Value 0.0031 | KL 0.01454 | CF 0.1537 | Std 0.1097 | |a| 0.0336
 Placing Sensors
 [Episode 369/400] Steps: 720 | Reward:   -4.75 | Battery:  79.31% | Loss: 
 Placing Sensors
-Policy -0.0130 | Value 0.0064 | KL 0.01702 | CF 0.1417 | Std 0.1097 | |a| 0.0386 | EV +0.825 | AE nan | Alpha 0.0100 | MB 24/24
+Policy -0.0130 | Value 0.0064 | KL 0.01702 | CF 0.1417 | Std 0.1097 | |a| 0.0386 | EV +0.825 | Rsd 0.254 | Res 0.109 | AE nan | Alpha 0.0100 | MB 24/24
   cert | viol 0.075 | dV -0.229287 | V 0.2812 | inball 0.540 | a*_q05 0.00306 | a*_q50 0.03322 | dV>=0 0.004 | n=150 | a_used 0.00422 -> 0.00427
   crit | n=1 | viol 0.641 | V 0.5400 | Vmin 0.1897 | agree +0.534 | a*_q05 -0.00770 | a*_q50 0.00206 | dV>=0 0.366 | beta 0.1000
   bell | direct viol 0.505 | direct dV>=0 0.452 | d_mean +0.00071 | d_std 0.02946 | d_q95 0.06129
@@ -1227,7 +1227,7 @@ Policy -0.0130 | Value 0.0064 | KL 0.01702 | CF 0.1417 | Std 0.1097 | |a| 0.0386
 Placing Sensors
 [Episode 371/400] Steps: 720 | Reward:   -3.97 | Battery:  78.38% | Loss: 
 Placing Sensors
-Policy -0.0142 | Value 0.0044 | KL 0.01043 | CF 0.1067 | Std 0.1097 | |a| 0.0420 | EV +0.912 | AE nan | Alpha 0.0100 | MB 24/24
+Policy -0.0142 | Value 0.0044 | KL 0.01043 | CF 0.1067 | Std 0.1097 | |a| 0.0420 | EV +0.912 | Rsd 0.334 | Res 0.100 | AE nan | Alpha 0.0100 | MB 24/24
   cert | viol 0.092 | dV -0.275782 | V 0.3403 | inball 0.547 | a*_q05 0.00311 | a*_q50 0.03072 | dV>=0 0.000 | n=150 | a_used 0.00427 -> 0.00416
   crit | n=1 | viol 0.465 | V 0.5773 | Vmin 0.1882 | agree +0.609 | a*_q05 -0.00486 | a*_q50 0.00473 | dV>=0 0.197 | beta 0.1000
   bell | direct viol 0.492 | direct dV>=0 0.442 | d_mean -0.00038 | d_std 0.03228 | d_q95 0.06572
@@ -1235,7 +1235,7 @@ Policy -0.0142 | Value 0.0044 | KL 0.01043 | CF 0.1067 | Std 0.1097 | |a| 0.0420
 Placing Sensors
 [Episode 373/400] Steps: 720 | Reward:   -2.26 | Battery:  75.47% | Loss: 
 Placing Sensors
-Policy -0.0128 | Value 0.0035 | KL 0.00820 | CF 0.0954 | Std 0.1097 | |a| 0.0333 | EV +0.947 | AE nan | Alpha 0.0100 | MB 24/24
+Policy -0.0128 | Value 0.0035 | KL 0.00820 | CF 0.0954 | Std 0.1097 | |a| 0.0333 | EV +0.947 | Rsd 0.320 | Res 0.074 | AE nan | Alpha 0.0100 | MB 24/24
   cert | viol 0.014 | dV -0.231229 | V 0.2737 | inball 0.550 | a*_q05 0.00511 | a*_q50 0.03366 | dV>=0 0.000 | n=150 | a_used 0.00416 -> 0.00418
   crit | n=1 | viol 0.536 | V 0.4946 | Vmin 0.1463 | agree +0.441 | a*_q05 -0.00728 | a*_q50 0.00365 | dV>=0 0.300 | beta 0.1000
   bell | direct viol 0.496 | direct dV>=0 0.440 | d_mean -0.00000 | d_std 0.02346 | d_q95 0.04990
@@ -1243,7 +1243,7 @@ Policy -0.0128 | Value 0.0035 | KL 0.00820 | CF 0.0954 | Std 0.1097 | |a| 0.0333
 Placing Sensors
 [Episode 375/400] Steps: 720 | Reward:   -2.59 | Battery:  82.42% | Loss: 
 Placing Sensors
-Policy -0.0084 | Value 0.0060 | KL 0.00994 | CF 0.1175 | Std 0.1096 | |a| 0.0355 | EV +0.883 | AE nan | Alpha 0.0100 | MB 24/24
+Policy -0.0084 | Value 0.0060 | KL 0.00994 | CF 0.1175 | Std 0.1096 | |a| 0.0355 | EV +0.883 | Rsd 0.297 | Res 0.105 | AE nan | Alpha 0.0100 | MB 24/24
   cert | viol 0.000 | dV -0.224083 | V 0.2348 | inball 0.664 | a*_q05 0.01298 | a*_q50 0.03960 | dV>=0 0.000 | n=150 | a_used 0.00418 -> 0.00437
   crit | n=1 | viol 0.708 | V 0.4609 | Vmin 0.1740 | agree +0.367 | a*_q05 -0.00730 | a*_q50 0.00091 | dV>=0 0.425 | beta 0.1000
   bell | direct viol 0.499 | direct dV>=0 0.461 | d_mean +0.00140 | d_std 0.02736 | d_q95 0.05717
@@ -1251,7 +1251,7 @@ Policy -0.0084 | Value 0.0060 | KL 0.00994 | CF 0.1175 | Std 0.1096 | |a| 0.0355
 Placing Sensors
 [Episode 377/400] Steps: 720 | Reward:   -3.91 | Battery:  73.36% | Loss: 
 Placing Sensors
-Policy -0.0066 | Value 0.0037 | KL 0.00896 | CF 0.0962 | Std 0.1096 | |a| 0.0450 | EV +0.907 | AE nan | Alpha 0.0100 | MB 24/24
+Policy -0.0066 | Value 0.0037 | KL 0.00896 | CF 0.0962 | Std 0.1096 | |a| 0.0450 | EV +0.907 | Rsd 0.288 | Res 0.088 | AE nan | Alpha 0.0100 | MB 24/24
   cert | viol 0.002 | dV -0.223536 | V 0.2461 | inball 0.580 | a*_q05 0.00858 | a*_q50 0.03385 | dV>=0 0.000 | n=150 | a_used 0.00437 -> 0.00449
   crit | n=1 | viol 0.654 | V 0.5081 | Vmin 0.1682 | agree +0.563 | a*_q05 -0.00598 | a*_q50 0.00178 | dV>=0 0.393 | beta 0.1000
   bell | direct viol 0.501 | direct dV>=0 0.451 | d_mean +0.00063 | d_std 0.02791 | d_q95 0.05937
@@ -1259,7 +1259,7 @@ Policy -0.0066 | Value 0.0037 | KL 0.00896 | CF 0.0962 | Std 0.1096 | |a| 0.0450
 Placing Sensors
 [Episode 379/400] Steps: 720 | Reward:   -3.65 | Battery:  77.11% | Loss: 
 Placing Sensors
-Policy -0.0110 | Value 0.0018 | KL 0.00902 | CF 0.0728 | Std 0.1096 | |a| 0.0365 | EV +0.974 | AE nan | Alpha 0.0100 | MB 24/24
+Policy -0.0110 | Value 0.0018 | KL 0.00902 | CF 0.0728 | Std 0.1096 | |a| 0.0365 | EV +0.974 | Rsd 0.324 | Res 0.052 | AE nan | Alpha 0.0100 | MB 24/24
   cert | viol 0.008 | dV -0.250347 | V 0.2841 | inball 0.568 | a*_q05 0.00633 | a*_q50 0.03518 | dV>=0 0.000 | n=150 | a_used 0.00449 -> 0.00454
   crit | n=1 | viol 0.338 | V 0.4515 | Vmin 0.1005 | agree +0.534 | a*_q05 -0.00536 | a*_q50 0.00725 | dV>=0 0.206 | beta 0.1000
   bell | direct viol 0.491 | direct dV>=0 0.435 | d_mean +0.00033 | d_std 0.02544 | d_q95 0.05488
@@ -1267,7 +1267,7 @@ Policy -0.0110 | Value 0.0018 | KL 0.00902 | CF 0.0728 | Std 0.1096 | |a| 0.0365
 Placing Sensors
 [Episode 381/400] Steps: 720 | Reward:   -2.66 | Battery:  76.83% | Loss: 
 Placing Sensors
-Policy -0.0066 | Value 0.0030 | KL 0.01685 | CF 0.1870 | Std 0.1095 | |a| 0.0404 | EV +0.955 | AE nan | Alpha 0.0100 | MB 24/24
+Policy -0.0066 | Value 0.0030 | KL 0.01685 | CF 0.1870 | Std 0.1095 | |a| 0.0404 | EV +0.955 | Rsd 0.307 | Res 0.065 | AE nan | Alpha 0.0100 | MB 24/24
   cert | viol 0.093 | dV -0.236221 | V 0.2862 | inball 0.575 | a*_q05 0.00303 | a*_q50 0.03728 | dV>=0 0.000 | n=150 | a_used 0.00454 -> 0.00448
   crit | n=1 | viol 0.430 | V 0.4939 | Vmin 0.1276 | agree +0.477 | a*_q05 -0.00569 | a*_q50 0.00554 | dV>=0 0.244 | beta 0.1000
   bell | direct viol 0.488 | direct dV>=0 0.443 | d_mean -0.00024 | d_std 0.02489 | d_q95 0.04969
@@ -1275,7 +1275,7 @@ Policy -0.0066 | Value 0.0030 | KL 0.01685 | CF 0.1870 | Std 0.1095 | |a| 0.0404
 Placing Sensors
 [Episode 383/400] Steps: 720 | Reward:   -5.13 | Battery:  66.87% | Loss: 
 Placing Sensors
-Policy -0.0098 | Value 0.0044 | KL 0.00814 | CF 0.0803 | Std 0.1095 | |a| 0.0359 | EV +0.955 | AE nan | Alpha 0.0100 | MB 24/24
+Policy -0.0098 | Value 0.0044 | KL 0.00814 | CF 0.0803 | Std 0.1095 | |a| 0.0359 | EV +0.955 | Rsd 0.340 | Res 0.084 | AE nan | Alpha 0.0100 | MB 24/24
   cert | viol 0.026 | dV -0.292708 | V 0.3472 | inball 0.534 | a*_q05 0.00543 | a*_q50 0.03353 | dV>=0 0.000 | n=150 | a_used 0.00448 -> 0.00452
   crit | n=1 | viol 0.304 | V 0.5491 | Vmin 0.1668 | agree +0.460 | a*_q05 -0.00523 | a*_q50 0.00777 | dV>=0 0.201 | beta 0.1000
   bell | direct viol 0.482 | direct dV>=0 0.424 | d_mean -0.00135 | d_std 0.01998 | d_q95 0.03876
@@ -1283,7 +1283,7 @@ Policy -0.0098 | Value 0.0044 | KL 0.00814 | CF 0.0803 | Std 0.1095 | |a| 0.0359
 Placing Sensors
 [Episode 385/400] Steps: 720 | Reward:   -2.91 | Battery:  88.48% | Loss: 
 Placing Sensors
-Policy -0.0103 | Value 0.0029 | KL 0.01700 | CF 0.1495 | Std 0.1095 | |a| 0.0362 | EV +0.937 | AE nan | Alpha 0.0100 | MB 24/24
+Policy -0.0103 | Value 0.0029 | KL 0.01700 | CF 0.1495 | Std 0.1095 | |a| 0.0362 | EV +0.937 | Rsd 0.271 | Res 0.068 | AE nan | Alpha 0.0100 | MB 24/24
   cert | viol 0.062 | dV -0.275263 | V 0.3267 | inball 0.611 | a*_q05 0.00479 | a*_q50 0.03394 | dV>=0 0.000 | n=150 | a_used 0.00452 -> 0.00448
   crit | n=1 | viol 0.376 | V 0.4834 | Vmin 0.1530 | agree +0.632 | a*_q05 -0.00547 | a*_q50 0.00672 | dV>=0 0.210 | beta 0.1000
   bell | direct viol 0.472 | direct dV>=0 0.411 | d_mean -0.00034 | d_std 0.01982 | d_q95 0.04121
@@ -1291,7 +1291,7 @@ Policy -0.0103 | Value 0.0029 | KL 0.01700 | CF 0.1495 | Std 0.1095 | |a| 0.0362
 Placing Sensors
 [Episode 387/400] Steps: 720 | Reward:   -2.94 | Battery:  86.83% | Loss: 
 Placing Sensors
-Policy -0.0123 | Value 0.0024 | KL 0.00870 | CF 0.0882 | Std 0.1095 | |a| 0.0326 | EV +0.958 | AE nan | Alpha 0.0100 | MB 24/24
+Policy -0.0123 | Value 0.0024 | KL 0.00870 | CF 0.0882 | Std 0.1095 | |a| 0.0326 | EV +0.958 | Rsd 0.260 | Res 0.059 | AE nan | Alpha 0.0100 | MB 24/24
   cert | viol 0.049 | dV -0.220326 | V 0.2575 | inball 0.635 | a*_q05 0.00493 | a*_q50 0.03437 | dV>=0 0.000 | n=150 | a_used 0.00448 -> 0.00452
   crit | n=1 | viol 0.561 | V 0.3958 | Vmin 0.1160 | agree +0.707 | a*_q05 -0.00457 | a*_q50 0.00381 | dV>=0 0.188 | beta 0.1000
   bell | direct viol 0.471 | direct dV>=0 0.417 | d_mean +0.00059 | d_std 0.02274 | d_q95 0.04585
@@ -1299,7 +1299,7 @@ Policy -0.0123 | Value 0.0024 | KL 0.00870 | CF 0.0882 | Std 0.1095 | |a| 0.0326
 Placing Sensors
 [Episode 389/400] Steps: 720 | Reward:   -6.17 | Battery:  68.43% | Loss: 
 Placing Sensors
-Policy -0.0163 | Value 0.0063 | KL 0.01918 | CF 0.1884 | Std 0.1095 | |a| 0.0572 | EV +0.885 | AE nan | Alpha 0.0100 | MB 24/24
+Policy -0.0163 | Value 0.0063 | KL 0.01918 | CF 0.1884 | Std 0.1095 | |a| 0.0572 | EV +0.885 | Rsd 0.325 | Res 0.125 | AE nan | Alpha 0.0100 | MB 24/24
   cert | viol 0.107 | dV -0.225169 | V 0.3097 | inball 0.497 | a*_q05 0.00128 | a*_q50 0.02524 | dV>=0 0.036 | n=150 | a_used 0.00452 -> 0.00419
   crit | n=1 | viol 0.388 | V 0.5552 | Vmin 0.1740 | agree +0.502 | a*_q05 -0.00352 | a*_q50 0.00639 | dV>=0 0.167 | beta 0.1000
   bell | direct viol 0.506 | direct dV>=0 0.438 | d_mean -0.00168 | d_std 0.02104 | d_q95 0.04381
@@ -1307,7 +1307,7 @@ Policy -0.0163 | Value 0.0063 | KL 0.01918 | CF 0.1884 | Std 0.1095 | |a| 0.0572
 Placing Sensors
 [Episode 391/400] Steps: 720 | Reward:   -2.66 | Battery:  79.36% | Loss: 
 Placing Sensors
-Policy -0.0054 | Value 0.0034 | KL 0.01643 | CF 0.1272 | Std 0.1095 | |a| 0.0354 | EV +0.924 | AE nan | Alpha 0.0100 | MB 24/24
+Policy -0.0054 | Value 0.0034 | KL 0.01643 | CF 0.1272 | Std 0.1095 | |a| 0.0354 | EV +0.924 | Rsd 0.263 | Res 0.073 | AE nan | Alpha 0.0100 | MB 24/24
   cert | viol 0.000 | dV -0.236503 | V 0.2517 | inball 0.646 | a*_q05 0.01092 | a*_q50 0.03709 | dV>=0 0.000 | n=150 | a_used 0.00419 -> 0.00435
   crit | n=1 | viol 0.389 | V 0.3792 | Vmin 0.1143 | agree +0.330 | a*_q05 -0.00558 | a*_q50 0.00651 | dV>=0 0.250 | beta 0.1000
   bell | direct viol 0.480 | direct dV>=0 0.434 | d_mean -0.00077 | d_std 0.02457 | d_q95 0.04878
@@ -1315,7 +1315,7 @@ Policy -0.0054 | Value 0.0034 | KL 0.01643 | CF 0.1272 | Std 0.1095 | |a| 0.0354
 Placing Sensors
 [Episode 393/400] Steps: 720 | Reward:   -3.47 | Battery:  63.87% | Loss: 
 Placing Sensors
-Policy -0.0113 | Value 0.0032 | KL 0.02590 | CF 0.2242 | Std 0.1095 | |a| 0.0422 | EV +0.938 | AE nan | Alpha 0.0100 | MB 24/24
+Policy -0.0113 | Value 0.0032 | KL 0.02590 | CF 0.2242 | Std 0.1095 | |a| 0.0422 | EV +0.938 | Rsd 0.310 | Res 0.078 | AE nan | Alpha 0.0100 | MB 24/24
   cert | viol 0.004 | dV -0.257768 | V 0.2886 | inball 0.571 | a*_q05 0.00731 | a*_q50 0.03350 | dV>=0 0.000 | n=150 | a_used 0.00435 -> 0.00442
   crit | n=1 | viol 0.459 | V 0.4598 | Vmin 0.1207 | agree +0.574 | a*_q05 -0.00511 | a*_q50 0.00523 | dV>=0 0.237 | beta 0.1000
   bell | direct viol 0.496 | direct dV>=0 0.438 | d_mean -0.00039 | d_std 0.02597 | d_q95 0.05166
@@ -1323,7 +1323,7 @@ Policy -0.0113 | Value 0.0032 | KL 0.02590 | CF 0.2242 | Std 0.1095 | |a| 0.0422
 Placing Sensors
 [Episode 395/400] Steps: 720 | Reward:   -4.28 | Battery:  71.17% | Loss: 
 Placing Sensors
-Policy 0.0025 | Value 0.0033 | KL 0.01716 | CF 0.1957 | Std 0.1095 | |a| 0.0477 | EV +0.916 | AE nan | Alpha 0.0100 | MB 24/24
+Policy 0.0025 | Value 0.0033 | KL 0.01716 | CF 0.1957 | Std 0.1095 | |a| 0.0477 | EV +0.916 | Rsd 0.271 | Res 0.079 | AE nan | Alpha 0.0100 | MB 24/24
   cert | viol 0.039 | dV -0.229223 | V 0.2723 | inball 0.559 | a*_q05 0.00509 | a*_q50 0.03262 | dV>=0 0.000 | n=150 | a_used 0.00442 -> 0.00439
   crit | n=1 | viol 0.475 | V 0.4799 | Vmin 0.1644 | agree +0.509 | a*_q05 -0.00566 | a*_q50 0.00492 | dV>=0 0.300 | beta 0.1000
   bell | direct viol 0.487 | direct dV>=0 0.444 | d_mean -0.00065 | d_std 0.02757 | d_q95 0.05915
@@ -1331,7 +1331,7 @@ Policy 0.0025 | Value 0.0033 | KL 0.01716 | CF 0.1957 | Std 0.1095 | |a| 0.0477 
 Placing Sensors
 [Episode 397/400] Steps: 720 | Reward:   -1.73 | Battery:  84.81% | Loss: 
 Placing Sensors
-Policy -0.0082 | Value 0.0018 | KL 0.01317 | CF 0.1626 | Std 0.1095 | |a| 0.0479 | EV +0.965 | AE nan | Alpha 0.0100 | MB 24/24
+Policy -0.0082 | Value 0.0018 | KL 0.01317 | CF 0.1626 | Std 0.1095 | |a| 0.0479 | EV +0.965 | Rsd 0.299 | Res 0.064 | AE nan | Alpha 0.0100 | MB 24/24
   cert | viol 0.000 | dV -0.240984 | V 0.2520 | inball 0.684 | a*_q05 0.01243 | a*_q50 0.04063 | dV>=0 0.000 | n=150 | a_used 0.00439 -> 0.00458
   crit | n=1 | viol 0.626 | V 0.4083 | Vmin 0.1446 | agree +0.392 | a*_q05 -0.00678 | a*_q50 0.00305 | dV>=0 0.298 | beta 0.1000
   bell | direct viol 0.448 | direct dV>=0 0.399 | d_mean +0.00134 | d_std 0.02146 | d_q95 0.04405
@@ -1341,7 +1341,7 @@ Placing Sensors
 Placing Sensors
 [Episode 400/400] Steps:  78 | Reward:  -17.48 | Battery:   0.00% | Loss: 
 Placing Sensors
-Policy -0.0070 | Value 0.0199 | KL 0.00924 | CF 0.1019 | Std 0.1096 | |a| 0.0483 | EV +0.853 | AE nan | Alpha 0.0100 | MB 24/24
+Policy -0.0070 | Value 0.0199 | KL 0.00924 | CF 0.1019 | Std 0.1096 | |a| 0.0483 | EV +0.853 | Rsd 0.450 | Res 0.176 | AE nan | Alpha 0.0100 | MB 24/24
   cert | viol 0.000 | dV -0.306361 | V 0.3259 | inball 0.545 | a*_q05 0.01050 | a*_q50 0.03876 | dV>=0 0.000 | n=150 | a_used 0.00458 -> 0.00476
   crit | n=1 | viol 0.461 | V 0.5565 | Vmin 0.1360 | agree +0.595 | a*_q05 -0.00566 | a*_q50 0.00540 | dV>=0 0.294 | beta 0.1000
   bell | direct viol 0.504 | direct dV>=0 0.439 | d_mean +0.00065 | d_std 0.03008 | d_q95 0.06040
@@ -1349,7 +1349,7 @@ Policy -0.0070 | Value 0.0199 | KL 0.00924 | CF 0.1019 | Std 0.1096 | |a| 0.0483
 Placing Sensors
 [Episode 402/400] Steps: 720 | Reward:   -2.95 | Battery:  87.35% | Loss: 
 Placing Sensors
-Policy -0.0073 | Value 0.0045 | KL 0.01149 | CF 0.0982 | Std 0.1095 | |a| 0.0414 | EV +0.941 | AE nan | Alpha 0.0100 | MB 24/24
+Policy -0.0073 | Value 0.0045 | KL 0.01149 | CF 0.0982 | Std 0.1095 | |a| 0.0414 | EV +0.941 | Rsd 0.321 | Res 0.081 | AE nan | Alpha 0.0100 | MB 24/24
   cert | viol 0.029 | dV -0.305786 | V 0.3330 | inball 0.633 | a*_q05 0.00771 | a*_q50 0.03917 | dV>=0 0.000 | n=150 | a_used 0.00476 -> 0.00494
   crit | n=1 | viol 0.578 | V 0.4190 | Vmin 0.1283 | agree +0.838 | a*_q05 -0.00685 | a*_q50 0.00381 | dV>=0 0.300 | beta 0.1000
   bell | direct viol 0.500 | direct dV>=0 0.449 | d_mean +0.00108 | d_std 0.03330 | d_q95 0.06686
@@ -1359,7 +1359,7 @@ Placing Sensors
 Placing Sensors
 [Episode 405/400] Steps: 720 | Reward:   -3.34 | Battery:  73.59% | Loss: 
 Placing Sensors
-Policy -0.0132 | Value 0.0100 | KL 0.02145 | CF 0.1417 | Std 0.1095 | |a| 0.0490 | EV +0.912 | AE nan | Alpha 0.0100 | MB 24/24
+Policy -0.0132 | Value 0.0100 | KL 0.02145 | CF 0.1417 | Std 0.1095 | |a| 0.0490 | EV +0.912 | Rsd 0.481 | Res 0.145 | AE nan | Alpha 0.0100 | MB 24/24
   cert | viol 0.046 | dV -0.282716 | V 0.3249 | inball 0.569 | a*_q05 0.00590 | a*_q50 0.03671 | dV>=0 0.000 | n=150 | a_used 0.00494 -> 0.00487
   crit | n=1 | viol 0.529 | V 0.5750 | Vmin 0.1416 | agree +0.703 | a*_q05 -0.00594 | a*_q50 0.00454 | dV>=0 0.240 | beta 0.1000
   bell | direct viol 0.511 | direct dV>=0 0.465 | d_mean +0.00014 | d_std 0.04064 | d_q95 0.07952
@@ -1367,7 +1367,7 @@ Policy -0.0132 | Value 0.0100 | KL 0.02145 | CF 0.1417 | Std 0.1095 | |a| 0.0490
 Placing Sensors
 [Episode 407/400] Steps: 720 | Reward:   -3.79 | Battery:  75.63% | Loss: 
 Placing Sensors
-Policy -0.0110 | Value 0.0029 | KL 0.01585 | CF 0.1658 | Std 0.1096 | |a| 0.0422 | EV +0.943 | AE nan | Alpha 0.0100 | MB 24/24
+Policy -0.0110 | Value 0.0029 | KL 0.01585 | CF 0.1658 | Std 0.1096 | |a| 0.0422 | EV +0.943 | Rsd 0.297 | Res 0.071 | AE nan | Alpha 0.0100 | MB 24/24
   cert | viol 0.016 | dV -0.241926 | V 0.2707 | inball 0.608 | a*_q05 0.00706 | a*_q50 0.03615 | dV>=0 0.000 | n=150 | a_used 0.00487 -> 0.00500
   crit | n=1 | viol 0.491 | V 0.4681 | Vmin 0.1637 | agree +0.506 | a*_q05 -0.00617 | a*_q50 0.00499 | dV>=0 0.244 | beta 0.1000
   bell | direct viol 0.492 | direct dV>=0 0.454 | d_mean +0.00025 | d_std 0.03135 | d_q95 0.06065
@@ -1375,7 +1375,7 @@ Policy -0.0110 | Value 0.0029 | KL 0.01585 | CF 0.1658 | Std 0.1096 | |a| 0.0422
 Placing Sensors
 [Episode 409/400] Steps: 720 | Reward:   -3.75 | Battery:  79.40% | Loss: 
 Placing Sensors
-Policy -0.0019 | Value 0.0039 | KL 0.01428 | CF 0.1401 | Std 0.1095 | |a| 0.0546 | EV +0.928 | AE nan | Alpha 0.0100 | MB 24/24
+Policy -0.0019 | Value 0.0039 | KL 0.01428 | CF 0.1401 | Std 0.1095 | |a| 0.0546 | EV +0.928 | Rsd 0.288 | Res 0.085 | AE nan | Alpha 0.0100 | MB 24/24
   cert | viol 0.015 | dV -0.208881 | V 0.2481 | inball 0.608 | a*_q05 0.00627 | a*_q50 0.03347 | dV>=0 0.000 | n=150 | a_used 0.00500 -> 0.00507
   crit | n=1 | viol 0.780 | V 0.4853 | Vmin 0.1442 | agree +0.577 | a*_q05 -0.00518 | a*_q50 0.00277 | dV>=0 0.218 | beta 0.1000
   bell | direct viol 0.495 | direct dV>=0 0.433 | d_mean +0.00119 | d_std 0.02209 | d_q95 0.04401
@@ -1383,7 +1383,7 @@ Policy -0.0019 | Value 0.0039 | KL 0.01428 | CF 0.1401 | Std 0.1095 | |a| 0.0546
 Placing Sensors
 [Episode 411/400] Steps: 720 | Reward:   -4.42 | Battery:  69.00% | Loss: 
 Placing Sensors
-Policy -0.0110 | Value 0.0074 | KL 0.01942 | CF 0.1884 | Std 0.1095 | |a| 0.0532 | EV +0.886 | AE nan | Alpha 0.0100 | MB 24/24
+Policy -0.0110 | Value 0.0074 | KL 0.01942 | CF 0.1884 | Std 0.1095 | |a| 0.0532 | EV +0.886 | Rsd 0.317 | Res 0.108 | AE nan | Alpha 0.0100 | MB 24/24
   cert | viol 0.023 | dV -0.272295 | V 0.3066 | inball 0.557 | a*_q05 0.00700 | a*_q50 0.03552 | dV>=0 0.000 | n=150 | a_used 0.00507 -> 0.00518
   crit | n=1 | viol 0.515 | V 0.5357 | Vmin 0.1630 | agree +0.403 | a*_q05 -0.00657 | a*_q50 0.00467 | dV>=0 0.332 | beta 0.1000
   bell | direct viol 0.489 | direct dV>=0 0.440 | d_mean +0.00039 | d_std 0.03368 | d_q95 0.07136
@@ -1391,7 +1391,7 @@ Policy -0.0110 | Value 0.0074 | KL 0.01942 | CF 0.1884 | Std 0.1095 | |a| 0.0532
 Placing Sensors
 [Episode 413/400] Steps: 720 | Reward:   -5.40 | Battery:  73.60% | Loss: 
 Placing Sensors
-Policy 0.0019 | Value 0.0051 | KL 0.01944 | CF 0.1554 | Std 0.1095 | |a| 0.0575 | EV +0.847 | AE nan | Alpha 0.0100 | MB 24/24
+Policy 0.0019 | Value 0.0051 | KL 0.01944 | CF 0.1554 | Std 0.1095 | |a| 0.0575 | EV +0.847 | Rsd 0.332 | Res 0.130 | AE nan | Alpha 0.0100 | MB 24/24
   cert | viol 0.073 | dV -0.230120 | V 0.2951 | inball 0.497 | a*_q05 0.00490 | a*_q50 0.02824 | dV>=0 0.000 | n=150 | a_used 0.00518 -> 0.00518
   crit | n=1 | viol 0.443 | V 0.5572 | Vmin 0.1423 | agree +0.546 | a*_q05 -0.00380 | a*_q50 0.00567 | dV>=0 0.184 | beta 0.1000
   bell | direct viol 0.519 | direct dV>=0 0.440 | d_mean +0.00040 | d_std 0.02737 | d_q95 0.05430
@@ -1401,7 +1401,7 @@ Placing Sensors
 Placing Sensors
 [Episode 416/400] Steps: 720 | Reward:   -4.12 | Battery:  73.20% | Loss: 
 Placing Sensors
-Policy -0.0018 | Value 0.0229 | KL 0.02141 | CF 0.1235 | Std 0.1095 | |a| 0.0518 | EV +0.826 | AE nan | Alpha 0.0100 | MB 18/24
+Policy -0.0018 | Value 0.0229 | KL 0.02141 | CF 0.1235 | Std 0.1095 | |a| 0.0518 | EV +0.826 | Rsd 0.436 | Res 0.185 | AE nan | Alpha 0.0100 | MB 18/24
   cert | viol 0.011 | dV -0.262109 | V 0.2852 | inball 0.535 | a*_q05 0.00904 | a*_q50 0.03440 | dV>=0 0.000 | n=150 | a_used 0.00518 -> 0.00531
   crit | n=1 | viol 0.665 | V 0.5597 | Vmin 0.1168 | agree +0.663 | a*_q05 -0.00663 | a*_q50 0.00270 | dV>=0 0.390 | beta 0.1000
   bell | direct viol 0.526 | direct dV>=0 0.466 | d_mean +0.00065 | d_std 0.03336 | d_q95 0.06746
@@ -1409,7 +1409,7 @@ Policy -0.0018 | Value 0.0229 | KL 0.02141 | CF 0.1235 | Std 0.1095 | |a| 0.0518
 Placing Sensors
 [Episode 418/400] Steps: 720 | Reward:   -2.68 | Battery:  83.66% | Loss: 
 Placing Sensors
-Policy -0.0018 | Value 0.0038 | KL 0.01107 | CF 0.0897 | Std 0.1095 | |a| 0.0560 | EV +0.944 | AE nan | Alpha 0.0100 | MB 24/24
+Policy -0.0018 | Value 0.0038 | KL 0.01107 | CF 0.0897 | Std 0.1095 | |a| 0.0560 | EV +0.944 | Rsd 0.349 | Res 0.083 | AE nan | Alpha 0.0100 | MB 24/24
   cert | viol 0.056 | dV -0.289509 | V 0.3379 | inball 0.594 | a*_q05 0.00538 | a*_q50 0.03373 | dV>=0 0.000 | n=150 | a_used 0.00531 -> 0.00547
   crit | n=1 | viol 0.341 | V 0.4337 | Vmin 0.1119 | agree +0.674 | a*_q05 -0.00383 | a*_q50 0.00840 | dV>=0 0.128 | beta 0.1000
   bell | direct viol 0.504 | direct dV>=0 0.452 | d_mean -0.00028 | d_std 0.04045 | d_q95 0.08759
@@ -1419,7 +1419,7 @@ Placing Sensors
 Placing Sensors
 [Episode 421/400] Steps:  75 | Reward:  -17.74 | Battery:   0.00% | Loss: 
 Placing Sensors
-Policy -0.0101 | Value 0.0116 | KL 0.02596 | CF 0.1947 | Std 0.1095 | |a| 0.0535 | EV +0.873 | AE nan | Alpha 0.0100 | MB 24/24
+Policy -0.0101 | Value 0.0116 | KL 0.02596 | CF 0.1947 | Std 0.1095 | |a| 0.0535 | EV +0.873 | Rsd 0.474 | Res 0.176 | AE nan | Alpha 0.0100 | MB 24/24
   cert | viol 0.041 | dV -0.258317 | V 0.3087 | inball 0.504 | a*_q05 0.00594 | a*_q50 0.03115 | dV>=0 0.000 | n=150 | a_used 0.00547 -> 0.00543
   crit | n=1 | viol 0.459 | V 0.5723 | Vmin 0.1095 | agree +0.641 | a*_q05 -0.00440 | a*_q50 0.00671 | dV>=0 0.222 | beta 0.1000
   bell | direct viol 0.496 | direct dV>=0 0.442 | d_mean -0.00123 | d_std 0.04587 | d_q95 0.09244
@@ -1427,7 +1427,7 @@ Policy -0.0101 | Value 0.0116 | KL 0.02596 | CF 0.1947 | Std 0.1095 | |a| 0.0535
 Placing Sensors
 [Episode 423/400] Steps: 720 | Reward:   -3.90 | Battery:  79.93% | Loss: 
 Placing Sensors
-Policy -0.0139 | Value 0.0035 | KL 0.01777 | CF 0.1842 | Std 0.1095 | |a| 0.0589 | EV +0.939 | AE nan | Alpha 0.0100 | MB 24/24
+Policy -0.0139 | Value 0.0035 | KL 0.01777 | CF 0.1842 | Std 0.1095 | |a| 0.0589 | EV +0.939 | Rsd 0.317 | Res 0.079 | AE nan | Alpha 0.0100 | MB 24/24
   cert | viol 0.107 | dV -0.198858 | V 0.2552 | inball 0.539 | a*_q05 0.00385 | a*_q50 0.02583 | dV>=0 0.000 | n=150 | a_used 0.00543 -> 0.00534
   crit | n=1 | viol 0.603 | V 0.5510 | Vmin 0.1839 | agree +0.599 | a*_q05 -0.00166 | a*_q50 0.00450 | dV>=0 0.137 | beta 0.1000
   bell | direct viol 0.502 | direct dV>=0 0.421 | d_mean +0.00027 | d_std 0.03104 | d_q95 0.05183
@@ -1435,7 +1435,7 @@ Policy -0.0139 | Value 0.0035 | KL 0.01777 | CF 0.1842 | Std 0.1095 | |a| 0.0589
 Placing Sensors
 [Episode 425/400] Steps: 720 | Reward:   -4.32 | Battery:  79.14% | Loss: 
 Placing Sensors
-Policy -0.0105 | Value 0.0052 | KL 0.02015 | CF 0.1818 | Std 0.1095 | |a| 0.0537 | EV +0.933 | AE nan | Alpha 0.0100 | MB 18/24
+Policy -0.0105 | Value 0.0052 | KL 0.02015 | CF 0.1818 | Std 0.1095 | |a| 0.0537 | EV +0.933 | Rsd 0.355 | Res 0.095 | AE nan | Alpha 0.0100 | MB 18/24
   cert | viol 0.052 | dV -0.292916 | V 0.3373 | inball 0.554 | a*_q05 0.00552 | a*_q50 0.03422 | dV>=0 0.000 | n=150 | a_used 0.00534 -> 0.00540
   crit | n=1 | viol 0.646 | V 0.5763 | Vmin 0.1487 | agree +0.625 | a*_q05 -0.00721 | a*_q50 0.00359 | dV>=0 0.313 | beta 0.1000
   bell | direct viol 0.510 | direct dV>=0 0.450 | d_mean +0.00079 | d_std 0.03721 | d_q95 0.07021
@@ -1443,7 +1443,7 @@ Policy -0.0105 | Value 0.0052 | KL 0.02015 | CF 0.1818 | Std 0.1095 | |a| 0.0537
 Placing Sensors
 [Episode 427/400] Steps: 720 | Reward:   -3.39 | Battery:  69.99% | Loss: 
 Placing Sensors
-Policy -0.0087 | Value 0.0038 | KL 0.01854 | CF 0.1722 | Std 0.1095 | |a| 0.0569 | EV +0.951 | AE nan | Alpha 0.0100 | MB 24/24
+Policy -0.0087 | Value 0.0038 | KL 0.01854 | CF 0.1722 | Std 0.1095 | |a| 0.0569 | EV +0.951 | Rsd 0.357 | Res 0.082 | AE nan | Alpha 0.0100 | MB 24/24
   cert | viol 0.033 | dV -0.288003 | V 0.3264 | inball 0.483 | a*_q05 0.00726 | a*_q50 0.03670 | dV>=0 0.000 | n=150 | a_used 0.00540 -> 0.00548
   crit | n=1 | viol 0.488 | V 0.5983 | Vmin 0.1372 | agree +0.357 | a*_q05 -0.00531 | a*_q50 0.00548 | dV>=0 0.330 | beta 0.1000
   bell | direct viol 0.521 | direct dV>=0 0.450 | d_mean -0.00026 | d_std 0.02575 | d_q95 0.05372
@@ -1451,7 +1451,7 @@ Policy -0.0087 | Value 0.0038 | KL 0.01854 | CF 0.1722 | Std 0.1095 | |a| 0.0569
 Placing Sensors
 [Episode 429/400] Steps: 720 | Reward:   -5.11 | Battery:  73.38% | Loss: 
 Placing Sensors
-Policy 0.0101 | Value 0.0075 | KL 0.02096 | CF 0.1923 | Std 0.1095 | |a| 0.0485 | EV +0.911 | AE nan | Alpha 0.0100 | MB 18/24
+Policy 0.0101 | Value 0.0075 | KL 0.02096 | CF 0.1923 | Std 0.1095 | |a| 0.0485 | EV +0.911 | Rsd 0.356 | Res 0.109 | AE nan | Alpha 0.0100 | MB 18/24
   cert | viol 0.069 | dV -0.288018 | V 0.3404 | inball 0.581 | a*_q05 0.00457 | a*_q50 0.03424 | dV>=0 0.009 | n=150 | a_used 0.00548 -> 0.00545
   crit | n=1 | viol 0.618 | V 0.5680 | Vmin 0.1289 | agree +0.478 | a*_q05 -0.00583 | a*_q50 0.00382 | dV>=0 0.319 | beta 0.1000
   bell | direct viol 0.484 | direct dV>=0 0.403 | d_mean +0.00126 | d_std 0.02889 | d_q95 0.05969
@@ -1461,7 +1461,7 @@ Placing Sensors
 Placing Sensors
 [Episode 432/400] Steps: 720 | Reward:   -3.98 | Battery:  86.63% | Loss: 
 Placing Sensors
-Policy -0.0021 | Value 0.0248 | KL 0.02257 | CF 0.1276 | Std 0.1095 | |a| 0.0509 | EV +0.868 | AE nan | Alpha 0.0100 | MB 12/24
+Policy -0.0021 | Value 0.0248 | KL 0.02257 | CF 0.1276 | Std 0.1095 | |a| 0.0509 | EV +0.868 | Rsd 0.461 | Res 0.170 | AE nan | Alpha 0.0100 | MB 12/24
   cert | viol 0.076 | dV -0.277511 | V 0.3317 | inball 0.522 | a*_q05 0.00473 | a*_q50 0.03251 | dV>=0 0.000 | n=150 | a_used 0.00545 -> 0.00550
   crit | n=1 | viol 0.456 | V 0.6109 | Vmin 0.1338 | agree +0.644 | a*_q05 -0.00472 | a*_q50 0.00622 | dV>=0 0.170 | beta 0.1000
   bell | direct viol 0.524 | direct dV>=0 0.450 | d_mean +0.00001 | d_std 0.02566 | d_q95 0.05066
@@ -1471,7 +1471,7 @@ Placing Sensors
 Placing Sensors
 [Episode 435/400] Steps:  99 | Reward:  -17.45 | Battery:   0.00% | Loss: 
 Placing Sensors
-Policy -0.0056 | Value 0.0131 | KL 0.01521 | CF 0.1329 | Std 0.1095 | |a| 0.0574 | EV +0.869 | AE nan | Alpha 0.0100 | MB 28/28
+Policy -0.0056 | Value 0.0131 | KL 0.01521 | CF 0.1329 | Std 0.1095 | |a| 0.0574 | EV +0.869 | Rsd 0.473 | Res 0.173 | AE nan | Alpha 0.0100 | MB 28/28
   cert | viol 0.009 | dV -0.243527 | V 0.2590 | inball 0.563 | a*_q05 0.01091 | a*_q50 0.03996 | dV>=0 0.000 | n=150 | a_used 0.00550 -> 0.00567
   crit | n=1 | viol 0.704 | V 0.6245 | Vmin 0.1737 | agree +0.642 | a*_q05 -0.00490 | a*_q50 0.00246 | dV>=0 0.314 | beta 0.1000
   bell | direct viol 0.545 | direct dV>=0 0.441 | d_mean +0.00115 | d_std 0.03402 | d_q95 0.07071
@@ -1479,7 +1479,7 @@ Policy -0.0056 | Value 0.0131 | KL 0.01521 | CF 0.1329 | Std 0.1095 | |a| 0.0574
 Placing Sensors
 [Episode 437/400] Steps: 720 | Reward:   -4.29 | Battery:  82.08% | Loss: 
 Placing Sensors
-Policy -0.0050 | Value 0.0061 | KL 0.01259 | CF 0.1208 | Std 0.1095 | |a| 0.0494 | EV +0.853 | AE nan | Alpha 0.0100 | MB 24/24
+Policy -0.0050 | Value 0.0061 | KL 0.01259 | CF 0.1208 | Std 0.1095 | |a| 0.0494 | EV +0.853 | Rsd 0.314 | Res 0.121 | AE nan | Alpha 0.0100 | MB 24/24
   cert | viol 0.103 | dV -0.192257 | V 0.2422 | inball 0.507 | a*_q05 0.00462 | a*_q50 0.02759 | dV>=0 0.000 | n=150 | a_used 0.00567 -> 0.00563
   crit | n=1 | viol 0.556 | V 0.5095 | Vmin 0.1742 | agree +0.615 | a*_q05 -0.00215 | a*_q50 0.00493 | dV>=0 0.123 | beta 0.1000
   bell | direct viol 0.501 | direct dV>=0 0.435 | d_mean +0.00020 | d_std 0.03998 | d_q95 0.07847
@@ -1487,7 +1487,7 @@ Policy -0.0050 | Value 0.0061 | KL 0.01259 | CF 0.1208 | Std 0.1095 | |a| 0.0494
 Placing Sensors
 [Episode 439/400] Steps: 720 | Reward:   -5.15 | Battery:  81.89% | Loss: 
 Placing Sensors
-Policy -0.0131 | Value 0.0075 | KL 0.01468 | CF 0.1233 | Std 0.1094 | |a| 0.0469 | EV +0.909 | AE nan | Alpha 0.0100 | MB 24/24
+Policy -0.0131 | Value 0.0075 | KL 0.01468 | CF 0.1233 | Std 0.1094 | |a| 0.0469 | EV +0.909 | Rsd 0.328 | Res 0.104 | AE nan | Alpha 0.0100 | MB 24/24
   cert | viol 0.091 | dV -0.274828 | V 0.3379 | inball 0.572 | a*_q05 0.00384 | a*_q50 0.03261 | dV>=0 0.000 | n=150 | a_used 0.00563 -> 0.00559
   crit | n=1 | viol 0.340 | V 0.4877 | Vmin 0.1118 | agree +0.433 | a*_q05 -0.00396 | a*_q50 0.00799 | dV>=0 0.150 | beta 0.1000
   bell | direct viol 0.492 | direct dV>=0 0.445 | d_mean -0.00097 | d_std 0.03950 | d_q95 0.07758
@@ -1495,7 +1495,7 @@ Policy -0.0131 | Value 0.0075 | KL 0.01468 | CF 0.1233 | Std 0.1094 | |a| 0.0469
 Placing Sensors
 [Episode 441/400] Steps: 720 | Reward:   -3.29 | Battery:  73.92% | Loss: 
 Placing Sensors
-Policy -0.0124 | Value 0.0047 | KL 0.02380 | CF 0.1683 | Std 0.1094 | |a| 0.0443 | EV +0.941 | AE nan | Alpha 0.0100 | MB 24/24
+Policy -0.0124 | Value 0.0047 | KL 0.02380 | CF 0.1683 | Std 0.1094 | |a| 0.0443 | EV +0.941 | Rsd 0.336 | Res 0.085 | AE nan | Alpha 0.0100 | MB 24/24
   cert | viol 0.058 | dV -0.306887 | V 0.3438 | inball 0.607 | a*_q05 0.00546 | a*_q50 0.03770 | dV>=0 0.000 | n=150 | a_used 0.00559 -> 0.00543
   crit | n=1 | viol 0.467 | V 0.4889 | Vmin 0.1237 | agree +0.534 | a*_q05 -0.00634 | a*_q50 0.00629 | dV>=0 0.241 | beta 0.1000
   bell | direct viol 0.521 | direct dV>=0 0.481 | d_mean +0.00067 | d_std 0.03862 | d_q95 0.07510
@@ -1505,7 +1505,7 @@ Placing Sensors
 Placing Sensors
 [Episode 444/400] Steps:  92 | Reward:  -17.34 | Battery:   0.00% | Loss: 
 Placing Sensors
-Policy -0.0010 | Value 0.0165 | KL 0.01972 | CF 0.1461 | Std 0.1093 | |a| 0.0430 | EV +0.900 | AE nan | Alpha 0.0100 | MB 24/24
+Policy -0.0010 | Value 0.0165 | KL 0.01972 | CF 0.1461 | Std 0.1093 | |a| 0.0430 | EV +0.900 | Rsd 0.483 | Res 0.162 | AE nan | Alpha 0.0100 | MB 24/24
   cert | viol 0.107 | dV -0.281844 | V 0.3656 | inball 0.535 | a*_q05 0.00238 | a*_q50 0.02980 | dV>=0 0.026 | n=150 | a_used 0.00543 -> 0.00479
   crit | n=1 | viol 0.448 | V 0.5889 | Vmin 0.1305 | agree +0.675 | a*_q05 -0.00284 | a*_q50 0.00649 | dV>=0 0.112 | beta 0.1000
   bell | direct viol 0.473 | direct dV>=0 0.425 | d_mean -0.00025 | d_std 0.04235 | d_q95 0.09012
@@ -1513,7 +1513,7 @@ Policy -0.0010 | Value 0.0165 | KL 0.01972 | CF 0.1461 | Std 0.1093 | |a| 0.0430
 Placing Sensors
 [Episode 446/400] Steps: 720 | Reward:   -4.80 | Battery:  71.35% | Loss: 
 Placing Sensors
-Policy -0.0106 | Value 0.0086 | KL 0.01637 | CF 0.1504 | Std 0.1093 | |a| 0.0450 | EV +0.921 | AE nan | Alpha 0.0100 | MB 24/24
+Policy -0.0106 | Value 0.0086 | KL 0.01637 | CF 0.1504 | Std 0.1093 | |a| 0.0450 | EV +0.921 | Rsd 0.403 | Res 0.113 | AE nan | Alpha 0.0100 | MB 24/24
   cert | viol 0.061 | dV -0.249093 | V 0.2917 | inball 0.561 | a*_q05 0.00492 | a*_q50 0.03804 | dV>=0 0.000 | n=150 | a_used 0.00479 -> 0.00485
   crit | n=1 | viol 0.622 | V 0.6077 | Vmin 0.1918 | agree +0.224 | a*_q05 -0.00639 | a*_q50 0.00243 | dV>=0 0.392 | beta 0.1000
   bell | direct viol 0.489 | direct dV>=0 0.449 | d_mean +0.00014 | d_std 0.03789 | d_q95 0.08038
@@ -1523,7 +1523,7 @@ Placing Sensors
 Placing Sensors
 [Episode 449/400] Steps: 720 | Reward:   -2.92 | Battery:  85.04% | Loss: 
 Placing Sensors
-Policy 0.0010 | Value 0.0193 | KL 0.01019 | CF 0.1072 | Std 0.1093 | |a| 0.0418 | EV +0.783 | AE nan | Alpha 0.0100 | MB 24/24
+Policy 0.0010 | Value 0.0193 | KL 0.01019 | CF 0.1072 | Std 0.1093 | |a| 0.0418 | EV +0.783 | Rsd 0.449 | Res 0.211 | AE nan | Alpha 0.0100 | MB 24/24
   cert | viol 0.000 | dV -0.284050 | V 0.2996 | inball 0.614 | a*_q05 0.01113 | a*_q50 0.04060 | dV>=0 0.000 | n=150 | a_used 0.00485 -> 0.00503
   crit | n=1 | viol 0.639 | V 0.5165 | Vmin 0.1533 | agree +0.720 | a*_q05 -0.00730 | a*_q50 0.00315 | dV>=0 0.298 | beta 0.1000
   bell | direct viol 0.494 | direct dV>=0 0.452 | d_mean +0.00216 | d_std 0.06064 | d_q95 0.13217
@@ -1531,9 +1531,11 @@ Policy 0.0010 | Value 0.0193 | KL 0.01019 | CF 0.1072 | Std 0.1093 | |a| 0.0418 
 Placing Sensors
 [Episode 451/400] Steps: 720 | Reward:   -4.51 | Battery:  82.96% | Loss: 
 Placing Sensors
+
+[CONVERGED] episode 452: deaths 9% over the last 100, survivor reward flat for 25 consecutive episodes. Wrote probe_converged.pt.
 [Episode 452/400] Steps:  73 | Reward:  -17.56 | Battery:   0.00% | Loss: 
 Placing Sensors
-Policy 0.0012 | Value 0.0175 | KL 0.01184 | CF 0.0948 | Std 0.1093 | |a| 0.0393 | EV +0.859 | AE nan | Alpha 0.0100 | MB 24/24
+Policy 0.0012 | Value 0.0175 | KL 0.01184 | CF 0.0948 | Std 0.1093 | |a| 0.0393 | EV +0.859 | Rsd 0.454 | Res 0.170 | AE nan | Alpha 0.0100 | MB 24/24
   cert | viol 0.115 | dV -0.283819 | V 0.3505 | inball 0.580 | a*_q05 0.00238 | a*_q50 0.03484 | dV>=0 0.018 | n=150 | a_used 0.00503 -> 0.00493
   crit | n=1 | viol 0.458 | V 0.5341 | Vmin 0.1251 | agree +0.735 | a*_q05 -0.00551 | a*_q50 0.00593 | dV>=0 0.194 | beta 0.1000
   bell | direct viol 0.477 | direct dV>=0 0.446 | d_mean +0.00061 | d_std 0.04398 | d_q95 0.09019
@@ -1541,7 +1543,7 @@ Policy 0.0012 | Value 0.0175 | KL 0.01184 | CF 0.0948 | Std 0.1093 | |a| 0.0393 
 Placing Sensors
 [Episode 454/400] Steps: 720 | Reward:   -4.20 | Battery:  83.84% | Loss: 
 Placing Sensors
-Policy -0.0104 | Value 0.0065 | KL 0.01244 | CF 0.1097 | Std 0.1093 | |a| 0.0413 | EV +0.876 | AE nan | Alpha 0.0100 | MB 24/24
+Policy -0.0104 | Value 0.0065 | KL 0.01244 | CF 0.1097 | Std 0.1093 | |a| 0.0413 | EV +0.876 | Rsd 0.283 | Res 0.100 | AE nan | Alpha 0.0100 | MB 24/24
   cert | viol 0.066 | dV -0.270218 | V 0.3160 | inball 0.607 | a*_q05 0.00463 | a*_q50 0.03375 | dV>=0 0.000 | n=150 | a_used 0.00493 -> 0.00473
   crit | n=1 | viol 0.431 | V 0.5058 | Vmin 0.1687 | agree +0.647 | a*_q05 -0.00503 | a*_q50 0.00590 | dV>=0 0.205 | beta 0.1000
   bell | direct viol 0.510 | direct dV>=0 0.453 | d_mean +0.00035 | d_std 0.03540 | d_q95 0.07066
@@ -1549,7 +1551,7 @@ Policy -0.0104 | Value 0.0065 | KL 0.01244 | CF 0.1097 | Std 0.1093 | |a| 0.0413
 Placing Sensors
 [Episode 456/400] Steps: 720 | Reward:   -3.63 | Battery:  78.36% | Loss: 
 Placing Sensors
-Policy -0.0037 | Value 0.0056 | KL 0.01236 | CF 0.0945 | Std 0.1093 | |a| 0.0341 | EV +0.927 | AE nan | Alpha 0.0100 | MB 24/24
+Policy -0.0037 | Value 0.0056 | KL 0.01236 | CF 0.0945 | Std 0.1093 | |a| 0.0341 | EV +0.927 | Rsd 0.355 | Res 0.096 | AE nan | Alpha 0.0100 | MB 24/24
   cert | viol 0.012 | dV -0.314280 | V 0.3376 | inball 0.623 | a*_q05 0.00929 | a*_q50 0.03939 | dV>=0 0.000 | n=150 | a_used 0.00473 -> 0.00483
   crit | n=1 | viol 0.440 | V 0.4667 | Vmin 0.1347 | agree +0.543 | a*_q05 -0.00699 | a*_q50 0.00567 | dV>=0 0.302 | beta 0.1000
   bell | direct viol 0.483 | direct dV>=0 0.439 | d_mean +0.00124 | d_std 0.03054 | d_q95 0.06346
@@ -1557,7 +1559,7 @@ Policy -0.0037 | Value 0.0056 | KL 0.01236 | CF 0.0945 | Std 0.1093 | |a| 0.0341
 Placing Sensors
 [Episode 458/400] Steps: 720 | Reward:   -4.62 | Battery:  61.81% | Loss: 
 Placing Sensors
-Policy -0.0090 | Value 0.0051 | KL 0.01098 | CF 0.1078 | Std 0.1093 | |a| 0.0431 | EV +0.943 | AE nan | Alpha 0.0100 | MB 24/24
+Policy -0.0090 | Value 0.0051 | KL 0.01098 | CF 0.1078 | Std 0.1093 | |a| 0.0431 | EV +0.943 | Rsd 0.394 | Res 0.094 | AE nan | Alpha 0.0100 | MB 24/24
   cert | viol 0.029 | dV -0.316457 | V 0.3546 | inball 0.548 | a*_q05 0.00668 | a*_q50 0.03799 | dV>=0 0.000 | n=150 | a_used 0.00483 -> 0.00489
   crit | n=1 | viol 0.668 | V 0.5994 | Vmin 0.1475 | agree +0.552 | a*_q05 -0.00670 | a*_q50 0.00301 | dV>=0 0.392 | beta 0.1000
   bell | direct viol 0.504 | direct dV>=0 0.457 | d_mean +0.00098 | d_std 0.03306 | d_q95 0.06362
@@ -1565,7 +1567,7 @@ Policy -0.0090 | Value 0.0051 | KL 0.01098 | CF 0.1078 | Std 0.1093 | |a| 0.0431
 Placing Sensors
 [Episode 460/400] Steps: 720 | Reward:   -3.73 | Battery:  80.52% | Loss: 
 Placing Sensors
-Policy -0.0052 | Value 0.0038 | KL 0.00823 | CF 0.0807 | Std 0.1093 | |a| 0.0453 | EV +0.965 | AE nan | Alpha 0.0100 | MB 24/24
+Policy -0.0052 | Value 0.0038 | KL 0.00823 | CF 0.0807 | Std 0.1093 | |a| 0.0453 | EV +0.965 | Rsd 0.440 | Res 0.083 | AE nan | Alpha 0.0100 | MB 24/24
   cert | viol 0.066 | dV -0.318484 | V 0.3784 | inball 0.564 | a*_q05 0.00375 | a*_q50 0.03291 | dV>=0 0.007 | n=150 | a_used 0.00489 -> 0.00480
   crit | n=1 | viol 0.394 | V 0.5331 | Vmin 0.0437 | agree +0.623 | a*_q05 -0.00492 | a*_q50 0.00604 | dV>=0 0.157 | beta 0.1000
   bell | direct viol 0.481 | direct dV>=0 0.404 | d_mean -0.00059 | d_std 0.02815 | d_q95 0.05027
@@ -1573,7 +1575,7 @@ Policy -0.0052 | Value 0.0038 | KL 0.00823 | CF 0.0807 | Std 0.1093 | |a| 0.0453
 Placing Sensors
 [Episode 462/400] Steps: 720 | Reward:   -3.25 | Battery:  72.37% | Loss: 
 Placing Sensors
-Policy -0.0056 | Value 0.0066 | KL 0.01850 | CF 0.1754 | Std 0.1093 | |a| 0.0440 | EV +0.932 | AE nan | Alpha 0.0100 | MB 24/24
+Policy -0.0056 | Value 0.0066 | KL 0.01850 | CF 0.1754 | Std 0.1093 | |a| 0.0440 | EV +0.932 | Rsd 0.372 | Res 0.097 | AE nan | Alpha 0.0100 | MB 24/24
   cert | viol 0.030 | dV -0.273714 | V 0.3055 | inball 0.566 | a*_q05 0.00711 | a*_q50 0.03690 | dV>=0 0.000 | n=150 | a_used 0.00480 -> 0.00487
   crit | n=1 | viol 0.656 | V 0.5175 | Vmin 0.0722 | agree +0.511 | a*_q05 -0.00584 | a*_q50 0.00261 | dV>=0 0.354 | beta 0.1000
   bell | direct viol 0.513 | direct dV>=0 0.454 | d_mean +0.00132 | d_std 0.03390 | d_q95 0.06683
@@ -1581,7 +1583,7 @@ Policy -0.0056 | Value 0.0066 | KL 0.01850 | CF 0.1754 | Std 0.1093 | |a| 0.0440
 Placing Sensors
 [Episode 464/400] Steps: 720 | Reward:   -4.00 | Battery:  66.73% | Loss: 
 Placing Sensors
-Policy -0.0088 | Value 0.0043 | KL 0.00836 | CF 0.0869 | Std 0.1093 | |a| 0.0409 | EV +0.965 | AE nan | Alpha 0.0100 | MB 24/24
+Policy -0.0088 | Value 0.0043 | KL 0.00836 | CF 0.0869 | Std 0.1093 | |a| 0.0409 | EV +0.965 | Rsd 0.417 | Res 0.078 | AE nan | Alpha 0.0100 | MB 24/24
   cert | viol 0.030 | dV -0.258655 | V 0.2929 | inball 0.570 | a*_q05 0.00641 | a*_q50 0.03503 | dV>=0 0.000 | n=150 | a_used 0.00487 -> 0.00503
   crit | n=1 | viol 0.385 | V 0.5406 | Vmin 0.0617 | agree +0.368 | a*_q05 -0.00497 | a*_q50 0.00688 | dV>=0 0.191 | beta 0.1000
   bell | direct viol 0.496 | direct dV>=0 0.449 | d_mean +0.00079 | d_std 0.02999 | d_q95 0.05888
@@ -1589,7 +1591,7 @@ Policy -0.0088 | Value 0.0043 | KL 0.00836 | CF 0.0869 | Std 0.1093 | |a| 0.0409
 Placing Sensors
 [Episode 466/400] Steps: 720 | Reward:   -3.82 | Battery:  77.88% | Loss: 
 Placing Sensors
-Policy 0.0024 | Value 0.0064 | KL 0.01636 | CF 0.1495 | Std 0.1093 | |a| 0.0434 | EV +0.924 | AE nan | Alpha 0.0100 | MB 24/24
+Policy 0.0024 | Value 0.0064 | KL 0.01636 | CF 0.1495 | Std 0.1093 | |a| 0.0434 | EV +0.924 | Rsd 0.369 | Res 0.102 | AE nan | Alpha 0.0100 | MB 24/24
   cert | viol 0.024 | dV -0.254529 | V 0.2883 | inball 0.613 | a*_q05 0.00652 | a*_q50 0.03629 | dV>=0 0.000 | n=150 | a_used 0.00503 -> 0.00513
   crit | n=1 | viol 0.579 | V 0.4904 | Vmin 0.0711 | agree +0.525 | a*_q05 -0.00507 | a*_q50 0.00389 | dV>=0 0.257 | beta 0.1000
   bell | direct viol 0.494 | direct dV>=0 0.448 | d_mean +0.00156 | d_std 0.03348 | d_q95 0.06601
@@ -1597,7 +1599,7 @@ Policy 0.0024 | Value 0.0064 | KL 0.01636 | CF 0.1495 | Std 0.1093 | |a| 0.0434 
 Placing Sensors
 [Episode 468/400] Steps: 720 | Reward:   -4.22 | Battery:  77.68% | Loss: 
 Placing Sensors
-Policy -0.0055 | Value 0.0040 | KL 0.02084 | CF 0.0871 | Std 0.1093 | |a| 0.0454 | EV +0.946 | AE nan | Alpha 0.0100 | MB 18/24
+Policy -0.0055 | Value 0.0040 | KL 0.02084 | CF 0.0871 | Std 0.1093 | |a| 0.0454 | EV +0.946 | Rsd 0.304 | Res 0.071 | AE nan | Alpha 0.0100 | MB 18/24
   cert | viol 0.050 | dV -0.276200 | V 0.3166 | inball 0.577 | a*_q05 0.00589 | a*_q50 0.03310 | dV>=0 0.000 | n=150 | a_used 0.00513 -> 0.00524
   crit | n=1 | viol 0.438 | V 0.4973 | Vmin 0.0895 | agree +0.443 | a*_q05 -0.00469 | a*_q50 0.00657 | dV>=0 0.213 | beta 0.1000
   bell | direct viol 0.502 | direct dV>=0 0.461 | d_mean -0.00070 | d_std 0.02864 | d_q95 0.05802
@@ -1605,7 +1607,7 @@ Policy -0.0055 | Value 0.0040 | KL 0.02084 | CF 0.0871 | Std 0.1093 | |a| 0.0454
 Placing Sensors
 [Episode 470/400] Steps: 720 | Reward:   -4.48 | Battery:  74.42% | Loss: 
 Placing Sensors
-Policy -0.0086 | Value 0.0041 | KL 0.01590 | CF 0.1482 | Std 0.1093 | |a| 0.0502 | EV +0.937 | AE nan | Alpha 0.0100 | MB 24/24
+Policy -0.0086 | Value 0.0041 | KL 0.01590 | CF 0.1482 | Std 0.1093 | |a| 0.0502 | EV +0.937 | Rsd 0.344 | Res 0.094 | AE nan | Alpha 0.0100 | MB 24/24
   cert | viol 0.079 | dV -0.234622 | V 0.2811 | inball 0.422 | a*_q05 0.00109 | a*_q50 0.02900 | dV>=0 0.036 | n=150 | a_used 0.00524 -> 0.00498
   crit | n=1 | viol 0.454 | V 0.5241 | Vmin 0.0988 | agree +0.472 | a*_q05 -0.00550 | a*_q50 0.00612 | dV>=0 0.271 | beta 0.1000
   bell | direct viol 0.528 | direct dV>=0 0.474 | d_mean -0.00025 | d_std 0.03435 | d_q95 0.07013
@@ -1613,7 +1615,7 @@ Policy -0.0086 | Value 0.0041 | KL 0.01590 | CF 0.1482 | Std 0.1093 | |a| 0.0502
 Placing Sensors
 [Episode 472/400] Steps: 720 | Reward:   -6.50 | Battery:  79.02% | Loss: 
 Placing Sensors
-Policy 0.0003 | Value 0.0081 | KL 0.01792 | CF 0.1612 | Std 0.1093 | |a| 0.0482 | EV +0.888 | AE nan | Alpha 0.0100 | MB 24/24
+Policy 0.0003 | Value 0.0081 | KL 0.01792 | CF 0.1612 | Std 0.1093 | |a| 0.0482 | EV +0.888 | Rsd 0.350 | Res 0.131 | AE nan | Alpha 0.0100 | MB 24/24
   cert | viol 0.180 | dV -0.252743 | V 0.3679 | inball 0.488 | a*_q05 0.00107 | a*_q50 0.02657 | dV>=0 0.022 | n=150 | a_used 0.00498 -> 0.00474
   crit | n=1 | viol 0.381 | V 0.5540 | Vmin 0.1132 | agree +0.585 | a*_q05 -0.00506 | a*_q50 0.00733 | dV>=0 0.178 | beta 0.1000
   bell | direct viol 0.502 | direct dV>=0 0.462 | d_mean -0.00214 | d_std 0.03175 | d_q95 0.06394
@@ -1621,7 +1623,7 @@ Policy 0.0003 | Value 0.0081 | KL 0.01792 | CF 0.1612 | Std 0.1093 | |a| 0.0482 
 Placing Sensors
 [Episode 474/400] Steps: 720 | Reward:   -4.19 | Battery:  65.49% | Loss: 
 Placing Sensors
-Policy -0.0045 | Value 0.0055 | KL 0.01138 | CF 0.1284 | Std 0.1093 | |a| 0.0639 | EV +0.935 | AE nan | Alpha 0.0100 | MB 24/24
+Policy -0.0045 | Value 0.0055 | KL 0.01138 | CF 0.1284 | Std 0.1093 | |a| 0.0639 | EV +0.935 | Rsd 0.355 | Res 0.094 | AE nan | Alpha 0.0100 | MB 24/24
   cert | viol 0.062 | dV -0.256589 | V 0.3084 | inball 0.474 | a*_q05 0.00457 | a*_q50 0.02817 | dV>=0 0.000 | n=150 | a_used 0.00474 -> 0.00473
   crit | n=1 | viol 0.441 | V 0.5749 | Vmin 0.0800 | agree +0.408 | a*_q05 -0.00427 | a*_q50 0.00563 | dV>=0 0.251 | beta 0.1000
   bell | direct viol 0.521 | direct dV>=0 0.450 | d_mean -0.00045 | d_std 0.02742 | d_q95 0.05634
@@ -1629,7 +1631,7 @@ Policy -0.0045 | Value 0.0055 | KL 0.01138 | CF 0.1284 | Std 0.1093 | |a| 0.0639
 Placing Sensors
 [Episode 476/400] Steps: 720 | Reward:   -5.56 | Battery:  81.71% | Loss: 
 Placing Sensors
-Policy -0.0076 | Value 0.0060 | KL 0.01175 | CF 0.1297 | Std 0.1093 | |a| 0.0509 | EV +0.901 | AE nan | Alpha 0.0100 | MB 24/24
+Policy -0.0076 | Value 0.0060 | KL 0.01175 | CF 0.1297 | Std 0.1093 | |a| 0.0509 | EV +0.901 | Rsd 0.309 | Res 0.098 | AE nan | Alpha 0.0100 | MB 24/24
   cert | viol 0.066 | dV -0.280610 | V 0.3438 | inball 0.527 | a*_q05 0.00431 | a*_q50 0.03182 | dV>=0 0.000 | n=150 | a_used 0.00473 -> 0.00479
   crit | n=1 | viol 0.438 | V 0.5364 | Vmin 0.1313 | agree +0.596 | a*_q05 -0.00675 | a*_q50 0.00565 | dV>=0 0.231 | beta 0.1000
   bell | direct viol 0.484 | direct dV>=0 0.430 | d_mean -0.00012 | d_std 0.02706 | d_q95 0.05436
@@ -1639,7 +1641,7 @@ Placing Sensors
 Placing Sensors
 [Episode 479/400] Steps:  85 | Reward:  -17.61 | Battery:   0.00% | Loss: 
 Placing Sensors
-Policy 0.0047 | Value 0.0182 | KL 0.01815 | CF 0.2028 | Std 0.1092 | |a| 0.0568 | EV +0.808 | AE nan | Alpha 0.0100 | MB 18/24
+Policy 0.0047 | Value 0.0182 | KL 0.01815 | CF 0.2028 | Std 0.1092 | |a| 0.0568 | EV +0.808 | Rsd 0.445 | Res 0.195 | AE nan | Alpha 0.0100 | MB 18/24
   cert | viol 0.000 | dV -0.314989 | V 0.3363 | inball 0.549 | a*_q05 0.01049 | a*_q50 0.04044 | dV>=0 0.000 | n=150 | a_used 0.00479 -> 0.00497
   crit | n=1 | viol 0.499 | V 0.5947 | Vmin 0.1268 | agree +0.611 | a*_q05 -0.00582 | a*_q50 0.00483 | dV>=0 0.267 | beta 0.1000
   bell | direct viol 0.518 | direct dV>=0 0.466 | d_mean -0.00058 | d_std 0.04556 | d_q95 0.08851
@@ -1647,7 +1649,7 @@ Policy 0.0047 | Value 0.0182 | KL 0.01815 | CF 0.2028 | Std 0.1092 | |a| 0.0568 
 Placing Sensors
 [Episode 481/400] Steps: 720 | Reward:   -3.91 | Battery:  83.54% | Loss: 
 Placing Sensors
-Policy -0.0025 | Value 0.0054 | KL 0.01029 | CF 0.0868 | Std 0.1092 | |a| 0.0437 | EV +0.935 | AE nan | Alpha 0.0100 | MB 24/24
+Policy -0.0025 | Value 0.0054 | KL 0.01029 | CF 0.0868 | Std 0.1092 | |a| 0.0437 | EV +0.935 | Rsd 0.359 | Res 0.092 | AE nan | Alpha 0.0100 | MB 24/24
   cert | viol 0.074 | dV -0.269963 | V 0.3211 | inball 0.600 | a*_q05 0.00404 | a*_q50 0.03342 | dV>=0 0.000 | n=150 | a_used 0.00497 -> 0.00476
   crit | n=1 | viol 0.371 | V 0.4661 | Vmin 0.0264 | agree +0.651 | a*_q05 -0.00283 | a*_q50 0.00646 | dV>=0 0.120 | beta 0.1000
   bell | direct viol 0.476 | direct dV>=0 0.437 | d_mean -0.00017 | d_std 0.04631 | d_q95 0.09187
@@ -1655,7 +1657,7 @@ Policy -0.0025 | Value 0.0054 | KL 0.01029 | CF 0.0868 | Std 0.1092 | |a| 0.0437
 Placing Sensors
 [Episode 483/400] Steps: 720 | Reward:   -2.22 | Battery:  85.17% | Loss: 
 Placing Sensors
-Policy -0.0111 | Value 0.0053 | KL 0.01232 | CF 0.1288 | Std 0.1092 | |a| 0.0477 | EV +0.918 | AE nan | Alpha 0.0100 | MB 24/24
+Policy -0.0111 | Value 0.0053 | KL 0.01232 | CF 0.1288 | Std 0.1092 | |a| 0.0477 | EV +0.918 | Rsd 0.329 | Res 0.096 | AE nan | Alpha 0.0100 | MB 24/24
   cert | viol 0.000 | dV -0.247553 | V 0.2646 | inball 0.630 | a*_q05 0.01025 | a*_q50 0.03961 | dV>=0 0.000 | n=150 | a_used 0.00476 -> 0.00491
   crit | n=1 | viol 0.619 | V 0.4535 | Vmin 0.0861 | agree +0.471 | a*_q05 -0.00603 | a*_q50 0.00277 | dV>=0 0.346 | beta 0.1000
   bell | direct viol 0.496 | direct dV>=0 0.453 | d_mean +0.00075 | d_std 0.03804 | d_q95 0.07649
@@ -1663,7 +1665,7 @@ Policy -0.0111 | Value 0.0053 | KL 0.01232 | CF 0.1288 | Std 0.1092 | |a| 0.0477
 Placing Sensors
 [Episode 485/400] Steps: 720 | Reward:   -3.48 | Battery:  84.89% | Loss: 
 Placing Sensors
-Policy -0.0090 | Value 0.0049 | KL 0.01018 | CF 0.1021 | Std 0.1092 | |a| 0.0481 | EV +0.899 | AE nan | Alpha 0.0100 | MB 24/24
+Policy -0.0090 | Value 0.0049 | KL 0.01018 | CF 0.1021 | Std 0.1092 | |a| 0.0481 | EV +0.899 | Rsd 0.296 | Res 0.096 | AE nan | Alpha 0.0100 | MB 24/24
   cert | viol 0.024 | dV -0.225638 | V 0.2664 | inball 0.600 | a*_q05 0.00649 | a*_q50 0.03017 | dV>=0 0.000 | n=150 | a_used 0.00491 -> 0.00494
   crit | n=1 | viol 0.343 | V 0.4986 | Vmin 0.0866 | agree +0.467 | a*_q05 -0.00367 | a*_q50 0.00729 | dV>=0 0.134 | beta 0.1000
   bell | direct viol 0.501 | direct dV>=0 0.466 | d_mean -0.00067 | d_std 0.02894 | d_q95 0.05826
@@ -1671,7 +1673,7 @@ Policy -0.0090 | Value 0.0049 | KL 0.01018 | CF 0.1021 | Std 0.1092 | |a| 0.0481
 Placing Sensors
 [Episode 487/400] Steps: 720 | Reward:   -3.42 | Battery:  76.41% | Loss: 
 Placing Sensors
-Policy -0.0060 | Value 0.0044 | KL 0.01082 | CF 0.1030 | Std 0.1092 | |a| 0.0568 | EV +0.945 | AE nan | Alpha 0.0100 | MB 24/24
+Policy -0.0060 | Value 0.0044 | KL 0.01082 | CF 0.1030 | Std 0.1092 | |a| 0.0568 | EV +0.945 | Rsd 0.336 | Res 0.080 | AE nan | Alpha 0.0100 | MB 24/24
   cert | viol 0.069 | dV -0.258078 | V 0.3043 | inball 0.553 | a*_q05 0.00453 | a*_q50 0.03352 | dV>=0 0.000 | n=150 | a_used 0.00494 -> 0.00482
   crit | n=1 | viol 0.604 | V 0.5145 | Vmin 0.0774 | agree +0.548 | a*_q05 -0.00465 | a*_q50 0.00313 | dV>=0 0.304 | beta 0.1000
   bell | direct viol 0.518 | direct dV>=0 0.450 | d_mean +0.00020 | d_std 0.02932 | d_q95 0.05847
@@ -1679,7 +1681,7 @@ Policy -0.0060 | Value 0.0044 | KL 0.01082 | CF 0.1030 | Std 0.1092 | |a| 0.0568
 Placing Sensors
 [Episode 489/400] Steps: 720 | Reward:   -3.90 | Battery:  75.63% | Loss: 
 Placing Sensors
-Policy -0.0135 | Value 0.0055 | KL 0.01771 | CF 0.1452 | Std 0.1092 | |a| 0.0517 | EV +0.929 | AE nan | Alpha 0.0100 | MB 24/24
+Policy -0.0135 | Value 0.0055 | KL 0.01771 | CF 0.1452 | Std 0.1092 | |a| 0.0517 | EV +0.929 | Rsd 0.337 | Res 0.090 | AE nan | Alpha 0.0100 | MB 24/24
   cert | viol 0.092 | dV -0.280303 | V 0.3360 | inball 0.538 | a*_q05 0.00395 | a*_q50 0.03304 | dV>=0 0.000 | n=150 | a_used 0.00482 -> 0.00475
   crit | n=1 | viol 0.488 | V 0.5853 | Vmin 0.1003 | agree +0.458 | a*_q05 -0.00591 | a*_q50 0.00494 | dV>=0 0.257 | beta 0.1000
   bell | direct viol 0.536 | direct dV>=0 0.474 | d_mean -0.00001 | d_std 0.03347 | d_q95 0.06933
@@ -1687,7 +1689,7 @@ Policy -0.0135 | Value 0.0055 | KL 0.01771 | CF 0.1452 | Std 0.1092 | |a| 0.0517
 Placing Sensors
 [Episode 491/400] Steps: 720 | Reward:   -4.52 | Battery:  70.59% | Loss: 
 Placing Sensors
-Policy -0.0082 | Value 0.0057 | KL 0.01119 | CF 0.0936 | Std 0.1092 | |a| 0.0493 | EV +0.918 | AE nan | Alpha 0.0100 | MB 24/24
+Policy -0.0082 | Value 0.0057 | KL 0.01119 | CF 0.0936 | Std 0.1092 | |a| 0.0493 | EV +0.918 | Rsd 0.358 | Res 0.109 | AE nan | Alpha 0.0100 | MB 24/24
   cert | viol 0.041 | dV -0.265750 | V 0.3051 | inball 0.580 | a*_q05 0.00603 | a*_q50 0.03650 | dV>=0 0.000 | n=150 | a_used 0.00475 -> 0.00469
   crit | n=1 | viol 0.525 | V 0.5663 | Vmin 0.1262 | agree +0.353 | a*_q05 -0.00678 | a*_q50 0.00428 | dV>=0 0.343 | beta 0.1000
   bell | direct viol 0.497 | direct dV>=0 0.440 | d_mean +0.00016 | d_std 0.02924 | d_q95 0.06175
@@ -1695,7 +1697,7 @@ Policy -0.0082 | Value 0.0057 | KL 0.01119 | CF 0.0936 | Std 0.1092 | |a| 0.0493
 Placing Sensors
 [Episode 493/400] Steps: 720 | Reward:   -2.60 | Battery:  74.96% | Loss: 
 Placing Sensors
-Policy -0.0044 | Value 0.0031 | KL 0.01145 | CF 0.0919 | Std 0.1093 | |a| 0.0630 | EV +0.951 | AE nan | Alpha 0.0100 | MB 24/24
+Policy -0.0044 | Value 0.0031 | KL 0.01145 | CF 0.0919 | Std 0.1093 | |a| 0.0630 | EV +0.951 | Rsd 0.329 | Res 0.075 | AE nan | Alpha 0.0100 | MB 24/24
   cert | viol 0.000 | dV -0.261776 | V 0.2835 | inball 0.593 | a*_q05 0.01073 | a*_q50 0.03608 | dV>=0 0.000 | n=150 | a_used 0.00469 -> 0.00487
   crit | n=1 | viol 0.508 | V 0.5366 | Vmin 0.1398 | agree +0.414 | a*_q05 -0.00556 | a*_q50 0.00473 | dV>=0 0.239 | beta 0.1000
   bell | direct viol 0.488 | direct dV>=0 0.442 | d_mean +0.00101 | d_std 0.03133 | d_q95 0.06786
@@ -1703,7 +1705,7 @@ Policy -0.0044 | Value 0.0031 | KL 0.01145 | CF 0.0919 | Std 0.1093 | |a| 0.0630
 Placing Sensors
 [Episode 495/400] Steps: 720 | Reward:   -3.49 | Battery:  68.91% | Loss: 
 Placing Sensors
-Policy -0.0089 | Value 0.0037 | KL 0.01188 | CF 0.0976 | Std 0.1093 | |a| 0.0509 | EV +0.934 | AE nan | Alpha 0.0100 | MB 24/24
+Policy -0.0089 | Value 0.0037 | KL 0.01188 | CF 0.0976 | Std 0.1093 | |a| 0.0509 | EV +0.934 | Rsd 0.320 | Res 0.088 | AE nan | Alpha 0.0100 | MB 24/24
   cert | viol 0.002 | dV -0.242830 | V 0.2588 | inball 0.620 | a*_q05 0.01026 | a*_q50 0.04023 | dV>=0 0.000 | n=150 | a_used 0.00487 -> 0.00505
   crit | n=1 | viol 0.603 | V 0.4941 | Vmin 0.1134 | agree +0.407 | a*_q05 -0.00670 | a*_q50 0.00249 | dV>=0 0.359 | beta 0.1000
   bell | direct viol 0.488 | direct dV>=0 0.434 | d_mean +0.00125 | d_std 0.02924 | d_q95 0.05940
@@ -1711,7 +1713,7 @@ Policy -0.0089 | Value 0.0037 | KL 0.01188 | CF 0.0976 | Std 0.1093 | |a| 0.0509
 Placing Sensors
 [Episode 497/400] Steps: 720 | Reward:   -4.08 | Battery:  59.00% | Loss: 
 Placing Sensors
-Policy -0.0099 | Value 0.0034 | KL 0.01053 | CF 0.0924 | Std 0.1092 | |a| 0.0529 | EV +0.962 | AE nan | Alpha 0.0100 | MB 24/24
+Policy -0.0099 | Value 0.0034 | KL 0.01053 | CF 0.0924 | Std 0.1092 | |a| 0.0529 | EV +0.962 | Rsd 0.345 | Res 0.067 | AE nan | Alpha 0.0100 | MB 24/24
   cert | viol 0.012 | dV -0.266752 | V 0.2908 | inball 0.564 | a*_q05 0.00865 | a*_q50 0.03865 | dV>=0 0.000 | n=150 | a_used 0.00505 -> 0.00508
   crit | n=1 | viol 0.474 | V 0.5039 | Vmin 0.0721 | agree +0.385 | a*_q05 -0.00450 | a*_q50 0.00567 | dV>=0 0.250 | beta 0.1000
   bell | direct viol 0.483 | direct dV>=0 0.438 | d_mean +0.00074 | d_std 0.03075 | d_q95 0.06023
@@ -1719,7 +1721,7 @@ Policy -0.0099 | Value 0.0034 | KL 0.01053 | CF 0.0924 | Std 0.1092 | |a| 0.0529
 Placing Sensors
 [Episode 499/400] Steps: 720 | Reward:   -3.67 | Battery:  76.53% | Loss: 
 Placing Sensors
-Policy -0.0129 | Value 0.0049 | KL 0.02201 | CF 0.1586 | Std 0.1092 | |a| 0.0596 | EV +0.935 | AE nan | Alpha 0.0100 | MB 24/24
+Policy -0.0129 | Value 0.0049 | KL 0.02201 | CF 0.1586 | Std 0.1092 | |a| 0.0596 | EV +0.935 | Rsd 0.339 | Res 0.094 | AE nan | Alpha 0.0100 | MB 24/24
   cert | viol 0.017 | dV -0.324114 | V 0.3496 | inball 0.610 | a*_q05 0.00902 | a*_q50 0.03937 | dV>=0 0.000 | n=150 | a_used 0.00508 -> 0.00525
   crit | n=1 | viol 0.525 | V 0.5304 | Vmin 0.1092 | agree +0.573 | a*_q05 -0.00592 | a*_q50 0.00456 | dV>=0 0.294 | beta 0.1000
   bell | direct viol 0.483 | direct dV>=0 0.432 | d_mean +0.00009 | d_std 0.03626 | d_q95 0.07618
@@ -1727,7 +1729,7 @@ Policy -0.0129 | Value 0.0049 | KL 0.02201 | CF 0.1586 | Std 0.1092 | |a| 0.0596
 Placing Sensors
 [Episode 501/400] Steps: 720 | Reward:   -4.19 | Battery:  63.60% | Loss: 
 Placing Sensors
-Policy -0.0067 | Value 0.0037 | KL 0.02105 | CF 0.1298 | Std 0.1092 | |a| 0.0759 | EV +0.935 | AE nan | Alpha 0.0100 | MB 24/24
+Policy -0.0067 | Value 0.0037 | KL 0.02105 | CF 0.1298 | Std 0.1092 | |a| 0.0759 | EV +0.935 | Rsd 0.286 | Res 0.073 | AE nan | Alpha 0.0100 | MB 24/24
   cert | viol 0.039 | dV -0.284780 | V 0.3193 | inball 0.543 | a*_q05 0.00673 | a*_q50 0.03603 | dV>=0 0.000 | n=150 | a_used 0.00525 -> 0.00535
   crit | n=1 | viol 0.622 | V 0.5797 | Vmin 0.1542 | agree +0.488 | a*_q05 -0.00671 | a*_q50 0.00309 | dV>=0 0.375 | beta 0.1000
   bell | direct viol 0.529 | direct dV>=0 0.463 | d_mean +0.00044 | d_std 0.03416 | d_q95 0.06950
@@ -1737,7 +1739,7 @@ Placing Sensors
 Placing Sensors
 [Episode 504/400] Steps:  73 | Reward:  -17.72 | Battery:   0.00% | Loss: 
 Placing Sensors
-Policy -0.0021 | Value 0.0282 | KL 0.02653 | CF 0.1781 | Std 0.1092 | |a| 0.0610 | EV +0.777 | AE nan | Alpha 0.0100 | MB 18/24
+Policy -0.0021 | Value 0.0282 | KL 0.02653 | CF 0.1781 | Std 0.1092 | |a| 0.0610 | EV +0.777 | Rsd 0.405 | Res 0.200 | AE nan | Alpha 0.0100 | MB 18/24
   cert | viol 0.103 | dV -0.240611 | V 0.3050 | inball 0.510 | a*_q05 0.00378 | a*_q50 0.02656 | dV>=0 0.000 | n=150 | a_used 0.00535 -> 0.00517
   crit | n=1 | viol 0.318 | V 0.5664 | Vmin 0.2050 | agree +0.598 | a*_q05 0.00017 | a*_q50 0.00797 | dV>=0 0.053 | beta 0.1000
   bell | direct viol 0.514 | direct dV>=0 0.463 | d_mean -0.00160 | d_std 0.03158 | d_q95 0.06543
@@ -1745,7 +1747,7 @@ Policy -0.0021 | Value 0.0282 | KL 0.02653 | CF 0.1781 | Std 0.1092 | |a| 0.0610
 Placing Sensors
 [Episode 506/400] Steps: 720 | Reward:   -4.53 | Battery:  78.53% | Loss: 
 Placing Sensors
-Policy -0.0102 | Value 0.0033 | KL 0.01461 | CF 0.1236 | Std 0.1091 | |a| 0.0615 | EV +0.975 | AE nan | Alpha 0.0100 | MB 24/24
+Policy -0.0102 | Value 0.0033 | KL 0.01461 | CF 0.1236 | Std 0.1091 | |a| 0.0615 | EV +0.975 | Rsd 0.409 | Res 0.065 | AE nan | Alpha 0.0100 | MB 24/24
   cert | viol 0.069 | dV -0.301778 | V 0.3657 | inball 0.526 | a*_q05 0.00461 | a*_q50 0.03126 | dV>=0 0.000 | n=150 | a_used 0.00517 -> 0.00516
   crit | n=1 | viol 0.487 | V 0.6427 | Vmin 0.1751 | agree +0.562 | a*_q05 -0.00482 | a*_q50 0.00538 | dV>=0 0.187 | beta 0.1000
   bell | direct viol 0.491 | direct dV>=0 0.439 | d_mean +0.00016 | d_std 0.04636 | d_q95 0.09433
@@ -1753,7 +1755,7 @@ Policy -0.0102 | Value 0.0033 | KL 0.01461 | CF 0.1236 | Std 0.1091 | |a| 0.0615
 Placing Sensors
 [Episode 508/400] Steps: 720 | Reward:   -4.90 | Battery:  71.49% | Loss: 
 Placing Sensors
-Policy -0.0097 | Value 0.0027 | KL 0.01642 | CF 0.1037 | Std 0.1091 | |a| 0.0572 | EV +0.967 | AE nan | Alpha 0.0100 | MB 24/24
+Policy -0.0097 | Value 0.0027 | KL 0.01642 | CF 0.1037 | Std 0.1091 | |a| 0.0572 | EV +0.967 | Rsd 0.361 | Res 0.066 | AE nan | Alpha 0.0100 | MB 24/24
   cert | viol 0.014 | dV -0.287478 | V 0.3285 | inball 0.553 | a*_q05 0.00744 | a*_q50 0.03464 | dV>=0 0.000 | n=150 | a_used 0.00516 -> 0.00525
   crit | n=1 | viol 0.515 | V 0.5866 | Vmin 0.1414 | agree +0.570 | a*_q05 -0.00552 | a*_q50 0.00493 | dV>=0 0.214 | beta 0.1000
   bell | direct viol 0.516 | direct dV>=0 0.468 | d_mean +0.00028 | d_std 0.02795 | d_q95 0.05307
@@ -1761,7 +1763,7 @@ Policy -0.0097 | Value 0.0027 | KL 0.01642 | CF 0.1037 | Std 0.1091 | |a| 0.0572
 Placing Sensors
 [Episode 510/400] Steps: 720 | Reward:   -2.46 | Battery:  70.51% | Loss: 
 Placing Sensors
-Policy -0.0087 | Value 0.0041 | KL 0.01250 | CF 0.1400 | Std 0.1091 | |a| 0.0596 | EV +0.957 | AE nan | Alpha 0.0100 | MB 24/24
+Policy -0.0087 | Value 0.0041 | KL 0.01250 | CF 0.1400 | Std 0.1091 | |a| 0.0596 | EV +0.957 | Rsd 0.347 | Res 0.078 | AE nan | Alpha 0.0100 | MB 24/24
   cert | viol 0.017 | dV -0.269332 | V 0.2896 | inball 0.640 | a*_q05 0.00969 | a*_q50 0.03890 | dV>=0 0.000 | n=150 | a_used 0.00525 -> 0.00542
   crit | n=1 | viol 0.578 | V 0.4635 | Vmin 0.1373 | agree +0.541 | a*_q05 -0.00582 | a*_q50 0.00398 | dV>=0 0.290 | beta 0.1000
   bell | direct viol 0.497 | direct dV>=0 0.449 | d_mean +0.00087 | d_std 0.03625 | d_q95 0.07565
@@ -1771,7 +1773,7 @@ Placing Sensors
 Placing Sensors
 [Episode 513/400] Steps: 131 | Reward:  -17.33 | Battery:   0.00% | Loss: 
 Placing Sensors
-Policy 0.0007 | Value 0.0322 | KL 0.02052 | CF 0.1788 | Std 0.1091 | |a| 0.0621 | EV +0.769 | AE nan | Alpha 0.0100 | MB 28/28
+Policy 0.0007 | Value 0.0322 | KL 0.02052 | CF 0.1788 | Std 0.1091 | |a| 0.0621 | EV +0.769 | Rsd 0.459 | Res 0.223 | AE nan | Alpha 0.0100 | MB 28/28
   cert | viol 0.000 | dV -0.298584 | V 0.3198 | inball 0.515 | a*_q05 0.01097 | a*_q50 0.03787 | dV>=0 0.000 | n=150 | a_used 0.00542 -> 0.00554
   crit | n=1 | viol 0.600 | V 0.6086 | Vmin 0.1217 | agree +0.601 | a*_q05 -0.00581 | a*_q50 0.00417 | dV>=0 0.290 | beta 0.1000
   bell | direct viol 0.504 | direct dV>=0 0.445 | d_mean +0.00063 | d_std 0.05788 | d_q95 0.12351
@@ -1779,7 +1781,7 @@ Policy 0.0007 | Value 0.0322 | KL 0.02052 | CF 0.1788 | Std 0.1091 | |a| 0.0621 
 Placing Sensors
 [Episode 515/400] Steps: 720 | Reward:   -5.07 | Battery:  79.00% | Loss: 
 Placing Sensors
-Policy -0.0127 | Value 0.0043 | KL 0.02021 | CF 0.1581 | Std 0.1091 | |a| 0.0572 | EV +0.956 | AE nan | Alpha 0.0100 | MB 24/24
+Policy -0.0127 | Value 0.0043 | KL 0.02021 | CF 0.1581 | Std 0.1091 | |a| 0.0572 | EV +0.956 | Rsd 0.386 | Res 0.081 | AE nan | Alpha 0.0100 | MB 24/24
   cert | viol 0.066 | dV -0.337698 | V 0.3909 | inball 0.599 | a*_q05 0.00521 | a*_q50 0.03754 | dV>=0 0.016 | n=150 | a_used 0.00554 -> 0.00558
   crit | n=1 | viol 0.465 | V 0.5293 | Vmin 0.0989 | agree +0.637 | a*_q05 -0.00631 | a*_q50 0.00632 | dV>=0 0.213 | beta 0.1000
   bell | direct viol 0.502 | direct dV>=0 0.467 | d_mean -0.00010 | d_std 0.04989 | d_q95 0.09853
@@ -1787,7 +1789,7 @@ Policy -0.0127 | Value 0.0043 | KL 0.02021 | CF 0.1581 | Std 0.1091 | |a| 0.0572
 Placing Sensors
 [Episode 517/400] Steps: 720 | Reward:   -4.01 | Battery:  85.72% | Loss: 
 Placing Sensors
-Policy -0.0053 | Value 0.0033 | KL 0.01468 | CF 0.1156 | Std 0.1091 | |a| 0.0687 | EV +0.962 | AE nan | Alpha 0.0100 | MB 24/24
+Policy -0.0053 | Value 0.0033 | KL 0.01468 | CF 0.1156 | Std 0.1091 | |a| 0.0687 | EV +0.962 | Rsd 0.337 | Res 0.068 | AE nan | Alpha 0.0100 | MB 24/24
   cert | viol 0.066 | dV -0.287586 | V 0.3281 | inball 0.605 | a*_q05 0.00516 | a*_q50 0.03630 | dV>=0 0.000 | n=150 | a_used 0.00558 -> 0.00559
   crit | n=1 | viol 0.443 | V 0.4552 | Vmin 0.0868 | agree +0.628 | a*_q05 -0.00579 | a*_q50 0.00620 | dV>=0 0.205 | beta 0.1000
   bell | direct viol 0.485 | direct dV>=0 0.453 | d_mean +0.00104 | d_std 0.04811 | d_q95 0.09634
@@ -1795,7 +1797,7 @@ Policy -0.0053 | Value 0.0033 | KL 0.01468 | CF 0.1156 | Std 0.1091 | |a| 0.0687
 Placing Sensors
 [Episode 519/400] Steps: 720 | Reward:   -3.20 | Battery:  80.68% | Loss: 
 Placing Sensors
-Policy -0.0053 | Value 0.0042 | KL 0.02297 | CF 0.1600 | Std 0.1091 | |a| 0.0563 | EV +0.958 | AE nan | Alpha 0.0100 | MB 18/24
+Policy -0.0053 | Value 0.0042 | KL 0.02297 | CF 0.1600 | Std 0.1091 | |a| 0.0563 | EV +0.958 | Rsd 0.366 | Res 0.085 | AE nan | Alpha 0.0100 | MB 18/24
   cert | viol 0.012 | dV -0.266556 | V 0.2927 | inball 0.560 | a*_q05 0.00836 | a*_q50 0.03729 | dV>=0 0.000 | n=150 | a_used 0.00559 -> 0.00567
   crit | n=1 | viol 0.615 | V 0.5639 | Vmin 0.1562 | agree +0.522 | a*_q05 -0.00578 | a*_q50 0.00377 | dV>=0 0.279 | beta 0.1000
   bell | direct viol 0.510 | direct dV>=0 0.455 | d_mean +0.00145 | d_std 0.03170 | d_q95 0.06146
@@ -1803,7 +1805,7 @@ Policy -0.0053 | Value 0.0042 | KL 0.02297 | CF 0.1600 | Std 0.1091 | |a| 0.0563
 Placing Sensors
 [Episode 521/400] Steps: 720 | Reward:   -3.88 | Battery:  80.90% | Loss: 
 Placing Sensors
-Policy -0.0136 | Value 0.0038 | KL 0.01659 | CF 0.1562 | Std 0.1091 | |a| 0.0520 | EV +0.956 | AE nan | Alpha 0.0100 | MB 24/24
+Policy -0.0136 | Value 0.0038 | KL 0.01659 | CF 0.1562 | Std 0.1091 | |a| 0.0520 | EV +0.956 | Rsd 0.359 | Res 0.091 | AE nan | Alpha 0.0100 | MB 24/24
   cert | viol 0.107 | dV -0.294872 | V 0.3650 | inball 0.544 | a*_q05 0.00402 | a*_q50 0.02912 | dV>=0 0.000 | n=150 | a_used 0.00567 -> 0.00575
   crit | n=1 | viol 0.307 | V 0.4866 | Vmin 0.0869 | agree +0.598 | a*_q05 -0.00241 | a*_q50 0.00824 | dV>=0 0.094 | beta 0.1000
   bell | direct viol 0.499 | direct dV>=0 0.454 | d_mean -0.00090 | d_std 0.02986 | d_q95 0.05912
@@ -1813,7 +1815,7 @@ Placing Sensors
 Placing Sensors
 [Episode 524/400] Steps: 720 | Reward:   -4.12 | Battery:  75.56% | Loss: 
 Placing Sensors
-Policy -0.0137 | Value 0.0202 | KL 0.01018 | CF 0.0877 | Std 0.1091 | |a| 0.0563 | EV +0.868 | AE nan | Alpha 0.0100 | MB 24/24
+Policy -0.0137 | Value 0.0202 | KL 0.01018 | CF 0.0877 | Std 0.1091 | |a| 0.0563 | EV +0.868 | Rsd 0.458 | Res 0.168 | AE nan | Alpha 0.0100 | MB 24/24
   cert | viol 0.007 | dV -0.288318 | V 0.3149 | inball 0.574 | a*_q05 0.00856 | a*_q50 0.03844 | dV>=0 0.000 | n=150 | a_used 0.00575 -> 0.00591
   crit | n=1 | viol 0.577 | V 0.5192 | Vmin 0.0961 | agree +0.691 | a*_q05 -0.00532 | a*_q50 0.00460 | dV>=0 0.257 | beta 0.1000
   bell | direct viol 0.502 | direct dV>=0 0.438 | d_mean +0.00160 | d_std 0.03029 | d_q95 0.06202
@@ -1868,21 +1870,21 @@ total step rows written: 6577
 ==============================================
 WALL CLOCK BREAKDOWN
 ==============================================
-Total run time        :   17639.37 s
-  Rollout (training)  :   17096.53 s  ( 96.9%)
-    - policy inference:     213.39 s  (  1.2%)
-    - env + reward    :   16883.14 s  ( 95.7%)
-  PPO update()        :      56.30 s  (  0.3%)
-  Checkpoint saves    :       0.01 s  (  0.0%)
-  Final evaluation    :     351.18 s  (  2.0%)
-  Other / logging     :     135.35 s  (  0.8%)
+Total run time        :   17671.08 s
+  Rollout (training)  :   17124.60 s  ( 96.9%)
+    - policy inference:     212.90 s  (  1.2%)
+    - env + reward    :   16911.71 s  ( 95.7%)
+  PPO update()        :      56.95 s  (  0.3%)
+  Checkpoint saves    :       0.05 s  (  0.0%)
+  Final evaluation    :     354.09 s  (  2.0%)
+  Other / logging     :     135.39 s  (  0.8%)
 
 ==============================================
 PER-CALL AVERAGES
 ==============================================
-Policy inference      :   294874 calls |    0.740 ms/step
-  final eval only     :     6577 calls |    0.725 ms/step
-PPO update()          :      192 calls |  293.209 ms/update
-Episode               :      400 eps   |   43.220 s/episode
+Policy inference      :   294874 calls |    0.738 ms/step
+  final eval only     :     6577 calls |    0.730 ms/step
+PPO update()          :      192 calls |  296.623 ms/update
+Episode               :      400 eps   |   43.292 s/episode
 
 update() share of wall clock: 0.3%
