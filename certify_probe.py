@@ -14,7 +14,7 @@ and three of those quantities cannot be recovered from the CSVs a
 training run writes:
 
   kappa_1   a LOWER envelope of V_eta over distance to the target set.
-            training_metrics.csv logs per-update aggregates -- means,
+            training_metrics_ppo_s1.csv logs per-update aggregates -- means,
             quantiles, a batch minimum -- and an envelope is a
             per-state minimum over a distance bin. `ood_range` is the
             closest column and it is a MEAN spread across probe

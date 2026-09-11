@@ -85,8 +85,13 @@ IS_DQN = POLICY_TYPE == "dqn"
 # Without the fourth cell the observed interaction -- the sign
 # constraint mattering only when the spectral norm is present -- is
 # indistinguishable from two main effects.
+# cost_icnn: the bounded observer with a certificate that vanishes on
+# the target set and carries a KNOWN quadratic lower bound,
+# V >= eps * d^2, after Manek & Kolter (2019). The other cost arms fit
+# kappa_1 from rollouts; this one fixes it by construction, which is
+# what turns kappa_1^{-1} from a regression into a bound.
 COST_VARIANTS = ("cost", "cost_linear", "cost_plain", "cost_lipschitz",
-                 "cost_softplus")
+                 "cost_softplus", "cost_icnn")
 KNOWN_VARIANTS = ("lyapunov", "normal") + COST_VARIANTS
 if POLICY_TYPE == "transformer" and TRANSFORMER_VARIANT not in KNOWN_VARIANTS:
     # Fail loudly. Every dispatch below is an if/elif chain ending in a
@@ -559,6 +564,21 @@ CONVERGE_STOP = os.environ.get("LTAC_CONV_STOP", "0") == "1"
 CHECKPOINT_FORMAT = 2
 
 
+# torch.load defaults to weights_only=True from PyTorch 2.6. A
+# full checkpoint carries the numpy RNG state, whose tuple contains a
+# numpy array, and numpy objects are not on the allowlist -- so the
+# load fails. These files are written by our own runs, so unpickling
+# them is no more dangerous than running the script that wrote them;
+# the flag is passed explicitly rather than left to the default so the
+# behaviour does not depend on the installed torch version. Older
+# versions have no such kwarg, hence the fallback.
+def _torch_load(path, map_location="cpu"):
+    try:
+        return torch.load(path, map_location=map_location, weights_only=False)
+    except TypeError:
+        return torch.load(path, map_location=map_location)
+
+
 def save_full_checkpoint(path, model, opt, ep, return_var_tracker,
                          conv_state, extra=None):
     """Everything needed to continue a run, not merely to evaluate it."""
@@ -569,6 +589,33 @@ def save_full_checkpoint(path, model, opt, ep, return_var_tracker,
         "model": model.state_dict(),
         "optimizer": opt.state_dict() if opt is not None else None,
         "progress_steps": int(PROGRESS.get("steps", 0)),
+        # The LR schedule and the auxiliary curriculum are functions of
+        # PROGRESS["steps"] / TOTAL_STEP_BUDGET, and that denominator is
+        # TOTAL_EPISODES * 720 -- a config value. Resuming with a
+        # different LTAC_EPISODES rewinds the schedule: at episode 850,
+        # going from 1000 to 1200 moves progress 0.850 -> 0.708 and
+        # nearly DOUBLES the learning rate, which undoes a converged
+        # policy. Stored so the mismatch can be caught rather than
+        # silently applied.
+        "total_episodes": TOTAL_EPISODES,
+        # The architecture, so a consumer can rebuild the network the
+        # weights came from instead of guessing it from the
+        # environment. A state_dict holds tensors and no structure, so
+        # without this the reader must be told the shape out of band --
+        # and if it is told wrong, strict=False silently leaves the
+        # unmatched layers randomly initialised. Recording it here
+        # makes that failure impossible rather than merely detectable.
+        "arch_env": {k: os.environ.get(k) for k in (
+            "LTAC_VARIANT", "LTAC_ENCODER_C", "LTAC_ENCODER_QK_C",
+            "LTAC_QK_TEMP", "LTAC_LN_EPS", "LTAC_LN_GAMMA_MAX",
+            "LTAC_SPECTRAL_C", "LTAC_POLICY_TYPE") if os.environ.get(k)},
+        "arch": {
+            "view_distance": VIEW_DISTANCE,
+            "scalar_dim": SCALAR_DIM,
+            "sequence_length": SEQUENCE_LENGTH,
+            "cost_beta_init": COST_BETA_INIT,
+            "cost_beta_gain_target": COST_BETA_GAIN_TARGET,
+        },
         "variant": TRANSFORMER_VARIANT,
         "policy_type": POLICY_TYPE,
         "seed": RUN_SEED,
@@ -597,7 +644,7 @@ def load_full_checkpoint(path, model, opt, return_var_tracker):
     different thing from resuming and should not be silent.
     """
     import numpy as _np
-    blob = torch.load(path, map_location="cpu", weights_only=False)
+    blob = _torch_load(path)
 
     if not (isinstance(blob, dict) and blob.get("format") == CHECKPOINT_FORMAT):
         model.load_state_dict(blob if not hasattr(blob, "state_dict")
@@ -612,6 +659,20 @@ def load_full_checkpoint(path, model, opt, return_var_tracker):
         raise SystemExit(
             f"checkpoint variant {blob.get('variant')!r} != "
             f"LTAC_VARIANT {TRANSFORMER_VARIANT!r}")
+
+    saved_te = blob.get("total_episodes")
+    if (saved_te is not None and saved_te != TOTAL_EPISODES
+            and os.environ.get("LTAC_ALLOW_BUDGET_CHANGE", "0") != "1"):
+        raise SystemExit(
+            f"checkpoint was trained with LTAC_EPISODES={saved_te}, "
+            f"resuming with {TOTAL_EPISODES}. This rescales "
+            f"progress_frac() and therefore the LR schedule and the "
+            f"auxiliary curriculum -- a converged policy would be hit "
+            f"with a step size it never trained under. Resume with "
+            f"LTAC_EPISODES={saved_te}; MAX_EPISODES_CAP is "
+            f"3*LTAC_EPISODES ({3 * saved_te}), so a longer run needs "
+            f"no larger budget. Set LTAC_ALLOW_BUDGET_CHANGE=1 to "
+            f"override.")
 
     model.load_state_dict(blob["model"])
     if opt is not None and blob.get("optimizer") is not None:
@@ -2817,6 +2878,18 @@ def run():
                 print("[cost_softplus] critic head: beta*softplus, "
                       "NO spectral norm (sign constraint only)")
 
+            elif TRANSFORMER_VARIANT == "cost_icnn":
+                from icnn_transformer import ICNNCostTransformerActorCritic
+                model = ICNNCostTransformerActorCritic(
+                    VIEW_DISTANCE, scalar_dim=SCALAR_DIM,
+                    sequence_length=SEQUENCE_LENGTH,
+                    softplus_beta=COST_BETA_INIT,
+                    beta_gain_target=COST_BETA_GAIN_TARGET,
+                    spectral_critic=True).to(device)
+                print("[cost_icnn] bounded observer + shifted softplus "
+                      "with quadratic floor: V >= eps*d^2, eps=%.3f"
+                      % model.eps_q)
+
             elif TRANSFORMER_VARIANT == "cost_lipschitz":
                 # Same reward, same critic head as `cost`. The ONE
                 # difference is the encoder: L2 self-attention with
@@ -3320,8 +3393,19 @@ def run():
             if conv_streak >= CONVERGE_SUSTAIN:
                 conv_fired_at = ep
                 ckpt_start = time.perf_counter()
+                # Never overwrite an existing probe_converged.pt. The
+                # test fires once per run, but LTAC_CONV_RESET re-arms
+                # it on resume, so a second firing would silently
+                # replace the checkpoint the first one selected -- and
+                # if the resumed stretch was worse, the good policy is
+                # gone. Suffix instead and let the run keep both.
+                _pc = ckpt_dir / "probe_converged.pt"
+                if _pc.exists():
+                    _pc = ckpt_dir / f"probe_converged_ep{ep}.pt"
+                    print(f"[CONVERGED] probe_converged.pt already exists; "
+                          f"writing {_pc.name} instead.")
                 save_full_checkpoint(
-                    ckpt_dir / "probe_converged.pt", model, opt, ep,
+                    _pc, model, opt, ep,
                     return_var_tracker,
                     {"hist": conv_hist[-CONVERGE_WINDOW:],
                      "streak": conv_streak, "fired_at": ep})
@@ -3330,7 +3414,7 @@ def run():
                       f"{100*_death_rate:.0f}% over the last "
                       f"{CONVERGE_WINDOW}, survivor reward flat for "
                       f"{conv_streak} consecutive episodes. "
-                      f"Wrote probe_converged.pt.")
+                      f"Wrote {_pc.name}.")
                 if CONVERGE_STOP:
                     print("[CONVERGED] LTAC_CONV_STOP=1, ending training.")
                     break
