@@ -1,0 +1,5 @@
+Placing Sensors
+[cost_icnn] bounded observer + shifted softplus with quadratic floor: V >= eps*d^2, eps=1.451
+Placing Sensors
+[Episode 1/900] Steps: 720 | Reward:   -6.91 | Battery:  32.23% | Loss: 
+Placing Sensors
