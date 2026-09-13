@@ -14,7 +14,7 @@ and three of those quantities cannot be recovered from the CSVs a
 training run writes:
 
   kappa_1   a LOWER envelope of V_eta over distance to the target set.
-            training_metrics_ppo_s1.csv logs per-update aggregates -- means,
+            training_metrics.csv logs per-update aggregates -- means,
             quantiles, a batch minimum -- and an envelope is a
             per-state minimum over a distance bin. `ood_range` is the
             closest column and it is a MEAN spread across probe
@@ -148,8 +148,9 @@ if _known.checkpoint:
     _variant, _seed = infer_variant(_CKPT)
     _variant = _known.variant or _variant
     if _variant and "LTAC_VARIANT" not in _arch:
-        for _arm in ("cost_lipschitz", "cost_linear", "cost_plain",
-                     "cost_softplus", "cost", "lyapunov", "normal"):
+        for _arm in ("cost_lipschitz", "cost_softplus", "cost_linear",
+                     "cost_plain", "cost_icnn", "cost", "lyapunov",
+                     "normal"):
             if _variant.startswith(_arm):
                 _variant = _arm
                 break
@@ -192,7 +193,18 @@ def build_model(ckpt_path, device, allow_missing=False):
     silently wrong model, which is the failure mode worth having.
     """
     variant = M.TRANSFORMER_VARIANT
-    if variant == "cost_lipschitz":
+    if variant == "cost_icnn":
+        # Must precede the cost_lipschitz branch: the icnn head
+        # subclasses it, so matching on the parent first would build a
+        # model without the quadratic floor and the state dict would
+        # then mismatch on the buffers g_ref / g_ref_init.
+        from icnn_transformer import ICNNCostTransformerActorCritic as C
+        model = C(M.VIEW_DISTANCE, scalar_dim=M.SCALAR_DIM,
+                  sequence_length=M.SEQUENCE_LENGTH,
+                  softplus_beta=M.COST_BETA_INIT,
+                  beta_gain_target=M.COST_BETA_GAIN_TARGET,
+                  spectral_critic=True)
+    elif variant == "cost_lipschitz":
         from lipschitz_transformer import LipschitzCostTransformerActorCritic as C
         model = C(M.VIEW_DISTANCE, scalar_dim=M.SCALAR_DIM,
                   sequence_length=M.SEQUENCE_LENGTH,
@@ -255,7 +267,8 @@ def value_of(model, seq):
     return float(-v.reshape(-1)[0].item()) if M.IS_COST else float(v.reshape(-1)[0].item())
 
 
-def rollout(model, env, device, n_episodes, seed0=10_000):
+def rollout(model, env, device, n_episodes, seed0=10_000,
+            fail_dir=None):
     """
     Deterministic rollouts, logging what the constants need.
 
@@ -357,6 +370,51 @@ def rollout(model, env, device, n_episodes, seed0=10_000):
             if env.ch.get_battery() <= 0.0:
                 break
 
+        # ---- capture failures for independent replay ----------------
+        #
+        # An episode that terminates early is excluded from D, and the
+        # exclusion is only defensible if the failure is a property of
+        # the environment draw rather than of the controller. That
+        # cannot be argued from the rollout alone: the observed harvest
+        # is a function of where the policy went, not of what the map
+        # offered. Deciding it requires running a planner that sees the
+        # whole field on the SAME draw.
+        #
+        # The draw is reproducible from (seed0, ep) because the loop
+        # reseeds numpy before place_devices/reset and terrain, foliage
+        # and start position all draw from np.random. Device placement
+        # uses Python's random, seeded once at construction, so a
+        # replay matches only if it performs the same number of
+        # place_devices calls. We therefore store a HASH of the
+        # realised terrain and foliage: the replay recomputes it and
+        # refuses to compare if it differs, rather than silently
+        # evaluating a different environment.
+        if ep_stat["steps"] < M.MAX_STEPS_PER_EPISODE and fail_dir:
+            import hashlib
+            pad = int(getattr(env, "PAD", 0))
+            topo = np.asarray(env.topo_mask, dtype=np.float32)
+            foli = np.asarray(env.foliage_mask, dtype=np.float32)
+            h = hashlib.sha256()
+            h.update(topo.tobytes())
+            h.update(foli.tobytes())
+            case = os.path.join(fail_dir, "fail_ep%03d.npz" % ep)
+            np.savez_compressed(
+                case,
+                seed0=seed0, episode=ep, env_sha256=h.hexdigest(),
+                pad=pad,
+                start_x=ep_stat["start_x"], start_y=ep_stat["start_y"],
+                start_batt=ep_stat["start_batt"],
+                steps_survived=ep_stat["steps"],
+                min_batt=ep_stat["min_batt"],
+                mean_solar_w=float(np.mean(ep_stat["solar_w"]))
+                if ep_stat["solar_w"] else np.nan,
+                path_m=ep_stat["path_m"],
+                # the fields themselves, so a replay can be checked
+                # even if the RNG path ever changes
+                topo=topo, foliage=foli)
+            print("    [fail] episode %d terminated at step %d; wrote %s"
+                  % (ep, ep_stat["steps"], os.path.basename(case)))
+
         disp = float(np.hypot(x - ep_stat["start_x"], y - ep_stat["start_y"]))
         ep_stat["final_batt"] = env.ch.get_battery()
         ep_stat["net_disp"] = disp
@@ -444,7 +502,10 @@ def main():
     env.set_view_dist(M.VIEW_DISTANCE)
 
     print(f"variant={M.TRANSFORMER_VARIANT}  episodes={args.episodes}")
-    rows, ep_stats = rollout(model, env, device, args.episodes)
+    fail_dir = os.path.join(args.out, 'failures')
+    os.makedirs(fail_dir, exist_ok=True)
+    rows, ep_stats = rollout(model, env, device, args.episodes,
+                             fail_dir=fail_dir)
 
     os.makedirs(args.out, exist_ok=True)
     # Name by run and checkpoint, not the bare filename: every
