@@ -1294,7 +1294,23 @@ _sc_tag = ("" if not IS_COST or SPECTRAL_C_TAG == 1.772
 _ch_tag = f"_{CHAOTIC_KIND}" if USE_CHAOTIC_INIT else ""
 _clr_tag = "" if CRITIC_LR == LR else f"_clr{CRITIC_LR:g}"
 
-OUT=Path(f"rl_csv_{_variant_tag}_s{RUN_SEED}{_mw_tag}{_dm_tag}{_tw_tag}{_sc_tag}{_ch_tag}{_clr_tag}_{timestamp}"); OUT.mkdir(exist_ok=True)
+# Quadratic-floor scale, for the cost_icnn arm only. Written WITHOUT a
+# decimal point -- eps=1.0 tags as "_eps10", 0.6 as "_eps06", 1.451 as
+# "_eps1451". A dot in a directory name splits on the extension in
+# several downstream tools, and certify_probe's run-name parser reads
+# the arm by matching a prefix, so "rl_csv_cost_icnn_eps1.0_s5" would
+# have the tag swallow the seed. Two decimal places are kept so 1.0 and
+# 1.451 remain distinguishable.
+_eps_tag = ""
+if TRANSFORMER_VARIANT == "cost_icnn" and os.environ.get("LTAC_EPS_Q"):
+    # The literal string with the dot removed, so the tag matches what
+    # was typed: 1.0 -> eps10, 0.6 -> eps06, 1.451 -> eps1451. Passing
+    # it through %g would drop the trailing zero and tag 1.0 as eps1,
+    # which is indistinguishable from a future eps=1 and does not match
+    # the sweep's EPS_VALUES entry.
+    _eps_tag = "_eps" + os.environ["LTAC_EPS_Q"].strip().replace(".", "")
+
+OUT=Path(f"rl_csv_{_variant_tag}_s{RUN_SEED}{_mw_tag}{_dm_tag}{_tw_tag}{_sc_tag}{_ch_tag}{_clr_tag}{_eps_tag}_{timestamp}"); OUT.mkdir(exist_ok=True)
 
 size = 2 * VIEW_DISTANCE + 1
 y, x = np.mgrid[-VIEW_DISTANCE:VIEW_DISTANCE+1,
