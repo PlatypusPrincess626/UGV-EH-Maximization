@@ -608,7 +608,14 @@ def save_full_checkpoint(path, model, opt, ep, return_var_tracker,
         "arch_env": {k: os.environ.get(k) for k in (
             "LTAC_VARIANT", "LTAC_ENCODER_C", "LTAC_ENCODER_QK_C",
             "LTAC_QK_TEMP", "LTAC_LN_EPS", "LTAC_LN_GAMMA_MAX",
-            "LTAC_SPECTRAL_C", "LTAC_POLICY_TYPE") if os.environ.get(k)},
+            "LTAC_SPECTRAL_C", "LTAC_POLICY_TYPE",
+            # eps_q is a plain float on the model, not a registered
+            # buffer, so it does NOT ride in the state_dict. Without it
+            # here, certify_probe would rebuild the head with whatever
+            # LTAC_EPS_Q happens to be set to at analysis time and the
+            # quadratic floor would silently differ from the one the
+            # run trained with.
+            "LTAC_EPS_Q") if os.environ.get(k)},
         "arch": {
             "view_distance": VIEW_DISTANCE,
             "scalar_dim": SCALAR_DIM,

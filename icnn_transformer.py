@@ -433,7 +433,7 @@ B_TGT = float(os.environ.get("LTAC_SOC_TARGET", "0.90"))
 # default is the quadratic envelope measured on the existing bounded
 # arm (1.451 +- 0.150 over eight seeds), so the head is asked for no
 # more than the current critic already achieves.
-EPS_Q = float(os.environ.get("LTAC_EPS_Q", "1.451"))
+EPS_Q = float(os.environ.get("LTAC_EPS_Q", "1.0"))
 
 # EMA horizon for the reference shift g_ref.
 REF_MOMENTUM = float(os.environ.get("LTAC_REF_MOM", "0.99"))
