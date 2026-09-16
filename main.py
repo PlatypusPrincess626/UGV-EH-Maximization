@@ -3114,7 +3114,10 @@ def run():
                                           "peak_solar_w","mean_solar_w",
                                           "start_battery","min_battery",
                                           "idle_mAh","motion_mAh","path_m","turn_integral",
-                                          "net_displacement_m"])
+                                          "net_displacement_m",
+                                          # period-wise certificate quantities
+                                          "V_start","V_end","alpha_T",
+                                          "E_max","E_argmax"])
     epw.writeheader()
     rollouts=[]
 
@@ -3233,6 +3236,15 @@ def run():
         ep_turn = 0.0
         start_battery = env.ch.get_battery()
         rollout_start = time.perf_counter()
+        # Certificate trace for this episode. Proposition 1 is stated on
+        # the PERIOD map, so its two quantities -- the period rate
+        # alpha_T = 1 - V_T/V_0 and the within-period rise E(tau) --
+        # are properties of a whole episode and cannot be recovered
+        # from per-update aggregates. Collecting V here is what lets
+        # them be written per episode rather than reconstructed from a
+        # probe afterwards.
+        ep_V_trace = []
+
         for step in range(MAX_STEPS_PER_EPISODE):
             s=seq_tensor(h,device)
 
@@ -3253,6 +3265,9 @@ def run():
                     else:
                         a, raw_a_b, lp, v = model.act(s)
                         lyapunov = None
+                        # V_cost = -V^pi; act() returns V^pi.
+                        if IS_COST:
+                            ep_V_trace.append(-float(v.reshape(-1)[0]))
                         barrier = None
                         current_action = a[0].detach().cpu().numpy()
                         stored_action = raw_a_b
@@ -3750,8 +3765,35 @@ def run():
 
         ep_env_time = rollout_elapsed - ep_inference_time
 
+        # --- period-wise certificate quantities -----------------------
+        #
+        # alpha_T is the contraction of Proposition 1(i) measured over
+        # one whole period; E_max is the largest RISE of the
+        # certificate within that period, which is what makes the
+        # invariant set of 1(iii) a claim about the trajectory rather
+        # than about daily snapshots.
+        #
+        # Only the POSITIVE part counts. Taking |V_t - V_0| instead
+        # would fold the day's contraction into the excursion and
+        # inflate the radius by an order of magnitude: on the bounded
+        # arm that is 1.32 against 0.21 at the 95th percentile.
+        #
+        # A truncated episode is not a period, so alpha_T is left
+        # undefined there rather than computed from a partial day.
+        _V0 = _VT = _aT = _Emax = _Earg = float("nan")
+        if ep_V_trace:
+            _V0 = ep_V_trace[0]
+            _VT = ep_V_trace[-1]
+            _rise = [v - _V0 for v in ep_V_trace]
+            _Emax = max(0.0, max(_rise))
+            _Earg = int(max(range(len(_rise)), key=lambda i: _rise[i]))
+            if len(ep_V_trace) >= MAX_STEPS_PER_EPISODE and abs(_V0) > 1e-12:
+                _aT = 1.0 - _VT / _V0
+
         steps_taken = len(r["rewards"]); log_status(ep, TOTAL_EPISODES, steps_taken, total, aft_batt, loss)
         epw.writerow(dict(episode=ep,steps=len(r["rewards"]),final_battery=aft_batt,total_reward=total,
+                          V_start=_V0, V_end=_VT, alpha_T=_aT,
+                          E_max=_Emax, E_argmax=_Earg,
                           total_directional_reward=total_directional,total_battery_reward=total_battery_reward,
                           total_movement_penalty=total_movement_penalty,loss=loss,
                           episode_time=ep_elapsed, rollout_time=rollout_elapsed,

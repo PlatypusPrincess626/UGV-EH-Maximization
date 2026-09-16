@@ -363,6 +363,7 @@ def rollout(model, env, device, n_episodes, seed0=10_000,
                 V_next = value_of(model, seq_next)
                 latent_next = model.encode(seq_next).reshape(-1).detach().cpu().numpy()
 
+            ep_stat.setdefault("V_trace", []).append(float(V))
             rows.append({
                 "episode": ep, "step": step,
                 "soc": soc, "soc_next": soc_next,
@@ -425,6 +426,36 @@ def rollout(model, env, device, n_episodes, seed0=10_000,
                 topo=topo, foliage=foli)
             print("    [fail] episode %d terminated at step %d; wrote %s"
                   % (ep, ep_stat["steps"], os.path.basename(case)))
+
+        # --- period-wise certificate quantities, per episode ----------
+        #
+        # The probe's episodes ARE periods: one episode is one solar
+        # day. alpha_T is Proposition 1(i) measured over that period
+        # and E(tau) is the within-period rise of 1(iii). Both are
+        # computed here rather than left to downstream analysis so the
+        # summary carries them alongside the envelope constants.
+        _Vs = ep_stat.get("V_trace") or []
+        if _Vs:
+            _V0 = _Vs[0]
+            ep_stat["V_start"] = _V0
+            ep_stat["V_end"] = _Vs[-1]
+            _rise = [v - _V0 for v in _Vs]
+            # Positive part only: a certificate that falls mid-period
+            # and returns has not left any sub-level set it started in,
+            # so counting the descent would inflate the radius.
+            ep_stat["E_max"] = max(0.0, max(_rise))
+            ep_stat["E_argmax"] = int(max(range(len(_rise)),
+                                          key=lambda i: _rise[i]))
+            ep_stat["alpha_T"] = (1.0 - _Vs[-1] / _V0
+                                  if (len(_Vs) >= M.MAX_STEPS_PER_EPISODE
+                                      and abs(_V0) > 1e-12) else float("nan"))
+        # The trace has served its purpose. It must not survive into
+        # ep_stats: the validation writer takes its fieldnames from the
+        # dict keys, so a 720-element list would be written into one
+        # CSV cell as a Python repr. The per-step values are already in
+        # _steps.csv, which is where anyone recomputing E(tau) at a
+        # different phase resolution should read them from.
+        ep_stat.pop("V_trace", None)
 
         disp = float(np.hypot(x - ep_stat["start_x"], y - ep_stat["start_y"]))
         ep_stat["final_batt"] = env.ch.get_battery()
