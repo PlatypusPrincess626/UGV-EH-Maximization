@@ -149,6 +149,7 @@ if _known.checkpoint:
     _variant = _known.variant or _variant
     if _variant and "LTAC_VARIANT" not in _arch:
         for _arm in ("cost_lipschitz", "cost_softplus", "cost_linear",
+                     "cost_proper",
                      "cost_plain", "cost_icnn", "cost", "lyapunov",
                      "normal"):
             if _variant.startswith(_arm):
@@ -193,7 +194,17 @@ def build_model(ckpt_path, device, allow_missing=False):
     silently wrong model, which is the failure mode worth having.
     """
     variant = M.TRANSFORMER_VARIANT
-    if variant == "cost_icnn":
+    if variant == "cost_proper":
+        # Before cost_icnn and cost_lipschitz: this subclasses the
+        # Lipschitz arm, so matching a parent first would build a head
+        # without the distance factor and the state dict would mismatch.
+        from icnn_transformer import ProperCostTransformerActorCritic as C
+        model = C(M.VIEW_DISTANCE, scalar_dim=M.SCALAR_DIM,
+                  sequence_length=M.SEQUENCE_LENGTH,
+                  softplus_beta=M.COST_BETA_INIT,
+                  beta_gain_target=M.COST_BETA_GAIN_TARGET,
+                  spectral_critic=True)
+    elif variant == "cost_icnn":
         # Must precede the cost_lipschitz branch: the icnn head
         # subclasses it, so matching on the parent first would build a
         # model without the quadratic floor and the state dict would

@@ -433,7 +433,7 @@ B_TGT = float(os.environ.get("LTAC_SOC_TARGET", "0.90"))
 # default is the quadratic envelope measured on the existing bounded
 # arm (1.451 +- 0.150 over eight seeds), so the head is asked for no
 # more than the current critic already achieves.
-EPS_Q = float(os.environ.get("LTAC_EPS_Q", "1.0"))
+EPS_Q = float(os.environ.get("LTAC_EPS_Q", "1.451"))
 
 # EMA horizon for the reference shift g_ref.
 REF_MOMENTUM = float(os.environ.get("LTAC_REF_MOM", "0.99"))
@@ -527,6 +527,102 @@ class ICNNCostTransformerActorCritic(LipschitzCostTransformerActorCritic):
         deficit = self._deficit(sequence)
         if self.training:
             self.update_reference(latent, deficit)
+        raw_mean = self.actor(latent)
+        raw_log_std = self.log_std_param.unsqueeze(0).expand(
+            raw_mean.shape[0], -1)
+        return (raw_mean, raw_log_std,
+                self.critic_with_deficit(latent, deficit), latent)
+
+
+# ---------------------------------------------------------------------
+# Structurally proper certificate.
+#
+# The ICNN head above fixes the FLOOR: V >= eps d^2 by construction,
+# while kappa_2 is still whatever training produces and the shift that
+# should make V vanish on Z* is an EMA that, measured on five seeds,
+# never converges -- V at d = 0 sits at 0.33-0.55 rather than 0.
+#
+# This head fixes BOTH envelopes and the extremum, by multiplying the
+# distance itself:
+#
+#     V(z) = d(z, Z*) * [ m + (M - m) * sigmoid(g(h)) ],   0 < m < M
+#
+# Since sigmoid is in (0,1), the bracket lies in (m, M) identically, so
+#
+#     m * d(z)  <=  V(z)  <=  M * d(z)
+#
+# holds for every z and every parameter setting. Three consequences:
+#
+#   Assumption 3   V = 0 exactly on Z*, because d = 0 there. No shift,
+#                  no EMA, nothing to converge.
+#   Assumption 4   kappa_1 = m and kappa_2 = M are CHOSEN, not fitted.
+#                  The class-K sandwich is architectural.
+#   Lipschitz      V is a product of d (1-Lipschitz in the state of
+#                  charge coordinate) and a bounded factor, so
+#                  L_V <= M + d_max * (M - m) * L_sigmoid * L_g / 4.
+#                  The encoder enters only through the SECOND term,
+#                  which is multiplied by (M - m): narrowing the
+#                  envelope narrows the Lipschitz constant too.
+#
+# WHAT IT COSTS. The network no longer sets the scale of V, only its
+# shape within a fixed corridor. If the true returns do not lie between
+# m*d and M*d, the critic cannot represent them and the value
+# regression will fight the constraint -- critic_ev is the metric that
+# will show it. The corridor width M/m is the knob: wide enough to fit
+# the returns, narrow enough that kappa_2/kappa_1 is a useful number.
+#
+# CHOOSING m AND M. The measured envelope on the bounded arm was
+# kappa_1 = 1.506 and kappa_2 = 3.16 * kappa_1 in the LINEAR-in-d
+# parameterisation this head uses, so m = 1.5 and M = 4.5 covers the
+# observed range with the ratio the data already shows. Set through
+# LTAC_KAPPA_M and LTAC_KAPPA_BIG.
+# ---------------------------------------------------------------------
+
+KAPPA_M = float(os.environ.get("LTAC_KAPPA_M", "1.5"))
+KAPPA_BIG = float(os.environ.get("LTAC_KAPPA_BIG", "4.5"))
+
+
+class ProperCostTransformerActorCritic(LipschitzCostTransformerActorCritic):
+    """Bounded observer with an architecturally proper certificate."""
+
+    def __init__(self, *args, kappa_m=None, kappa_big=None,
+                 scalar_dim=8, **kwargs):
+        super().__init__(*args, scalar_dim=scalar_dim, **kwargs)
+        self.kappa_m = float(KAPPA_M if kappa_m is None else kappa_m)
+        self.kappa_big = float(KAPPA_BIG if kappa_big is None else kappa_big)
+        if not (0.0 < self.kappa_m < self.kappa_big):
+            raise ValueError("need 0 < kappa_m < kappa_big, got %g, %g"
+                             % (self.kappa_m, self.kappa_big))
+        self.scalar_dim = int(scalar_dim)
+
+    def _deficit(self, sequence):
+        # obs() packs the patch first, then the scalar block, whose
+        # fifth entry is battery/100. Index from the END so the patch
+        # size never enters.
+        b = sequence[:, -1, -self.scalar_dim + 4]
+        return torch.clamp(B_TGT - b, min=0.0)
+
+    def critic_with_deficit(self, latent, deficit):
+        """V^pi = -V_cost, with V_cost = d * [m + (M-m)*sigmoid(g)]."""
+        g = self.critic_body(latent).squeeze(-1)
+        shape = self.kappa_m + (self.kappa_big - self.kappa_m) * torch.sigmoid(g)
+        return -(deficit * shape)
+
+    def critic(self, latent):
+        raise RuntimeError(
+            "ProperCostTransformerActorCritic needs the state-of-charge "
+            "deficit, which is not recoverable from the latent alone. "
+            "Call value_only(sequence) or forward(sequence); a bare "
+            "critic(latent) would drop the distance factor and with it "
+            "both envelopes.")
+
+    def value_only(self, sequence):
+        latent = self.encode(sequence)
+        return self.critic_with_deficit(latent, self._deficit(sequence))
+
+    def forward(self, sequence):
+        latent = self.encode(sequence)
+        deficit = self._deficit(sequence)
         raw_mean = self.actor(latent)
         raw_log_std = self.log_std_param.unsqueeze(0).expand(
             raw_mean.shape[0], -1)

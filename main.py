@@ -91,7 +91,7 @@ IS_DQN = POLICY_TYPE == "dqn"
 # kappa_1 from rollouts; this one fixes it by construction, which is
 # what turns kappa_1^{-1} from a regression into a bound.
 COST_VARIANTS = ("cost", "cost_linear", "cost_plain", "cost_lipschitz",
-                 "cost_softplus", "cost_icnn")
+                 "cost_softplus", "cost_icnn", "cost_proper")
 KNOWN_VARIANTS = ("lyapunov", "normal") + COST_VARIANTS
 if POLICY_TYPE == "transformer" and TRANSFORMER_VARIANT not in KNOWN_VARIANTS:
     # Fail loudly. Every dispatch below is an if/elif chain ending in a
@@ -615,7 +615,8 @@ def save_full_checkpoint(path, model, opt, ep, return_var_tracker,
             # LTAC_EPS_Q happens to be set to at analysis time and the
             # quadratic floor would silently differ from the one the
             # run trained with.
-            "LTAC_EPS_Q") if os.environ.get(k)},
+            "LTAC_EPS_Q", "LTAC_KAPPA_M", "LTAC_KAPPA_BIG")
+            if os.environ.get(k)},
         "arch": {
             "view_distance": VIEW_DISTANCE,
             "scalar_dim": SCALAR_DIM,
@@ -1302,7 +1303,10 @@ _clr_tag = "" if CRITIC_LR == LR else f"_clr{CRITIC_LR:g}"
 # have the tag swallow the seed. Two decimal places are kept so 1.0 and
 # 1.451 remain distinguishable.
 _eps_tag = ""
-if TRANSFORMER_VARIANT == "cost_icnn" and os.environ.get("LTAC_EPS_Q"):
+if TRANSFORMER_VARIANT == "cost_proper" and os.environ.get("LTAC_KAPPA_M"):
+    _eps_tag = ("_m" + os.environ["LTAC_KAPPA_M"].strip().replace(".", "")
+                + "M" + os.environ.get("LTAC_KAPPA_BIG", "4.5").strip().replace(".", ""))
+elif TRANSFORMER_VARIANT == "cost_icnn" and os.environ.get("LTAC_EPS_Q"):
     # The literal string with the dot removed, so the tag matches what
     # was typed: 1.0 -> eps10, 0.6 -> eps06, 1.451 -> eps1451. Passing
     # it through %g would drop the trailing zero and tag 1.0 as eps1,
@@ -2900,6 +2904,17 @@ def run():
                     spectral_critic=False).to(device)
                 print("[cost_softplus] critic head: beta*softplus, "
                       "NO spectral norm (sign constraint only)")
+
+            elif TRANSFORMER_VARIANT == "cost_proper":
+                from icnn_transformer import ProperCostTransformerActorCritic as C
+                model = C(VIEW_DISTANCE, scalar_dim=SCALAR_DIM,
+                          sequence_length=SEQUENCE_LENGTH,
+                          softplus_beta=COST_BETA_INIT,
+                          beta_gain_target=COST_BETA_GAIN_TARGET,
+                          spectral_critic=True).to(device)
+                print("[cost_proper] V = d*(m + (M-m)*sigmoid(g)): "
+                      "m=%.2f <= kappa_1, kappa_2 <= M=%.2f by construction"
+                      % (model.kappa_m, model.kappa_big))
 
             elif TRANSFORMER_VARIANT == "cost_icnn":
                 from icnn_transformer import ICNNCostTransformerActorCritic
