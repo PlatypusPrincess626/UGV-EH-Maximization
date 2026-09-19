@@ -2067,12 +2067,18 @@ def compute_batch(rollouts, device):
         # they measure.
         if IS_LAGRANGIAN:
             cv = r.get("cost_values") or [0.0] * T
+            cs = r.get("cost_signal") or [0.0] * T
+            # Both guarded the same way. cost_signal is appended in the
+            # same branch as the act() call, so it should always have T
+            # entries -- but an arm that reaches this code without
+            # having recorded the stream should produce a zero cost
+            # return, not a KeyError halfway through training.
             ep_cadv = []
             cgae = 0.0
             for i in reversed(range(T)):
                 nxt = (r.get("cost_bootstrap", 0.0) if i == T - 1
                        else cv[i + 1])
-                cgae = (r["cost_signal"][i] + GAMMA * nxt - cv[i]
+                cgae = (cs[i] + GAMMA * nxt - cv[i]
                         + GAMMA * GAE_LAMBDA * cgae)
                 ep_cadv.insert(0, cgae)
             cost_adv += ep_cadv
@@ -3300,6 +3306,13 @@ def run():
         "lyap_penalty","dynamics_loss",
         "barrier_loss","approx_kl","clip_fraction","mean_std","mean_raw_log_std",
         "mean_abs_action","alpha",
+        # Lagrangian baseline. Written as empty on every other arm,
+        # which DictWriter handles, whereas a key absent from
+        # fieldnames raises. The two that matter are lag_lambda and
+        # lag_j_c: a multiplier decaying to zero while J_c stays above
+        # budget means the constraint went slack and the arm is plain
+        # PPO wearing a cost critic.
+        "lag_lambda","lag_j_c","lag_violation",
     ] + DIAGNOSTIC_FIELDS)
     metrics_writer.writeheader()
 
