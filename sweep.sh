@@ -21,6 +21,20 @@ VARIANTS="${VARIANTS:-lyapunov normal cost}"
 # LTAC_CONV_STOP was never set. Every previous sweep therefore ran
 # WITHOUT early stopping regardless of what CONV_STOP was set to.
 CONV_STOP="${CONV_STOP:-0}"
+# Trailing-window death rate the convergence test requires. main.py
+# reads LTAC_CONV_DEATH and defaults to 0.10; without this mapping a
+# CONV_DEATH set on the command line is silently dropped, which is how
+# a run intended at 0.05 stopped with a 7% trailing death rate.
+CONV_DEATH="${CONV_DEATH:-0.05}"
+
+# Lagrangian baseline. The constraint is
+#   J_c = E[sum gamma^t 1(b < COST_FLOOR)]  <=  COST_BUDGET
+# and LAMBDA_LR is the dual ascent step. These apply only to the
+# "lagrangian" variant; every other arm ignores them, so they are
+# passed unconditionally rather than guarded.
+COST_FLOOR="${COST_FLOOR:-0.20}"
+COST_BUDGET="${COST_BUDGET:-1.25}"
+LAMBDA_LR="${LAMBDA_LR:-0.02}"
 POLICIES="${POLICIES:-transformer}"
 LOGDIR="${LOGDIR:-sweep_logs}"
 
@@ -72,6 +86,8 @@ echo "  policies  : $POLICIES"
 echo "  episodes  : $EPISODES"
 echo "  eps (icnn): ${EPS_VALUES:-<unset, head default>}"
 echo "  conv_stop : $CONV_STOP"
+echo "  conv_death: $CONV_DEATH"
+echo "  lagrangian: floor=$COST_FLOOR budget=$COST_BUDGET lam_lr=$LAMBDA_LR"
 echo "  logs      : $LOGDIR/"
 echo "  started   : $(date)"
 echo "=============================================================="
@@ -113,11 +129,17 @@ for s in $SEEDS; do
         # LTAC_EPS_Q is exported only when set, so an empty value never
         # shadows the head's own default with the empty string.
         if [ -n "$eps_env" ]; then
-          LTAC_EPS_Q="$eps_env" LTAC_CONV_STOP="$CONV_STOP" LTAC_VARIANT="$v" \
+          LTAC_EPS_Q="$eps_env" LTAC_CONV_DEATH="$CONV_DEATH" \
+            LTAC_COST_FLOOR="$COST_FLOOR" LTAC_COST_BUDGET="$COST_BUDGET" \
+            LTAC_LAMBDA_LR="$LAMBDA_LR" \
+            LTAC_CONV_STOP="$CONV_STOP" LTAC_VARIANT="$v" \
             LTAC_SEED="$s" LTAC_EPISODES="$EPISODES" \
             python -u main.py > "$log" 2>&1
         else
-          LTAC_CONV_STOP="$CONV_STOP" LTAC_VARIANT="$v" \
+          LTAC_CONV_DEATH="$CONV_DEATH" LTAC_CONV_STOP="$CONV_STOP" \
+            LTAC_COST_FLOOR="$COST_FLOOR" LTAC_COST_BUDGET="$COST_BUDGET" \
+            LTAC_LAMBDA_LR="$LAMBDA_LR" \
+            LTAC_VARIANT="$v" \
             LTAC_SEED="$s" LTAC_EPISODES="$EPISODES" \
             python -u main.py > "$log" 2>&1
         fi
