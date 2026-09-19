@@ -2695,7 +2695,19 @@ def update(model,opt,rollouts,device, ep, metrics_writer=None, return_var_tracke
                 # which object the constraint is stated on.
                 cost_value_loss = torch.zeros((), device=device)
                 if IS_LAGRANGIAN and LAG_STATE["cost_returns"] is not None:
-                    _cv = model.cost_value(latent)
+                    # cost_value_only re-encodes rather than reusing a
+                    # latent: evaluate_actions returns seven values and
+                    # the latent is not one of them, so there is no
+                    # latent in scope here. The cost is one extra
+                    # encoder pass per minibatch, which is real but
+                    # affects only this baseline -- and threading the
+                    # latent out of evaluate_actions would change a
+                    # signature every arm shares.
+                    # states[mb], not mb_states: that name is bound
+                    # only on the lyapunov path, and this branch runs
+                    # on the transformer path where the minibatch is
+                    # indexed inline.
+                    _cv = model.cost_value_only(states[mb])
                     cost_value_loss = F.mse_loss(
                         _cv, LAG_STATE["cost_returns"][mb].detach())
 
