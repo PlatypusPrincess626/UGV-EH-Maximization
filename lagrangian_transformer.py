@@ -56,7 +56,7 @@ import torch
 import torch.nn as nn
 import torch.nn.functional as F
 
-from cost_transformer import CostTransformerActorCritic
+from transformer import TransformerActorCritic
 
 # Charge below which a step counts against the budget.
 COST_FLOOR = float(os.environ.get("LTAC_COST_FLOOR", "0.20"))
@@ -70,8 +70,22 @@ LAMBDA_LR = float(os.environ.get("LTAC_LAMBDA_LR", "0.02"))
 LAMBDA_MAX = float(os.environ.get("LTAC_LAMBDA_MAX", "50.0"))
 
 
-class LagrangianTransformerActorCritic(CostTransformerActorCritic):
-    """PPO with a separate cost critic and a learned dual variable."""
+class LagrangianTransformerActorCritic(TransformerActorCritic):
+    """PPO with a separate cost critic and a learned dual variable.
+
+    Subclasses the REWARD baseline, not the cost one. That is not a
+    detail: CostTransformerActorCritic puts a negated softplus on the
+    value head, forcing V^pi <= 0, which is correct for a cost MDP and
+    wrong here. This arm maximizes reward under a constraint, so its
+    reward critic must be free to take either sign -- clamping it
+    non-positive would leave the value regression fighting the
+    architecture from the first update.
+
+    Building on the reward baseline also isolates what the comparison
+    is for: this arm and "normal" differ by exactly the cost critic and
+    the multiplier, so any gap between them is the constraint
+    mechanism and nothing else.
+    """
 
     def __init__(self, *args, scalar_dim=8, d_model=128, **kwargs):
         super().__init__(*args, scalar_dim=scalar_dim, d_model=d_model,
@@ -145,10 +159,13 @@ class LagrangianTransformerActorCritic(CostTransformerActorCritic):
         return (adv_r - lam * adv_c) / (1.0 + lam)
 
     def forward(self, sequence):
-        """Parent tuple, with the cost value appended."""
-        latent = self.encode(sequence)
-        raw_mean = self.actor(latent)
-        raw_log_std = self.log_std_param.unsqueeze(0).expand(
-            raw_mean.shape[0], -1)
-        return (raw_mean, raw_log_std, self.critic(latent), latent,
-                self.cost_value(latent))
+        """
+        The parent's 4-tuple, unchanged.
+
+        act(), distribution() and evaluate_actions() all unpack exactly
+        four values, and main.py's rollout unpacks four. Appending the
+        cost value here would break every one of them; it is reached
+        through cost_value_only() instead, which is what the rollout
+        and the value regression call.
+        """
+        return super().forward(sequence)

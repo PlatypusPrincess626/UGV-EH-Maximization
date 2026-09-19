@@ -3375,7 +3375,10 @@ def run():
                     else:
                         a, raw_a_b, lp, v = model.act(s)
                         lyapunov = None
-                        # V_cost = -V^pi; act() returns V^pi.
+                        # V_cost = -V^pi; act() returns V^pi. Only the
+                        # cost arms have a certificate to trace; the
+                        # Lagrangian arm's critic is an ordinary reward
+                        # value and negating it would log nonsense.
                         if IS_COST:
                             ep_V_trace.append(-float(v.reshape(-1)[0]))
                         if IS_LAGRANGIAN:
