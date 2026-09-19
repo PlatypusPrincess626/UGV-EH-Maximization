@@ -2989,6 +2989,40 @@ def run():
                   "J_c = E[sum g^t 1(b < %.2f)] <= %.2f"
                   % (COST_FLOOR, COST_BUDGET))
 
+            # Mirrors the "normal" arm's optimizer exactly, with one
+            # group added for the cost critic. Every dispatch branch
+            # must build BOTH the model and opt: they are the two names
+            # the training loop closes over, and a branch that sets
+            # only the first fails later with "local variable 'opt'
+            # referenced before assignment" rather than at the point of
+            # the omission.
+            #
+            # The cost critic gets CRITIC_LR, the same as the reward
+            # critic. Giving the two value heads different rates would
+            # make the multiplier chase a moving target: lambda is
+            # driven by J_c, which is what the cost critic estimates,
+            # so a slower cost critic shows up as a lambda that lags
+            # the constraint rather than tracks it.
+            opt = optim.AdamW([
+                {"params": (list(model.input_projection.parameters())
+                            + list(model.encoder.parameters())
+                            + list(model.attention_pool.parameters())
+                            + [model.position_embedding]),
+                 "lr": 1e-3, "weight_decay": 1e-5, "initial_lr": 1e-3},
+                {"params": list(model.actor.parameters()),
+                 "lr": LR, "weight_decay": 1e-5, "initial_lr": LR},
+                {"params": list(model.critic.parameters()),
+                 "lr": CRITIC_LR, "weight_decay": 1e-5,
+                 "initial_lr": CRITIC_LR},
+                {"params": list(model.cost_critic.parameters()),
+                 "lr": CRITIC_LR, "weight_decay": 1e-5,
+                 "initial_lr": CRITIC_LR},
+                {"params": [model.log_std_param],
+                 "lr": LR, "weight_decay": 1e-5, "initial_lr": LR},
+            ])
+            control_params = list(model.parameters())
+            auxiliary_param_list = []
+
         elif IS_COST:
             from cost_transformer import CostTransformerActorCritic
             if TRANSFORMER_VARIANT == "cost":
