@@ -2972,6 +2972,17 @@ def run():
                                # problem is gone.
                                {"params": log_std_params,     "lr": LR, "weight_decay":1e-5, "initial_lr": LR},],
                               eps=1e-5,)
+
+        elif TRANSFORMER_VARIANT == LAGRANGIAN_VARIANT:
+            from lagrangian_transformer import (
+                LagrangianTransformerActorCritic as C,
+                COST_FLOOR, COST_BUDGET)
+            model = C(VIEW_DISTANCE, scalar_dim=SCALAR_DIM,
+                      sequence_length=SEQUENCE_LENGTH).to(device)
+            print("[lagrangian] separate cost critic; constraint "
+                  "J_c = E[sum g^t 1(b < %.2f)] <= %.2f"
+                  % (COST_FLOOR, COST_BUDGET))
+
         elif IS_COST:
             from cost_transformer import CostTransformerActorCritic
             if TRANSFORMER_VARIANT == "cost":
@@ -2997,16 +3008,6 @@ def run():
                     spectral_critic=False).to(device)
                 print("[cost_softplus] critic head: beta*softplus, "
                       "NO spectral norm (sign constraint only)")
-
-            elif TRANSFORMER_VARIANT == LAGRANGIAN_VARIANT:
-                from lagrangian_transformer import (
-                    LagrangianTransformerActorCritic as C,
-                    COST_FLOOR, COST_BUDGET)
-                model = C(VIEW_DISTANCE, scalar_dim=SCALAR_DIM,
-                          sequence_length=SEQUENCE_LENGTH).to(device)
-                print("[lagrangian] separate cost critic; constraint "
-                      "J_c = E[sum g^t 1(b < %.2f)] <= %.2f"
-                      % (COST_FLOOR, COST_BUDGET))
 
             elif TRANSFORMER_VARIANT == "cost_proper":
                 from icnn_transformer import ProperCostTransformerActorCritic as C
@@ -3118,6 +3119,7 @@ def run():
             opt = optim.Adam(model.parameters(), lr=LR)
             control_params = list(model.parameters())
             auxiliary_param_list = []
+
         else:
             from transformer import TransformerActorCritic
             model = TransformerActorCritic(
