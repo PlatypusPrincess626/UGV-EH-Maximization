@@ -2972,13 +2972,19 @@ def run():
                                # problem is gone.
                                {"params": log_std_params,     "lr": LR, "weight_decay":1e-5, "initial_lr": LR},],
                               eps=1e-5,)
-
-        elif TRANSFORMER_VARIANT == LAGRANGIAN_VARIANT:
+        elif IS_LAGRANGIAN:
+            # Placed at the TOP level of the dispatch, not inside the
+            # IS_COST chain: this arm is a reward MDP with a second
+            # critic, so IS_COST is false for it and a branch nested
+            # there is never reached -- the model falls through to the
+            # plain actor-critic and the first cost_value_only call
+            # dies with AttributeError.
             from lagrangian_transformer import (
-                LagrangianTransformerActorCritic as C,
+                LagrangianTransformerActorCritic,
                 COST_FLOOR, COST_BUDGET)
-            model = C(VIEW_DISTANCE, scalar_dim=SCALAR_DIM,
-                      sequence_length=SEQUENCE_LENGTH).to(device)
+            model = LagrangianTransformerActorCritic(
+                VIEW_DISTANCE, scalar_dim=SCALAR_DIM,
+                sequence_length=SEQUENCE_LENGTH).to(device)
             print("[lagrangian] separate cost critic; constraint "
                   "J_c = E[sum g^t 1(b < %.2f)] <= %.2f"
                   % (COST_FLOOR, COST_BUDGET))
@@ -3119,7 +3125,6 @@ def run():
             opt = optim.Adam(model.parameters(), lr=LR)
             control_params = list(model.parameters())
             auxiliary_param_list = []
-
         else:
             from transformer import TransformerActorCritic
             model = TransformerActorCritic(
