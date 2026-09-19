@@ -92,7 +92,18 @@ IS_DQN = POLICY_TYPE == "dqn"
 # what turns kappa_1^{-1} from a regression into a bound.
 COST_VARIANTS = ("cost", "cost_linear", "cost_plain", "cost_lipschitz",
                  "cost_softplus", "cost_icnn", "cost_proper")
-KNOWN_VARIANTS = ("lyapunov", "normal") + COST_VARIANTS
+
+# The Lagrangian baseline is a REWARD-MDP arm with a second critic on a
+# separate cost-return, so it is deliberately not in COST_VARIANTS: it
+# is the construction the merged critic is contrasted against, not a
+# member of the cost family.
+LAGRANGIAN_VARIANT = "lagrangian"
+LAG_STATE = {"cost_adv": None, "cost_returns": None, "j_c": 0.0,
+             "lam": 0.0}
+COST_BUDGET_M = float(os.environ.get("LTAC_COST_BUDGET", "1.25"))
+COST_FLOOR_M = float(os.environ.get("LTAC_COST_FLOOR", "0.20"))
+KNOWN_VARIANTS = (("lyapunov", "normal", LAGRANGIAN_VARIANT)
+                  + COST_VARIANTS)
 if POLICY_TYPE == "transformer" and TRANSFORMER_VARIANT not in KNOWN_VARIANTS:
     # Fail loudly. Every dispatch below is an if/elif chain ending in a
     # bare `else` that builds a plain TransformerActorCritic, and the
@@ -120,6 +131,8 @@ if POLICY_TYPE == "transformer" and TRANSFORMER_VARIANT not in KNOWN_VARIANTS:
         f"'{CHAOTIC_SUFFIX}' suffix.{hint}")
 
 IS_COST = (TRANSFORMER_VARIANT in COST_VARIANTS) or IS_DQN
+IS_LAGRANGIAN = (TRANSFORMER_VARIANT == LAGRANGIAN_VARIANT
+                 and POLICY_TYPE == "transformer")
 
 
 ###############################################################
@@ -615,7 +628,9 @@ def save_full_checkpoint(path, model, opt, ep, return_var_tracker,
             # LTAC_EPS_Q happens to be set to at analysis time and the
             # quadratic floor would silently differ from the one the
             # run trained with.
-            "LTAC_EPS_Q", "LTAC_KAPPA_M", "LTAC_KAPPA_BIG")
+            "LTAC_EPS_Q", "LTAC_KAPPA_M", "LTAC_KAPPA_BIG",
+            "LTAC_COST_FLOOR", "LTAC_COST_BUDGET",
+            "LTAC_LAMBDA_LR", "LTAC_CONV_DEATH")
             if os.environ.get(k)},
         "arch": {
             "view_distance": VIEW_DISTANCE,
@@ -2022,6 +2037,7 @@ def compute_batch(rollouts, device):
     # CERT_NSTEP ahead WITHIN THE SAME EPISODE (-1 where the window
     # would run past the end). Both are certification-only; neither
     # touches the loss.
+    cost_adv, cost_returns, j_c_samples = [], [], []
     costs=[]; nstep_idx=[]; achievable=[]
     offset = 0
 
@@ -2041,6 +2057,30 @@ def compute_batch(rollouts, device):
 
         adv += ep_adv
         returns += [a + v for a, v in zip(ep_adv, r["values"])]
+
+        # Second GAE pass, on the CONSTRAINT stream. The Lagrangian
+        # baseline needs its own advantage because its constraint is
+        # stated on a separate cost-return -- that separation is the
+        # construction being compared against, not an implementation
+        # detail. Everything else (gamma, lambda, the bootstrap
+        # convention) is shared so the two streams differ only in what
+        # they measure.
+        if IS_LAGRANGIAN:
+            cv = r.get("cost_values") or [0.0] * T
+            ep_cadv = []
+            cgae = 0.0
+            for i in reversed(range(T)):
+                nxt = (r.get("cost_bootstrap", 0.0) if i == T - 1
+                       else cv[i + 1])
+                cgae = (r["cost_signal"][i] + GAMMA * nxt - cv[i]
+                        + GAMMA * GAE_LAMBDA * cgae)
+                ep_cadv.insert(0, cgae)
+            cost_adv += ep_cadv
+            cost_returns += [a + v for a, v in zip(ep_cadv, cv)]
+            # J_c for the dual update: the discounted cost-return from
+            # the episode's own start, which is the quantity the budget
+            # is stated on.
+            j_c_samples.append(float(ep_cadv[0] + cv[0]))
         states += r["states"]
         next_states += r["next_states"]
         actions += r["actions"]
@@ -2058,6 +2098,19 @@ def compute_batch(rollouts, device):
     nstep_idx = torch.tensor(nstep_idx, device=device, dtype=torch.long)
 
     adv = (adv - adv.mean()) / (adv.std(unbiased=False) + 1e-8)
+
+    if IS_LAGRANGIAN:
+        cost_adv = torch.tensor(cost_adv, device=device, dtype=torch.float32)
+        cost_returns = torch.tensor(cost_returns, device=device,
+                                    dtype=torch.float32)
+        # Normalised on its own scale. Sharing the reward stream's
+        # statistics would make the multiplier's units depend on the
+        # reward magnitude, so a tuned lambda would not transfer.
+        cost_adv = ((cost_adv - cost_adv.mean())
+                    / (cost_adv.std(unbiased=False) + 1e-8))
+        LAG_STATE["cost_adv"] = cost_adv
+        LAG_STATE["cost_returns"] = cost_returns
+        LAG_STATE["j_c"] = float(np.mean(j_c_samples)) if j_c_samples else 0.0
 
     return (states, next_states, actions, oldlp, adv, returns,
             costs, nstep_idx, achievable)
@@ -2613,19 +2666,44 @@ def update(model,opt,rollouts,device, ep, metrics_writer=None, return_var_tracke
                 with torch.no_grad():
                     approx_kl = ((ratio - 1.0) - log_ratio).mean()
                     clip_fraction = ((torch.abs(ratio - 1.0) > CLIP_EPS).float().mean())
-                surr1 = ratio * adv[mb]
+                # Under the Lagrangian baseline the policy optimizes a
+                # COMBINED advantage: the reward stream penalised by
+                # the multiplier times the cost stream. The division by
+                # (1 + lambda) holds the gradient scale fixed as the
+                # multiplier grows -- without it the effective learning
+                # rate drifts exactly when the constraint starts to
+                # bind, which is when stability matters most.
+                _adv_mb = adv[mb]
+                if IS_LAGRANGIAN and LAG_STATE["cost_adv"] is not None:
+                    _lam = model.lam
+                    _adv_mb = model.combine_advantages(
+                        _adv_mb, LAG_STATE["cost_adv"][mb], _lam)
+
+                surr1 = ratio * _adv_mb
                 surr2 = torch.clamp(ratio,
                                     1.0 - CLIP_EPS,
-                                    1.0 + CLIP_EPS) * adv[mb]
+                                    1.0 + CLIP_EPS) * _adv_mb
                 policy_loss = -torch.min(surr1, surr2).mean()
 
                 value_loss_raw = F.mse_loss(values, returns[mb].detach())
                 value_loss = value_loss_raw / return_scale
 
+                # The second critic is fitted here and nowhere else.
+                # It shares the encoder with the reward critic, exactly
+                # as the auxiliary-certificate baseline does, so the
+                # only structural difference from the merged arm is
+                # which object the constraint is stated on.
+                cost_value_loss = torch.zeros((), device=device)
+                if IS_LAGRANGIAN and LAG_STATE["cost_returns"] is not None:
+                    _cv = model.cost_value(latent)
+                    cost_value_loss = F.mse_loss(
+                        _cv, LAG_STATE["cost_returns"][mb].detach())
+
                 saturation_loss = raw_mean.pow(2).mean()
 
                 loss = (policy_loss
                         + VALUE_COEF * value_loss
+                        + VALUE_COEF * cost_value_loss
                         - alpha * entropy.mean()
                         + RAW_LOG_STD_REG_COEF * raw_log_std_reg
                         + MEAN_SATURATION_COEF * saturation_loss)
@@ -2707,6 +2785,21 @@ def update(model,opt,rollouts,device, ep, metrics_writer=None, return_var_tracke
         # alpha; the new value takes effect next update.
         if last_alpha_feasible is not None:
             avg["cert_alpha_next"] = adapt_alpha(*last_alpha_feasible)
+
+        if IS_LAGRANGIAN:
+            # One dual step per update, not per minibatch: the
+            # multiplier is a property of the batch's constraint
+            # violation, and updating it inside the epoch loop would
+            # let it chase minibatch noise.
+            _lam = model.update_lambda(LAG_STATE["j_c"])
+            LAG_STATE["lam"] = _lam
+            avg["lag_lambda"] = _lam
+            avg["lag_j_c"] = LAG_STATE["j_c"]
+            # The two diagnostics that decide whether this baseline is
+            # honest: did it meet its own budget, and did the
+            # constraint stay active? A lambda decaying toward zero
+            # means the arm has quietly become plain PPO.
+            avg["lag_violation"] = LAG_STATE["j_c"] - COST_BUDGET_M
 
         print(
             f"Policy {avg.get('policy_loss', 0):.4f} | "
@@ -2904,6 +2997,16 @@ def run():
                     spectral_critic=False).to(device)
                 print("[cost_softplus] critic head: beta*softplus, "
                       "NO spectral norm (sign constraint only)")
+
+            elif TRANSFORMER_VARIANT == LAGRANGIAN_VARIANT:
+                from lagrangian_transformer import (
+                    LagrangianTransformerActorCritic as C,
+                    COST_FLOOR, COST_BUDGET)
+                model = C(VIEW_DISTANCE, scalar_dim=SCALAR_DIM,
+                          sequence_length=SEQUENCE_LENGTH).to(device)
+                print("[lagrangian] separate cost critic; constraint "
+                      "J_c = E[sum g^t 1(b < %.2f)] <= %.2f"
+                      % (COST_FLOOR, COST_BUDGET))
 
             elif TRANSFORMER_VARIANT == "cost_proper":
                 from icnn_transformer import ProperCostTransformerActorCritic as C
@@ -3268,6 +3371,17 @@ def run():
                         # V_cost = -V^pi; act() returns V^pi.
                         if IS_COST:
                             ep_V_trace.append(-float(v.reshape(-1)[0]))
+                        if IS_LAGRANGIAN:
+                            # The constraint stream, recorded alongside
+                            # the reward stream so the second GAE pass
+                            # has the same per-step alignment.
+                            _soc = env.ch.get_battery() / 100.0
+                            r.setdefault("cost_signal", []).append(
+                                1.0 if _soc < COST_FLOOR_M else 0.0)
+                            with torch.no_grad():
+                                r.setdefault("cost_values", []).append(
+                                    float(model.cost_value_only(s)
+                                          .reshape(-1)[0]))
                         barrier = None
                         current_action = a[0].detach().cpu().numpy()
                         stored_action = raw_a_b
