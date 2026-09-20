@@ -64,10 +64,32 @@ COST_FLOOR = float(os.environ.get("LTAC_COST_FLOOR", "0.20"))
 COST_BUDGET = float(os.environ.get("LTAC_COST_BUDGET", "1.25"))
 # Dual ascent step size.
 LAMBDA_LR = float(os.environ.get("LTAC_LAMBDA_LR", "0.02"))
-# Ceiling on the multiplier. A runaway lambda silently turns the run
-# into pure constraint satisfaction with no task signal, which looks
-# like convergence failure rather than what it is.
-LAMBDA_MAX = float(os.environ.get("LTAC_LAMBDA_MAX", "50.0"))
+# Ceiling on the multiplier, and the number of updates before the dual
+# is allowed to move at all.
+#
+# BOTH DEFAULTS ARE SET FROM A FAILED RUN, NOT FROM TASTE.
+#
+# At LAMBDA_MAX = 50 and no warm-up, seed 1 saturated the multiplier
+# by update 48. The objective (A_r - lam A_c)/(1 + lam) then weights
+# the reward at 1/51 = 2%, so the policy stopped learning to navigate:
+# 2,579 episodes at a 70-83% death rate with no trend, and 1/10
+# surviving at evaluation. J_c stayed near 20 against a budget of
+# 1.25, which drove lambda higher still.
+#
+# That is a deadlock rather than slow convergence. J_c is high because
+# the vehicle dies, it dies because it never learned to find sun, it
+# never learned because lambda suppressed the reward signal, and
+# lambda is high because J_c is high.
+#
+# The warm-up breaks the loop at its only entry point: the policy gets
+# WARMUP updates of undisturbed task signal before the constraint
+# begins to bind. The lower ceiling bounds the damage if the dual runs
+# away anyway -- at LAMBDA_MAX = 5 the reward still carries 1/6 = 17%
+# of the objective, which is enough to keep learning.
+LAMBDA_MAX = float(os.environ.get("LTAC_LAMBDA_MAX", "5.0"))
+# Counted in EPISODES: main.py passes the episode index,
+# there being no update counter in scope at the call site.
+LAMBDA_WARMUP = int(os.environ.get("LTAC_LAMBDA_WARMUP", "300"))
 
 
 class LagrangianTransformerActorCritic(TransformerActorCritic):
@@ -118,7 +140,7 @@ class LagrangianTransformerActorCritic(TransformerActorCritic):
         return float(torch.exp(self.log_lambda).clamp(max=LAMBDA_MAX))
 
     @torch.no_grad()
-    def update_lambda(self, j_c):
+    def update_lambda(self, j_c, update_idx=None):
         """
         Dual ascent on the constraint violation.
 
@@ -126,7 +148,15 @@ class LagrangianTransformerActorCritic(TransformerActorCritic):
         lambda = 0 this moves proportionally rather than additively, so
         a satisfied constraint decays the multiplier smoothly instead
         of pinning it at the boundary.
+
+        Frozen for the first LAMBDA_WARMUP episodes. A constraint that
+        binds before the policy can satisfy it drives the multiplier to
+        its ceiling and takes the task signal with it; the dual has
+        nothing useful to chase until J_c reflects a policy that has
+        started to work.
         """
+        if update_idx is not None and update_idx < LAMBDA_WARMUP:
+            return self.lam
         viol = float(j_c) - COST_BUDGET
         self.log_lambda.add_(LAMBDA_LR * viol)
         self.log_lambda.clamp_(min=-11.5, max=float(

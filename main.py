@@ -102,6 +102,8 @@ LAG_STATE = {"cost_adv": None, "cost_returns": None, "j_c": 0.0,
              "lam": 0.0}
 COST_BUDGET_M = float(os.environ.get("LTAC_COST_BUDGET", "1.25"))
 COST_FLOOR_M = float(os.environ.get("LTAC_COST_FLOOR", "0.20"))
+# In EPISODES, not updates: see the update_lambda call site.
+LAMBDA_WARMUP_M = int(os.environ.get("LTAC_LAMBDA_WARMUP", "300"))
 KNOWN_VARIANTS = (("lyapunov", "normal", LAGRANGIAN_VARIANT)
                   + COST_VARIANTS)
 if POLICY_TYPE == "transformer" and TRANSFORMER_VARIANT not in KNOWN_VARIANTS:
@@ -2809,7 +2811,11 @@ def update(model,opt,rollouts,device, ep, metrics_writer=None, return_var_tracke
             # multiplier is a property of the batch's constraint
             # violation, and updating it inside the epoch loop would
             # let it chase minibatch noise.
-            _lam = model.update_lambda(LAG_STATE["j_c"])
+            # ep, the episode index, is what is in scope here; there
+            # is no update counter. One update follows a fixed batch of
+            # episodes, so an episode threshold freezes the dual for
+            # the same stretch of training and needs no new state.
+            _lam = model.update_lambda(LAG_STATE["j_c"], update_idx=ep)
             LAG_STATE["lam"] = _lam
             avg["lag_lambda"] = _lam
             avg["lag_j_c"] = LAG_STATE["j_c"]
@@ -2818,6 +2824,7 @@ def update(model,opt,rollouts,device, ep, metrics_writer=None, return_var_tracke
             # constraint stay active? A lambda decaying toward zero
             # means the arm has quietly become plain PPO.
             avg["lag_violation"] = LAG_STATE["j_c"] - COST_BUDGET_M
+            avg["lag_frozen"] = float(ep < LAMBDA_WARMUP_M)
 
         print(
             f"Policy {avg.get('policy_loss', 0):.4f} | "
@@ -3312,7 +3319,7 @@ def run():
         # lag_j_c: a multiplier decaying to zero while J_c stays above
         # budget means the constraint went slack and the arm is plain
         # PPO wearing a cost critic.
-        "lag_lambda","lag_j_c","lag_violation",
+        "lag_lambda","lag_j_c","lag_violation","lag_frozen",
     ] + DIAGNOSTIC_FIELDS)
     metrics_writer.writeheader()
 
