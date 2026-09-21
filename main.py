@@ -99,7 +99,7 @@ COST_VARIANTS = ("cost", "cost_linear", "cost_plain", "cost_lipschitz",
 # member of the cost family.
 LAGRANGIAN_VARIANT = "lagrangian"
 LAG_STATE = {"cost_adv": None, "cost_returns": None, "j_c": 0.0,
-             "lam": 0.0}
+             "lam": 0.0, "cost_var": 0.0, "cost_scale": 1.0}
 COST_BUDGET_M = float(os.environ.get("LTAC_COST_BUDGET", "1.25"))
 COST_FLOOR_M = float(os.environ.get("LTAC_COST_FLOOR", "0.20"))
 # In EPISODES, not updates: see the update_lambda call site.
@@ -2118,6 +2118,13 @@ def compute_batch(rollouts, device):
                     / (cost_adv.std(unbiased=False) + 1e-8))
         LAG_STATE["cost_adv"] = cost_adv
         LAG_STATE["cost_returns"] = cost_returns
+        # Running variance of the cost return, the analogue of the
+        # reward critic's return_scale. An EMA rather than the batch
+        # variance, so one unusual batch cannot swing the loss scale.
+        _bv = float(cost_returns.var(unbiased=False).item()) if cost_returns.numel() > 1 else 1.0
+        LAG_STATE["cost_var"] = (0.99 * LAG_STATE["cost_var"] + 0.01 * _bv
+                                 if LAG_STATE["cost_var"] > 0 else _bv)
+        LAG_STATE["cost_scale"] = max(LAG_STATE["cost_var"], 1e-6)
         LAG_STATE["j_c"] = float(np.mean(j_c_samples)) if j_c_samples else 0.0
 
     return (states, next_states, actions, oldlp, adv, returns,
@@ -2716,8 +2723,17 @@ def update(model,opt,rollouts,device, ep, metrics_writer=None, return_var_tracke
                     # on the transformer path where the minibatch is
                     # indexed inline.
                     _cv = model.cost_value_only(states[mb])
-                    cost_value_loss = F.mse_loss(
+                    # Scaled by the cost return's own running variance,
+                    # exactly as the reward critic is scaled by
+                    # return_scale. Unscaled, this regression on returns
+                    # of order 20 dominated the shared encoder: seed 1
+                    # sat at 71-79% deaths for 450 episodes, 300 of them
+                    # with lambda frozen at 0.1 -- i.e. while the arm was
+                    # within ~10% of Standard PPO, which reaches <=10%
+                    # deaths by episode ~345 with the same architecture.
+                    cost_value_loss = (F.mse_loss(
                         _cv, LAG_STATE["cost_returns"][mb].detach())
+                        / LAG_STATE["cost_scale"])
 
                 saturation_loss = raw_mean.pow(2).mean()
 
@@ -2825,6 +2841,7 @@ def update(model,opt,rollouts,device, ep, metrics_writer=None, return_var_tracke
             # means the arm has quietly become plain PPO.
             avg["lag_violation"] = LAG_STATE["j_c"] - COST_BUDGET_M
             avg["lag_frozen"] = float(ep < LAMBDA_WARMUP_M)
+            avg["lag_cost_scale"] = LAG_STATE["cost_scale"]
 
         print(
             f"Policy {avg.get('policy_loss', 0):.4f} | "
@@ -3320,6 +3337,7 @@ def run():
         # budget means the constraint went slack and the arm is plain
         # PPO wearing a cost critic.
         "lag_lambda","lag_j_c","lag_violation","lag_frozen",
+        "lag_cost_scale",
     ] + DIAGNOSTIC_FIELDS)
     metrics_writer.writeheader()
 
