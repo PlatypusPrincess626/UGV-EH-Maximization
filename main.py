@@ -2704,10 +2704,9 @@ def update(model,opt,rollouts,device, ep, metrics_writer=None, return_var_tracke
                 value_loss = value_loss_raw / return_scale
 
                 # The second critic is fitted here and nowhere else.
-                # It shares the encoder with the reward critic, exactly
-                # as the auxiliary-certificate baseline does, so the
-                # only structural difference from the merged arm is
-                # which object the constraint is stated on.
+                # Its gradient stops at the latent (cost_value detaches
+                # it), so this loss trains the cost head only and the
+                # shared encoder is shaped exactly as in Standard PPO.
                 cost_value_loss = torch.zeros((), device=device)
                 if IS_LAGRANGIAN and LAG_STATE["cost_returns"] is not None:
                     # cost_value_only re-encodes rather than reusing a

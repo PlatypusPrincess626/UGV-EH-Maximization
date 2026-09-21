@@ -115,10 +115,10 @@ class LagrangianTransformerActorCritic(TransformerActorCritic):
         self.scalar_dim = int(scalar_dim)
 
         # The second critic. Deliberately a separate head with its own
-        # regression target: that separation IS the baseline. It shares
-        # the encoder, exactly as the auxiliary-certificate baseline
-        # does, so the only structural difference from the merged arm
-        # is which object the constraint is stated on.
+        # regression target: that separation IS the baseline. It reads
+        # the shared encoder's latent without training it (see
+        # cost_value below), so the encoder is shaped by the policy and
+        # reward critic exactly as in Standard PPO.
         L1 = max(64, d_model // 2)
         self.cost_critic = nn.Sequential(
             nn.Linear(d_model, L1), nn.GELU(),
@@ -164,11 +164,32 @@ class LagrangianTransformerActorCritic(TransformerActorCritic):
         return self.lam
 
     # -- the cost value -------------------------------------------------
+    #
+    # The cost critic READS the shared latent but does not TRAIN it.
+    #
+    # Measured on seed 1: with the cost regression back-propagating into
+    # the encoder, the arm sat at 62-65% deaths through a 300-episode
+    # warm-up with lambda frozen at 0.1 -- i.e. while it was within ~10%
+    # of Standard PPO, which reaches <=10% deaths by episode ~300 with
+    # the same encoder. The constraint signal was reshaping the
+    # representation the policy depends on before the constraint had
+    # any say in the policy objective.
+    #
+    # Detaching keeps the arm plain Lagrangian PPO: separate reward and
+    # cost value functions are the standard arrangement (Safety Gym's
+    # PPO-Lagrangian uses separate networks outright), and with the
+    # encoder trained only by the policy and reward critic, this arm
+    # differs from Standard PPO by the cost critic's advantage and the
+    # multiplier alone -- which is the comparison it exists for.
     def cost_value(self, latent):
-        return self.cost_critic(latent).squeeze(-1)
+        return self.cost_critic(latent.detach()).squeeze(-1)
 
     def cost_value_only(self, sequence):
-        return self.cost_value(self.encode(sequence))
+        # No graph through the encoder is needed: the latent is detached
+        # anyway, so building one would only cost memory.
+        with torch.no_grad():
+            latent = self.encode(sequence)
+        return self.cost_value(latent)
 
     @staticmethod
     def cost_signal(soc):
