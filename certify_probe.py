@@ -49,6 +49,8 @@ import re
 import sys
 from collections import deque
 
+import random
+
 import numpy as np
 import torch
 from pvlib import solarposition
@@ -291,6 +293,11 @@ def rollout(model, env, device, n_episodes, seed0=10_000,
     for ep in range(n_episodes):
         torch.manual_seed(seed0 + ep)
         np.random.seed(seed0 + ep)
+        # The period-initial charge is drawn from Python's random, not
+        # numpy's, so without this the start states depend on call
+        # order rather than on the episode index, and a probe cannot be
+        # reproduced or compared across arms episode by episode.
+        random.seed(seed0 + ep)
         env.place_devices()
         env.reset()
         x, y, yaw = env.ch.get_position()
@@ -569,6 +576,25 @@ def main():
     # controller other than the one whose performance is tabulated,
     # and the run lengths differ across seeds so there is no common
     # final episode to align on.
+    # Closure check for the multi-period result: every end-of-period
+    # state must lie in the set of period-initial states the guarantee
+    # was certified on, or the per-period bound cannot be chained.
+    _lo = float(os.environ.get("LTAC_START_SOC_MIN", "0.30"))
+    _hi = float(os.environ.get("LTAC_START_SOC_MAX", "0.40"))
+    _fin = np.array([e["final_batt"] / 100.0 for e in ep_stats
+                     if e.get("final_batt") is not None], dtype=float)
+    if _fin.size:
+        _in = float(((_fin >= _lo) & (_fin <= _hi)).mean())
+        print("\n[closure] start range [%.2f, %.2f]; end charge %.3f to %.3f; "
+              "%.1f%% of periods end inside the start range"
+              % (_lo, _hi, _fin.min(), _fin.max(), 100 * _in))
+        if _in < 1.0:
+            print("          closure FAILS: the multi-period bound does not "
+                  "apply. Widen LTAC_START_SOC_MIN/MAX to cover the end "
+                  "charge and re-probe.")
+    _closure = {"start_soc_range": [_lo, _hi],
+                "closure_frac": _in if _fin.size else None}
+
     val_path = os.path.join(args.out, f"{stem}_validation.csv")
     with open(val_path, "w", newline="") as f:
         w = csv.DictWriter(f, fieldnames=list(ep_stats[0].keys()))
@@ -656,6 +682,7 @@ def main():
         "V_mean": float(V.mean()), "V_min": float(V.min()),
         "d_max": float(d.max()),
     }
+    summary.update(_closure)
     with open(os.path.join(args.out, f"{stem}_summary.json"), "w") as f:
         json.dump(summary, f, indent=2)
 
