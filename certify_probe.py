@@ -224,6 +224,23 @@ def build_model(ckpt_path, device, allow_missing=False):
                   softplus_beta=M.COST_BETA_INIT,
                   beta_gain_target=M.COST_BETA_GAIN_TARGET,
                   spectral_critic=True)
+    elif variant == "lyapunov":
+        # The auxiliary-certificate baseline. Its checkpoint carries the
+        # Lyapunov, barrier and latent-dynamics heads, so loading it into
+        # the plain actor-critic of the else branch below fails on
+        # unexpected keys -- which is the right failure, but it means the
+        # arm cannot be probed at all without this branch.
+        #
+        # Note what the probe then measures for it: V_cost = -V^pi, the
+        # negated critic of a REWARD MDP whose returns are not
+        # non-positive, so it is not a cost-to-go and the sandwich of
+        # Lemma 2 does not apply to it. We report it because it is the
+        # only certificate this arm offers, not as a like-for-like
+        # comparison.
+        from lyupnov_transformer import LyapunovTransformerActorCritic as C
+        model = C(view_dist=M.VIEW_DISTANCE, scalar_dim=M.SCALAR_DIM,
+                  sequence_length=M.SEQUENCE_LENGTH)
+
     elif variant in M.COST_VARIANTS:
         from cost_transformer import CostTransformerActorCritic as C
         model = C(M.VIEW_DISTANCE, scalar_dim=M.SCALAR_DIM,

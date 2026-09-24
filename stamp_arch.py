@@ -81,6 +81,29 @@ def build_model(device="cpu"):
         return C(M.VIEW_DISTANCE, scalar_dim=M.SCALAR_DIM,
                  sequence_length=M.SEQUENCE_LENGTH,
                  use_spectral=(variant == "cost_linear")).to(device)
+    if variant == "cost_proper":
+        from icnn_transformer import ProperCostTransformerActorCritic as C
+        return C(M.VIEW_DISTANCE, scalar_dim=M.SCALAR_DIM,
+                 sequence_length=M.SEQUENCE_LENGTH,
+                 softplus_beta=M.COST_BETA_INIT,
+                 beta_gain_target=M.COST_BETA_GAIN_TARGET,
+                 spectral_critic=True).to(device)
+    if variant == "cost_icnn":
+        from icnn_transformer import ICNNCostTransformerActorCritic as C
+        return C(M.VIEW_DISTANCE, scalar_dim=M.SCALAR_DIM,
+                 sequence_length=M.SEQUENCE_LENGTH,
+                 softplus_beta=M.COST_BETA_INIT,
+                 beta_gain_target=M.COST_BETA_GAIN_TARGET,
+                 spectral_critic=True).to(device)
+    if variant == "lyapunov":
+        # Carries the auxiliary Lyapunov, barrier and latent-dynamics
+        # heads. Without this branch the fall-through below builds the
+        # plain actor-critic, strict loading reports them as unexpected,
+        # and the arm cannot be stamped or probed at all.
+        from lyupnov_transformer import LyapunovTransformerActorCritic as C
+        return C(view_dist=M.VIEW_DISTANCE, scalar_dim=M.SCALAR_DIM,
+                 sequence_length=M.SEQUENCE_LENGTH).to(device)
+    # "normal", and anything else, is the plain actor-critic.
     from transformer import TransformerActorCritic as C
     return C(M.VIEW_DISTANCE, scalar_dim=M.SCALAR_DIM,
              sequence_length=M.SEQUENCE_LENGTH).to(device)
