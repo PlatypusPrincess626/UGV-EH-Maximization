@@ -334,7 +334,15 @@ def rollout(model, env, device, n_episodes, seed0=10_000,
         for step in range(M.MAX_STEPS_PER_EPISODE):
             seq = M.seq_tensor(h, device)
             with torch.no_grad():
-                a, _raw, _lp, _v = model.act(seq, True)
+                # Arity differs by arm: the cost and plain heads return
+                # (action, raw, logp, value), while the auxiliary-head
+                # baseline appends its Lyapunov, barrier, latent and
+                # predicted-next outputs, eight in all. Only the action
+                # is used here, so index rather than unpack -- a fixed
+                # four-way unpack fails on that arm with "too many
+                # values to unpack" after the rollout has already begun.
+                _out = model.act(seq, True)
+                a = _out[0] if isinstance(_out, tuple) else _out
                 latent = model.encode(seq).reshape(-1).detach().cpu().numpy()
             V = value_of(model, seq)
             soc = env.ch.get_battery() / 100.0
