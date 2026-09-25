@@ -224,6 +224,21 @@ def build_model(ckpt_path, device, allow_missing=False):
                   softplus_beta=M.COST_BETA_INIT,
                   beta_gain_target=M.COST_BETA_GAIN_TARGET,
                   spectral_critic=True)
+    elif variant == "lagrangian":
+        # PPO with a separate cost critic and a learned dual. The cost
+        # critic's weights are in the checkpoint, so the plain
+        # actor-critic below cannot load it.
+        #
+        # Note what the probe measures here: V_cost = -V^pi of a REWARD
+        # MDP, as for the auxiliary-head baseline, so it is not a
+        # cost-to-go and Lemma 2 does not apply. The arm's constraint
+        # lives on its second critic, which the certificate machinery
+        # does not read.
+        from lagrangian_transformer import (
+            LagrangianTransformerActorCritic as C)
+        model = C(M.VIEW_DISTANCE, scalar_dim=M.SCALAR_DIM,
+                  sequence_length=M.SEQUENCE_LENGTH)
+
     elif variant == "lyapunov":
         # The auxiliary-certificate baseline. Its checkpoint carries the
         # Lyapunov, barrier and latent-dynamics heads, so loading it into
